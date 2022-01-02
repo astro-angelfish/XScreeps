@@ -1,0 +1,20 @@
+/* errormap */
+import { ErrorMapper } from './_errorMap/errorMapper'
+/* 原型挂载 */
+import Mount from '@/mount'
+import RoomWork from '@/boot/roomWork'
+import CreepWork from '@/boot/creepWork'
+import { CreepNumStatistic } from './module/global/statistic'
+/**
+ * 主运行函数
+ */
+export const loop = ErrorMapper.wrapLoop(() =>{
+    /* 原型拓展挂载 */
+    Mount()
+    /* 爬虫统计及死亡Memory回收 */
+    CreepNumStatistic()
+    /* 房间框架运行 */
+    RoomWork()
+    /* 爬虫运行 */
+    CreepWork()
+})
