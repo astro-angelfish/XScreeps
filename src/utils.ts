@@ -80,6 +80,70 @@ export function GenerateAbility(work?:number,carry?:number,move?:number,attack?:
   return body_list
 }
 
+// 用于对bodypartconstant[] 列表进行自适应化，使得爬虫房间能生产该爬虫，具体逻辑为寻找该bodypart中数量最多的，对其进行减法运算，直到达到目的，但数量到1时将不再减少
+export function adaption_body(arr:BodyPartConstant[],critical_num:number):BodyPartConstant[]
+{
+  // 获取基本能力列表
+  var temp_list = []
+  for (var i of arr)
+  {
+    if (!isInArray(temp_list,i))
+    {
+      temp_list.push(i)
+    }
+  }
+  while (CalculateEnergy(arr) > critical_num)
+  {
+    var all_1:boolean = false
+    for (var s=0;s < temp_list.length;s++)
+    {
+      if (getSameNum(temp_list[s],arr)> 1)
+      {
+        var index = arr.indexOf(temp_list[s])
+        if(index > -1) {
+          arr.splice(index,1);
+        }
+        all_1 = true
+      }
+    }
+    if (!all_1) break
+  }
+  return arr
+}
+
+/**
+     * 获取数组中相同元素的个数
+     * @param val 相同的元素
+     * @param arr 传入数组
+     */
+export function getSameNum(val,arr):number
+{
+  var processArr = []
+  for (var i of arr)
+  {
+    if (i == val) processArr.push(i)
+  }
+  return processArr.length
+}
+
+/* 判断孵化所需能量 */
+export function CalculateEnergy(abilityList:BodyPartConstant[]):number
+{
+  var num = 0
+  for (var part of abilityList)
+  {
+    if (part == WORK) num += 100
+    if (part == MOVE) num += 50
+    if (part == CARRY) num += 50
+    if (part == ATTACK) num += 80
+    if (part == RANGED_ATTACK) num += 150
+    if (part == HEAL) num += 250
+    if (part == CLAIM) num += 600
+    if (part == TOUGH) num += 10
+  }
+  return num
+}
+
 /* 向列表中添加指定数量元素 */
 export function AddList(arr:any[],time_:number,element:any):any[]
 {

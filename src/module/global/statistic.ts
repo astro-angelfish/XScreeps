@@ -8,6 +8,7 @@ export function CreepNumStatistic():void {
         if (Game.rooms[roomName] && !global.CreepNumData[roomName]) global.CreepNumData[roomName]={}
         if (global.CreepNumData[roomName])
         {
+            /* 所有角色数量归零 从0开始统计 */
             for (let roleName in global.CreepNumData[roomName])
             global.CreepNumData[roomName][roleName] = 0
         }

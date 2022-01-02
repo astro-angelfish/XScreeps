@@ -7,4 +7,15 @@ interface CreepMemory {
     belong: string      // 爬虫所属房间
     shard: string       // 爬虫所属shard
     role: string        // 爬虫角色
+    /* 每个爬虫都必须有该记忆，方便boost */
+    boostData:BoostData   
+}
+
+interface BoostData{
+    [body:string]:Boosted
+}
+interface Boosted{
+    boosted?:boolean
+    type?:ResourceConstant
+    num?:number
 }

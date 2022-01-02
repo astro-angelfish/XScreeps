@@ -18,8 +18,8 @@ export default class RoomCoreInitExtension extends Room {
         if (!this.memory.StructureIdData) this.memory.StructureIdData = {}
         if (!this.memory.RoomLabBind) this.memory.RoomLabBind = {}
         if (!this.memory.SpawnMessage) this.memory.SpawnMessage = {}
-        if (!this.memory.SpawnList) this.memory.SpawnList = []
         if (!this.memory.originLevel) this.memory.originLevel = 0
+        if (!this.memory.SpawnList) this.memory.SpawnList = []
     }
 
     /**
@@ -238,7 +238,6 @@ export default class RoomCoreInitExtension extends Room {
         if (!global.CreepBodyData[this.name]) global.CreepBodyData[this.name] = {}
         if (!global.CreepNumData) global.CreepNumData = {}
         if (!global.CreepNumData[this.name]) global.CreepNumData[this.name] = {}
-        if (!this.memory.SpawnMessage['counter']) this.memory.SpawnMessage['counter'] = {}
-        if (!this.memory.SpawnMessage['timer']) this.memory.SpawnMessage['timer'] = {}
+
     }
 }
