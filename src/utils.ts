@@ -154,3 +154,99 @@ export function AddList(arr:any[],time_:number,element:any):any[]
   }
   return list_
 }
+
+/* 按照列表中某个属性进行排序 配合sort使用 */
+export function compare(property){
+  return function(a,b){
+      var value1 = a[property]
+      var value2 = b[property]
+      return value1 - value2
+  }
+}
+
+// 字符串压缩
+export function compileStr(str){
+  let count = 1
+  let newStr = ''
+  for(let i =0; i < str.length -1; i++){
+      if(str[i] == str[i+1]){
+          count ++
+          continue   // 如果此时的字符和后一个字符想等的话 那么跳出此次循环 继续下次循环
+      }else{
+          if(count == 1){    
+              newStr += str[i]
+          }else{
+              newStr += count + str[i]
+              count = 1
+          }
+      }
+  }
+  return newStr
+}
+
+/* 正则获取房间信息 return {coor:['E','S'],num:[44,45]} */
+export function regularRoom(roomName:string):{coor:string[],num:number[]}
+{
+  var roomName =  roomName
+  const regRoom = /[A-Z]/g
+  const regNum = /\d{1,2}/g
+  let Acoord = regRoom.exec(roomName)[0]
+  let AcoordNum = parseInt(regNum.exec(roomName)[0])
+  let Bcoord = regRoom.exec(roomName)[0]
+  let BcoordNum = parseInt(regNum.exec(roomName)[0])
+  return {coor:[Acoord,Bcoord],num:[AcoordNum,BcoordNum]}
+}
+
+/* 计算两个房间之间的距离   */
+export function roomDistance(roomName1:string,roomName2:string):number{
+  var Data1 = regularRoom(roomName1)
+  var Data2 = regularRoom(roomName2)
+  var Xdistance = 0
+  var Ydistance = 0
+  if (Data1.coor[0] == Data2.coor[0])
+  {
+    Xdistance = Math.abs(Data1.num[0]-Data2.num[0])
+  }
+  else
+  {
+    /* 过渡处 */
+    Xdistance = 2* Data1.num[0]
+  }
+  if (Data1.coor[1] == Data2.coor[1])
+  {
+    Ydistance = Math.abs(Data1.num[1]-Data2.num[1])
+  }
+  else
+  {
+    /* 过渡处 */
+    Ydistance = 2* Data1.num[1]
+  }
+
+  return Xdistance>Ydistance?Xdistance:Ydistance
+}
+
+/* 获取两个房间之间最近的星门房 */
+export function closestPotalRoom(roomName1:string,roomName2:string):string{
+  var Data1 = regularRoom(roomName1)
+  var Data2 = regularRoom(roomName2)
+  /* 分别计算距离每个房间最近的portal房，如果两个房的最近是相等的就return该房 */
+  /* 如果不相等，就对比 A房--A最近Portal房距离 + A最近Portal房--B房距离 和 B房--B最近Portal房距离 + B最近Portal房--A房距离*/
+  var NData1R = `${Data1.coor[0]}${Data1.num[0] %10>5?Data1.num[0]+(10-Data1.num[0]%10):Data1.num[0]-Data1.num[0]%10}${Data1.coor[1]}${Data1.num[1]%10>5?Data1.num[1]+(10-Data1.num[1]%10):Data1.num[1]-Data1.num[1]%10}`
+  var NData2R = `${Data2.coor[0]}${Data2.num[0] %10>5?Data2.num[0]+(10-Data2.num[0]%10):Data2.num[0]-Data2.num[0]%10}${Data2.coor[1]}${Data2.num[1]%10>5?Data2.num[1]+(10-Data2.num[1]%10):Data2.num[1]-Data2.num[1]%10}`
+  if (NData1R == NData2R)
+    return NData1R
+  else
+  {
+    var Adistance = roomDistance(roomName1,NData1R) + roomDistance(roomName2,NData1R)
+    var Bdistance = roomDistance(roomName1,NData2R) + roomDistance(roomName2,NData2R)
+    if (Adistance > Bdistance)
+      return NData2R
+    else
+      return NData1R
+  }
+}
+
+/* 获取指定方向相反的方向 */
+export function getOppositeDirection(direction: DirectionConstant): DirectionConstant {
+  return <DirectionConstant>((direction + 3) % 8 + 1)
+}
