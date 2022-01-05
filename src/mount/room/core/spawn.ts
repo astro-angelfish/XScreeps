@@ -7,6 +7,13 @@ import { adaption_body, CalculateEnergy, compare, GenerateAbility } from "@/util
 /* 房间原型拓展   --内核  --房间孵化 */
 export default class RoomCoreSpawnExtension extends Room {
 
+    /* 孵化总函数 */
+    public SpawnMain():void{
+        this.SpawnConfigInit()
+        this.SpawnConfigModify()
+        this.SpawnManager()
+    }
+
     /* 爬虫孵化配置初始化 */
     public SpawnConfigInit():void{
         if (!this.memory.SpawnConfig) this.memory.SpawnConfig = {}
@@ -36,7 +43,7 @@ export default class RoomCoreSpawnExtension extends Room {
             global.CreepBodyData[this.name][role] = RoleLevelData[role][this.controller.level].bodypart
         }
         /* 数量信息二次加工 */
-        if (this.controller.level == this.memory.originLevel) return
+        if (this.controller.level != this.memory.originLevel)
         for (let role in this.memory.SpawnConfig)
         {
             var role_ = this.memory.SpawnConfig[role]
@@ -74,6 +81,7 @@ export default class RoomCoreSpawnExtension extends Room {
             else
             {
                 let roleNum = global.CreepNumData[this.name][role]
+                if (roleNum === undefined) roleNum = 0
                 if (this.memory.SpawnConfig[role] && (!roleNum || roleNum < this.memory.SpawnConfig[role].num))
                 {
                     /* 计算SpawnList里相关role的个数 */
@@ -99,6 +107,7 @@ export default class RoomCoreSpawnExtension extends Room {
             let thisSpawn = Game.getObjectById(sID) as StructureSpawn
             if (!thisSpawn)
             {
+                console.log(4)
                 /* 没有该spawn说明spawn已经被摧毁或者被拆除了，删除structureData里的数据 */
                 var spawnMemoryList = this.memory.StructureIdData.spawn as string[]
                 var index = spawnMemoryList.indexOf(sID)
@@ -121,6 +130,10 @@ export default class RoomCoreSpawnExtension extends Room {
             /* 对爬虫数据进行自适应 */
             let allEnergyCapacity = this.energyCapacityAvailable
             if(allEnergyCapacity < CalculateEnergy(body)) adaption_body(body,allEnergyCapacity)
+            /* 对具备自适应属性的爬虫进行自适应 */
+            let allEnergy = this.energyAvailable
+            if (this.memory.SpawnConfig[roleName] && this.memory.SpawnConfig[roleName].adaption && global.CreepNumData[this.name][roleName] == 0 && allEnergy < CalculateEnergy(body))
+            adaption_body(body,allEnergy)
             // 名称整理
             let mark = RoleData[roleName].mark?RoleData[roleName].mark:"＃"
             let timestr = Game.time.toString().substr(Game.time.toString().length - 4)

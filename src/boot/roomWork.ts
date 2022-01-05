@@ -9,6 +9,10 @@ export default ()=>{
         /* 具体房间逻辑 */
         // 初始化
         thisRoom.RoomInit()
+        thisRoom.SpawnMain()
+
+        // 孵化爬虫
+        thisRoom.SpawnExecution()
         
         // 房间等级Memory信息更新
         if (thisRoom.controller.level > thisRoom.memory.originLevel)

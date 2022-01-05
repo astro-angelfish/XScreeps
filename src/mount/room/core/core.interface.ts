@@ -6,6 +6,7 @@ interface Room {
     RoomSpawnListInit():void
 
     // spawn
+    SpawnMain():void
     SpawnConfigInit():void
     SpawnConfigModify():void
     SpawnManager():void
@@ -20,6 +21,13 @@ interface RoomMemory {
     SpawnConfig:SpawnConfigData // 存放房间孵化配置
     SpawnList:SpawnList[]
     originLevel:number          // 房间控制器等级，房间等级变化会跟着变化
+    harvestData:harvestData
+}
+
+interface harvestData{
+    [sourceID:string]:{
+        containerID?:string
+        linkID?:string}
 }
 
 /* 房间记忆实验室绑定数据格式 */

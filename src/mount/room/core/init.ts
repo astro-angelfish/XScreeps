@@ -17,7 +17,7 @@ export default class RoomCoreInitExtension extends Room {
     public RoomMemoryInit():void{
         if (!this.memory.StructureIdData) this.memory.StructureIdData = {}
         if (!this.memory.RoomLabBind) this.memory.RoomLabBind = {}
-        if (!this.memory.SpawnMessage) this.memory.SpawnMessage = {}
+        if (!this.memory.SpawnConfig) this.memory.SpawnConfig = {}
         if (!this.memory.originLevel) this.memory.originLevel = 0
         if (!this.memory.SpawnList) this.memory.SpawnList = []
     }
@@ -35,7 +35,7 @@ export default class RoomCoreInitExtension extends Room {
             let ASpawn = this.getStructure('spawn') as StructureSpawn[]
             for (let sp of ASpawn)
             {
-                StructureData.spawn.push(sp)
+                StructureData.spawn.push(sp.id)
             }
         }
         else if ((level == 7 && StructureData.spawn.length < 2) || (level >= 8 && StructureData.spawn.length < 3))
@@ -97,6 +97,11 @@ export default class RoomCoreInitExtension extends Room {
                 }
             }
         }
+        // if (!StructureData.source_containers) StructureData.source_containers = []
+        // if (level <= 6 && StructureData.source_containers.length < StructureData.source.length)
+        // {
+        //     if (level)
+        // }
         /* 矿点link记忆更新 */
         if (level >= 5 && level < 6)
         {
@@ -226,6 +231,55 @@ export default class RoomCoreInitExtension extends Room {
             if (factory_.length > 0)
             {
                 this.memory.StructureIdData.FactoryId = factory_[0].id
+            }
+        }
+        // harvestData 数据更新
+        if (!this.memory.harvestData)
+        {
+            this.memory.harvestData = {}
+            for (let source_ of this.memory.StructureIdData.source)
+            {
+                this.memory.harvestData[source_] = {}
+            }
+        }
+        if (Game.time % 7 == 0)
+        for (let id in this.memory.harvestData)
+        {
+            if(level < 5)
+            {
+                if (!this.memory.harvestData[id].containerID)
+                {
+                    let source = Game.getObjectById(id) as Source
+                    let containers = source.pos.findInRange(FIND_STRUCTURES,1,{filter:(stru)=>{return stru.structureType == 'container'}})
+                    if (containers.length > 0) this.memory.harvestData[id].containerID = containers[0].id
+                }
+            }
+            else if (level >= 5 && level <= 7)
+            {
+                let source = Game.getObjectById(id) as Source
+                if (!this.memory.harvestData[id].linkID)
+                {
+                    if (!this.memory.harvestData[id].containerID)
+                    {
+                        let containers = source.pos.findInRange(FIND_STRUCTURES,1,{filter:(stru)=>{return stru.structureType == 'container'}})
+                        if (containers.length > 0) this.memory.harvestData[id].containerID = containers[0].id
+                    }
+                    let links = source.pos.findInRange(FIND_STRUCTURES,2,{filter:(stru)=>{return stru.structureType == 'container'}})
+                    if (links.length > 0) this.memory.harvestData[id].linkID = links[0].id
+                }
+                else
+                {
+                    delete this.memory.harvestData[id].containerID
+                }
+            }
+            else
+            {
+                if (!this.memory.harvestData[id].linkID)
+                {
+                    let source = Game.getObjectById(id) as Source
+                    let links = source.pos.findInRange(FIND_STRUCTURES,2,{filter:(stru)=>{return stru.structureType == 'container'}})
+                    if (links.length > 0) this.memory.harvestData[id].linkID = links[0].id
+                }
             }
         }
     }

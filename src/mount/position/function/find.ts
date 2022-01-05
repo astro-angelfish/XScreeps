@@ -55,4 +55,10 @@ export default class PositionFunctionFindExtension extends RoomPosition {
             }
         }
     }
+    /* 获取最近的store能量有空的spawn或扩展 */
+    public getClosestStore():StructureExtension | StructureSpawn | StructureLab | undefined{
+        return this.findClosestByPath(FIND_STRUCTURES,{filter:(structure:StructureExtension |StructureSpawn)=>{
+            return filter_structure(structure,[STRUCTURE_EXTENSION,STRUCTURE_SPAWN,STRUCTURE_LAB]) && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
+        }}) as StructureExtension | StructureSpawn  | undefined
+    }
 }
