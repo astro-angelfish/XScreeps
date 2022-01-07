@@ -13,15 +13,20 @@ interface Room {
     SpawnExecution():void
     AddSpawnList(role:string,body:number[],level:number,mem?:SpawnMemory):void
     SpawnListRoleNum(role:string):number
+
+    // ecosphere
+    RoomEcosphere():void
+    RoomPlan():void
+    RoomRuleLayout(level:number,map:BluePrint):void
 }
 
 interface RoomMemory {
     StructureIdData:any // 存放房间内建筑ID信息
     RoomLabBind:RoomLabBind // 存放房间lab调用相关绑定信息
     SpawnConfig:SpawnConfigData // 存放房间孵化配置
-    SpawnList:SpawnList[]
+    SpawnList:SpawnList[]       // 孵化列表
     originLevel:number          // 房间控制器等级，房间等级变化会跟着变化
-    harvestData:harvestData
+    harvestData:harvestData     // 能量矿采集信息
 }
 
 interface harvestData{
@@ -73,3 +78,15 @@ interface SpawnList {
 interface SpawnMemory {
     [mem:string]:any
 }
+
+
+/**
+ * 房间自动布局
+ */
+interface BluePrintData{
+    x:number,   // 相对于中心点x的位置
+    y:number,   // 相对于中心点y的位置
+    structureType?:BuildableStructureConstant,  // 建筑类型
+    level?: number      // 自动布局等级
+}
+type BluePrint = BluePrintData[]

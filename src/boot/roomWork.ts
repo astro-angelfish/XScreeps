@@ -9,6 +9,7 @@ export default ()=>{
         /* 具体房间逻辑 */
         // 初始化
         thisRoom.RoomInit()
+        thisRoom.RoomEcosphere()
         thisRoom.SpawnMain()
 
         // 孵化爬虫

@@ -250,3 +250,19 @@ export function closestPotalRoom(roomName1:string,roomName2:string):string{
 export function getOppositeDirection(direction: DirectionConstant): DirectionConstant {
   return <DirectionConstant>((direction + 3) % 8 + 1)
 }
+
+/* 打印指定颜色 */
+type Colors = 'red'|'blue'| 'green' | 'yellow' | 'orange'
+const colors: { [name in Colors]: string } = {
+	red: '#ef9a9a',
+	green: '#6b9955',
+	yellow: '#c5c599',
+	blue: '#8dc5e3',
+  orange:'#ff9d00',
+}
+export function Colorful(content: string, colorName: Colors | string = null, bolder: boolean = false): string {
+	const colorStyle = colorName ? `color: ${colors[colorName] ? colors[colorName] : colorName};` : ''
+	const bolderStyle = bolder ? 'font-weight: bolder;' : ''
+
+	return `<text style="${[colorStyle, bolderStyle].join(' ')}">${content}</text>`
+}

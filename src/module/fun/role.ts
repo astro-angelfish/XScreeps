@@ -1,3 +1,5 @@
+import { getDistance } from "@/utils";
+
 /**
  * 存放非任务类型角色相关的函数
 */
@@ -99,6 +101,10 @@ export function carry_(creep_:Creep):void{
     if (creep_.memory.working)
     {
         let extension = creep_.pos.getClosestStore()
+        if (Game.rooms[creep_.memory.belong].controller.level >= 4 && Game.rooms[creep_.memory.belong].memory.StructureIdData.storageID)
+        {
+            extension = Game.getObjectById(Game.rooms[creep_.memory.belong].memory.StructureIdData.storageID) as StructureExtension
+        }
         if (extension)
         {
             if (!creep_.pos.isNearTo(extension)) creep_.goTo(extension.pos,1)
@@ -164,6 +170,85 @@ export function upgrade_(creep_:Creep):void{
         if (!creep_.pos.isNearTo(container)) creep_.goTo(container.pos,1)
         else creep_.withdraw(container,'energy')
 
+    }
+
+}
+
+export function build_(creep:Creep):void{
+    if (!creep.memory) return
+    var thisRoom = Game.rooms[creep.memory.belong]
+    if (!thisRoom) return
+    if (!creep.memory.standed) creep.memory.standed = false
+    if (!Game.rooms[creep.memory.belong]) return
+    if (!creep.memory.working) creep.memory.working = false
+    if(creep.memory.working && creep.store.getUsedCapacity("energy") == 0 ) {
+        creep.memory.working = false;
+    }
+    if(!creep.memory.working && creep.store.getFreeCapacity() == 0) {
+        creep.memory.working = true;
+    }
+    if (creep.memory.working)
+    {
+        var construction = creep.pos.findClosestByPath(FIND_MY_CONSTRUCTION_SITES)
+        if (construction)
+        {
+            if (creep.build(construction) == ERR_NOT_IN_RANGE)
+            {
+                creep.goTo(construction.pos,1)
+                creep.memory.standed = false
+            }
+            if (getDistance(creep.pos,construction.pos) <= 3)
+            creep.memory.standed = true
+        }
+        else
+        {
+            /* 没有建筑物则考虑道路维护 */
+            var roads = creep.pos.findClosestByPath(FIND_STRUCTURES,{filter:(structure)=>{
+                return structure.structureType == 'road' && structure.hits < structure.hitsMax
+            }})
+            if (roads)
+            {
+                creep.say("🛠️",true)
+                if (creep.repair(roads) == ERR_NOT_IN_RANGE)
+                {
+                    creep.goTo(roads.pos,1)
+                }
+                if (getDistance(creep.pos,roads.pos) <= 3)
+                creep.memory.standed = false
+            }
+        }
+    }
+    else
+    {
+        creep.memory.standed = false
+        /* 如果有storage就去storage里找，没有就自己采集 */
+        if (thisRoom.memory.StructureIdData.storageID)
+        {
+            var storage = Game.getObjectById(thisRoom.memory.StructureIdData.storageID) as StructureStorage
+            if (!storage)
+            {
+                delete thisRoom.memory.StructureIdData.storageID
+                return
+            }
+            if (creep.withdraw(storage,'energy') == ERR_NOT_IN_RANGE)
+                creep.goTo(storage.pos,1)  
+        }
+        else
+        {
+            var container = creep.pos.findClosestByPath(FIND_STRUCTURES,{filter:(stru)=>{return stru.structureType == 'container' && stru.store.getUsedCapacity('energy') > creep.store.getCapacity()}})
+            if (container)
+            {
+                if (!creep.pos.isNearTo(container))
+                {
+                    creep.goTo(container.pos,1)
+                }
+                else
+                {
+                    creep.withdraw(container,'energy')
+                }
+                
+            }
+        }
     }
 
 }

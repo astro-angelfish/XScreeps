@@ -1,4 +1,4 @@
-import { carry_, harvest_, upgrade_ } from "@/module/fun/role"
+import { build_, carry_, harvest_, upgrade_ } from "@/module/fun/role"
 
 interface SpawnConstantData  {
     [role:string]:{
@@ -20,13 +20,14 @@ export const RoleData:SpawnConstantData = {
     'harvest':{num:0,ability:[1,1,2,0,0,0,0,0],adaption:true,level:5,mark:"矿",init:true,fun:harvest_},  // 矿点采集工
     'carry':{num:0,ability:[0,3,3,0,0,0,0,0],level:6,mark:"运",init:true,fun:carry_},  // 矿点搬运工
     'upgrade':{num:0,ability:[1,1,2,0,0,0,0,0],level:10,mark:"升",init:true,fun:upgrade_},   // 升级工
+    'build':{num:0,ability:[1,1,2,0,0,0,0,0],level:10,mark:"建",init:true,fun:build_},   // 建筑工
 }
 
 /* 爬虫部件随房间等级变化的动态列表 */
 export const RoleLevelData = {
     'harvest':{
-        1:{bodypart:[1,1,1,0,0,0,0,0],num:2},
-        2:{bodypart:[2,1,2,0,0,0,0,0],num:2},
+        1:{bodypart:[2,1,1,0,0,0,0,0],num:2},
+        2:{bodypart:[4,1,2,0,0,0,0,0],num:2},
         3:{bodypart:[3,2,3,0,0,0,0,0],num:2},
         4:{bodypart:[5,2,5,0,0,0,0,0],num:2},
         5:{bodypart:[5,2,5,0,0,0,0,0],num:2},
@@ -40,9 +41,9 @@ export const RoleLevelData = {
         3:{bodypart:[0,4,4,0,0,0,0,0],num:2},
         4:{bodypart:[0,6,6,0,0,0,0,0],num:2},
         5:{bodypart:[0,2,2,0,0,0,0,0],num:2},
-        6:{bodypart:[0,2,2,0,0,0,0,0],num:2},
-        7:{bodypart:[0,2,2,0,0,0,0,0],num:2},
-        8:{bodypart:[0,2,2,0,0,0,0,0],num:2},
+        6:{bodypart:[0,2,2,0,0,0,0,0],num:0},
+        7:{bodypart:[0,2,2,0,0,0,0,0],num:0},
+        8:{bodypart:[0,2,2,0,0,0,0,0],num:0},
     },
     'upgrade':{
         1:{bodypart:[1,1,2,0,0,0,0,0],num:4},
@@ -53,5 +54,16 @@ export const RoleLevelData = {
         6:{bodypart:[5,2,5,0,0,0,0,0],num:2},
         7:{bodypart:[10,2,10,0,0,0,0,0],num:2},
         8:{bodypart:[15,3,15,0,0,0,0,0],num:1},
+    },    
+    'build':{
+        1:{bodypart:[1,1,2,0,0,0,0,0],num:1},
+        2:{bodypart:[2,2,4,0,0,0,0,0],num:1},
+        3:{bodypart:[3,3,6,0,0,0,0,0],num:1},
+        4:{bodypart:[4,4,8,0,0,0,0,0],num:1},
+        5:{bodypart:[4,4,8,0,0,0,0,0],num:0},
+        6:{bodypart:[5,5,10,0,0,0,0,0],num:0},
+        7:{bodypart:[6,6,12,0,0,0,0,0],num:0},
+        8:{bodypart:[8,8,16,0,0,0,0,0],num:0},
     },
+
 }

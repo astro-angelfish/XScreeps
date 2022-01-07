@@ -5,6 +5,7 @@ import Mount from '@/mount'
 import RoomWork from '@/boot/roomWork'
 import CreepWork from '@/boot/creepWork'
 import { CreepNumStatistic } from './module/global/statistic'
+import { pixel } from './module/fun/pixel'
 /**
  * 主运行函数
  */
@@ -17,4 +18,7 @@ export const loop = ErrorMapper.wrapLoop(() =>{
     RoomWork()
     /* 爬虫运行 */
     CreepWork()
+
+    /* 像素 */
+    pixel()
 })

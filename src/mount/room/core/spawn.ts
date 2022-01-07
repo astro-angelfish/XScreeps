@@ -107,7 +107,6 @@ export default class RoomCoreSpawnExtension extends Room {
             let thisSpawn = Game.getObjectById(sID) as StructureSpawn
             if (!thisSpawn)
             {
-                console.log(4)
                 /* 没有该spawn说明spawn已经被摧毁或者被拆除了，删除structureData里的数据 */
                 var spawnMemoryList = this.memory.StructureIdData.spawn as string[]
                 var index = spawnMemoryList.indexOf(sID)
@@ -132,7 +131,7 @@ export default class RoomCoreSpawnExtension extends Room {
             if(allEnergyCapacity < CalculateEnergy(body)) adaption_body(body,allEnergyCapacity)
             /* 对具备自适应属性的爬虫进行自适应 */
             let allEnergy = this.energyAvailable
-            if (this.memory.SpawnConfig[roleName] && this.memory.SpawnConfig[roleName].adaption && global.CreepNumData[this.name][roleName] == 0 && allEnergy < CalculateEnergy(body))
+            if (this.memory.SpawnConfig[roleName] && this.memory.SpawnConfig[roleName].adaption && !global.CreepNumData[this.name][roleName] && allEnergy < CalculateEnergy(body))
             adaption_body(body,allEnergy)
             // 名称整理
             let mark = RoleData[roleName].mark?RoleData[roleName].mark:"＃"

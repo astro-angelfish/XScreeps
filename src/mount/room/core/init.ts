@@ -97,11 +97,6 @@ export default class RoomCoreInitExtension extends Room {
                 }
             }
         }
-        // if (!StructureData.source_containers) StructureData.source_containers = []
-        // if (level <= 6 && StructureData.source_containers.length < StructureData.source.length)
-        // {
-        //     if (level)
-        // }
         /* 矿点link记忆更新 */
         if (level >= 5 && level < 6)
         {
@@ -264,7 +259,7 @@ export default class RoomCoreInitExtension extends Room {
                         let containers = source.pos.findInRange(FIND_STRUCTURES,1,{filter:(stru)=>{return stru.structureType == 'container'}})
                         if (containers.length > 0) this.memory.harvestData[id].containerID = containers[0].id
                     }
-                    let links = source.pos.findInRange(FIND_STRUCTURES,2,{filter:(stru)=>{return stru.structureType == 'container'}})
+                    let links = source.pos.findInRange(FIND_STRUCTURES,2,{filter:(stru)=>{return stru.structureType == 'link'}})
                     if (links.length > 0) this.memory.harvestData[id].linkID = links[0].id
                 }
                 else
