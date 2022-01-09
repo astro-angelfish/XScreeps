@@ -18,6 +18,12 @@ interface Room {
     RoomEcosphere():void
     RoomPlan():void
     RoomRuleLayout(level:number,map:BluePrint):void
+    RoomState():void
+    repatchDistribution():void
+    unzip(str:string):RoomPosition | undefined
+    addStructureMemory():void
+    getDistributionNum():number
+    unbindMemory(mold:BuildableStructureConstant,x:number,y:number):void
 }
 
 interface RoomMemory {
@@ -27,6 +33,9 @@ interface RoomMemory {
     SpawnList:SpawnList[]       // 孵化列表
     originLevel:number          // 房间控制器等级，房间等级变化会跟着变化
     harvestData:harvestData     // 能量矿采集信息
+    state:stateType         // 房间状态
+    structureNum:number     // 房间内建筑的总数量
+    distribution:StructureMemory        // 自动布局
 }
 
 interface harvestData{
@@ -90,3 +99,9 @@ interface BluePrintData{
     level?: number      // 自动布局等级
 }
 type BluePrint = BluePrintData[]
+
+type stateType = 'peace' | 'war'
+
+interface StructureMemory{
+    [Stype:string]:string[]
+}

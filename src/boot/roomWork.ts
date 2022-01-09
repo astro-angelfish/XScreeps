@@ -7,13 +7,14 @@ export default ()=>{
         let thisRoom = Game.rooms[roomName]
         if (!thisRoom) continue
         /* 具体房间逻辑 */
-        // 初始化
-        thisRoom.RoomInit()
-        thisRoom.RoomEcosphere()
-        thisRoom.SpawnMain()
+        thisRoom.RoomInit()         // 房间数据初始化
+        thisRoom.RoomEcosphere()    // 房间状态、布局
+        thisRoom.SpawnMain()        // 定时、补员型孵化
 
-        // 孵化爬虫
-        thisRoom.SpawnExecution()
+        /* 任务管理器 */
+        
+
+        thisRoom.SpawnExecution()   // 孵化爬虫
         
         // 房间等级Memory信息更新
         if (thisRoom.controller.level > thisRoom.memory.originLevel)

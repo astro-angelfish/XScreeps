@@ -3,4 +3,6 @@ interface RoomPosition {
     getClosestStructure(sr:StructureConstant[],mode:number):Structure | undefined
     directionToPos(direction: DirectionConstant) : RoomPosition | undefined
     getClosestStore():StructureExtension | StructureSpawn | StructureLab | undefined
+    getSourceVoid():RoomPosition[]
+    getSourceLinkVoid():RoomPosition[]
 }

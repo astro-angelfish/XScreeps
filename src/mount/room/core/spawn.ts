@@ -60,6 +60,8 @@ export default class RoomCoreSpawnExtension extends Room {
         for (let role in this.memory.SpawnConfig)
         {
             var role_ = this.memory.SpawnConfig[role]
+            // 战争状态下爬虫停止生产
+            if (this.memory.state == 'war') {if(!role_.must) continue LoopA}
             /* 间隔型 */
             if (role_.interval)
             {

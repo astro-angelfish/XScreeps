@@ -22,7 +22,7 @@ export function harvest_(creep_:Creep):void{
             if (!link) delete data.linkID
             else
             {
-                if (link.hits < link.hitsMax) creep_.repair(link)
+                if (link.hits < link.hitsMax) {creep_.repair(link);return}
                 if (creep_.pos.isNearTo(link))creep_.transfer(link,'energy')
                 else creep_.goTo(link.pos,1)
             }
@@ -34,7 +34,7 @@ export function harvest_(creep_:Creep):void{
             if (!container) delete data.containerID
             else
             {
-                if (container.hits < container.hitsMax) creep_.repair(container)
+                if (container.hits < container.hitsMax) {creep_.repair(container);return}
                 if (creep_.pos.isNearTo(container))creep_.transfer(container,'energy')
                 else creep_.goTo(container.pos,1)
             }
@@ -109,6 +109,17 @@ export function carry_(creep_:Creep):void{
         {
             if (!creep_.pos.isNearTo(extension)) creep_.goTo(extension.pos,1)
             else creep_.transfer(extension,'energy')
+        }
+        else
+        {
+            let tower = creep_.pos.findClosestByRange(FIND_STRUCTURES,{filter:(stru)=>{
+                return stru.structureType == 'tower' && stru.store.getFreeCapacity('energy') > 0
+            }})
+            if (tower)
+            {
+                if (!creep_.pos.isNearTo(tower)) creep_.goTo(tower.pos,1)
+                else creep_.transfer(tower,'energy')
+            }
         }
         delete creep_.memory.targetID
     }
