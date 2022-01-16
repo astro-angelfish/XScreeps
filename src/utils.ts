@@ -266,3 +266,8 @@ export function Colorful(content: string, colorName: Colors | string = null, bol
 
 	return `<text style="${[colorStyle, bolderStyle].join(' ')}">${content}</text>`
 }
+
+/* 生成一个不会重复的ID */
+export function generateID():string{ // 生成n位长度的字符串
+  return Math.random().toString(36).substr(3) + `${Game.time}`
+}

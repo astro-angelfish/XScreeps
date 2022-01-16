@@ -2,5 +2,5 @@
 interface Memory {
     bypassRooms?:string[]
     whitesheet?:string[]
-    
+    ignoreMissonName?:string[]
 }

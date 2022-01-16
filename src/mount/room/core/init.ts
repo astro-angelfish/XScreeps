@@ -21,6 +21,8 @@ export default class RoomCoreInitExtension extends Room {
         if (!this.memory.originLevel) this.memory.originLevel = 0
         if (!this.memory.SpawnList) this.memory.SpawnList = []
         if (!this.memory.state) this.memory.state = 'peace'
+        if (!this.memory.CoolDownDic) this.memory.CoolDownDic = {}
+        if (!this.memory.Misson) this.memory.Misson = {}
     }
 
     /**

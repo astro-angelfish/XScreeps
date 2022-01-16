@@ -29,7 +29,7 @@ export default()=>{
       /* 任务类型爬虫 */
       else
       {
-
+        thisCreep.ManageMisson()
       }
     }
 }

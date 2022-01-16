@@ -13,6 +13,9 @@ interface Room {
     SpawnExecution():void
     AddSpawnList(role:string,body:number[],level:number,mem?:SpawnMemory):void
     SpawnListRoleNum(role:string):number
+    NumSpawn(role:string,num:number,level?:number):boolean
+    MissonNumSpawn(role:string,num:number,level?:number):boolean
+    
 
     // ecosphere
     RoomEcosphere():void
@@ -28,7 +31,6 @@ interface Room {
 
 interface RoomMemory {
     StructureIdData:any // 存放房间内建筑ID信息
-    RoomLabBind:RoomLabBind // 存放房间lab调用相关绑定信息
     SpawnConfig:SpawnConfigData // 存放房间孵化配置
     SpawnList:SpawnList[]       // 孵化列表
     originLevel:number          // 房间控制器等级，房间等级变化会跟着变化
@@ -42,11 +44,6 @@ interface harvestData{
     [sourceID:string]:{
         containerID?:string
         linkID?:string}
-}
-
-/* 房间记忆实验室绑定数据格式 */
-interface RoomLabBind{
-    [id:string]:{missonID:string[],rType:ResourceConstant,occ?:boolean}     // occ为true时不允许新增占用lab
 }
 
 /**

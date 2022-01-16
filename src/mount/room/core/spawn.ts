@@ -84,6 +84,11 @@ export default class RoomCoreSpawnExtension extends Room {
             {
                 let roleNum = global.CreepNumData[this.name][role]
                 if (roleNum === undefined) roleNum = 0
+                if (roleNum == 0 && role_.misson)       // 任务类型的就删了
+                {
+                    delete this.memory.SpawnConfig[role]
+                    continue
+                }
                 if (this.memory.SpawnConfig[role] && (!roleNum || roleNum < this.memory.SpawnConfig[role].num))
                 {
                     /* 计算SpawnList里相关role的个数 */
@@ -133,7 +138,7 @@ export default class RoomCoreSpawnExtension extends Room {
             if(allEnergyCapacity < CalculateEnergy(body)) adaption_body(body,allEnergyCapacity)
             /* 对具备自适应属性的爬虫进行自适应 */
             let allEnergy = this.energyAvailable
-            if (this.memory.SpawnConfig[roleName] && this.memory.SpawnConfig[roleName].adaption && !global.CreepNumData[this.name][roleName] && allEnergy < CalculateEnergy(body))
+            if (this.memory.SpawnConfig[roleName] && this.memory.SpawnConfig[roleName].adaption && allEnergy < CalculateEnergy(body))
             adaption_body(body,allEnergy)
             // 名称整理
             let mark = RoleData[roleName].mark?RoleData[roleName].mark:"＃"
@@ -185,5 +190,38 @@ export default class RoomCoreSpawnExtension extends Room {
         let num_ = 0
         for (var obj of this.memory.SpawnList) if(obj.role == role) num_ += 1
         return num_
+    }
+
+    /* 【功能函数】数量孵化 */
+    public NumSpawn(role:string,num:number,level?:number):boolean{
+        if (!this.memory.SpawnConfig[role]) this.memory.SpawnConfig[role] = {num:num,level:level}
+        if (this.memory.SpawnConfig[role].misson) {console.log("任务角色！不能进行数量孵化！角色为",role);return false}
+        if (this.memory.SpawnConfig[role].interval) {console.log("计时角色！不能进行数量孵化！角色为",role);return false}
+        this.memory.SpawnConfig[role].num = num
+        if (level) this.memory.SpawnConfig[role].level = level
+        if (!this.memory.SpawnConfig[role].level){let level_ = RoleData[role].level?RoleData[role].level:10;this.memory.SpawnConfig[role].level = level_}
+        return true
+    }
+
+    /* 【功能函数】任务数量孵化 */
+    public MissonNumSpawn(role:string,num:number,level?:number):boolean{
+        if (!this.memory.SpawnConfig[role]) this.memory.SpawnConfig[role] = {num:num,level:level,misson:true}
+        if (!this.memory.SpawnConfig[role].misson) {console.log("非任务角色！不能进行任务数量孵化！角色为",role);return false}
+        if (this.memory.SpawnConfig[role].interval) {console.log("计时角色！不能进行任务数量孵化！角色为",role);return false}
+        this.memory.SpawnConfig[role].num = num
+        if (level) this.memory.SpawnConfig[role].level = level
+        if (!this.memory.SpawnConfig[role].level){let level_ = RoleData[role].level?RoleData[role].level:10;this.memory.SpawnConfig[role].level = level_}
+        return true
+    }
+
+    /* 【功能函数】单次孵化 */
+    public SingleSpawn(role:string,body:number[]=global.CreepBodyData[this.name][role]?global.CreepBodyData[this.name][role]:RoleData[role].ability,level:number=RoleData[role].level,mem?:SpawnMemory):boolean{
+        this.AddSpawnList(role,body,level,mem)
+        return true
+    }
+
+    /* 【功能函数】定时孵化角色 */
+    public TimeSpawn():boolean{
+        return
     }
 }

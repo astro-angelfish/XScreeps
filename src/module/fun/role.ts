@@ -1,4 +1,4 @@
-import { getDistance } from "@/utils";
+import { getDistance, isInArray } from "@/utils";
 
 /**
  * 存放非任务类型角色相关的函数
@@ -47,6 +47,10 @@ export function harvest_(creep_:Creep):void{
     }
     else
     {
+        if (creep_.getActiveBodyparts('work') <= 1 && creep_.room.controller.level >= 4 && creep_.room.energyAvailable >= 800 && creep_.room.memory.SpawnList.length <= 0)
+        {
+            creep_.suicide()
+        }
         if (!creep_.memory.targetID)
         {
             /* 寻找目标 */
@@ -127,11 +131,11 @@ export function carry_(creep_:Creep):void{
     {
         if (!creep_.memory.targetID)
         {
-            let container = creep_.pos.findClosestByRange(FIND_STRUCTURES,{filter:(stru)=>{return stru.structureType == 'container' && stru.store.getUsedCapacity('energy') > creep_.store.getCapacity()}}) as StructureContainer
+            let container = creep_.pos.findClosestByRange(FIND_STRUCTURES,{filter:(stru)=>{return stru.structureType == 'container' && stru.store.getUsedCapacity('energy') >= creep_.store.getFreeCapacity('energy')}}) as StructureContainer
             if (container) creep_.memory.targetID = container.id
         }
         let container = Game.getObjectById(creep_.memory.targetID) as StructureContainer
-        if (!container)
+        if (!container || container.store.getUsedCapacity('energy') <= 0)
         {
             delete creep_.memory.targetID
             return
@@ -161,6 +165,7 @@ export function upgrade_(creep_:Creep):void{
     {
         creep_.memory.standed = false
         if (!creep_.memory.targetID)
+        {
         if (Game.rooms[creep_.memory.belong].memory.StructureIdData.upgrade_link)
         {
             let upgrade_link = Game.getObjectById(Game.rooms[creep_.memory.belong].memory.StructureIdData.upgrade_link)
@@ -169,8 +174,9 @@ export function upgrade_(creep_:Creep):void{
         }
         else
         {
-            let container = creep_.pos.findClosestByRange(FIND_STRUCTURES,{filter:(stru)=>{return stru.structureType == 'container' && stru.store.getUsedCapacity('energy') > creep_.store.getCapacity()}}) as StructureContainer
+            let container = creep_.pos.findClosestByRange(FIND_STRUCTURES,{filter:(stru)=>{return (stru.structureType== 'container' || stru.structureType == 'storage' )&& stru.store.getUsedCapacity('energy') > creep_.store.getCapacity()}}) as StructureContainer
             if (container) creep_.memory.targetID = container.id
+        }
         }
         let container = Game.getObjectById(creep_.memory.targetID) as StructureContainer | StructureLink
         if (!container)

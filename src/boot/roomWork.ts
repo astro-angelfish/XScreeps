@@ -12,7 +12,7 @@ export default ()=>{
         thisRoom.SpawnMain()        // 定时、补员型孵化
 
         /* 任务管理器 */
-        
+        thisRoom.MissionManager()
 
         thisRoom.SpawnExecution()   // 孵化爬虫
         

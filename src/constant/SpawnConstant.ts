@@ -18,17 +18,19 @@ interface SpawnConstantData  {
 /* 爬虫信息列表 */
 export const RoleData:SpawnConstantData = {
     'harvest':{num:0,ability:[1,1,2,0,0,0,0,0],adaption:true,level:5,mark:"矿",init:true,fun:harvest_},  // 矿点采集工
-    'carry':{num:0,ability:[0,3,3,0,0,0,0,0],level:6,mark:"运",init:true,fun:carry_},  // 矿点搬运工
+    'carry':{num:0,ability:[0,3,3,0,0,0,0,0],level:6,mark:"矿",init:true,adaption:true,fun:carry_},  // 矿点搬运工
     'upgrade':{num:0,ability:[1,1,2,0,0,0,0,0],level:10,mark:"升",init:true,fun:upgrade_},   // 升级工
     'build':{num:0,ability:[1,1,2,0,0,0,0,0],level:10,mark:"建",init:true,fun:build_},   // 建筑工
+    'manage':{num:0,ability:[0,1,1,0,0,0,0,0],level:2,mark:"中",init:true,must:true,adaption:true},   // 中央搬运工
+    'transport':{num:0,ability:[0,2,2,0,0,0,0,0],level:1,mark:"运",init:true,must:true,adaption:true},  // 房间物流搬运工
 }
 
 /* 爬虫部件随房间等级变化的动态列表 */
 export const RoleLevelData = {
     'harvest':{
         1:{bodypart:[2,1,1,0,0,0,0,0],num:2},
-        2:{bodypart:[4,1,2,0,0,0,0,0],num:2},
-        3:{bodypart:[3,2,3,0,0,0,0,0],num:2},
+        2:{bodypart:[3,1,2,0,0,0,0,0],num:2},
+        3:{bodypart:[4,2,2,0,0,0,0,0],num:2},
         4:{bodypart:[5,2,5,0,0,0,0,0],num:2},
         5:{bodypart:[5,2,5,0,0,0,0,0],num:2},
         6:{bodypart:[5,2,5,0,0,0,0,0],num:2},
@@ -49,8 +51,8 @@ export const RoleLevelData = {
         1:{bodypart:[1,1,2,0,0,0,0,0],num:4},
         2:{bodypart:[2,2,4,0,0,0,0,0],num:3},
         3:{bodypart:[3,3,6,0,0,0,0,0],num:3},
-        4:{bodypart:[4,4,8,0,0,0,0,0],num:3},
-        5:{bodypart:[4,4,8,0,0,0,0,0],num:3},
+        4:{bodypart:[4,4,8,0,0,0,0,0],num:2},
+        5:{bodypart:[4,4,8,0,0,0,0,0],num:2},
         6:{bodypart:[5,2,5,0,0,0,0,0],num:2},
         7:{bodypart:[10,2,10,0,0,0,0,0],num:2},
         8:{bodypart:[15,3,15,0,0,0,0,0],num:1},
@@ -64,6 +66,26 @@ export const RoleLevelData = {
         6:{bodypart:[5,5,10,0,0,0,0,0],num:0},
         7:{bodypart:[6,6,12,0,0,0,0,0],num:0},
         8:{bodypart:[8,8,16,0,0,0,0,0],num:0},
+    },
+    'transport':{
+        1:{bodypart:[0,1,1,0,0,0,0,0],num:0},
+        2:{bodypart:[0,1,1,0,0,0,0,0],num:0},
+        3:{bodypart:[0,2,2,0,0,0,0,0],num:0},
+        4:{bodypart:[0,2,2,0,0,0,0,0],num:1},
+        5:{bodypart:[0,4,4,0,0,0,0,0],num:1},
+        6:{bodypart:[0,10,10,0,0,0,0,0],num:1},
+        7:{bodypart:[0,20,20,0,0,0,0,0],num:1},
+        8:{bodypart:[0,24,24,0,0,0,0,0],num:1},
+    },
+    'manage':{
+        1:{bodypart:[0,1,1,0,0,0,0,0],num:0},
+        2:{bodypart:[0,1,1,0,0,0,0,0],num:0},
+        3:{bodypart:[0,2,2,0,0,0,0,0],num:0},
+        4:{bodypart:[0,2,2,0,0,0,0,0],num:1},
+        5:{bodypart:[0,10,5,0,0,0,0,0],num:1},
+        6:{bodypart:[0,15,5,0,0,0,0,0],num:1},
+        7:{bodypart:[0,20,10,0,0,0,0,0],num:1},
+        8:{bodypart:[0,32,16,0,0,0,0,0],num:1},
     },
 
 }
