@@ -14,8 +14,7 @@ interface Room {
     AddSpawnList(role:string,body:number[],level:number,mem?:SpawnMemory):void
     SpawnListRoleNum(role:string):number
     NumSpawn(role:string,num:number,level?:number):boolean
-    MissonNumSpawn(role:string,num:number,level?:number):boolean
-    
+    SingleSpawn(role:string,level?:number,mem?:SpawnMemory):boolean
 
     // ecosphere
     RoomEcosphere():void

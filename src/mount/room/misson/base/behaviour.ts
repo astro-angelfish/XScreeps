@@ -18,7 +18,7 @@ export default class RoomMissonBehaviourExtension extends Room {
     }
 
     // 建造任务
-    public Task_Build():void{
+    public Constru_Build():void{
         if (Game.time % 51) return
         if (this.controller.level < 5) return
         var myConstrusion = new RoomPosition(Memory.RoomControlData[this.name].center[0],Memory.RoomControlData[this.name].center[1],this.name).findClosestByRange(FIND_MY_CONSTRUCTION_SITES)
@@ -32,4 +32,6 @@ export default class RoomMissonBehaviourExtension extends Room {
             delete this.memory.SpawnConfig['build']
         }
     }
+
+    
 }

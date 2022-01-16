@@ -6,6 +6,9 @@ interface Creep{
 
     // 任务
     handle_feed():void
+    handle_carry():void
+    handle_repair():void
+    
 }
 
 interface CreepMemory{

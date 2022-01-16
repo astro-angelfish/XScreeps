@@ -21,7 +21,6 @@ export const loop = ErrorMapper.wrapLoop(() =>{
     RoomWork()
     /* 爬虫运行 */
     CreepWork()
-
     /* 像素 */
     pixel()
 })

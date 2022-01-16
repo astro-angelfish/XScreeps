@@ -5,7 +5,7 @@ import mountConsole from './console'
 import mountStructure from './structure'
 import mountPowerCreep from './powercreep'
 export default function():void {
-    //if (!global.Mounted)
+    if (!global.Mounted)
     {
     mountConsole()
     mountPosition()
@@ -13,6 +13,6 @@ export default function():void {
     mountStructure()
     mountCreep()
     mountPowerCreep()
-    //global.Mounted = true
+    global.Mounted = true
     }
 }

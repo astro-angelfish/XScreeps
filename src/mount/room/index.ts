@@ -1,12 +1,13 @@
 import { assignPrototype } from "../base"
 import RoomCoreInitExtension from './core/init'
 import RoomCoreSpawnExtension from "./core/spawn"
-import RoomFunctionFindExtension from "./function/find"
+import RoomFunctionFindExtension from "./function/fun"
 import RoomCoreEcosphereExtension from "./core/ecosphere"
 import RoomMissonFrameExtension from "./misson/base/base"
 import RoomMissonPublish from "./misson/publish/publish"
 import RoomMissonBehaviourExtension from "./misson/base/behaviour"
-import RoomMissonTransportExtension from "./misson/transport"
+import RoomMissonTransportExtension from "./misson/base/transport"
+import RoomMissonVindicateExtension from "./misson/action/vindicate"
 
 // 定义好挂载顺序
 const plugins = [
@@ -18,6 +19,7 @@ const plugins = [
     RoomMissonPublish,
     RoomMissonBehaviourExtension,
     RoomMissonTransportExtension,
+    RoomMissonVindicateExtension,
     ]
 
 /**

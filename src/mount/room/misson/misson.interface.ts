@@ -7,11 +7,14 @@ interface Room {
     MissionNum(range:string,name:string):number
 
     // 主动
-    Task_Feed():void
-    Task_Build():void
+    Spawn_Feed():void
+    Constru_Build():void
+    Tower_Feed():void
+    Lab_Feed():void
 
     // 被动
     Task_Carry(misson:MissionModel):void
+    Task_Repair(mission:MissionModel):void
 }
 
 interface RoomMemory {
@@ -37,6 +40,7 @@ interface MissionModel{
     level?:number        // 任务等级，越小优先级越高
     Data?:any           // 动态数据
     Sata?:any           // 断链数据 [需要复制到爬虫记忆里的数据，好让爬虫自己处理]
+    reserve?:boolean
     /* 自动处理属性 */
     processing?:boolean // 任务是否正在被处理
     id?:string       // 每个任务的唯一标识

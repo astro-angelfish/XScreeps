@@ -1,3 +1,4 @@
+import { RoleData } from "@/constant/SpawnConstant"
 import { Colorful, compare, generateID, isInArray } from "@/utils"
 
 /* 房间原型拓展   --任务  --任务框架 */
@@ -10,15 +11,20 @@ export default class RoomMissonFrameExtension extends Room {
         this.DelayCaculator()
         // 任务-爬虫 绑定信息更新
         this.UnbindMonitor()
+        // 任务-爬虫 孵化
+        this.MissonRoleSpawn()
         /* 任务主动挂载区域 需要按照任务重要程度进行排序 */
-        this.Task_Feed()
-        this.Task_Build()
+        this.Spawn_Feed()    // 虫卵填充任务
+        this.Constru_Build()   // 建筑任务
+        this.Tower_Feed()   // 防御塔填充任务
+        this.Lab_Feed()     // 实验室填充\回收任务
         /* 基本任务监控区域 */
         for (var index in this.memory.Misson)
         for (var misson of this.memory.Misson[index])
         {
             switch (misson.name){
                 case "物流运输":{this.Task_Carry(misson);break;}
+                case "墙体维护":{this.Task_Repair(misson);break;}
             }
         }
     }
@@ -120,7 +126,7 @@ export default class RoomMissonFrameExtension extends Room {
                     }
                 }
                 /* 解绑爬虫的任务 对于没有超时监测的任务，删除任务也要删除任务绑定的爬虫 */
-                if (m.delayTick < 99995 && m.CreepBind)
+                if (!m.reserve && m.CreepBind)
                 {
                     for (var c in m.CreepBind)
                     for (var cc of m.CreepBind[c].bind)
@@ -322,4 +328,31 @@ export default class RoomMissonFrameExtension extends Room {
         }
         return false
     }
+
+    /* 任务所需角色孵化管理 */ 
+    public MissonRoleSpawn():void{
+        if (!this.memory.Misson['Creep']) this.memory.Misson['Creep'] = []
+        for (var misson of this.memory.Misson['Creep'])
+        {
+            if (misson.CreepBind)
+            {
+                for (var role in misson.CreepBind)
+                {
+                    if (this.memory.state == 'war' && !RoleData[role].must) continue    // 战争模式下非必要任务不运行
+                    let spawnNum = misson.CreepBind[role].num - misson.CreepBind[role].bind.length
+                    if (spawnNum > 0 && !this.memory.SpawnConfig[role] && misson.Data.disShard != Game)
+                    {
+                        /* 如果任务没招到爬，检查一下是否空闲爬 */
+                        let relateSpawnList = this.SpawnListRoleNum(role)
+                        let relateCreeps = _.filter(Game.creeps,(creep) => creep.memory.belong == this.name && creep.memory.role == role && (!creep.memory.MissionData || !creep.memory.MissionData.id)).length
+                        if (relateSpawnList+relateCreeps < spawnNum)
+                        {
+                            this.SingleSpawn(role)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 }

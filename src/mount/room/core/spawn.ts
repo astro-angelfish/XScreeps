@@ -96,6 +96,9 @@ export default class RoomCoreSpawnExtension extends Room {
                     if (num_ + roleNum < this.memory.SpawnConfig[role].num)
                     {
                         /* 开始添加一个孵化任务进孵化队列 */
+                        if (global.CreepBodyData[this.name][role])
+                        this.AddSpawnList(role,global.CreepBodyData[this.name][role],role_.level?role_.level:10,RoleData[role].mem)
+                        else
                         this.AddSpawnList(role,RoleData[role].ability,role_.level?role_.level:10,RoleData[role].mem)
                     }
                 }
@@ -128,10 +131,9 @@ export default class RoomCoreSpawnExtension extends Room {
             let bd = spawnlist[0].body
             let body = GenerateAbility(bd[0],bd[1],bd[2],bd[3],bd[4],bd[5],bd[6],bd[7])
             // 如果global有该爬虫的部件信息，优先用global的数据
-            if (global.CreepBodyData[this.name][roleName])
+            if (global.SpecialBodyData[this.name][roleName])
             {
-                let bd = global.CreepBodyData[this.name][roleName]
-                body = GenerateAbility(bd[0],bd[1],bd[2],bd[3],bd[4],bd[5],bd[6],bd[7])
+                body = global.SpecialBodyData[this.name][roleName]
             }
             /* 对爬虫数据进行自适应 */
             let allEnergyCapacity = this.energyCapacityAvailable
@@ -169,6 +171,7 @@ export default class RoomCoreSpawnExtension extends Room {
             if (result == OK)
             {
                 spawnlist.splice(0,1)   // 孵化成功，删除该孵化数据
+                if (global.SpecialBodyData[this.name][roleName]) delete global.SpecialBodyData[this.name][roleName] // 删除特殊体型数据
             }
         }
         /* 说明所有spawn都繁忙或当前能量不适合孵化该creep */
@@ -203,20 +206,12 @@ export default class RoomCoreSpawnExtension extends Room {
         return true
     }
 
-    /* 【功能函数】任务数量孵化 */
-    public MissonNumSpawn(role:string,num:number,level?:number):boolean{
-        if (!this.memory.SpawnConfig[role]) this.memory.SpawnConfig[role] = {num:num,level:level,misson:true}
-        if (!this.memory.SpawnConfig[role].misson) {console.log("非任务角色！不能进行任务数量孵化！角色为",role);return false}
-        if (this.memory.SpawnConfig[role].interval) {console.log("计时角色！不能进行任务数量孵化！角色为",role);return false}
-        this.memory.SpawnConfig[role].num = num
-        if (level) this.memory.SpawnConfig[role].level = level
-        if (!this.memory.SpawnConfig[role].level){let level_ = RoleData[role].level?RoleData[role].level:10;this.memory.SpawnConfig[role].level = level_}
-        return true
-    }
-
     /* 【功能函数】单次孵化 */
-    public SingleSpawn(role:string,body:number[]=global.CreepBodyData[this.name][role]?global.CreepBodyData[this.name][role]:RoleData[role].ability,level:number=RoleData[role].level,mem?:SpawnMemory):boolean{
-        this.AddSpawnList(role,body,level,mem)
+    public SingleSpawn(role:string,level?:number,mem?:SpawnMemory):boolean{
+        let body_ = RoleData[role].ability
+        if (global.CreepBodyData[this.name][role]) body_ = global.CreepBodyData[this.name][role]
+        let level_ = level?level:10
+        this.AddSpawnList(role,body_,level_,mem)
         return true
     }
 

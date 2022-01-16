@@ -75,6 +75,8 @@ export default class CreepMissonBaseExtension extends Creep {
         {
             switch (this.memory.MissionData.name) {
                 case '虫卵填充':{this.handle_feed();break;}
+                case '物流运输':{this.handle_carry();break;}
+                case '墙体维护':{this.handle_repair();break;}
             }
         }
     }

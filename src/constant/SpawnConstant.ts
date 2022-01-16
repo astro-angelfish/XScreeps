@@ -23,6 +23,7 @@ export const RoleData:SpawnConstantData = {
     'build':{num:0,ability:[1,1,2,0,0,0,0,0],level:10,mark:"建",init:true,fun:build_},   // 建筑工
     'manage':{num:0,ability:[0,1,1,0,0,0,0,0],level:2,mark:"中",init:true,must:true,adaption:true},   // 中央搬运工
     'transport':{num:0,ability:[0,2,2,0,0,0,0,0],level:1,mark:"运",init:true,must:true,adaption:true},  // 房间物流搬运工
+    'repair':{num:0,ability:[1,1,1,0,0,0,0,0],level:2,mark:"维",must:true}
 }
 
 /* 爬虫部件随房间等级变化的动态列表 */
@@ -86,6 +87,16 @@ export const RoleLevelData = {
         6:{bodypart:[0,15,5,0,0,0,0,0],num:1},
         7:{bodypart:[0,20,10,0,0,0,0,0],num:1},
         8:{bodypart:[0,32,16,0,0,0,0,0],num:1},
+    },
+    'repair':{
+        1:{bodypart:[1,1,2,0,0,0,0,0],num:0},
+        2:{bodypart:[1,1,2,0,0,0,0,0],num:0},
+        3:{bodypart:[2,2,4,0,0,0,0,0],num:0},
+        4:{bodypart:[2,2,4,0,0,0,0,0],num:0},
+        5:{bodypart:[3,3,3,0,0,0,0,0],num:0},
+        6:{bodypart:[6,6,6,0,0,0,0,0],num:0},
+        7:{bodypart:[10,10,10,0,0,0,0,0],num:0},
+        8:{bodypart:[15,20,15,0,0,0,0,0],num:0},
     },
 
 }

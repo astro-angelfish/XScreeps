@@ -1,9 +1,11 @@
 import { assignPrototype } from "../base"
 import frameExtension from './control/frame'
+import actionExtension from './control/action'
 
 // 定义好挂载顺序
 const plugins = [
     frameExtension,
+    actionExtension,
     ]
 
 /**

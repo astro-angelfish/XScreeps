@@ -5,4 +5,7 @@ interface RoomPosition {
     getClosestStore():StructureExtension | StructureSpawn | StructureLab | undefined
     getSourceVoid():RoomPosition[]
     getSourceLinkVoid():RoomPosition[]
+    GetStructure(stru:StructureConstant):Structure
+    GetStructureList(stru:StructureConstant[]):StructureStorage[]
+    GetRuin():Ruin
 }

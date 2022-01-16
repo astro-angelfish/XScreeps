@@ -110,4 +110,39 @@ export default class PositionFunctionFindExtension extends RoomPosition {
             )
             return result
     }
+
+        /* 获取该位置上指定类型建筑 */
+    public GetStructure(stru:StructureConstant):Structure{
+        var lis = this.lookFor(LOOK_STRUCTURES)
+        if (lis.length <= 0) return null
+        for (var i of lis)
+        {
+            if (i.structureType == stru)
+                return i
+        }
+        return null
+    }
+    /* 获取该位置上指定类型建筑列表 */
+    public GetStructureList(stru:StructureConstant[]):StructureStorage[]{
+        var lis = this.lookFor(LOOK_STRUCTURES)
+        if (lis.length <= 0) return []
+        var result:Structure[] = []
+        for (var i of lis)
+        {
+            if (isInArray(stru,i.structureType))
+                result.push(i)
+        }
+        return result as StructureStorage[]
+    }
+    /* 获取该位置上有store的ruin */
+    public GetRuin():Ruin{
+        var lis = this.lookFor(LOOK_RUINS)
+        if (lis.length <= 0) return null
+        for (var i of lis)
+        {
+            if (i.store && Object.keys(i.store).length > 0)
+            return i
+        }
+        return null
+    }
 }
