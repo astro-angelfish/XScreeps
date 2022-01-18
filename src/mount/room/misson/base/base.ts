@@ -13,11 +13,14 @@ export default class RoomMissonFrameExtension extends Room {
         this.UnbindMonitor()
         // 任务-爬虫 孵化
         this.MissonRoleSpawn()
-        /* 任务主动挂载区域 需要按照任务重要程度进行排序 */
-        this.Spawn_Feed()    // 虫卵填充任务
+        /* [全自动] 任务挂载区域 需要按照任务重要程度进行排序 */
+        this.Spawn_Feed()    // 虫卵填充任务 
+        this.Task_CenterLink()  // 能量采集  
         this.Constru_Build()   // 建筑任务
-        this.Tower_Feed()   // 防御塔填充任务
-        this.Lab_Feed()     // 实验室填充\回收任务
+        this.Task_Clink()       // 链接送仓任务
+        this.Tower_Feed()   // 防御塔填充任务 
+        this.Lab_Feed()     // 实验室填充\回收任务  
+        this.Nuker_Feed()   // 核弹填充任务      
         /* 基本任务监控区域 */
         for (var index in this.memory.Misson)
         for (var misson of this.memory.Misson[index])

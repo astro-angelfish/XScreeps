@@ -12,6 +12,14 @@ declare module NodeJS {
             [routekey:string]:string
         }
         Gtime:{[roomName:string]:number}
+        // 将对象全局获取，这样只用获取一次对象，不用每次都分别获取
+        Stru:{
+            [roomName:string]:globalStrcutureData
+        }
     }
+}
+
+interface globalStrcutureData{
+    [structureName:string]:Structure | Structure[]
 }
 

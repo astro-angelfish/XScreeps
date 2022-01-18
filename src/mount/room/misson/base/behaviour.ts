@@ -33,5 +33,31 @@ export default class RoomMissonBehaviourExtension extends Room {
         }
     }
 
+    // 资源link资源转移至centerlink中
+    public Task_CenterLink():void{
+        if ((global.Gtime[this.name]- Game.time) % 13) return
+        if (!this.memory.StructureIdData.source_links) this.memory.StructureIdData.source_links = []
+        if (!this.memory.StructureIdData.center_link || this.memory.StructureIdData.source_links.length <= 0) return
+        if (this.MissionNum('Structure','链传送能') >= 1) return
+        let center_link = Game.getObjectById(this.memory.StructureIdData.center_link) as StructureLink
+        if (!center_link){delete this.memory.StructureIdData.center_link;return}
+        for (let id of this.memory.StructureIdData.source_links )
+        {
+            let source_link = Game.getObjectById(id) as StructureLink
+            if (!source_link)
+            {
+                let index = this.memory.StructureIdData.source_links.indexOf(id)
+                this.memory.StructureIdData.source_links.splice(index,1)
+                return
+            }
+            if (source_link.store.getUsedCapacity('energy') >= 600)
+            {
+                var thisTask = this.Public_link([source_link.id],center_link.id,10)
+                this.AddMission(thisTask)
+                return
+            }
+        }
+    }
+
     
 }

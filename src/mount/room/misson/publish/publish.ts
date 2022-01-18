@@ -81,4 +81,47 @@ export default class RoomMissonPublish extends Room {
         thisTask.maxTime = 3
         return thisTask
     }
+
+    /**
+     *                  C计划 即占领一个房间开启安全模式，建造wall，保护主房
+     * @param disRoom   目标房间
+     * @returns         任务对象
+     */
+    public public_planC(disRoom:string):MissionModel{
+        var thisTask:MissionModel = {
+            name:'C计划',
+            range:'Creep',
+            delayTick:20500,
+            level:10,
+            Data:{
+                state:0,
+                disRoom:disRoom
+            },
+        }
+        thisTask.CreepBind = {'cclaim':{num:1,bind:[]},'cupgrade':{num:1,bind:[]}}
+        return thisTask
+    }
+
+    /**
+     *                  link传任务发布函数
+     * @param structure 传送的link
+     * @param dislink   目的link
+     * @param level     传送任务等级
+     * @param delayTick 过期时间
+     * @returns         任务对象
+     */
+    public Public_link(structure:string[],dislink:string,level:number,delayTick?:number):MissionModel{
+        var thisTask:MissionModel = {
+            name:'链传送能',
+            range:'Structure',
+            delayTick:20,
+            structure:structure,
+            level:level,
+            Data:{
+                disStructure:dislink
+            }
+        }
+        if (delayTick) thisTask.delayTick = delayTick
+        return thisTask
+    }
 }

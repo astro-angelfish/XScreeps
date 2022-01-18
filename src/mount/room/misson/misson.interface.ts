@@ -11,6 +11,9 @@ interface Room {
     Constru_Build():void
     Tower_Feed():void
     Lab_Feed():void
+    Nuker_Feed():void
+    Task_CenterLink():void
+    Task_Clink():void
 
     // 被动
     Task_Carry(misson:MissionModel):void
@@ -38,8 +41,8 @@ interface MissionModel{
     cooldownTick?:number // 冷却时间
     CreepBind?:BindData  // 爬虫绑定
     level?:number        // 任务等级，越小优先级越高
-    Data?:any           // 动态数据
-    Sata?:any           // 断链数据 [需要复制到爬虫记忆里的数据，好让爬虫自己处理]
+    Data?:any           // 数据
+    //Sata?:any           // 断链数据 [需要复制到爬虫记忆里的数据，好让爬虫自己处理]
     reserve?:boolean
     /* 自动处理属性 */
     processing?:boolean // 任务是否正在被处理

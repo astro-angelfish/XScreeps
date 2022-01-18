@@ -23,6 +23,10 @@ export default class RoomCoreInitExtension extends Room {
         if (!this.memory.state) this.memory.state = 'peace'
         if (!this.memory.CoolDownDic) this.memory.CoolDownDic = {}
         if (!this.memory.Misson) this.memory.Misson = {}
+        if (!this.memory.Misson['Structure']) this.memory.Misson['Structure'] = []
+        if (!this.memory.Misson['Room']) this.memory.Misson['Room'] = []
+        if (!this.memory.Misson['Creep']) this.memory.Misson['Creep'] = []
+        if (!this.memory.Misson['PowerCreep']) this.memory.Misson['PowerCreep'] = []
     }
 
     /**
@@ -146,12 +150,12 @@ export default class RoomCoreInitExtension extends Room {
             if (new_storage.length == 1) this.memory.StructureIdData.storageID = new_storage[0].id
         }
         /* 防御塔记忆更新 */
-        if (Game.time % 150 == 0 && this.controller.level >= 5)
+        if (Game.time % 150 == 0 && this.controller.level >= 3)
         {
             if (!this.memory.StructureIdData.AtowerID) this.memory.StructureIdData.AtowerID = []
             this.memory.StructureIdData.AtowerID as string[]
             var ATowers = this.getStructure(STRUCTURE_TOWER) as StructureTower[]
-            if (ATowers.length > this.memory.StructureIdData.AtowerID.length + 1)
+            if (ATowers.length > this.memory.StructureIdData.AtowerID.length)
             {
                 for (var t of ATowers) 
                 if (t.my && !isInArray(this.memory.StructureIdData.AtowerID as string[],t.id))

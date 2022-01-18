@@ -1,3 +1,5 @@
+import { Colorful } from "@/utils"
+
 export default {
     repair:{
         set(roomName:string,rtype:'global'|'special'|'nuker',num:number,boost:null|ResourceConstant,vindicate:boolean):string{
@@ -25,4 +27,26 @@ export default {
             return `[repair] 房间${roomName}删除类型为${Rtype}刷墙任务失败!`
         },
     },
+    plan:{
+        C(roomName:string,disRoom:string):string{
+            var thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[plan] 不存在房间${roomName}`
+            let task = thisRoom.public_planC(disRoom)
+            if (thisRoom.AddMission(task))
+            return Colorful(`[plan] 房间${roomName}挂载C计划成功 -> ${disRoom}`,'green')
+            return Colorful(`[plan] 房间${roomName}挂载C计划失败 -> ${disRoom}`,'red')
+        },
+        CC(roomName:string):string
+        {
+            var thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[plan] 不存在房间${roomName}`
+            for (var i of thisRoom.memory.Misson['Creep'])
+            if (i.name == 'C计划' )
+            {
+                if (thisRoom.DeleteMission(i.id))
+                return Colorful(`[plan] 房间${roomName}挂载C计划成功`,'green')
+            }
+            return Colorful(`[plan] 房间${roomName}删除C计划失败`,'red')
+        }
+    }
 }

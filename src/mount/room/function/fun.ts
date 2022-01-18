@@ -77,4 +77,88 @@ export default class RoomFunctionFindExtension extends Room {
         let least_ = LeastHit(s_l,mode,)
         return least_
     }
+
+    /* 获取指定类型的建筑 */
+    public getTypeStructure(sr:StructureConstant[]):Structure[]
+    {
+        var resultstructure = this.find(FIND_STRUCTURES,{filter:(structure)=>{
+            return filter_structure(structure,sr)
+        }})
+        return resultstructure
+    }
+
+    /* 房间建筑执行任务 */
+    public structureMission(strus:StructureConstant[]):void{
+        var AllStructures =  this.getTypeStructure(strus) as StructureLink[]
+        for (var stru of AllStructures)
+        {
+            if (stru.ManageMission)
+                stru.ManageMission()
+        }
+    }
+
+    /* 获取全局建筑对象变量 由于该对象每tick都不一样，所以需要每tick都获取 */
+    public GlobalStructure():void{
+        // 目前只支持 storage terminal factory powerspawn 
+        if (!global.Stru) global.Stru = {}
+        if (!global.Stru[this.name]) global.Stru[this.name] = {}
+
+        if (this.memory.StructureIdData.storageID)
+        {
+            global.Stru[this.name]['storage'] = Game.getObjectById(this.memory.StructureIdData.storageID) as StructureStorage
+            if (!global.Stru[this.name]['storage'])
+            {
+                delete this.memory.StructureIdData.storageID
+            }
+        }
+        if(this.memory.StructureIdData.terminalID)
+        {
+            global.Stru[this.name]['terminal'] = Game.getObjectById(this.memory.StructureIdData.terminalID) as StructureTerminal
+            if (!global.Stru[this.name]['terminal'])
+            {
+                delete this.memory.StructureIdData.terminalID
+            }
+        }
+        if (this.memory.StructureIdData.PowerSpawnID)
+        {
+            global.Stru[this.name]['powerspawn'] = Game.getObjectById(this.memory.StructureIdData.PowerSpawnID) as StructurePowerSpawn
+            if (!global.Stru[this.name]['powerspawn'])
+            {
+                delete this.memory.StructureIdData.PowerSpawnID
+            }
+        }
+        if (this.memory.StructureIdData.FactoryId)
+        {
+            global.Stru[this.name]['factory'] = Game.getObjectById(this.memory.StructureIdData.FactoryId) as StructureFactory
+            if (!global.Stru[this.name]['factory'])
+            {
+                delete this.memory.StructureIdData.FactoryId
+            }
+        }
+        if (this.memory.StructureIdData.NtowerID)
+        {
+            global.Stru[this.name]['Ntower'] = Game.getObjectById(this.memory.StructureIdData.NtowerID) as StructureTower
+            if (!global.Stru[this.name]['Ntower'])
+            {
+                delete this.memory.StructureIdData.NtowerID
+            }
+        }
+        if (this.memory.StructureIdData.AtowerID && this.memory.StructureIdData.AtowerID.length > 0)
+        {
+            var otlist = global.Stru[this.name]['Atower'] = [] as StructureTower[]
+            for (var ti of this.memory.StructureIdData.OtowerID)
+            {
+                var ot = Game.getObjectById(ti) as StructureTower
+                if (!ot)
+                {
+                    var index = this.memory.StructureIdData.OtowerID.indexOf(ti)
+                    this.memory.StructureIdData.OtowerID.splice(index,1)
+                    continue
+                }
+                otlist.push(ot)
+            }
+        }
+        
+
+    }
 }

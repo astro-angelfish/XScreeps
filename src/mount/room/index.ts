@@ -8,6 +8,7 @@ import RoomMissonPublish from "./misson/publish/publish"
 import RoomMissonBehaviourExtension from "./misson/base/behaviour"
 import RoomMissonTransportExtension from "./misson/base/transport"
 import RoomMissonVindicateExtension from "./misson/action/vindicate"
+import RoomFunctionTowerExtension from "./function/tower"
 
 // 定义好挂载顺序
 const plugins = [
@@ -17,6 +18,7 @@ const plugins = [
     RoomCoreEcosphereExtension,
     RoomMissonFrameExtension,
     RoomMissonPublish,
+    RoomFunctionTowerExtension,
     RoomMissonBehaviourExtension,
     RoomMissonTransportExtension,
     RoomMissonVindicateExtension,
