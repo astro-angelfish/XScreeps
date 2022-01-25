@@ -1,21 +1,20 @@
+import { loop } from "@/main";
 import { getDistance } from "@/utils";
 
 /**
  * 存放非任务类型角色相关的函数
 */
+
+// 采矿工
 export function harvest_(creep_:Creep):void{
     if (!Game.rooms[creep_.memory.belong]) return
-    if (!creep_.memory.working) creep_.memory.working = false
-    if(creep_.memory.working && creep_.store.getUsedCapacity("energy") == 0 ) {
-        creep_.memory.working = false;
-    }
-    if(!creep_.memory.working && creep_.store.getFreeCapacity() == 0) {
-        creep_.memory.working = true;
-    }
+    creep_.workstate('energy')
+    if (!Game.rooms[creep_.memory.belong].memory.harvestData) return
     if (creep_.memory.working)
     {
-        var data = Game.rooms[creep_.memory.belong].memory.harvestData[creep_.memory.targetID]
+        let data = Game.rooms[creep_.memory.belong].memory.harvestData[creep_.memory.targetID]
         if (!data) return
+        // 优先寻找link
         if (data.linkID)
         {
             let link = Game.getObjectById(data.linkID) as StructureLink
@@ -28,6 +27,7 @@ export function harvest_(creep_:Creep):void{
             }
             return
         }
+        // 其次寻找container
         if (data.containerID)
         {
             let container = Game.getObjectById(data.containerID) as StructureLink
@@ -40,30 +40,37 @@ export function harvest_(creep_:Creep):void{
             }
             return
         }
-        /* 都没有就寻找附近范围内的container */
+        /* 最后寻找附近的建筑工地 */
         let cons = creep_.pos.findInRange(FIND_MY_CONSTRUCTION_SITES,3)
         if (cons.length > 0) creep_.build(cons[0])
+        else creep_.pos.createConstructionSite('container')
         return
     }
     else
     {
-        if (creep_.getActiveBodyparts('work') <= 1 && creep_.room.controller.level >= 4 && creep_.room.energyAvailable >= 800 && creep_.room.memory.SpawnList.length <= 0)
+        // 如果不具备挖矿功能了，就自杀
+        if (creep_.getActiveBodyparts('work') <= 0)
         {
             creep_.suicide()
         }
+        // 绑定矿点
         if (!creep_.memory.targetID)
         {
-            /* 寻找目标 */
-            LoopA:
-            for (var sourceID of Game.rooms[creep_.memory.belong].memory.StructureIdData.source)
+            for (var i in Game.rooms[creep_.memory.belong].memory.harvestData)
             {
-                /* 寻找是否有爬虫记忆里有这个id了 */
-                for (var creep of Game.rooms[creep_.memory.belong].find(FIND_MY_CREEPS,{filter:(creep)=>{return creep.memory.role && creep.memory.role == 'harvest'}}) as Creep[])
-                if (creep.memory.targetID && creep.memory.targetID == sourceID) continue LoopA
-                else creep_.memory.targetID = sourceID
+                var data_ = Game.rooms[creep_.memory.belong].memory.harvestData[i]
+                if (data_.carry == creep_.name)
+                {
+                    creep_.memory.targetID = i
+                    break
+                }
+                if (!data_.harvest || !Game.creeps[data_.harvest])
+                {
+                    creep_.memory.targetID = i
+                    data_.harvest = creep_.name
+                    break
+                }
             }
-            /* 如果还没有，就说明该房间只有1个矿 */
-            creep_.say("找不到目标source!")
             return
         }
         /* 寻找target附近的container */
@@ -74,139 +81,142 @@ export function harvest_(creep_:Creep):void{
         if (!data) return
         if (data.linkID || data.containerID)
         {
-            creep_.harvest(source)
-            creep_.say("⛏")
-            return
-        }
-        /* 寻找或者建造 */
-        let constru = source.pos.findInRange(FIND_CONSTRUCTION_SITES,1,{filter:(cons)=>{return cons.structureType == 'container'}})
-        if (constru.length > 0 && Game.rooms[creep_.memory.belong].controller.level > 7) {creep_.harvest(source);return}
-        if (constru.length > 0)
-        {
-            creep_.harvest(source)
+            creep_.say("😒",true)
         }
         else
         {
-            creep_.pos.createConstructionSite('container')
+            creep_.say("🤪",true)
         }
-
+        creep_.harvest(source)
     }
 }
 
+// 搬运工
 export function carry_(creep_:Creep):void{
     if (!Game.rooms[creep_.memory.belong]) return
-    if (!creep_.memory.working) creep_.memory.working = false
-    if(creep_.memory.working && creep_.store.getUsedCapacity("energy") == 0 ) {
-        creep_.memory.working = false;
-    }
-    if(!creep_.memory.working && creep_.store.getFreeCapacity() == 0) {
-        creep_.memory.working = true;
-    }
-    if (creep_.memory.working)
+    creep_.workstate('energy')
+    if (!creep_.memory.containerID)
     {
-        let extension = creep_.pos.getClosestStore()
-        if (Game.rooms[creep_.memory.belong].controller.level >= 4 && Game.rooms[creep_.memory.belong].memory.StructureIdData.storageID)
+        var harvestData = Game.rooms[creep_.memory.belong].memory.harvestData
+        if (!harvestData) return
+        if (Object.keys(harvestData).length == 0) return
+        else if (Object.keys(harvestData).length > 1)
         {
-            extension = Game.getObjectById(Game.rooms[creep_.memory.belong].memory.StructureIdData.storageID) as StructureExtension
-        }
-        if (extension)
-        {
-            if (!creep_.pos.isNearTo(extension)) creep_.goTo(extension.pos,1)
-            else creep_.transfer(extension,'energy')
+            for (var i in Game.rooms[creep_.memory.belong].memory.harvestData)
+            {
+                var data_ = Game.rooms[creep_.memory.belong].memory.harvestData[i]
+                if (data_.carry == creep_.name)
+                {
+                    creep_.memory.containerID = data_.containerID
+                    break
+                }
+                if ((!data_.carry || !Game.creeps[data_.carry]) && data_.containerID)
+                {
+                    creep_.memory.containerID = data_.containerID
+                    data_.carry = creep_.name
+                    break
+                }
+            }
+            return
         }
         else
         {
-            let tower = creep_.pos.findClosestByRange(FIND_STRUCTURES,{filter:(stru)=>{
-                return stru.structureType == 'tower' && stru.store.getFreeCapacity('energy') > 0
-            }})
-            if (tower)
+            var harvestData_ = harvestData[Object.keys(harvestData)[0]]
+            if (harvestData_.containerID)
             {
-                if (!creep_.pos.isNearTo(tower)) creep_.goTo(tower.pos,1)
-                else creep_.transfer(tower,'energy')
+                let container = Game.getObjectById(harvestData_.containerID)
+                if (!container) delete harvestData_.containerID
+                else
+                {
+                    creep_.memory.containerID = harvestData_.containerID
+                }
             }
+            else creep_.say("oh No!")
+            return
         }
-        delete creep_.memory.targetID
+    }
+    if (creep_.memory.working)
+    {
+        let target = null
+        if (Game.rooms[creep_.memory.belong].memory.StructureIdData.storageID)  // 优先仓库
+        {
+            target = Game.getObjectById(Game.rooms[creep_.memory.belong].memory.StructureIdData.storageID) as StructureStorage
+            if (!target) delete Game.rooms[creep_.memory.belong].memory.StructureIdData.storageID
+        }
+        if (!target)    // 其次虫卵
+        {
+            target = creep_.pos.getClosestStore()
+        }
+        if (!target)    // 再其次防御塔
+        {
+            target = creep_.pos.findClosestByRange(FIND_STRUCTURES,{filter:(stru)=>{
+                return stru.structureType == 'tower' && stru.store.getFreeCapacity('energy') > creep_.store.getUsedCapacity('energy')
+            }})
+        }
+        if (!target) return
+        creep_.transfer_(target,'energy')
     }
     else
     {
-        if (!creep_.memory.targetID)
-        {
-            let container = creep_.pos.findClosestByRange(FIND_STRUCTURES,{filter:(stru)=>{return stru.structureType == 'container' && stru.store.getUsedCapacity('energy') >= creep_.store.getFreeCapacity('energy')}}) as StructureContainer
-            if (container) creep_.memory.targetID = container.id
-        }
-        let container = Game.getObjectById(creep_.memory.targetID) as StructureContainer
-        if (!container || container.store.getUsedCapacity('energy') <= 0)
-        {
-            delete creep_.memory.targetID
-            return
-        }
+        let container = Game.getObjectById(creep_.memory.containerID) as StructureContainer
+        if (!container) {delete creep_.memory.containerID;return}
         if (!creep_.pos.isNearTo(container)) creep_.goTo(container.pos,1)
-        else creep_.withdraw(container,'energy')
+        else {if(container.store.getUsedCapacity('energy')>creep_.store.getFreeCapacity())creep_.withdraw(container,'energy')}
     }
 }
 
+// 升级工
 export function upgrade_(creep_:Creep):void{
     if (!Game.rooms[creep_.memory.belong]) return
-    if (!creep_.memory.working) creep_.memory.working = false
-    if(creep_.memory.working && creep_.store.getUsedCapacity("energy") == 0 ) {
-        creep_.memory.working = false;
-    }
-    if(!creep_.memory.working && creep_.store.getFreeCapacity() == 0) {
-        creep_.memory.working = true;
-    }
+    creep_.workstate('energy')
     if (creep_.memory.working)
     {
-        if (creep_.upgradeController(Game.rooms[creep_.memory.belong].controller) == ERR_NOT_IN_RANGE) creep_.goTo(Game.rooms[creep_.memory.belong].controller.pos,2)
-        else
-            creep_.memory.standed = true
+        creep_.upgrade_()
         delete creep_.memory.targetID
     }
     else
     {
-        creep_.memory.standed = false
         if (!creep_.memory.targetID)
         {
-            if (Game.rooms[creep_.memory.belong].memory.StructureIdData.upgrade_link)
+            let target = null
+            if (Game.rooms[creep_.memory.belong].memory.StructureIdData.upgrade_link)       // 优先Link
             {
-                let upgrade_link = Game.getObjectById(Game.rooms[creep_.memory.belong].memory.StructureIdData.upgrade_link)
-                if (upgrade_link) creep_.memory.targetID = Game.rooms[creep_.memory.belong].memory.StructureIdData.upgrade_link
-                else delete Game.rooms[creep_.memory.belong].memory.StructureIdData.upgrade_link
+                target = Game.getObjectById(Game.rooms[creep_.memory.belong].memory.StructureIdData.upgrade_link) as StructureLink
+                if (!target) delete Game.rooms[creep_.memory.belong].memory.StructureIdData.upgrade_link
             }
-            else
+            else if (Game.rooms[creep_.memory.belong].memory.StructureIdData.storageID)  // 优先仓库
             {
-                let container = creep_.pos.findClosestByRange(FIND_STRUCTURES,{filter:(stru)=>{return (stru.structureType== 'container' || stru.structureType == 'storage' )&& stru.store.getUsedCapacity('energy') > creep_.store.getCapacity()}}) as StructureContainer
-                if (container) creep_.memory.targetID = container.id
+                target = Game.getObjectById(Game.rooms[creep_.memory.belong].memory.StructureIdData.storageID) as StructureStorage
+                if (!target) delete Game.rooms[creep_.memory.belong].memory.StructureIdData.storageID
             }
+            if (!target)    // 其次container
+            {
+                target = creep_.pos.findClosestByRange(FIND_STRUCTURES,{filter:(stru)=>{
+                    return stru.structureType == 'container' && stru.store.getUsedCapacity('energy') > creep_.store.getFreeCapacity()
+                }})
+            }
+            if (!target) {creep_.say("😑",true);return}
+            else {creep_.memory.targetID = target.id}
         }
-        let container = Game.getObjectById(creep_.memory.targetID) as StructureContainer | StructureLink
-        if (!container)
+        else
         {
-            delete creep_.memory.targetID
-            return
+            let target = Game.getObjectById(creep_.memory.targetID) as StructureStorage
+            if (target) creep_.withdraw_(target,'energy')
         }
-        if (!creep_.pos.isNearTo(container)) creep_.goTo(container.pos,1)
-        else creep_.withdraw(container,'energy')
 
     }
 
 }
 
+// 建筑工
 export function build_(creep:Creep):void{
-    if (!creep.memory) return
     var thisRoom = Game.rooms[creep.memory.belong]
     if (!thisRoom) return
     if (!creep.memory.standed) creep.memory.standed = false
-    if (!Game.rooms[creep.memory.belong]) return
-    if (!creep.memory.working) creep.memory.working = false
-    if(creep.memory.working && creep.store.getUsedCapacity("energy") == 0 ) {
-        creep.memory.working = false;
-    }
-    if(!creep.memory.working && creep.store.getFreeCapacity() == 0) {
-        creep.memory.working = true;
-    }
+    creep.workstate('energy')
     if (creep.memory.working)
     {
-        var construction = creep.pos.findClosestByPath(FIND_MY_CONSTRUCTION_SITES)
+        var construction = creep.pos.findClosestByRange(FIND_MY_CONSTRUCTION_SITES)
         if (construction)
         {
             if (creep.build(construction) == ERR_NOT_IN_RANGE)

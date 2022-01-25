@@ -63,7 +63,7 @@ export default class CreepMissonBaseExtension extends Creep {
                         this.memory.MissionData.id = t.id           // 任务id
                         this.memory.MissionData.name = t.name        // 任务名
                         this.memory.MissionData.Data = t.Data?t.Data:{}    // 任务数据传输
-                        this.memory.MissionData.Sata = t.Sata?t.Sata:{}
+                        // this.memory.MissionData.Sata = t.Sata?t.Sata:{}
                         break LoopBind
                     }
                 }
@@ -78,6 +78,7 @@ export default class CreepMissonBaseExtension extends Creep {
                 case '物流运输':{this.handle_carry();break;}
                 case '墙体维护':{this.handle_repair();break;}
                 case 'C计划':{this.handle_planC();break;}
+                case '黄球拆迁':{this.handle_dismantle();break;}
             }
         }
     }

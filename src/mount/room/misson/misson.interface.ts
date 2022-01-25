@@ -1,12 +1,15 @@
 interface Room {
+    /* 任务框架 */
     MissionManager():void
     AddMission(mis:MissionModel):boolean
     DeleteMission(id:string):boolean
     RoleMissionNum(role:string,name:string):number
     GainMission(id:string):MissionModel | null
     MissionNum(range:string,name:string):number
-
-    // 主动
+    Check_Carry(role:string,source:RoomPosition,pos:RoomPosition,rType:ResourceConstant):boolean
+    Check_Lab(misson:MissionModel,role:string,tankType:'storage' | 'terminal' | 'complex'):boolean
+    
+    // 主动任务
     Spawn_Feed():void
     Constru_Build():void
     Tower_Feed():void
@@ -15,9 +18,10 @@ interface Room {
     Task_CenterLink():void
     Task_Clink():void
 
-    // 被动
+    // 被动任务
     Task_Carry(misson:MissionModel):void
     Task_Repair(mission:MissionModel):void
+    Task_dismantle(mission:MissionModel):void
 }
 
 interface RoomMemory {
@@ -51,7 +55,7 @@ interface MissionModel{
 
 /* 任务角色绑定数据 */
 interface BindData{
-    [role:string]:{num:number,bind:string[]}
+    [role:string]:{num:number,bind:string[],interval?:number}
 }
 
 /* 任务实验室绑定数据 */

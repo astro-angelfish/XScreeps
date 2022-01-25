@@ -1,5 +1,5 @@
 import structure from "@/mount/structure"
-import { filter_structure, GenerateAbility, isInArray } from "@/utils"
+import { filter_structure, GenerateAbility, generateID, isInArray } from "@/utils"
 
 /* 爬虫原型拓展   --任务  --任务行为 */
 export default class CreepMissonActionExtension extends Creep {
@@ -114,6 +114,44 @@ export default class CreepMissonActionExtension extends Creep {
                 if (source) this.harvest_(source)
             }
         }
+    }
+
+    public handle_dismantle():void{
+        let missionData = this.memory.MissionData
+        let id = missionData.id
+        let mission = missionData.Data
+        if (mission.boost)
+        {
+            /* boost检查 暂缺 */
+        }
+        if (this.room.name != mission.disRoom){this.goTo(new RoomPosition(25,25,mission.disRoom),20);return}
+        /* 黄灰旗 */
+        let disFlag = this.pos.findClosestByPath(FIND_FLAGS,{filter:(flag)=>{
+            return flag.color == COLOR_YELLOW && flag.secondaryColor == COLOR_GREY
+        }})
+        if (!disFlag)
+        {
+            var clostStructure = this.pos.findClosestByRange(FIND_HOSTILE_STRUCTURES,{filter:(struc)=>{
+                return !isInArray([STRUCTURE_CONTROLLER,STRUCTURE_WALL],struc.structureType)
+            }})
+            if (clostStructure)
+            {
+                clostStructure.pos.createFlag(generateID(),COLOR_YELLOW,COLOR_GREY)
+                return
+            }
+            else
+                return
+        }
+        let stru = disFlag.pos.lookFor(LOOK_STRUCTURES)[0]
+        if (stru )
+        {
+            if (this.dismantle(stru) == ERR_NOT_IN_RANGE)
+            {
+                this.goTo(stru.pos,1)
+                return
+            }
+        }
+        else {disFlag.remove()}
     }
 
 }

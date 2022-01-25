@@ -28,6 +28,7 @@ export default class RoomMissonFrameExtension extends Room {
             switch (misson.name){
                 case "物流运输":{this.Task_Carry(misson);break;}
                 case "墙体维护":{this.Task_Repair(misson);break;}
+                case '黄球拆迁':{this.Task_dismantle(misson);break;}
             }
         }
     }
@@ -222,8 +223,6 @@ export default class RoomMissonFrameExtension extends Room {
     }
     /* 与role相关的任务数量查询 */
     public RoleMissionNum(role:string,name:string):number{
-        if (!this.memory.Misson) this.memory.Misson = {}
-        if (!this.memory.Misson['Creep']) this.memory.Misson['Creep'] = []
         let n = 0
         for (var i of this.memory.Misson['Creep'])
         {
@@ -341,6 +340,24 @@ export default class RoomMissonFrameExtension extends Room {
             {
                 for (var role in misson.CreepBind)
                 {
+                    /* 间隔型 未测试 */
+                    if (misson.CreepBind[role].interval)
+                    {
+                        if (misson.CreepBind[role].num <= 0) continue
+                        if (misson.CreepBind[role].interval <= 0) continue
+                        /* 如果是间隔孵化型的爬虫角色 */
+                        if (!misson.Data)misson.Data = {}
+                        if (!misson.Data.intervalTime) misson.Data.intervalTime = Game.time
+                        if ((Game.time - misson.Data.intervalTime) % misson.CreepBind[role].interval == 0)
+                        {
+                            for (let i=0;i<misson.CreepBind[role].num;i++)
+                            {
+                                this.SingleSpawn(role)
+                            }
+                        }
+                        continue
+                    }
+                    /* 补全型 */
                     if (this.memory.state == 'war' && !RoleData[role].must) continue    // 战争模式下非必要任务不运行
                     let spawnNum = misson.CreepBind[role].num - misson.CreepBind[role].bind.length
                     if (spawnNum > 0 && !this.memory.SpawnConfig[role] && misson.Data.disShard != Game)
@@ -358,4 +375,79 @@ export default class RoomMissonFrameExtension extends Room {
         }
     }
 
+    /* 判断lab的boost搬运模块 */
+    public Check_Lab(misson:MissionModel,role:string,tankType:'storage' | 'terminal' | 'complex'):boolean
+    {
+        var id:string
+        if (tankType == 'storage')
+        {
+            if (!this.memory.StructureIdData.storageID )return false
+            id = this.memory.StructureIdData.storageID
+        }
+        else if (tankType == 'terminal')
+        {
+            if (!this.memory.StructureIdData.terminalID )return false
+            id = this.memory.StructureIdData.terminalID
+        }
+        var tank_ = Game.getObjectById(id) as StructureStorage | StructureTerminal
+        if (!tank_ && id) return false
+        /* 先负责lab的填充 */
+        for (var i in misson.LabBind)
+        {
+            var All_i_Num:number
+            if (tankType == 'complex')
+            {
+                var terminal = Game.getObjectById(this.memory.StructureIdData.terminalID) as StructureTerminal
+                var storage = Game.getObjectById(this.memory.StructureIdData.storageID) as StructureStorage
+                if (!terminal || !storage)
+                {
+                    if (!terminal && storage) tank_ = storage
+                    else if (terminal && !storage) tank_ = terminal
+                    else return false
+                }
+                else
+                {
+                    var terminalNum = terminal.store.getUsedCapacity(misson.LabBind[i] as ResourceConstant)
+                    var storageNum = storage.store.getUsedCapacity(misson.LabBind[i] as ResourceConstant)
+                    tank_ = terminalNum>storageNum?terminal:storage
+                }
+            }
+            if (!tank_) return false
+            All_i_Num = tank_.store.getUsedCapacity(misson.LabBind[i] as ResourceConstant)
+            if (All_i_Num < 4000)
+            {
+                /* 买能量  暂缺 */
+                
+            }
+            var disLab = Game.getObjectById(i)  as StructureLab
+            if (!disLab) return false
+            if (disLab.store.getUsedCapacity(misson.LabBind[i] as ResourceConstant) < 800)
+            {
+                if (All_i_Num < 1500)
+                return false
+                var roleData:BindData = {}
+                roleData[role] = {num:1,bind:[]}
+                var carryTask = this.Public_Carry(roleData,25,this.name,tank_.pos.x,tank_.pos.y,this.name,disLab.pos.x,disLab.pos.y,misson.LabBind[i] as ResourceConstant,2000)
+                this.AddMission(carryTask)
+                return false
+            }
+        }
+        return true 
+    }
+
+    /* 判断已经有了该类型的搬运任务 true:代表没有重复， false代表有 */
+    public Check_Carry(role:string,source:RoomPosition,pos:RoomPosition,rType:ResourceConstant):boolean{
+        for (let i of this.memory.Misson['Creep'])
+        {
+            if (!i.CreepBind) continue
+            if (i.name != '物流运输') continue
+            if (i.CreepBind[role] && i.Data.rType == rType)
+            {
+                let sourcePos = new RoomPosition(i.Data.sourcePosX,i.Data.sourcePosY,i.Data.sourceRoom)
+                let disPos = new RoomPosition(i.Data.targetPosX,i.Data.targetPosY,i.Data.targetRoom)
+                if (sourcePos.isEqualTo(source) && disPos.isEqualTo(pos)) return false
+            }
+        }
+        return true
+    }
 }

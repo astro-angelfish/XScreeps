@@ -9,6 +9,7 @@ export default class RoomCoreInitExtension extends Room {
         this.RoomMemoryInit()
         this.RoomStructureInit()
         this.RoomSpawnListInit()
+        this.RoomGlobalStructure()
     }
 
     /**
@@ -27,6 +28,7 @@ export default class RoomCoreInitExtension extends Room {
         if (!this.memory.Misson['Room']) this.memory.Misson['Room'] = []
         if (!this.memory.Misson['Creep']) this.memory.Misson['Creep'] = []
         if (!this.memory.Misson['PowerCreep']) this.memory.Misson['PowerCreep'] = []
+        if (!global.Stru[this.name])global.Stru[this.name] = {}
     }
 
     /**
@@ -103,6 +105,10 @@ export default class RoomCoreInitExtension extends Room {
                     break
                 }
             }
+        }
+        if (!StructureData.comsume_link)
+        {
+            StructureData.comsume_link = []
         }
         /* 矿点link记忆更新 */
         if (level >= 5 && level < 6)
@@ -244,7 +250,7 @@ export default class RoomCoreInitExtension extends Room {
                 this.memory.harvestData[source_] = {}
             }
         }
-        if (Game.time % 7 == 0)
+        if (Game.time % 17 == 0)
         for (let id in this.memory.harvestData)
         {
             if(level < 5)
@@ -256,7 +262,7 @@ export default class RoomCoreInitExtension extends Room {
                     if (containers.length > 0) this.memory.harvestData[id].containerID = containers[0].id
                 }
             }
-            else if (level >= 5 && level <= 7)
+            else if (level >= 5)
             {
                 let source = Game.getObjectById(id) as Source
                 if (!this.memory.harvestData[id].linkID)
@@ -271,7 +277,16 @@ export default class RoomCoreInitExtension extends Room {
                 }
                 else
                 {
-                    delete this.memory.harvestData[id].containerID
+                    if (this.memory.harvestData[id].containerID)
+                    {
+                        let container = Game.getObjectById(this.memory.harvestData[id].containerID) as StructureContainer
+                        if (container)
+                        {
+                            this.unbindMemory('container',container.pos.x,container.pos.y)
+                            container.destroy()
+                        }
+                        delete this.memory.harvestData[id].containerID
+                    }
                 }
             }
             else
@@ -295,5 +310,67 @@ export default class RoomCoreInitExtension extends Room {
         if (!global.CreepNumData) global.CreepNumData = {}
         if (!global.CreepNumData[this.name]) global.CreepNumData[this.name] = {}
 
+    }
+
+    /**
+     * 房间全局建筑初始化
+     */
+    public RoomGlobalStructure():void{
+        // 目前只支持 storage terminal factory powerspawn
+        if (this.memory.StructureIdData.storageID)
+        {
+            global.Stru[this.name]['storage'] = Game.getObjectById(this.memory.StructureIdData.storageID) as StructureStorage
+            if (!global.Stru[this.name]['storage'])
+            {
+                delete this.memory.StructureIdData.storageID
+            }
+        }
+        if(this.memory.StructureIdData.terminalID)
+        {
+            global.Stru[this.name]['terminal'] = Game.getObjectById(this.memory.StructureIdData.terminalID) as StructureTerminal
+            if (!global.Stru[this.name]['terminal'])
+            {
+                delete this.memory.StructureIdData.terminalID
+            }
+        }
+        if (this.memory.StructureIdData.PowerSpawnID)
+        {
+            global.Stru[this.name]['powerspawn'] = Game.getObjectById(this.memory.StructureIdData.PowerSpawnID) as StructurePowerSpawn
+            if (!global.Stru[this.name]['powerspawn'])
+            {
+                delete this.memory.StructureIdData.PowerSpawnID
+            }
+        }
+        if (this.memory.StructureIdData.FactoryId)
+        {
+            global.Stru[this.name]['factory'] = Game.getObjectById(this.memory.StructureIdData.FactoryId) as StructureFactory
+            if (!global.Stru[this.name]['factory'])
+            {
+                delete this.memory.StructureIdData.FactoryId
+            }
+        }
+        if (this.memory.StructureIdData.NtowerID)
+        {
+            global.Stru[this.name]['Ntower'] = Game.getObjectById(this.memory.StructureIdData.NtowerID) as StructureTower
+            if (!global.Stru[this.name]['Ntower'])
+            {
+                delete this.memory.StructureIdData.NtowerID
+            }
+        }
+        if (this.memory.StructureIdData.AtowerID && this.memory.StructureIdData.AtowerID.length > 0)
+        {
+            var otlist = global.Stru[this.name]['Atower'] = [] as StructureTower[]
+            for (var ti of this.memory.StructureIdData.AtowerID)
+            {
+                var ot = Game.getObjectById(ti) as StructureTower
+                if (!ot)
+                {
+                    var index = this.memory.StructureIdData.AtowerID.indexOf(ti)
+                    this.memory.StructureIdData.AtowerID.splice(index,1)
+                    continue
+                }
+                otlist.push(ot)
+            }
+        }
     }
 }

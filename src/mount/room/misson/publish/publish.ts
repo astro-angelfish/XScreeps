@@ -124,4 +124,25 @@ export default class RoomMissonPublish extends Room {
         if (delayTick) thisTask.delayTick = delayTick
         return thisTask
     }
+    
+    public Public_dismantle(disRoom:string,num:number,interval?:number,boost?:boolean):MissionModel{
+        var thisTask:MissionModel = {
+            name:'黄球拆迁',
+            range:'Creep',
+            delayTick:20500,
+            level:10,
+            Data:{
+                disRoom:disRoom,
+                num:num
+            },
+        }
+        if (this.controller.level <= 5) thisTask.Data.boost = false
+        if (boost)
+        {
+            thisTask.Data.boost = true
+            thisTask.LabBind = this.Bind_Lab(['XZHO2','XZH2O'])
+        }
+        thisTask.CreepBind = {'dismantle':{num:0,interval:interval?interval:1200,bind:[]}}
+        return thisTask
+    }
 }

@@ -13,6 +13,7 @@ interface CreepMemory {
     /* 目标Id */
     targetID?:string
     containerID?:string
+    adaption?:boolean
 }
 
 interface BoostData{

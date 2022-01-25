@@ -44,9 +44,33 @@ export default {
             if (i.name == 'C计划' )
             {
                 if (thisRoom.DeleteMission(i.id))
-                return Colorful(`[plan] 房间${roomName}挂载C计划成功`,'green')
+                return Colorful(`[plan] 房间${roomName}删除C计划成功`,'green')
             }
             return Colorful(`[plan] 房间${roomName}删除C计划失败`,'red')
+        }
+    },
+    war:{
+        dismantle(roomName:string,disRoom:string,num:number,boost?:boolean,interval?:number):string{
+            var thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[war] 不存在房间${roomName}`
+            let interval_ = interval?interval:1000
+            let task = thisRoom.Public_dismantle(disRoom,num,interval_,boost)
+            if (thisRoom.AddMission(task))
+            return Colorful(`[war] 房间${roomName}挂载拆迁任务成功 -> ${disRoom}`,'green')
+            return Colorful(`[war] 房间${roomName}挂载拆迁任务失败 -> ${disRoom}`,'red')
+        },
+        Cdismantle(roomName:string,disRoom:string):string{
+            var thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[war] 不存在房间${roomName}`
+            for (var i of thisRoom.memory.Misson['Creep'])
+            {
+                if (i.name =='黄球拆迁' && i.Data.disRoom ==disRoom)
+                {
+                    if (thisRoom.DeleteMission(i.id))
+                    return Colorful(`[plan] 房间${roomName}删除拆迁任务成功`,'green')
+                }
+            }
+            return Colorful(`[war] 房间${roomName}删除拆迁任务失败`,'red')
         }
     }
 }

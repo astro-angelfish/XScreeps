@@ -17,15 +17,16 @@ interface SpawnConstantData  {
 
 /* 爬虫信息列表 */
 export const RoleData:SpawnConstantData = {
-    'harvest':{num:0,ability:[1,1,2,0,0,0,0,0],adaption:true,level:5,mark:"矿",init:true,fun:harvest_},  // 矿点采集工
-    'carry':{num:0,ability:[0,3,3,0,0,0,0,0],level:6,mark:"矿",init:true,adaption:true,fun:carry_},  // 矿点搬运工
+    'harvest':{num:0,ability:[1,1,2,0,0,0,0,0],adaption:true,level:5,mark:"挖",init:true,fun:harvest_},  // 矿点采集工
+    'carry':{num:0,ability:[0,3,3,0,0,0,0,0],level:5,mark:"运",init:true,adaption:true,fun:carry_},  // 矿点搬运工
     'upgrade':{num:0,ability:[1,1,2,0,0,0,0,0],level:10,mark:"升",init:true,fun:upgrade_},   // 升级工
     'build':{num:0,ability:[1,1,2,0,0,0,0,0],level:10,mark:"建",init:true,fun:build_},   // 建筑工
     'manage':{num:0,ability:[0,1,1,0,0,0,0,0],level:2,mark:"中",init:true,must:true,adaption:true},   // 中央搬运工
-    'transport':{num:0,ability:[0,2,2,0,0,0,0,0],level:1,mark:"运",init:true,must:true,adaption:true},  // 房间物流搬运工
-    'repair':{num:0,ability:[1,1,1,0,0,0,0,0],level:2,mark:"维",must:true},
+    'transport':{num:0,ability:[0,2,2,0,0,0,0,0],level:1,mark:"搬",init:true,must:true,adaption:true},  // 房间物流搬运工
+    'repair':{num:0,ability:[1,1,1,0,0,0,0,0],level:2,mark:"墙",must:true},     // 刷墙
     'cclaim':{num:0,ability:[0,0,1,0,0,0,1,0],level:10,mark:"C"},           // 开房sf
     'cupgrade':{num:0,ability:[2,5,7,0,0,0,0,0],level:11,mark:"C"},
+    'dismantle':{num:0,ability:[25,0,25,0,0,0,0,0],level:11,mark:"拆"}
 }
 
 /* 爬虫部件随房间等级变化的动态列表 */
@@ -36,7 +37,7 @@ export const RoleLevelData = {
         3:{bodypart:[5,1,3,0,0,0,0,0],num:2},
         4:{bodypart:[5,1,3,0,0,0,0,0],num:2},
         5:{bodypart:[5,1,3,0,0,0,0,0],num:2},
-        6:{bodypart:[5,1,3,0,0,0,0,0],num:2},
+        6:{bodypart:[6,1,3,0,0,0,0,0],num:2},
         7:{bodypart:[6,2,3,0,0,0,0,0],num:2},
         8:{bodypart:[8,2,8,0,0,0,0,0],num:2},
     },
@@ -45,8 +46,8 @@ export const RoleLevelData = {
         2:{bodypart:[0,3,3,0,0,0,0,0],num:2},
         3:{bodypart:[0,4,4,0,0,0,0,0],num:2},
         4:{bodypart:[0,6,6,0,0,0,0,0],num:2},
-        5:{bodypart:[0,2,2,0,0,0,0,0],num:2},
-        6:{bodypart:[0,2,2,0,0,0,0,0],num:0},
+        5:{bodypart:[0,5,5,0,0,0,0,0],num:2},
+        6:{bodypart:[0,5,5,0,0,0,0,0],num:0},
         7:{bodypart:[0,2,2,0,0,0,0,0],num:0},
         8:{bodypart:[0,2,2,0,0,0,0,0],num:0},
     },
@@ -100,5 +101,14 @@ export const RoleLevelData = {
         7:{bodypart:[10,10,10,0,0,0,0,0],num:0},
         8:{bodypart:[15,20,15,0,0,0,0,0],num:0},
     },
-
+    'dismantle':{
+        1:{bodypart:[1,0,1,0,0,0,0,0],num:0},
+        2:{bodypart:[2,0,2,0,0,0,0,0],num:0},
+        3:{bodypart:[3,0,3,0,0,0,0,0],num:0},
+        4:{bodypart:[3,0,3,0,0,0,0,0],num:0},
+        5:{bodypart:[6,0,6,0,0,0,0,0],num:0},
+        6:{bodypart:[10,0,10,0,0,0,0,0],num:0},
+        7:{bodypart:[20,0,20,0,0,0,0,0],num:0},
+        8:{bodypart:[25,0,25,0,0,0,0,0],num:0},
+    },
 }

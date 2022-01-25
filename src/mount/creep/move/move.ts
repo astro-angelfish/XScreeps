@@ -170,8 +170,7 @@ export default class CreepMoveExtension extends Creep {
             return false
         }
         // 同意对穿
-        // this.say('👌')
-        this.say(`${direction}`)
+        this.say('👌')
         this.move(direction)
         return true
     }

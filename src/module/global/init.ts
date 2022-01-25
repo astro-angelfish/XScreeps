@@ -11,5 +11,7 @@ export function MemoryInit():void {
     for (let i in Memory.RoomControlData) if (!global.Gtime[i])global.Gtime[i] = Game.time - random(1,20,false)
     if (!global.SpecialBodyData) global.SpecialBodyData = {}
     for (let i in Memory.RoomControlData) if (!global.SpecialBodyData[i])global.SpecialBodyData[i]={}
-
+    if (!global.intervalData) global.intervalData = {}
+    for (let i in global.intervalData) if (!global.intervalData[i])global.intervalData[i]={}
+    if (!global.Stru)global.Stru = {}
 }

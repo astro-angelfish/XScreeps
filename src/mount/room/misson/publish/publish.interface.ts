@@ -3,4 +3,6 @@ interface Room {
     public_repair(Rtype:'global' | 'special' | 'nuker',num:number,boostType:ResourceConstant,vindicate:boolean):MissionModel
     public_planC(disRoom:string):MissionModel
     Public_link(structure:string[],disStructure:string,level:number,delayTick?:number):MissionModel
+    Public_dismantle(disRoom:string,num:number,interval?:number,boost?:boolean):MissionModel
+    Check_Lab(misson:MissionModel,role:string,tankType:'storage' | 'terminal' | 'complex')
 }

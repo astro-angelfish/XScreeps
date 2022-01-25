@@ -59,5 +59,9 @@ export default class RoomMissonBehaviourExtension extends Room {
         }
     }
 
+    // 消费link请求资源 例如升级Link
+    public Task_ComsumeLink():void{
+
+    }
     
 }

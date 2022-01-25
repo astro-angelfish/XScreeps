@@ -62,27 +62,8 @@ export default class RoomCoreSpawnExtension extends Room {
             var role_ = this.memory.SpawnConfig[role]
             // 战争状态下爬虫停止生产
             if (this.memory.state == 'war') {if(!role_.must) continue LoopA}
-            /* 间隔型 */
-            if (role_.interval)
-            {
-                if(!role_.time && role_.time !== 0) role_.time = role_.interval
-                if ( role_.time <= 0)
-                {
-                    let num_ = this.SpawnListRoleNum(role)
-                    if (num_ < 1)
-                    {
-                        /* 开始添加一个孵化任务进孵化队列 */
-                        this.AddSpawnList(role,RoleData[role].ability,role_.level?role_.level:10,RoleData[role].mem)
-                        role_.time = role_.interval
-                    }   
-                    else continue LoopA
-                }
-                role_.time--
-            }
-            /* 补员型 */
-            else
-            {
-                let roleNum = global.CreepNumData[this.name][role]
+            /* 固定 补员型 */
+            let roleNum = global.CreepNumData[this.name][role]
                 if (roleNum === undefined) roleNum = 0
                 if (roleNum == 0 && role_.misson)       // 任务类型的就删了
                 {
@@ -102,7 +83,7 @@ export default class RoomCoreSpawnExtension extends Room {
                         this.AddSpawnList(role,RoleData[role].ability,role_.level?role_.level:10,RoleData[role].mem)
                     }
                 }
-            }
+            
         }
     }
 
@@ -140,8 +121,21 @@ export default class RoomCoreSpawnExtension extends Room {
             if(allEnergyCapacity < CalculateEnergy(body)) adaption_body(body,allEnergyCapacity)
             /* 对具备自适应属性的爬虫进行自适应 */
             let allEnergy = this.energyAvailable
+            let adaption = false
             if (this.memory.SpawnConfig[roleName] && this.memory.SpawnConfig[roleName].adaption && allEnergy < CalculateEnergy(body))
-            adaption_body(body,allEnergy)
+            {
+                if (global.CreepNumData[this.name][roleName] <= 0)
+                {
+                    adaption_body(body,allEnergy)
+                    adaption = true
+                }
+                else if (this.controller.level < 4 && roleName == 'harvest' && global.CreepNumData[this.name]['carry'] <= 0)
+                {
+                    /* 特殊情况，防止卡死 */
+                    adaption_body(body,allEnergy)
+                    adaption = true
+                }
+            }
             // 名称整理
             let mark = RoleData[roleName].mark?RoleData[roleName].mark:"＃"
             let timestr = Game.time.toString().substr(Game.time.toString().length - 4)
@@ -157,8 +151,10 @@ export default class RoomCoreSpawnExtension extends Room {
                 belong:this.name,
                 shard:Game.shard.name,
                 boostData:bodyData,
-                working:false
+                working:false,
+                adaption:false
             }
+            if (adaption) thisMem.adaption = true   // 代表该爬虫是被自适应过孵化的，如果能量充足应该重新孵化
             // 额外记忆添加
             if (mem)
             {
@@ -199,7 +195,6 @@ export default class RoomCoreSpawnExtension extends Room {
     public NumSpawn(role:string,num:number,level?:number):boolean{
         if (!this.memory.SpawnConfig[role]) this.memory.SpawnConfig[role] = {num:num,level:level}
         if (this.memory.SpawnConfig[role].misson) {console.log("任务角色！不能进行数量孵化！角色为",role);return false}
-        if (this.memory.SpawnConfig[role].interval) {console.log("计时角色！不能进行数量孵化！角色为",role);return false}
         this.memory.SpawnConfig[role].num = num
         if (level) this.memory.SpawnConfig[role].level = level
         if (!this.memory.SpawnConfig[role].level){let level_ = RoleData[role].level?RoleData[role].level:10;this.memory.SpawnConfig[role].level = level_}
@@ -215,8 +210,8 @@ export default class RoomCoreSpawnExtension extends Room {
         return true
     }
 
-    /* 【功能函数】定时孵化角色  未完成 */
-    public TimeSpawn():boolean{
+    /* 【功能函数】定时孵化角色 [任务相关]  未完成 */
+    public TimeSpawn(role:string,interval:number,num:number,level?:number):boolean{
         return
     }
 }
