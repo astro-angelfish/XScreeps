@@ -187,7 +187,7 @@ export default class RoomCoreInitExtension extends Room {
         if (Game.time % 200 == 0)
         {
             var ALabs = this.getStructure(STRUCTURE_LAB) as StructureLab[]
-            if (ALabs.length > 1)
+            if (ALabs.length >= 1)
             {
                 if (!this.memory.StructureIdData.labs) this.memory.StructureIdData.labs = []
                 for (var llab of ALabs)

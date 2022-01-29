@@ -10,6 +10,7 @@ interface Creep{
     handle_repair():void
     handle_planC():void
     handle_dismantle():void
+    handle_quickRush():void
     
 }
 

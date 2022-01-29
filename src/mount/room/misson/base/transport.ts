@@ -64,7 +64,7 @@ export default class RoomMissonTransportExtension extends Room {
         if ((global.Gtime[this.name]- Game.time) % 13) return
         if (!this.memory.StructureIdData.storageID) return
         if (!this.memory.StructureIdData.labs || this.memory.StructureIdData.labs.length <= 0)return
-        if (this.RoleMissionNum('transport','物流运输') >= 1) return
+        if (this.RoleMissionNum('transport','物流运输') > 2) return
         for (var id of this.memory.StructureIdData.labs)
         {
             var thisLab = Game.getObjectById(id) as StructureLab

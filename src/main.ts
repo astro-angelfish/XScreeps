@@ -1,4 +1,4 @@
-/* errormap */
+/* error map */
 import { ErrorMapper } from './_errorMap/errorMapper'
 import { MemoryInit } from './module/global/init'
 /* 原型挂载 */
@@ -27,5 +27,5 @@ export const loop = ErrorMapper.wrapLoop(() =>{
     let cpu4 = Game.cpu.getUsed()
     /* 像素 */
     pixel()
-    // console.log(`cpu消耗统计:\n初始化及原型挂载:${cpu2-cpu1}\n房间框架运行:${cpu3-cpu2}\n爬虫运行:${cpu4-cpu3}\n总cpu:${cpu4}`)
+    console.log(`cpu消耗统计:\n初始化及原型挂载:${cpu2-cpu1}\n房间框架运行:${cpu3-cpu2}\n爬虫运行:${cpu4-cpu3}\n总cpu:${cpu4}`)
 })

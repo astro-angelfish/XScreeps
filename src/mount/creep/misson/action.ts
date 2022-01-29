@@ -1,5 +1,6 @@
 import structure from "@/mount/structure"
 import { filter_structure, GenerateAbility, generateID, isInArray } from "@/utils"
+import { filter } from "lodash"
 
 /* 爬虫原型拓展   --任务  --任务行为 */
 export default class CreepMissonActionExtension extends Creep {
@@ -152,6 +153,30 @@ export default class CreepMissonActionExtension extends Creep {
             }
         }
         else {disFlag.remove()}
+    }
+
+    // 急速冲级
+    public handle_quickRush():void{
+        let missionData = this.memory.MissionData
+        let id = missionData.id
+        let mission = Game.rooms[this.memory.belong].GainMission(id)
+        if (!mission) return
+        // boost检查
+        if (mission.LabBind && !this.BoostCheck(['work'])) return
+        this.workstate('energy')
+        let terminal_ = global.Stru[this.memory.belong]['terminal'] as StructureTerminal
+        if (!terminal_){this.say("找不到terminal!");return}
+        if (this.memory.working)
+        {
+            this.upgrade_()
+            if (this.store.getUsedCapacity('energy') < 35 && terminal_.pos.isNearTo(this) )
+            this.withdraw_(terminal_,'energy')
+        }
+        else
+        {
+            this.withdraw_(terminal_,'energy')
+        }
+        this.memory.standed = mission.Data.standed
     }
 
 }

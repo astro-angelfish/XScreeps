@@ -16,6 +16,7 @@ export default class RoomMissonFrameExtension extends Room {
         /* [全自动] 任务挂载区域 需要按照任务重要程度进行排序 */
         this.Spawn_Feed()    // 虫卵填充任务 
         this.Task_CenterLink()  // 能量采集  
+        this.Task_ComsumeLink() // 消费、冲级link
         this.Constru_Build()   // 建筑任务
         this.Task_Clink()       // 链接送仓任务
         this.Tower_Feed()   // 防御塔填充任务 
@@ -29,6 +30,7 @@ export default class RoomMissonFrameExtension extends Room {
                 case "物流运输":{this.Task_Carry(misson);break;}
                 case "墙体维护":{this.Task_Repair(misson);break;}
                 case '黄球拆迁':{this.Task_dismantle(misson);break;}
+                case '急速冲级':{this.Task_Quick_upgrade(misson);break}
             }
         }
     }
@@ -95,7 +97,7 @@ export default class RoomMissonFrameExtension extends Room {
         this.memory.Misson[mis.range].push(mis)
         this.memory.Misson[mis.range].sort(compare('level'))      // 每次提交任务都根据优先级排列一下
         if (!isInArray(Memory.ignoreMissonName,mis.name))
-            console.log(Colorful(`${mis.name} 任务挂载√√√ ID:${mis.id} Room:${this.name}`,'green'))
+            console.log(Colorful(`${mis.name} 任务挂载 √√√ ID:${mis.id} Room:${this.name}`,'green'))
         /* 任务挂载成功才绑定实验室 */
         if (mis.LabBind && Object.keys(mis.LabBind).length > 0)
         {
@@ -146,7 +148,7 @@ export default class RoomMissonFrameExtension extends Room {
                 var index = this.memory.Misson[range].indexOf(m)
                 this.memory.Misson[range].splice(index,1)
                 if (!isInArray(Memory.ignoreMissonName,m.name))
-                    console.log(Colorful(`${m.name} 任务删除××× ID:${m.id} Room:${this.name}`,'blue'))
+                    console.log(Colorful(`${m.name} 任务删除 xxx ID:${m.id} Room:${this.name}`,'blue'))
                 return true
             }
         }
@@ -199,7 +201,7 @@ export default class RoomMissonFrameExtension extends Room {
                     for (var c of m.CreepBind[r].bind)
                     if (!Game.creeps[c])
                     {
-                        console.log(`已经清除爬虫${c}的绑定数据！`)
+                        console.log(`已经清除爬虫${c}的绑定数据!`)
                         var index = m.CreepBind[r].bind.indexOf(c)
                         m.CreepBind[r].bind.splice(index,1)
                     }
@@ -378,6 +380,7 @@ export default class RoomMissonFrameExtension extends Room {
     /* 判断lab的boost搬运模块 */
     public Check_Lab(misson:MissionModel,role:string,tankType:'storage' | 'terminal' | 'complex'):boolean
     {
+        if (!misson.LabBind) return true
         var id:string
         if (tankType == 'storage')
         {
@@ -421,13 +424,13 @@ export default class RoomMissonFrameExtension extends Room {
             }
             var disLab = Game.getObjectById(i)  as StructureLab
             if (!disLab) return false
-            if (disLab.store.getUsedCapacity(misson.LabBind[i] as ResourceConstant) < 800)
+            if (disLab.store.getUsedCapacity(misson.LabBind[i] as ResourceConstant) < 1000)
             {
                 if (All_i_Num < 1500)
                 return false
                 var roleData:BindData = {}
                 roleData[role] = {num:1,bind:[]}
-                var carryTask = this.Public_Carry(roleData,25,this.name,tank_.pos.x,tank_.pos.y,this.name,disLab.pos.x,disLab.pos.y,misson.LabBind[i] as ResourceConstant,2000)
+                var carryTask = this.Public_Carry(roleData,40,this.name,tank_.pos.x,tank_.pos.y,this.name,disLab.pos.x,disLab.pos.y,misson.LabBind[i] as ResourceConstant,2000)
                 this.AddMission(carryTask)
                 return false
             }
@@ -446,6 +449,21 @@ export default class RoomMissonFrameExtension extends Room {
                 let sourcePos = new RoomPosition(i.Data.sourcePosX,i.Data.sourcePosY,i.Data.sourceRoom)
                 let disPos = new RoomPosition(i.Data.targetPosX,i.Data.targetPosY,i.Data.targetRoom)
                 if (sourcePos.isEqualTo(source) && disPos.isEqualTo(pos)) return false
+            }
+        }
+        return true
+    }
+
+    /* 判断是否已经有了该类型的link任务 true:代表没有重复 false代表有 */
+    public Check_Link(source:RoomPosition,po:RoomPosition):boolean{
+        let sourceLink = source.GetStructure('link')
+        let posLink = po.GetStructure('link')
+        if (!sourceLink || !posLink) {console.log(`${this.name}出现check_link错误!`);return false}
+        for (let i of this.memory.Misson['Structure'])
+        {
+            if (i.name == "链传送能" && isInArray(i.structure,sourceLink.id) && i.Data.disStructure == posLink.id)
+            {
+                return false
             }
         }
         return true

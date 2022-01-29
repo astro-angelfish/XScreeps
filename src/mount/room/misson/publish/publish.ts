@@ -125,6 +125,14 @@ export default class RoomMissonPublish extends Room {
         return thisTask
     }
     
+    /**
+     *                  拆迁任务发布函数
+     * @param disRoom   目标房间
+     * @param num       数量
+     * @param interval  时间间隔
+     * @param boost     是否boost
+     * @returns         任务对象
+     */
     public Public_dismantle(disRoom:string,num:number,interval?:number,boost?:boolean):MissionModel{
         var thisTask:MissionModel = {
             name:'黄球拆迁',
@@ -143,6 +151,23 @@ export default class RoomMissonPublish extends Room {
             thisTask.LabBind = this.Bind_Lab(['XZHO2','XZH2O'])
         }
         thisTask.CreepBind = {'dismantle':{num:0,interval:interval?interval:1200,bind:[]}}
+        return thisTask
+    }
+
+    public Public_quick(num:number,boostType:ResourceConstant | null):MissionModel{
+        var thisTask:MissionModel = {
+            name:'急速冲级',
+            range:'Creep',
+            delayTick:99999,
+            level:10,
+            Data:{
+            },
+        }
+        thisTask.CreepBind = {'rush':{num:num,bind:[]}}
+        if (boostType)
+        {
+            thisTask.LabBind = this.Bind_Lab([boostType])
+        }
         return thisTask
     }
 }

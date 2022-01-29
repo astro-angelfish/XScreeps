@@ -1,4 +1,4 @@
-import { random } from "lodash"
+import { random, slice } from "lodash"
 
 /**
  * Memory初始化

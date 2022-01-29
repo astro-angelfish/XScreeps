@@ -67,7 +67,7 @@ export default class CreepMissonBaseExtension extends Creep {
                         break LoopBind
                     }
                 }
-                if (Object.keys(this.memory.MissionData).length <= 0) this.say("找不到任务了!")
+                if (Object.keys(this.memory.MissionData).length <= 0) this.say("💤")
                 return
             }
         }
@@ -79,7 +79,9 @@ export default class CreepMissonBaseExtension extends Creep {
                 case '墙体维护':{this.handle_repair();break;}
                 case 'C计划':{this.handle_planC();break;}
                 case '黄球拆迁':{this.handle_dismantle();break;}
+                case '急速冲级':{this.handle_quickRush();break;}
             }
         }
     }
+
 }

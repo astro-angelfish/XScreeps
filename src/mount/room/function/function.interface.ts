@@ -5,6 +5,8 @@ interface Room {
     getListHitsleast(sc:StructureConstant[],mode?:number):Structure | undefined
     getTypeStructure(sr:StructureConstant[]):Structure[]
     structureMission(strus:StructureConstant[]):void
+    StructureMission():void
+    LevelMessageUpdate():void
     // tower
     TowerWork():void
 }

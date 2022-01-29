@@ -8,6 +8,7 @@ interface Room {
     MissionNum(range:string,name:string):number
     Check_Carry(role:string,source:RoomPosition,pos:RoomPosition,rType:ResourceConstant):boolean
     Check_Lab(misson:MissionModel,role:string,tankType:'storage' | 'terminal' | 'complex'):boolean
+    Check_Link(source:RoomPosition,pos:RoomPosition):boolean
     
     // 主动任务
     Spawn_Feed():void
@@ -17,11 +18,13 @@ interface Room {
     Nuker_Feed():void
     Task_CenterLink():void
     Task_Clink():void
+    Task_ComsumeLink():void
 
     // 被动任务
     Task_Carry(misson:MissionModel):void
     Task_Repair(mission:MissionModel):void
     Task_dismantle(mission:MissionModel):void
+    Task_Quick_upgrade(mission:MissionModel):void
 }
 
 interface RoomMemory {

@@ -9,4 +9,5 @@ interface Creep{
     build_(distination:ConstructionSite) : void
     repair_(distination:Structure) : void
     withdraw_(distination:Structure,rType:ResourceConstant) : void
+    BoostCheck(boostBody:string[]):boolean
 }

@@ -21,8 +21,8 @@ interface RoomControlData {
         // 防御 [不包括防御塔]
         defend?: {
             auto?: boolean  // 是否主动防御
-            range: number   // 范围
-            level: number   // 防御等级
+            range?: number   // 范围
+            level?: number   // 防御等级
         }
 
     }

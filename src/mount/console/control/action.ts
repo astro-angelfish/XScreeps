@@ -1,4 +1,4 @@
-import { Colorful } from "@/utils"
+import { Colorful, compare } from "@/utils"
 
 export default {
     repair:{
@@ -72,5 +72,118 @@ export default {
             }
             return Colorful(`[war] 房间${roomName}删除拆迁任务失败`,'red')
         }
+    },
+    upgrade:{
+        quick(roomName:string,num:number,boostType:null| ResourceConstant):string{
+            let thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[upgrade] 不存在房间${roomName}`
+            var thisTask = thisRoom.Public_quick(num,boostType)
+            if (thisTask && thisRoom.AddMission(thisTask))
+            return `[upgrade] 房间${roomName}挂载急速冲级任务成功`
+            return `[upgrade] 房间${roomName}挂载急速冲级任务失败`
+        },
+        Cquick(roomName:string):string{
+            var thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[repair] 不存在房间${roomName}`
+            for (var i of thisRoom.memory.Misson['Creep'])
+            if (i.name == '急速冲级')
+            {
+                if (thisRoom.DeleteMission(i.id))
+                return `[upgrade] 房间${roomName}删除急速冲级任务成功`
+            }
+            return `[upgrade] 房间${roomName}删除急速冲级任务失败!`
+        },
+        Nquick(roomName:string,num:number):string{
+            var thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[repair] 不存在房间${roomName}`
+            for (var i of thisRoom.memory.Misson['Creep'])
+            if (i.name == '急速冲级')
+            {
+                i.CreepBind['rush'].num = num
+                return `[upgrade] 房间${roomName}急速冲级任务数量修改为${num}`
+            }
+            return `[upgrade] 房间${roomName}修改急速冲级任务数量失败!`
+        },
+    },
+    carry:{
+        special(roomName:string,res:ResourceConstant,sP:RoomPosition,dP:RoomPosition,CreepNum?:number,ResNum?:number):string{
+            let thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[carry] 不存在房间${roomName}`
+            let time = 99999
+            if (!ResNum) time = 30000
+            var thisTask = thisRoom.Public_Carry({'truck':{num:CreepNum?CreepNum:1,bind:[]}},time,sP.roomName,sP.x,sP.y,dP.roomName,dP.x,dP.y,res,ResNum?ResNum:undefined)
+            if (thisRoom.AddMission(thisTask)) return `[carry] 房间${roomName}挂载special搬运任务成功`
+            return `[carry] 房间${roomName}挂载special搬运任务失败`
+        },
+        Cspecial(roomName:string):string{
+            let thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[carry] 不存在房间${roomName}`
+            for (var i of thisRoom.memory.Misson['Creep'])
+            if (i.name == '物流运输' && i.CreepBind['truck'] && i.Data.rType)
+            {
+                if(thisRoom.DeleteMission(i.id))
+                return `[carry] 房间${roomName}删除special搬运任务成功`
+            }
+            return `[carry] 房间${roomName}删除special搬运任务失败`
+        },
+    },
+    market:{
+        // 交易订单
+        deal(roomName:string,id:string,amount:number):number{
+            return Game.market.deal(id, amount, roomName);
+        },
+        // 查询订单
+        look(rType:ResourceConstant,marType:"buy"|"sell"):string
+        {
+            var HistoryList = Game.market.getHistory(rType)
+            var allNum:number = 0
+            for (var ii of HistoryList)
+            {
+                allNum += ii.avgPrice
+            }
+            var avePrice = allNum / HistoryList.length
+            var list = Game.market.getAllOrders({type: marType, resourceType: rType});
+            /* 按照价格从上到下 */
+            var newList = list.sort(compare('price'))
+            var result = `当前市场上资源${rType}的${marType}订单如下:\n`
+            if (rType == 'pixel' as ResourceConstant)
+            {
+                for (var i of list)
+                {
+                    result += `\tID:${i.id} 数量:${i.amount} 价格:${i.price} 坐标:${i.roomName} \n`
+                }
+                return result
+            }
+            for (var i of newList)
+            {
+                var priceColor = 'green'
+                var roomColor = 'green'
+                if (i.price > avePrice && i.price - avePrice > 10) priceColor = 'red'
+                if (i.price > avePrice && i.price - avePrice <= 10) priceColor = 'yellow'
+                if (i.price <= avePrice) priceColor = 'green'
+                LoopB:
+                for (var roomName in Memory.RoomControlData)
+                {
+                    var cost = Game.market.calcTransactionCost(1000,roomName as string,i.roomName)
+                    if (cost >= 7000) {roomColor = 'red';break LoopB}
+                    else if (cost < 700 && cost >= 500) {roomColor = 'yellow';break LoopB}
+                    roomColor = 'green'
+                }
+                result += `\tID:${i.id} ` + `数量:${i.amount} 价格:`+ Colorful(`${i.price}`,priceColor?priceColor:'blue',true) +` 坐标: ` + Colorful(`${i.roomName}`,roomColor?roomColor:'blue',true) + ' \n'
+            }
+            return result
+        },
+        // 下买订单
+        buy(roomName:string,rType:ResourceConstant,price:number,amount:number):string{
+            var result = Game.market.createOrder({
+                type: 'buy' ,
+                resourceType: rType,
+                price: price,
+                totalAmount: amount,
+                roomName: roomName   
+            });
+            if (result == OK) return `[market] ` + Colorful(`买资源${rType}的订单下达成功！ 数量为${amount},价格为${price}`,'blue',true)
+            else return `[market] ` + Colorful(`买资源${rType}的订单出现错误，不能下达！`,'red',true)
+        },
     }
 }

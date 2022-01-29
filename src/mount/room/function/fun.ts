@@ -96,6 +96,67 @@ export default class RoomFunctionFindExtension extends Room {
                 stru.ManageMission()
         }
     }
+/**
+    * 建筑任务初始化 目前包含terminal factory link
+    */
+    public StructureMission():void{
+        let structures = []
+        var IdData = this.memory.StructureIdData
+        if (IdData.terminalID)
+        {
+            let terminal = Game.getObjectById(IdData.terminalID) as StructureTerminal
+            if (!terminal) {delete IdData.terminalID}
+            else structures.push(terminal)
+        }
+        if (IdData.FactoryId)
+        {
+            let factory = Game.getObjectById(IdData.FactoryId) as StructureFactory
+            if (!factory) {delete IdData.FactoryId}
+            else structures.push(factory)
+        }
+        if (IdData.center_link)
+        {
+            let center_link = Game.getObjectById(IdData.center_link) as StructureLink
+            if (!center_link) {delete IdData.center_link}
+            else structures.push(center_link)
+        }
+        if (IdData.source_links && IdData.source_links.length > 0)
+        {
+            for (var s of IdData.source_links)
+            {
+                let sl = Game.getObjectById(s) as StructureLink
+                if (!sl)
+                {
+                    var index = IdData.source_links.indexOf(s)
+                    IdData.source_links.splice(index,1)
+                }
+                else structures.push(sl)
+            }
+        }
+        if (IdData.comsume_link && IdData.comsume_link.length > 0)
+        {
+            for (var s of IdData.comsume_link)
+            {
+                let sl = Game.getObjectById(s) as StructureLink
+                if (!sl)
+                {
+                    var index = IdData.comsume_link.indexOf(s)
+                    IdData.comsume_link.splice(index,1)
+                }
+                else structures.push(sl)
+            }
+        }
+        if (structures.length > 0)
+        {
+            for (var obj of structures)
+            {
+                if (obj.ManageMission)
+                {
+                    obj.ManageMission()
+                }
+            }
+        }
+    }
 
     /* 获取全局建筑对象变量 由于该对象每tick都不一样，所以需要每tick都获取 */
     public GlobalStructure():void{
@@ -160,5 +221,11 @@ export default class RoomFunctionFindExtension extends Room {
         }
         
 
+    }
+
+    /* 等级信息更新 */
+    public LevelMessageUpdate():void{
+        if (this.controller.level > this.memory.originLevel)
+        this.memory.originLevel = this.controller.level
     }
 }

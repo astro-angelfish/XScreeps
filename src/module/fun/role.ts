@@ -219,13 +219,7 @@ export function build_(creep:Creep):void{
         var construction = creep.pos.findClosestByRange(FIND_MY_CONSTRUCTION_SITES)
         if (construction)
         {
-            if (creep.build(construction) == ERR_NOT_IN_RANGE)
-            {
-                creep.goTo(construction.pos,1)
-                creep.memory.standed = false
-            }
-            if (getDistance(creep.pos,construction.pos) <= 3)
-            creep.memory.standed = true
+            creep.build_(construction)
         }
         else
         {

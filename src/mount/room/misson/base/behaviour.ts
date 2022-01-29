@@ -6,15 +6,6 @@ export default class RoomMissonBehaviourExtension extends Room {
         // 没有任务数据 或者数据不全就取消任务
         if (!misson.Data) this.DeleteMission(misson.id)
         if (!misson.CreepBind) this.DeleteMission(misson.id)
-        /* 生产相关爬虫 */
-        for (var cRole in misson.CreepBind)
-        {
-            /* manage 和 transport是例外，他们是常驻 */
-            if (cRole == 'manage' || cRole == 'transport')
-            continue
-            // for (var i=0;i<misson.CreepBind[cRole].num;i++)
-            //     this.AddSpawnList(cRole,global.CreepBodyData[this.name][cRole],10)
-        }
     }
 
     // 建造任务
@@ -38,9 +29,9 @@ export default class RoomMissonBehaviourExtension extends Room {
         if ((global.Gtime[this.name]- Game.time) % 13) return
         if (!this.memory.StructureIdData.source_links) this.memory.StructureIdData.source_links = []
         if (!this.memory.StructureIdData.center_link || this.memory.StructureIdData.source_links.length <= 0) return
-        if (this.MissionNum('Structure','链传送能') >= 1) return
         let center_link = Game.getObjectById(this.memory.StructureIdData.center_link) as StructureLink
         if (!center_link){delete this.memory.StructureIdData.center_link;return}
+        else {if (center_link.store.getUsedCapacity('energy') > 750)return}
         for (let id of this.memory.StructureIdData.source_links )
         {
             let source_link = Game.getObjectById(id) as StructureLink
@@ -50,7 +41,7 @@ export default class RoomMissonBehaviourExtension extends Room {
                 this.memory.StructureIdData.source_links.splice(index,1)
                 return
             }
-            if (source_link.store.getUsedCapacity('energy') >= 600)
+            if (source_link.store.getUsedCapacity('energy') >= 600 && this.Check_Link(source_link.pos,center_link.pos))
             {
                 var thisTask = this.Public_link([source_link.id],center_link.id,10)
                 this.AddMission(thisTask)
@@ -61,7 +52,39 @@ export default class RoomMissonBehaviourExtension extends Room {
 
     // 消费link请求资源 例如升级Link
     public Task_ComsumeLink():void{
-
+        if ((global.Gtime[this.name]- Game.time) % 7) return
+        if (!this.memory.StructureIdData.center_link) return
+        let center_link = Game.getObjectById(this.memory.StructureIdData.center_link) as StructureLink
+        if (!center_link){delete this.memory.StructureIdData.center_link;return}
+        if (this.memory.StructureIdData.upgrade_link)
+        {
+            let upgrade_link = Game.getObjectById(this.memory.StructureIdData.upgrade_link) as StructureLink
+            if (!upgrade_link){delete this.memory.StructureIdData.upgrade_link;return}
+            if (upgrade_link.store.getUsedCapacity('energy') <= 400)
+            {
+                var thisTask = this.Public_link([center_link.id],upgrade_link.id,20)
+                this.AddMission(thisTask)
+                return
+            }
+            if (this.memory.StructureIdData.comsume_link.length > 0)
+            {
+                for (var i of this.memory.StructureIdData.comsume_link)
+                {
+                    let l = Game.getObjectById(i) as StructureLink
+                    if (!l){
+                        let index = this.memory.StructureIdData.comsume_link.indexOf(i)
+                        this.memory.StructureIdData.comsume_link.splice(index,1)
+                        return
+                    }
+                    if (l.store.getUsedCapacity('energy') <= 400)
+                    {
+                        var thisTask = this.Public_link([center_link.id],l.id,15)
+                        this.AddMission(thisTask)
+                        return
+                    }
+                }
+            }
+        }
     }
     
 }

@@ -40,6 +40,7 @@ export default class RoomCoreSpawnExtension extends Room {
         /* 身体部件信息二次加工 */
         for (let role in RoleLevelData)
         {
+            if (RoleLevelData[role][this.controller.level])
             global.CreepBodyData[this.name][role] = RoleLevelData[role][this.controller.level].bodypart
         }
         /* 数量信息二次加工 */
