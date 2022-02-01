@@ -49,6 +49,27 @@ export default {
             return Colorful(`[plan] 房间${roomName}删除C计划失败`,'red')
         }
     },
+    expand:{
+        set(roomName:string,disRoom:string,num:number,Cnum:number = 1):string{
+            var thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[expand] 不存在房间${roomName}`
+            let task = thisRoom.Public_expand(disRoom,num,Cnum)
+            if (thisRoom.AddMission(task))
+            return Colorful(`[expand] 房间${roomName}挂载扩张援建计划成功 -> ${disRoom}`,'green')
+            return Colorful(`[expand] 房间${roomName}挂载扩张援建计划失败 -> ${disRoom}`,'red')
+        },
+        remove(roomName:string,disRoom:string):string{
+            var thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[expand] 不存在房间${roomName}`
+            for (var i of thisRoom.memory.Misson['Creep'])
+            if (i.name == '扩张援建' && i.Data.disRoom == disRoom )
+            {
+                if (thisRoom.DeleteMission(i.id))
+                return Colorful(`[expand] 房间${roomName}删除扩张援建成功`,'green')
+            }
+            return Colorful(`[expand] 房间${roomName}删除扩张援建失败`,'red')
+        },
+    },
     war:{
         dismantle(roomName:string,disRoom:string,num:number,boost?:boolean,interval?:number):string{
             var thisRoom = Game.rooms[roomName]
@@ -71,6 +92,27 @@ export default {
                 }
             }
             return Colorful(`[war] 房间${roomName}删除拆迁任务失败`,'red')
+        },
+        support(roomName:string,disRoom:string,rType:'double'):string{
+            var thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[war] 不存在房间${roomName}`
+            let task = thisRoom.Public_support(disRoom,rType,'shard3')
+            if (thisRoom.AddMission(task))
+            return Colorful(`[war] 房间${roomName}挂载紧急支援任务成功 -> ${disRoom}`,'green')
+            return Colorful(`[war] 房间${roomName}挂载紧急支援任务失败 -> ${disRoom}`,'red')
+        },
+        Csupport(roomName:string,disRoom:string,rType:string):string{
+            var thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[war] 不存在房间${roomName}`
+            for (var i of thisRoom.memory.Misson['Creep'])
+            {
+                if (i.name =='紧急支援' && i.Data.disRoom ==disRoom && i.Data.sType == rType)
+                {
+                    if (thisRoom.DeleteMission(i.id))
+                    return Colorful(`[plan] 房间${roomName}紧急支援任务成功`,'green')
+                }
+            }
+            return Colorful(`[war] 房间${roomName}紧急支援任务失败`,'red')
         }
     },
     upgrade:{
@@ -185,5 +227,56 @@ export default {
             if (result == OK) return `[market] ` + Colorful(`买资源${rType}的订单下达成功！ 数量为${amount},价格为${price}`,'blue',true)
             else return `[market] ` + Colorful(`买资源${rType}的订单出现错误，不能下达！`,'red',true)
         },
+    },
+        /* 绕过房间api */
+    bypass: {
+    
+    /* 添加要绕过的房间 */
+    add(roomNames: string):string {
+        if (!Memory.bypassRooms) Memory.bypassRooms = []
+
+        // 确保新增的房间名不会重复
+        Memory.bypassRooms = _.uniq([ ...Memory.bypassRooms, roomNames])
+        return `[bypass]已添加绕过房间 \n ${this.show()}`
+    },
+
+    show():string{
+        if (!Memory.bypassRooms || Memory.bypassRooms.length <= 0) return '[bypass]当前无绕过房间'
+        return `[bypass]当前绕过房间列表：${Memory.bypassRooms.join(' ')}`
+    },
+    clean():string{
+        Memory.bypassRooms = []
+        return `[bypass]已清空绕过房间列表，当前列表：${Memory.bypassRooms.join(' ')}`
+    },
+    remove(roomNames: string):string {
+        if (!Memory.bypassRooms) Memory.bypassRooms = []
+        if (roomNames.length <= 0) delete Memory.bypassRooms
+        else Memory.bypassRooms = _.difference(Memory.bypassRooms,[roomNames])
+        return `[bypass]已移除绕过房间${roomNames}`
     }
+    },
+
+    /* 白名单api */
+    whitesheet:{
+        add(username:string):string{
+            if (!Memory.whitesheet) Memory.whitesheet = []
+            Memory.whitesheet = _.uniq([...Memory.whitesheet,username])
+            return `[whitesheet]已添加用户${username}进白名单！\n${this.show()}`
+        },
+        show():string{
+            if (!Memory.whitesheet || Memory.whitesheet.length <= 0) return "[whitesheet]当前白名单为空！"
+            return `[whitesheet]白名单列表：${Memory.whitesheet.join(' ')}`
+        },
+        clean():string{
+            Memory.whitesheet = []
+            return '[whitesheet]当前白名单已清空'
+        },
+        remove(username:string):string{
+            // if (! (username in Memory.whitesheet)) return `[whitesheet]白名单里没有玩家“${username}”`
+            if (!Memory.whitesheet) Memory.whitesheet = []
+            if (Memory.whitesheet.length <= 0) delete Memory.whitesheet
+            else Memory.whitesheet = _.difference(Memory.whitesheet,[username])
+            return `[whitesheet]已移除${username}出白名单`
+        }
+    },
 }

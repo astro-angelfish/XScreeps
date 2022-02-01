@@ -1,3 +1,5 @@
+import { Colorful, isInArray } from "@/utils"
+
 export default {
     frame:
     {
@@ -55,5 +57,15 @@ export default {
             }
             return `[spawn] 任务${id}的${role}数量信息修改失败`
         },
-    }
+    },
+    link:{
+        comsume(roomName:string,id:string):string{
+            let thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[link] 不存在房间${roomName}`
+            if (isInArray(thisRoom.memory.StructureIdData.source_links,id)) return `[link] id错误，不能为source_link`
+            if (id == thisRoom.memory.StructureIdData.center_link || id == thisRoom.memory.StructureIdData.upgrade_link) return `[link] id错误，不能为center_link/upgrade_link`
+            if (!isInArray(thisRoom.memory.StructureIdData.comsume_link,id))thisRoom.memory.StructureIdData.comsume_link.push(id)
+            return Colorful(`[link] 房间${roomName} id为${id}的link已加入comsume_link列表中`,'green',true)
+        }
+    },
 }

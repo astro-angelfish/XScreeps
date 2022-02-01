@@ -29,8 +29,12 @@ export const RoleData:SpawnConstantData = {
     'dismantle':{num:0,ability:[25,0,25,0,0,0,0,0],level:11,mark:"拆家"},
     'rush':{num:0,ability:[10,2,5,0,0,0,0,0],level:11,mark:"升级"},
     'truck':{num:0,ability:[0,10,10,0,0,0,0,0],level:12,mark:"顺丰"},
+    'claim':{num:0,ability:[0,0,1,0,0,0,1,0],level:10,mark:"扩张"}, 
+    'Ebuild':{num:0,ability:[1,1,2,0,0,0,0,0],level:13,mark:"援建"},
+    'Eupgrade':{num:0,ability:[1,1,2,0,0,0,0,0],level:13,mark:"援建"},
+    'double-attack':{num:0,ability:[0,0,10,28,0,0,0,12],level:10,mark:"双",must:true},
+    'double-heal':{num:0,ability:[0,0,10,0,0,28,0,12],level:10,mark:"双",must:true},
 }
-
 /* 爬虫部件随房间等级变化的动态列表 */
 export const RoleLevelData = {
     'harvest':{
@@ -80,7 +84,7 @@ export const RoleLevelData = {
         4:{bodypart:[0,2,2,0,0,0,0,0],num:1},
         5:{bodypart:[0,4,4,0,0,0,0,0],num:1},
         6:{bodypart:[0,10,10,0,0,0,0,0],num:1},
-        7:{bodypart:[0,20,20,0,0,0,0,0],num:1},
+        7:{bodypart:[0,24,24,0,0,0,0,0],num:1},
         8:{bodypart:[0,24,24,0,0,0,0,0],num:1},
     },
     'manage':{
@@ -101,7 +105,7 @@ export const RoleLevelData = {
         5:{bodypart:[3,3,3,0,0,0,0,0],num:0},
         6:{bodypart:[6,6,6,0,0,0,0,0],num:0},
         7:{bodypart:[10,10,10,0,0,0,0,0],num:0},
-        8:{bodypart:[15,20,15,0,0,0,0,0],num:0},
+        8:{bodypart:[15,10,15,0,0,0,0,0],num:0},
     },
     'dismantle':{
         1:{bodypart:[1,0,1,0,0,0,0,0],num:0},
@@ -115,7 +119,7 @@ export const RoleLevelData = {
     },
     'rush':{
         6:{bodypart:[17,1,9,0,0,0,0,0],num:0},
-        7:{bodypart:[30,1,16,0,0,0,0,0],num:0},
+        7:{bodypart:[39,1,10,0,0,0,0,0],num:0},
     },
     'truck':{
         1:{bodypart:[0,1,1,0,0,0,0,0],num:0},
@@ -126,5 +130,25 @@ export const RoleLevelData = {
         6:{bodypart:[0,10,10,0,0,0,0,0],num:0},
         7:{bodypart:[0,20,20,0,0,0,0,0],num:0},
         8:{bodypart:[0,25,25,0,0,0,0,0],num:0},
+    },
+    'Ebuild':{
+        1:{bodypart:[1,1,2,0,0,0,0,0],num:0},
+        2:{bodypart:[1,1,2,0,0,0,0,0],num:0},
+        3:{bodypart:[2,2,4,0,0,0,0,0],num:0},
+        4:{bodypart:[2,2,4,0,0,0,0,0],num:0},
+        5:{bodypart:[4,4,8,0,0,0,0,0],num:0},
+        6:{bodypart:[5,5,10,0,0,0,0,0],num:0},
+        7:{bodypart:[10,10,20,0,0,0,0,0],num:0},
+        8:{bodypart:[10,10,20,0,0,0,0,0],num:0},
+    },
+    'Eupgrade':{
+        1:{bodypart:[1,1,2,0,0,0,0,0],num:0},
+        2:{bodypart:[1,1,2,0,0,0,0,0],num:0},
+        3:{bodypart:[2,2,4,0,0,0,0,0],num:0},
+        4:{bodypart:[2,2,4,0,0,0,0,0],num:0},
+        5:{bodypart:[4,4,8,0,0,0,0,0],num:0},
+        6:{bodypart:[5,5,10,0,0,0,0,0],num:0},
+        7:{bodypart:[10,10,20,0,0,0,0,0],num:0},
+        8:{bodypart:[10,10,20,0,0,0,0,0],num:0},
     },
 }

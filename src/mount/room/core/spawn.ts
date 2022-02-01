@@ -107,7 +107,9 @@ export default class RoomCoreSpawnExtension extends Room {
             }
             // 正在孵化就跳过该spawn
             if (thisSpawn.spawning) continue
+            
             var spawnlist = this.memory.SpawnList
+            if (spawnlist.length <= 0) continue
             let roleName = spawnlist[0].role
             let mem = spawnlist[0].memory
             let bd = spawnlist[0].body

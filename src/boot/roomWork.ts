@@ -21,5 +21,19 @@ export default ()=>{
         thisRoom.StructureMission() // terminal link factory 工作
         
         thisRoom.LevelMessageUpdate()        // 房间等级Memory信息更新
+        if (roomName == 'E23S3')
+        {
+            if(thisRoom.memory.state == 'war')
+            {
+                let enemy = thisRoom.find(FIND_HOSTILE_CREEPS,{filter:(creep)=>{
+                    return creep.owner.username == 'Q13214'
+                }})
+                if (enemy.length > 0 && thisRoom.MissionNum("Creep",'紧急支援') <= 0)
+                {
+                    let task = thisRoom.Public_support(roomName,'double','shard3')
+                    thisRoom.AddMission(task)
+                }
+            }
+        }
     }
 }

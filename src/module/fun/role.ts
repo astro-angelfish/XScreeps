@@ -243,16 +243,19 @@ export function build_(creep:Creep):void{
     {
         creep.memory.standed = false
         /* 如果有storage就去storage里找，没有就自己采集 */
-        if (thisRoom.memory.StructureIdData.storageID)
+        if (thisRoom.memory.StructureIdData.storageID || thisRoom.memory.StructureIdData.terminalID)
         {
             var storage = Game.getObjectById(thisRoom.memory.StructureIdData.storageID) as StructureStorage
             if (!storage)
             {
                 delete thisRoom.memory.StructureIdData.storageID
-                return
             }
-            if (creep.withdraw(storage,'energy') == ERR_NOT_IN_RANGE)
-                creep.goTo(storage.pos,1)  
+            if (storage && storage.store.getUsedCapacity('energy') >= creep.store.getCapacity()) creep.withdraw_(storage,'energy')
+            else
+            {
+                let terminal_ = Game.getObjectById(Game.rooms[creep.memory.belong].memory.StructureIdData.terminalID) as StructureTerminal
+                if (terminal_ && terminal_.store.getUsedCapacity('energy') >= creep.store.getCapacity()) creep.withdraw_(terminal_,'energy')
+            }
         }
         else
         {

@@ -3,4 +3,5 @@ interface Memory {
     bypassRooms?:string[]
     whitesheet?:string[]
     ignoreMissonName?:string[]
+    marketAdjust?:{[res:string]:number}
 }

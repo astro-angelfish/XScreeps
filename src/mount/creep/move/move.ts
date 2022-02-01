@@ -1,4 +1,5 @@
 // import { RequestShard } from "@/shard/base"
+import { RequestShard } from "@/module/shard/base"
 import { closestPotalRoom, getOppositeDirection } from "@/utils"
 
 /* 本地寻路移动 */
@@ -212,66 +213,66 @@ export default class CreepMoveExtension extends Creep {
     }
 
     // 跨shard移动
-    // public arriveTo(target:RoomPosition,range:number,shard:shardName = Game.shard.name as shardName):void{
-    //     if (!this.memory.targetShard) this.memory.targetShard = shard
-    //     if (shard == Game.shard.name)
-    //     {
-    //         this.goTo(target,range)
-    //     }
-    //     else
-    //     {
-    //         if (!this.memory.protalRoom)
-    //         // 寻找最近的十字路口房间
-    //         {
-    //             if (Game.flags[`${this.memory.belong}/portal`])
-    //             {
-    //                 this.memory.protalRoom = Game.flags[`${this.memory.belong}/portal`].room.name
-    //             }
-    //             else
-    //             {
-    //                 this.memory.protalRoom = closestPotalRoom(this.memory.belong,target.roomName)
-    //             }
-    //         }
-    //         if (!this.memory.protalRoom || this.memory.protalRoom == null) return
-    //         if (this.room.name != this.memory.protalRoom)
-    //         {
-    //             this.goTo(new RoomPosition(25,25,this.memory.protalRoom),20)
-    //         }
-    //         else
-    //         {
-    //             /* 寻找星门 */
-    //             var portal = this.room.find(FIND_STRUCTURES,{filter:(structure)=>{
-    //                 return structure.structureType == STRUCTURE_PORTAL 
-    //             }}) as StructurePortal[]
-    //             if (portal.length <= 0) return
-    //             var thisportal:StructurePortal
-    //             for (var i of portal)
-    //             {
-    //                 var porType = i.destination as {shard:string, room:string}
-    //                 if (porType.shard == shard )
-    //                 thisportal = i
-    //             }
-    //             if (!thisportal) return
-    //             if (!this.pos.isNearTo(thisportal)) this.goTo(thisportal.pos,1)
-    //             else
-    //             {
-    //                 /* moveData里的shardmemory */
-    //                 /* 靠近后等待信息传送 */
-    //                 var RequestData = {
-    //                     relateShard:shard,
-    //                     sourceShard:Game.shard.name as shardName,
-    //                     type:1,
-    //                     data:{id:this.name,MemoryData:this.memory}
-    //                 }
-    //                 if(RequestShard(RequestData))
-    //                 {
-    //                     this.moveTo(thisportal)
-    //                 }
-    //             }
-    //         }
-    //     }
-    //     return
-    // }
+    public arriveTo(target:RoomPosition,range:number,shard:shardName = Game.shard.name as shardName):void{
+        if (!this.memory.targetShard) this.memory.targetShard = shard
+        if (shard == Game.shard.name)
+        {
+            this.goTo(target,range)
+        }
+        else
+        {
+            if (!this.memory.protalRoom)
+            // 寻找最近的十字路口房间
+            {
+                if (Game.flags[`${this.memory.belong}/portal`])
+                {
+                    this.memory.protalRoom = Game.flags[`${this.memory.belong}/portal`].room.name
+                }
+                else
+                {
+                    this.memory.protalRoom = closestPotalRoom(this.memory.belong,target.roomName)
+                }
+            }
+            if (!this.memory.protalRoom || this.memory.protalRoom == null) return
+            if (this.room.name != this.memory.protalRoom)
+            {
+                this.goTo(new RoomPosition(25,25,this.memory.protalRoom),20)
+            }
+            else
+            {
+                /* 寻找星门 */
+                var portal = this.room.find(FIND_STRUCTURES,{filter:(structure)=>{
+                    return structure.structureType == STRUCTURE_PORTAL 
+                }}) as StructurePortal[]
+                if (portal.length <= 0) return
+                var thisportal:StructurePortal
+                for (var i of portal)
+                {
+                    var porType = i.destination as {shard:string, room:string}
+                    if (porType.shard == shard )
+                    thisportal = i
+                }
+                if (!thisportal) return
+                if (!this.pos.isNearTo(thisportal)) this.goTo(thisportal.pos,1)
+                else
+                {
+                    /* moveData里的shardmemory */
+                    /* 靠近后等待信息传送 */
+                    var RequestData = {
+                        relateShard:shard,
+                        sourceShard:Game.shard.name as shardName,
+                        type:1,
+                        data:{id:this.name,MemoryData:this.memory}
+                    }
+                    if(RequestShard(RequestData))
+                    {
+                        this.moveTo(thisportal)
+                    }
+                }
+            }
+        }
+        return
+    }
 
 
     

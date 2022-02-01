@@ -46,10 +46,13 @@ export default class CreepMissonTransportExtension extends Creep {
         }
         else
         {
-            /* 获取capacity信息 */
-            if (this.store.getCapacity() < 600 && this.room.controller.level == 8 && this.room.energyAvailable >= 2000) this.suicide()
             if (storage_.store['energy'] >= this.store.getCapacity())
             this.withdraw_(storage_,'energy')
+            else
+            {
+                let terminal_ = Game.getObjectById(Game.rooms[this.memory.belong].memory.StructureIdData.terminalID) as StructureTerminal
+                if (terminal_ && terminal_.store.getUsedCapacity('energy') >= this.store.getCapacity()) this.withdraw_(terminal_,'energy')
+            }
         }
     }
 

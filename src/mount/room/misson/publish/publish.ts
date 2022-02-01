@@ -22,6 +22,7 @@ export default class RoomMissonPublish extends Room {
                 range:'Creep',
                 delayTick:delayTick,
                 cooldownTick:1,
+                maxTime:3,
                 Data:{
                     sourceRoom:sR,
                     sourcePosX:sX,
@@ -154,6 +155,12 @@ export default class RoomMissonPublish extends Room {
         return thisTask
     }
 
+    /**
+     *                  急速冲级任务发布函数
+     * @param num       冲级爬数量
+     * @param boostType boost类型
+     * @returns         任务对象
+     */
     public Public_quick(num:number,boostType:ResourceConstant | null):MissionModel{
         var thisTask:MissionModel = {
             name:'急速冲级',
@@ -167,6 +174,48 @@ export default class RoomMissonPublish extends Room {
         if (boostType)
         {
             thisTask.LabBind = this.Bind_Lab([boostType])
+        }
+        return thisTask
+    }
+
+    public Public_expand(disRoom:string,num:number,cnum?:number):MissionModel{
+        var thisTask:MissionModel = {
+            name:'扩张援建',
+            range:'Creep',
+            delayTick:40000,
+            level:10,
+            Data:{
+                disRoom:disRoom
+            },
+        }
+        thisTask.CreepBind = {
+            'claim':{num:cnum,bind:[]},
+            'Ebuild':{num:num,bind:[]},
+            'Eupgrade':{num:num,bind:[]}
+        }
+        return thisTask
+    }
+
+    public Public_helpBuild(disRoom:string,num:number,shard?:string,time?:number):MissionModel{
+        return
+    }
+
+    public Public_support(disRoom:string,sType:'double' | 'aio' | 'squard',shard?:string):MissionModel{
+        var thisTask:MissionModel = {
+            name:'紧急支援',
+            range:'Creep',
+            delayTick:20000,
+            level:10,
+            Data:{
+                disRoom:disRoom,
+                sType:sType,
+                shard:shard
+            },
+        }
+        if (sType == 'double')
+        {
+            thisTask.CreepBind = {'double-attack':{num:1,bind:[]},'double-heal':{num:1,bind:[]}}
+            thisTask.LabBind = this.Bind_Lab(['XUH2O','XLHO2','XZHO2','XGHO2'])
         }
         return thisTask
     }

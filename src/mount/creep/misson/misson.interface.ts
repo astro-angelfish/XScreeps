@@ -11,9 +11,14 @@ interface Creep{
     handle_planC():void
     handle_dismantle():void
     handle_quickRush():void
+    handle_expand():void
+    handle_support():void
+    
     
 }
 
 interface CreepMemory{
     MissionData?:any
+    double?:string  // 双人小队
+    captain?:boolean
 }

@@ -29,6 +29,8 @@ export default class RoomCoreInitExtension extends Room {
         if (!this.memory.Misson['Creep']) this.memory.Misson['Creep'] = []
         if (!this.memory.Misson['PowerCreep']) this.memory.Misson['PowerCreep'] = []
         if (!global.Stru[this.name])global.Stru[this.name] = {}
+        if (!this.memory.TerminalData) this.memory.TerminalData = {'energy':{num:50000,fill:true}}
+        if (!this.memory.MarketData) this.memory.MarketData = {'deal':{},'order':{}}
     }
 
     /**
@@ -44,7 +46,7 @@ export default class RoomCoreInitExtension extends Room {
             let ASpawn = this.getStructure('spawn') as StructureSpawn[]
             for (let sp of ASpawn)
             {
-                StructureData.spawn.push(sp.id)
+                StructureData.spawn.push(sp.id) 
             }
         }
         else if ((level == 7 && StructureData.spawn.length < 2) || (level >= 8 && StructureData.spawn.length < 3))
@@ -52,7 +54,11 @@ export default class RoomCoreInitExtension extends Room {
             if (Game.time % 10 == 0)
             {
                 let ASpawn = this.getStructure('spawn') as StructureSpawn[]
-                StructureData.spawn = ASpawn
+                for (let sp of ASpawn)
+                {
+                    if(!isInArray(StructureData.spawn,sp.id))
+                    StructureData.spawn.push(sp.id)
+                }
             }
         }
         /* 中心点依赖建筑*/

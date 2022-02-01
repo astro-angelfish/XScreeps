@@ -62,7 +62,7 @@ export default class RoomMissonBehaviourExtension extends Room {
             if (!upgrade_link){delete this.memory.StructureIdData.upgrade_link;return}
             if (upgrade_link.store.getUsedCapacity('energy') <= 400)
             {
-                var thisTask = this.Public_link([center_link.id],upgrade_link.id,20)
+                var thisTask = this.Public_link([center_link.id],upgrade_link.id,25)
                 this.AddMission(thisTask)
                 return
             }
@@ -78,7 +78,7 @@ export default class RoomMissonBehaviourExtension extends Room {
                     }
                     if (l.store.getUsedCapacity('energy') <= 400)
                     {
-                        var thisTask = this.Public_link([center_link.id],l.id,15)
+                        var thisTask = this.Public_link([center_link.id],l.id,35)
                         this.AddMission(thisTask)
                         return
                     }

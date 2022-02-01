@@ -1,6 +1,12 @@
+import { times } from "lodash";
+
 /* 房间原型拓展   --行为  --维护任务 */
 export default class RoomMissonVindicateExtension extends Room {
     public Task_Repair(mission:MissionModel):void{
+        if (mission.LabBind)
+        {
+            if (!this.Check_Lab(mission,'transport','complex')) return
+        }
         if (mission.Data.RepairType == 'global')
         {
 
@@ -37,7 +43,7 @@ export default class RoomMissonVindicateExtension extends Room {
             let allprice = 0
             for (var ii=0;ii<3;ii++)
                 allprice += history[ii].avgPrice
-            let avePrice = allprice/3 + 3.5 // 平均能量价格
+            let avePrice = allprice/3 + 4.5 // 平均能量价格
             if (avePrice > 20) avePrice = 20
             /* 清理过期订单 */
             if (Object.keys(Game.market.orders).length > 150)
@@ -64,6 +70,25 @@ export default class RoomMissonVindicateExtension extends Room {
                 });
                 console.log(`房间${this.name}创建能量订单，价格:${avePrice};数量:100000`)
             }
+        }
+    }
+
+    /* 紧急援建 */
+    public Task_HelpBuild(mission:MissionModel):void{
+        if ((Game.time - global.Gtime[this.name]) % 9) return
+        if (mission.LabBind)
+        {
+            if(!this.Check_Lab(mission,'transport','complex')) return
+        }
+        
+    }
+
+    /* 紧急支援 */
+    public Task_HelpDefend(mission:MissionModel):void{
+        // if ((Game.time - global.Gtime[this.name]) % 9) return
+        if (mission.LabBind)
+        {
+            if(!this.Check_Lab(mission,'transport','complex')) return
         }
     }
 }

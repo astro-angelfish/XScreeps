@@ -8,7 +8,7 @@ export default class RoomMissonTransportExtension extends Room {
         if (this.RoleMissionNum('transport','虫卵填充') < 1)
         {
             let thisPos = new RoomPosition(Memory.RoomControlData[this.name].center[0],Memory.RoomControlData[this.name].center[1],this.name)
-            let emptyExtensions = thisPos.findClosestByRange(FIND_MY_STRUCTURES,{filter:(structure)=>{
+            let emptyExtensions = thisPos.findClosestByPath(FIND_MY_STRUCTURES,{filter:(structure)=>{
                 return (structure.structureType == 'spawn' || structure.structureType == 'extension') && structure.store.getFreeCapacity('energy') > 0
             }})
             if (emptyExtensions)
@@ -51,6 +51,7 @@ export default class RoomMissonTransportExtension extends Room {
                 /* 下达搬运任务搬运 */
                 let storage_ = Game.getObjectById(this.memory.StructureIdData.storageID) as StructureStorage
                 if (!storage_) return
+                if (this.RoleMissionNum('transport','物流运输') > 3 ||!this.Check_Carry('transport',storage_.pos,tower.pos,'energy')) continue
                 if (storage_.store.getUsedCapacity('energy') < 1000)return
                 let thisTask = this.Public_Carry({'transport':{num:2,bind:[]}},35,this.name,storage_.pos.x,storage_.pos.y,this.name,tower.pos.x,tower.pos.y,'energy',1000 - tower.store.getUsedCapacity('energy'))
                 this.AddMission(thisTask)
@@ -64,7 +65,8 @@ export default class RoomMissonTransportExtension extends Room {
         if ((global.Gtime[this.name]- Game.time) % 13) return
         if (!this.memory.StructureIdData.storageID) return
         if (!this.memory.StructureIdData.labs || this.memory.StructureIdData.labs.length <= 0)return
-        if (this.RoleMissionNum('transport','物流运输') > 2) return
+        let missionNum = this.RoleMissionNum('transport','物流运输')
+        if (missionNum > 3) {console.log("任务数量过多!为",missionNum);return}
         for (var id of this.memory.StructureIdData.labs)
         {
             var thisLab = Game.getObjectById(id) as StructureLab
@@ -79,7 +81,8 @@ export default class RoomMissonTransportExtension extends Room {
                 /* 下布搬运命令 */
                 var storage_ = Game.getObjectById(this.memory.StructureIdData.storageID) as StructureStorage
                 if (!storage_) return
-                if (storage_.store.getUsedCapacity('energy') < 10000)return
+                if (storage_.store.getUsedCapacity('energy') < 2000 || !this.Check_Carry('transport',storage_.pos,thisLab.pos,'energy'))
+                {continue}
                 var thisTask = this.Public_Carry({'transport':{num:1,bind:[]}},25,this.name,storage_.pos.x,storage_.pos.y,this.name,thisLab.pos.x,thisLab.pos.y,'energy',2000 - thisLab.store.getUsedCapacity('energy'))
                 this.AddMission(thisTask)
                 return

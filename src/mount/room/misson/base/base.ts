@@ -31,6 +31,8 @@ export default class RoomMissonFrameExtension extends Room {
                 case "墙体维护":{this.Task_Repair(misson);break;}
                 case '黄球拆迁':{this.Task_dismantle(misson);break;}
                 case '急速冲级':{this.Task_Quick_upgrade(misson);break}
+                case '紧急援建':{this.Task_HelpBuild(misson);break}
+                case '紧急支援':{this.Task_HelpDefend(misson);break}
             }
         }
     }
@@ -424,13 +426,13 @@ export default class RoomMissonFrameExtension extends Room {
             }
             var disLab = Game.getObjectById(i)  as StructureLab
             if (!disLab) return false
-            if (disLab.store.getUsedCapacity(misson.LabBind[i] as ResourceConstant) < 1000)
+            if (disLab.store.getUsedCapacity(misson.LabBind[i] as ResourceConstant) < 1000 && this.Check_Carry('transport',tank_.pos,disLab.pos,misson.LabBind[i] as ResourceConstant))
             {
                 if (All_i_Num < 1500)
                 return false
                 var roleData:BindData = {}
                 roleData[role] = {num:1,bind:[]}
-                var carryTask = this.Public_Carry(roleData,40,this.name,tank_.pos.x,tank_.pos.y,this.name,disLab.pos.x,disLab.pos.y,misson.LabBind[i] as ResourceConstant,2000)
+                var carryTask = this.Public_Carry(roleData,45,this.name,tank_.pos.x,tank_.pos.y,this.name,disLab.pos.x,disLab.pos.y,misson.LabBind[i] as ResourceConstant,2000)
                 this.AddMission(carryTask)
                 return false
             }

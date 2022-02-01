@@ -16,7 +16,7 @@ export default class RoomFunctionTowerExtension extends Room {
             let Ntower:StructureTower = null
             if (this.memory.StructureIdData.NtowerID){Ntower = Game.getObjectById(this.memory.StructureIdData.NtowerID) as StructureTower}
             if (!Ntower){delete this.memory.StructureIdData.NtowerID;return;}
-            if (Game.time - global.Gtime[this.name] % 5 == 0)
+            if ((Game.time - global.Gtime[this.name]) % 5 == 0)
             {
                 /* 寻找路，修路 */
                 var repairRoad = Ntower.pos.findClosestByRange(FIND_STRUCTURES,{filter:(stru)=>{
