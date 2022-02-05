@@ -11,6 +11,8 @@ import RoomMissonVindicateExtension from "./misson/action/vindicate"
 import RoomFunctionTowerExtension from "./function/tower"
 import NormalWarExtension from "./misson/war/normal"
 import RoomMissonManageExtension from "./misson/base/manage"
+import RoomMissonDefendExtension from "./misson/action/defend"
+import RoomMissonWarExtension from "./misson/action/war"
 
 // 定义好挂载顺序
 const plugins = [
@@ -26,7 +28,8 @@ const plugins = [
     RoomMissonVindicateExtension,
     NormalWarExtension,
     RoomMissonManageExtension,
-    
+    RoomMissonDefendExtension,
+    RoomMissonWarExtension,
     ]
 
 /**

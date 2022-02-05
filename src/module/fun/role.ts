@@ -176,6 +176,22 @@ export function upgrade_(creep_:Creep):void{
     }
     else
     {
+        if (Game.flags[`${creep_.memory.belong}/ruin`])
+        {
+            if (!creep_.pos.isNearTo(Game.flags[`${creep_.memory.belong}/ruin`]))
+                creep_.goTo(Game.flags[`${creep_.memory.belong}/ruin`].pos,1)
+            else
+            {
+                let ruin = Game.flags[`${creep_.memory.belong}/ruin`].pos.lookFor(LOOK_RUINS)
+                let swi = false
+                for (var i of ruin)
+                {
+                    if (i.store.getUsedCapacity('energy') > 0) {creep_.withdraw(i,'energy');swi = true;return}
+                }
+                if (!swi) Game.flags[`${creep_.memory.belong}/ruin`].remove()
+            }
+            return
+        }
         if (!creep_.memory.targetID)
         {
             let target = null
@@ -223,6 +239,7 @@ export function build_(creep:Creep):void{
         }
         else
         {
+            
             /* 没有建筑物则考虑道路维护 */
             var roads = creep.pos.findClosestByPath(FIND_STRUCTURES,{filter:(structure)=>{
                 return structure.structureType == 'road' && structure.hits < structure.hitsMax
@@ -242,6 +259,22 @@ export function build_(creep:Creep):void{
     else
     {
         creep.memory.standed = false
+        if (Game.flags[`${creep.memory.belong}/ruin`])
+        {
+            if (!creep.pos.isNearTo(Game.flags[`${creep.memory.belong}/ruin`]))
+                creep.goTo(Game.flags[`${creep.memory.belong}/ruin`].pos,1)
+            else
+            {
+                let ruin = Game.flags[`${creep.memory.belong}/ruin`].pos.lookFor(LOOK_RUINS)
+                let swi = false
+                for (var i of ruin)
+                {
+                    if (i.store.getUsedCapacity('energy') > 0) {creep.withdraw(i,'energy');swi = true;return}
+                }
+                if (!swi) Game.flags[`${creep.memory.belong}/ruin`].remove()
+            }
+            return
+        }
         /* 如果有storage就去storage里找，没有就自己采集 */
         if (thisRoom.memory.StructureIdData.storageID || thisRoom.memory.StructureIdData.terminalID)
         {

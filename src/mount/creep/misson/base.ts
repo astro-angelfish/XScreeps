@@ -23,6 +23,18 @@ export default class CreepMissonBaseExtension extends Creep {
         }
         if (Object.keys(this.memory.MissionData).length <= 0)
         {
+            if (this.memory.taskRB)
+            {
+                let task_ = Game.rooms[this.memory.belong].GainMission(this.memory.taskRB)
+                if (task_)
+                {
+                    task_.CreepBind[this.memory.role].bind.push(this.name)
+                    this.memory.MissionData.id = task_.id           // 任务id
+                    this.memory.MissionData.name = task_.name        // 任务名
+                    this.memory.MissionData.Data = task_.Data?task_.Data:{}    // 任务数据传输
+                    return
+                }
+            }
             /* 每任务的情况下考虑领任务 */
             if (!Game.rooms[this.memory.belong].memory.Misson['Creep'])
             Game.rooms[this.memory.belong].memory.Misson['Creep'] = []
@@ -82,6 +94,8 @@ export default class CreepMissonBaseExtension extends Creep {
                 case '急速冲级':{this.handle_quickRush();break;}
                 case '扩张援建':{this.handle_expand();break}
                 case '紧急支援':{this.handle_support();break}
+                case '控制攻击':{this.handle_control();break}
+                case '紧急援建':{this.handle_helpBuild();break}
             }
         }
     }

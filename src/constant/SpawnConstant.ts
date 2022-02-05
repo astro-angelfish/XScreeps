@@ -20,7 +20,7 @@ export const RoleData:SpawnConstantData = {
     'harvest':{num:0,ability:[1,1,2,0,0,0,0,0],adaption:true,level:5,mark:"挖",init:true,fun:harvest_},  // 矿点采集工
     'carry':{num:0,ability:[0,3,3,0,0,0,0,0],level:5,mark:"运",init:true,adaption:true,fun:carry_},  // 矿点搬运工
     'upgrade':{num:0,ability:[1,1,2,0,0,0,0,0],level:10,mark:"升级",init:true,fun:upgrade_},   // 升级工
-    'build':{num:0,ability:[1,1,2,0,0,0,0,0],level:10,mark:"建设",init:true,fun:build_},   // 建筑工
+    'build':{num:0,ability:[1,1,2,0,0,0,0,0],level:10,mark:"建设",init:true,fun:build_,must:true},   // 建筑工
     'manage':{num:0,ability:[0,1,1,0,0,0,0,0],level:2,mark:"中央",init:true,must:true,adaption:true},   // 中央搬运工
     'transport':{num:0,ability:[0,2,2,0,0,0,0,0],level:1,mark:"搬运",init:true,must:true,adaption:true},  // 房间物流搬运工
     'repair':{num:0,ability:[1,1,1,0,0,0,0,0],level:2,mark:"刷墙",must:true},     // 刷墙
@@ -34,6 +34,8 @@ export const RoleData:SpawnConstantData = {
     'Eupgrade':{num:0,ability:[1,1,2,0,0,0,0,0],level:13,mark:"援建"},
     'double-attack':{num:0,ability:[0,0,10,28,0,0,0,12],level:10,mark:"双",must:true},
     'double-heal':{num:0,ability:[0,0,10,0,0,28,0,12],level:10,mark:"双",must:true},
+    'claim-attack':{num:0,ability:[0,0,15,0,0,0,15,0],level:10,mark:"控"},
+    'architect':{num:0,ability:[15,10,10,0,0,10,0,5],level:10,mark:"援建"},
 }
 /* 爬虫部件随房间等级变化的动态列表 */
 export const RoleLevelData = {
@@ -151,4 +153,5 @@ export const RoleLevelData = {
         7:{bodypart:[10,10,20,0,0,0,0,0],num:0},
         8:{bodypart:[10,10,20,0,0,0,0,0],num:0},
     },
+
 }

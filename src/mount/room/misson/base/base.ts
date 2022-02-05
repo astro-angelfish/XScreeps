@@ -22,6 +22,7 @@ export default class RoomMissonFrameExtension extends Room {
         this.Tower_Feed()   // 防御塔填充任务 
         this.Lab_Feed()     // 实验室填充\回收任务  
         this.Nuker_Feed()   // 核弹填充任务      
+        this.Nuke_Defend()  // 核弹防御
         /* 基本任务监控区域 */
         for (var index in this.memory.Misson)
         for (var misson of this.memory.Misson[index])
@@ -354,9 +355,16 @@ export default class RoomMissonFrameExtension extends Room {
                         if (!misson.Data.intervalTime) misson.Data.intervalTime = Game.time
                         if ((Game.time - misson.Data.intervalTime) % misson.CreepBind[role].interval == 0)
                         {
+                            /* 如果孵化队列里太多这种类型的爬虫就不孵化 最高允许8个 */
+                            let n = 0
+                            for (var ii of this.memory.SpawnList)
+                            {
+                                if (ii.role == role) n += 1
+                            }
+                            if (n > 8) continue
                             for (let i=0;i<misson.CreepBind[role].num;i++)
                             {
-                                this.SingleSpawn(role)
+                                this.SingleSpawn(role,RoleData[role].level?RoleData[role].level:10,{taskRB:misson.id})
                             }
                         }
                         continue

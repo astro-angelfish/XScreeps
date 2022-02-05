@@ -40,8 +40,9 @@ export const loop = ErrorMapper.wrapLoop(() =>{
         let hoscrp = Game.rooms['E22S3'].find(FIND_HOSTILE_CREEPS)
         if (hoscrp.length > 0)
         {
-            for (var i of hoscrp)
-            if (i.owner.username == 'Q13214') Game.rooms['E22S3'].controller.activateSafeMode()
+            
+            let tower = Game.rooms['E22S3'].getStructure('tower') as StructureTower[]
+            if (tower.length > 0){for(var ii of tower)ii.attack(hoscrp[0])}
         }
     }
 })

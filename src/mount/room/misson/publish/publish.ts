@@ -1,3 +1,5 @@
+import { times } from "lodash"
+
 /* 房间原型拓展   --任务  --任务发布便捷函数 */
 export default class RoomMissonPublish extends Room {
     /**
@@ -58,6 +60,7 @@ export default class RoomMissonPublish extends Room {
                 boostType:boostType,
                 vindicate:vindicate
             },
+            maxTime:3
         }
         thisTask.CreepBind = {'repair':{num:num,bind:[]}}
         if (boostType == 'LH')
@@ -88,7 +91,7 @@ export default class RoomMissonPublish extends Room {
      * @param disRoom   目标房间
      * @returns         任务对象
      */
-    public public_planC(disRoom:string):MissionModel{
+    public public_planC(disRoom:string,Cnum:number,upNum:number,shard?:shardName,):MissionModel{
         var thisTask:MissionModel = {
             name:'C计划',
             range:'Creep',
@@ -96,10 +99,20 @@ export default class RoomMissonPublish extends Room {
             level:10,
             Data:{
                 state:0,
-                disRoom:disRoom
+                disRoom:disRoom,
             },
         }
-        thisTask.CreepBind = {'cclaim':{num:1,bind:[]},'cupgrade':{num:1,bind:[]}}
+        thisTask.reserve = true
+        if (!shard)
+        {
+            thisTask.Data.shard = Game.shard.name
+            thisTask.CreepBind = {'cclaim':{num:Cnum,bind:[]},'cupgrade':{num:upNum,bind:[]}}
+        }
+        else
+        {
+            thisTask.Data.shard = shard
+            thisTask.CreepBind = {'cclaim':{num:Cnum,bind:[],interval:1000},'cupgrade':{num:upNum,bind:[],interval:1000}}
+        }
         return thisTask
     }
 
@@ -145,6 +158,7 @@ export default class RoomMissonPublish extends Room {
                 num:num
             },
         }
+        thisTask.reserve = true
         if (this.controller.level <= 5) thisTask.Data.boost = false
         if (boost)
         {
@@ -155,6 +169,22 @@ export default class RoomMissonPublish extends Room {
         return thisTask
     }
 
+    public Public_control(disRoom:string,shard:shardName,interval:number):MissionModel
+    {
+        var thisTask:MissionModel = {
+            name:'控制攻击',
+            range:'Creep',
+            delayTick:99999,
+            level:10,
+            Data:{
+                disRoom:disRoom,
+                shard:shard,
+            },
+        }
+        thisTask.reserve = true
+        thisTask.CreepBind = {'claim-attack':{num:1,interval:interval,bind:[]}}
+        return thisTask
+    }
     /**
      *                  急速冲级任务发布函数
      * @param num       冲级爬数量
@@ -188,6 +218,7 @@ export default class RoomMissonPublish extends Room {
                 disRoom:disRoom
             },
         }
+        thisTask.reserve = true
         thisTask.CreepBind = {
             'claim':{num:cnum,bind:[]},
             'Ebuild':{num:num,bind:[]},
@@ -197,7 +228,27 @@ export default class RoomMissonPublish extends Room {
     }
 
     public Public_helpBuild(disRoom:string,num:number,shard?:string,time?:number):MissionModel{
-        return
+        var thisTask:MissionModel = {
+            name:'紧急援建',
+            range:'Creep',
+            delayTick:20000,
+            level:10,
+            Data:{
+                disRoom:disRoom,
+                num:num,
+                shard:shard?shard:Game.shard.name
+            },
+            maxTime:2
+            
+        }
+        thisTask.reserve = true
+        thisTask.CreepBind = {
+            'architect':{num:num,bind:[],interval:time?time:1000},
+        }
+        thisTask.LabBind = this.Bind_Lab(['XZHO2','XLH2O','XLHO2','XGHO2','XKH2O'])
+        if (thisTask.LabBind)
+        return thisTask
+        return null
     }
 
     public Public_support(disRoom:string,sType:'double' | 'aio' | 'squard',shard?:string):MissionModel{
@@ -209,14 +260,23 @@ export default class RoomMissonPublish extends Room {
             Data:{
                 disRoom:disRoom,
                 sType:sType,
-                shard:shard
             },
+            maxTime:3
         }
+        thisTask.reserve = true
         if (sType == 'double')
         {
             thisTask.CreepBind = {'double-attack':{num:1,bind:[]},'double-heal':{num:1,bind:[]}}
             thisTask.LabBind = this.Bind_Lab(['XUH2O','XLHO2','XZHO2','XGHO2'])
         }
+        else if (sType == 'aio')
+        {
+
+        }
+        if (shard)thisTask.Data.shard = shard
+        else thisTask.Data.shard = Game.shard.name
+        
         return thisTask
     }
+
 }

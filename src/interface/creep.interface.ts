@@ -14,6 +14,7 @@ interface CreepMemory {
     targetID?:string
     containerID?:string
     adaption?:boolean
+    taskRB?:string
 }
 
 interface BoostData{

@@ -105,17 +105,17 @@ export default class terminalExtension extends StructureTerminal {
             /* 计算平均价格 */
             let history = Game.market.getHistory('energy')
             let allprice = 0
-            for (var ii=0;ii<3;ii++)
+            for (var ii=12;ii<15;ii++)
                 allprice += history[ii].avgPrice
-            let avePrice = allprice/3 + (Memory.marketAdjust['energy']?Memory.marketAdjust['energy']:2.5) // 平均能量价格
+            let avePrice = allprice/3 + (Memory.marketAdjust['energy']?Memory.marketAdjust['energy']:0.5) // 平均能量价格
             if (avePrice > 20) avePrice = 20    // 最大不超过20
             /* 清理过期订单 */
             if (Object.keys(Game.market.orders).length > 150)
             {
                 for (let j in Game.market.orders)
                 {
-                    let order = Game.market.getOrderById(j)
-                    if (!order.active) delete Game.market.orders[j]
+                    let order = Game.market.getOrderById(j);
+                    if (order.amount <=0 || !order.active) Game.market.cancelOrder(j);
                 }
             }
             /* 下单 */

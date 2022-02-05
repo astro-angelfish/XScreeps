@@ -1,5 +1,7 @@
 /* 存放全局方法 */
 
+import { object } from "lodash"
+
 /*  判定是否在列表里 */
 export function isInArray(arr:any[],value:any):boolean
 {
@@ -74,41 +76,42 @@ export function GenerateAbility(work?:number,carry?:number,move?:number,attack?:
   if (attack) body_list = AddList(body_list,attack,ATTACK)
   if (range_attack) body_list = AddList(body_list,range_attack,RANGED_ATTACK)
   if (carry) body_list = AddList(body_list,carry,CARRY)
+  if (claim) body_list = AddList(body_list,claim,CLAIM)
   if (move) body_list = AddList(body_list,move,MOVE)
   if (heal) body_list = AddList(body_list,heal,HEAL)
-  if (claim) body_list = AddList(body_list,claim,CLAIM)
   return body_list
 }
 
 // 用于对bodypartconstant[] 列表进行自适应化，使得爬虫房间能生产该爬虫，具体逻辑为寻找该bodypart中数量最多的，对其进行减法运算，直到达到目的，但数量到1时将不再减少
 export function adaption_body(arr:BodyPartConstant[],critical_num:number):BodyPartConstant[]
 {
-  // 获取基本能力列表
-  var temp_list = []
-  for (var i of arr)
-  {
-    if (!isInArray(temp_list,i))
-    {
-      temp_list.push(i)
-    }
-  }
   while (CalculateEnergy(arr) > critical_num)
   {
-    var all_1:boolean = false
-    for (var s=0;s < temp_list.length;s++)
-    {
-      if (getSameNum(temp_list[s],arr)> 1)
-      {
-        var index = arr.indexOf(temp_list[s])
+    let m_body = most_body(arr)
+    if (!m_body) {return ['move']}
+        var index = arr.indexOf(m_body)
         if(index > -1) {
           arr.splice(index,1);
         }
-        all_1 = true
-      }
-    }
-    if (!all_1) break
   }
   return arr
+}
+
+// 寻找身体部件中数量最多的部件
+export function most_body(arr:BodyPartConstant[]):BodyPartConstant{
+  let bN = {}
+  for (let bc of arr)
+  {
+    if (!bN[bc]) bN[bc] = getSameNum(bc,arr)
+  }
+  let bM = null
+  for (let i in bN)
+  {
+    if (bN[i] > 1 && (bM==null)?(bN[i]>1):(bN[i]>bN[bM]))
+    bM = i
+  }
+  if (!bM) {console.log("查找最多部件数量错误");return null}
+  return bM
 }
 
 /**
@@ -272,3 +275,17 @@ export function generateID():string{ // 生成n位长度的字符串
   return Math.random().toString(36).substr(3) + `${Game.time}`
 }
 
+/* 压缩位置函数 */
+export function zipPosition(position:RoomPosition):string
+{
+  let x = position.x
+  let y = position.y
+  let room = position.roomName
+  return `${x}/${y}/${room}`
+}
+
+/* 将压缩出来的字符串解压 例如 23/42/W1N1 */
+export function unzipPosition(str:string):RoomPosition | undefined{
+  var info = str.split('/')
+  return info.length == 3? new RoomPosition(Number(info[0]),Number(info[1]),info[2]):undefined
+}

@@ -36,6 +36,7 @@ export default class RoomFunctionTowerExtension extends Room {
             let enemys = this.find(FIND_HOSTILE_CREEPS,{filter:(creep)=>{
                 return !isInArray(Memory.whitesheet,creep.owner.username)
             }})
+            if (!this.memory.StructureIdData.AtowerID) this.memory.StructureIdData.AtowerID = []
             if (enemys.length <= 0) return
             else if (enemys.length == 1)
             {

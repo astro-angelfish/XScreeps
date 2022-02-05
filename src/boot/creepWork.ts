@@ -20,7 +20,12 @@ export default()=>{
       /* 跨shard找回记忆 */
       if (!thisCreep.memory.role)
       {
-        continue 
+        var InshardMemory = JSON.parse(InterShardMemory.getLocal()) || {}
+        if (InshardMemory.creep && InshardMemory.creep[c])
+        {
+            Game.creeps[c].memory = InshardMemory.creep[c].MemoryData
+        }
+        continue
       }
       if (!RoleData[thisCreep.memory.role]) continue
       if (adaption && thisCreep.memory.adaption && thisCreep.store.getUsedCapacity()==0 )
@@ -37,6 +42,7 @@ export default()=>{
         /* adaption爬虫执行自杀 */
       }
       /* 非任务类型爬虫 */
+      let a = Game.cpu.getUsed()
       if (RoleData[thisCreep.memory.role].fun)
       {
         RoleData[thisCreep.memory.role].fun(thisCreep)
@@ -45,6 +51,11 @@ export default()=>{
       else
       {
         thisCreep.ManageMisson()
+      }
+      let b = Game.cpu.getUsed()
+      if (b-a> 0.5)
+      {
+        //console.log(`爬虫${thisCreep.name}|角色${thisCreep.memory.role}消耗cpu:${b-a}`)
       }
     }
 }

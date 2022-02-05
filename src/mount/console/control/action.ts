@@ -28,10 +28,10 @@ export default {
         },
     },
     plan:{
-        C(roomName:string,disRoom:string):string{
+        C(roomName:string,disRoom:string,Cnum:number,Unum:number,shard:shardName = Game.shard.name as shardName):string{
             var thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[plan] 不存在房间${roomName}`
-            let task = thisRoom.public_planC(disRoom)
+            let task = thisRoom.public_planC(disRoom,Cnum,Unum,shard)
             if (thisRoom.AddMission(task))
             return Colorful(`[plan] 房间${roomName}挂载C计划成功 -> ${disRoom}`,'green')
             return Colorful(`[plan] 房间${roomName}挂载C计划失败 -> ${disRoom}`,'red')
@@ -109,10 +109,31 @@ export default {
                 if (i.name =='紧急支援' && i.Data.disRoom ==disRoom && i.Data.sType == rType)
                 {
                     if (thisRoom.DeleteMission(i.id))
-                    return Colorful(`[plan] 房间${roomName}紧急支援任务成功`,'green')
+                    return Colorful(`[war] 房间${roomName}紧急支援任务成功`,'green')
                 }
             }
             return Colorful(`[war] 房间${roomName}紧急支援任务失败`,'red')
+        },
+        control(roomName:string,disRoom:string,interval:number,shard:shardName = Game.shard.name as shardName):string{
+            var thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[war] 不存在房间${roomName}`
+            let task = thisRoom.Public_control(disRoom,shard,interval)
+            if (thisRoom.AddMission(task))
+            return Colorful(`[war] 房间${roomName}挂载控制攻击任务成功 -> ${disRoom}`,'green')
+            return Colorful(`[war] 房间${roomName}挂载控制攻击任务失败 -> ${disRoom}`,'red')
+        },
+        Ccontrol(roomName:string,disRoom:string,shard:shardName = Game.shard.name as shardName):string{
+            var thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[war] 不存在房间${roomName}`
+            for (var i of thisRoom.memory.Misson['Creep'])
+            {
+                if (i.name =='控制攻击' && i.Data.disRoom ==disRoom && i.Data.shard == shard)
+                {
+                    if (thisRoom.DeleteMission(i.id))
+                    return Colorful(`[war] 房间${roomName}控制攻击任务成功`,'green')
+                }
+            }
+            return Colorful(`[war] 房间${roomName}控制攻击任务失败`,'red')
         }
     },
     upgrade:{
@@ -255,7 +276,6 @@ export default {
         return `[bypass]已移除绕过房间${roomNames}`
     }
     },
-
     /* 白名单api */
     whitesheet:{
         add(username:string):string{
@@ -279,4 +299,45 @@ export default {
             return `[whitesheet]已移除${username}出白名单`
         }
     },
+
+    support:{
+        // 紧急援建
+        build(roomName:string,disRoom:string,num:number,interval:number,shard:shardName = Game.shard.name as shardName):string{
+            var thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[support] 不存在房间${roomName}`
+            let task = thisRoom.Public_helpBuild(disRoom,num,shard,interval)
+            if (thisRoom.AddMission(task))
+            return Colorful(`[support] 房间${roomName}挂载紧急援建任务成功 -> ${disRoom}`,'green')
+            return Colorful(`[support] 房间${roomName}挂载紧急援建任务失败 -> ${disRoom}`,'red')
+        },
+        Cbuild(roomName:string,disRoom:string,shard:shardName = Game.shard.name as shardName):string{
+            var thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[support] 不存在房间${roomName}`
+            for (var i of thisRoom.memory.Misson['Creep'])
+            {
+                if (i.name =='紧急援建' && i.Data.disRoom ==disRoom && i.Data.shard == shard)
+                {
+                    if (thisRoom.DeleteMission(i.id))
+                    return Colorful(`[support] 房间${roomName}紧急援建任务成功`,'green')
+                }
+            }
+            return Colorful(`[support] 房间${roomName}紧急援建任务失败`,'red')
+        },
+    },
+
+    /* 核弹相关 */
+    nuke:{
+        /* 发射核弹 */
+        launch(roomName:string,disRoom:string,x_:number,y_:number):string{
+            var myRoom = Game.rooms[roomName]
+            if (!myRoom) return `[nuke]房间错误，请确认房间${roomName}！`
+            var nuke_ = Game.getObjectById(myRoom.memory.StructureIdData.NukerID as string) as StructureNuker
+            if (!nuke_) return `[nuke]核弹查询错误!`
+            if (nuke_.launchNuke(new RoomPosition(x_,y_,disRoom)) == OK)
+                return Colorful(`[nuke]${roomName}->${disRoom}的核弹发射成功!预计---500000---ticks后着陆!`,'yellow',true)
+            else
+                return Colorful(`[nuke]${roomName}->${disRoom}的核弹发射失败!`,'yellow',true)
+        }
+    },
+
 }

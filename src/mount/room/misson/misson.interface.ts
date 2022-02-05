@@ -19,6 +19,7 @@ interface Room {
     Task_CenterLink():void
     Task_Clink():void
     Task_ComsumeLink():void
+    Nuke_Defend():void
 
     // 被动任务
     Task_Carry(misson:MissionModel):void
@@ -27,15 +28,22 @@ interface Room {
     Task_Quick_upgrade(mission:MissionModel):void
     Task_HelpDefend(mission:MissionModel):void
     Task_HelpBuild(mission:MissionModel):void
+    
 }
 
 interface RoomMemory {
     Misson:{[range:string]:MissionModel[]}  // 任务
     RoomLabBind?:RoomLabBind
     CoolDownDic:{[Name:string]:number}      /* 冷却时间的哈希表 key为任务名 */
+    nukeID?:string[]
+    nukeData?:NukeData
     
 }
 
+interface NukeData{
+    damage:{[str:string]:number}// 地形伤害数据
+    rampart:{[str:string]:number}   // 初始rampart防御数据
+}
 /* 房间任务模板 */
 interface MissionModel{
     /* 所有任务都必须有 */
@@ -72,5 +80,6 @@ interface MissonLabBind{
 interface RoomLabBind{
     [id:string]:{missonID:string[],rType:ResourceConstant,occ?:boolean}     // occ为true时不允许新增占用lab
 }
+
 
 
