@@ -541,7 +541,7 @@ export default class CreepMissonActionExtension extends Creep {
             else
             {
                 // 以withdraw开头的旗帜  例如： withdraw_0
-                let withdrawFlag = this.pos.findClosestByRange(FIND_FLAGS,{filter:(flag)=>{
+                let withdrawFlag = this.pos.findClosestByPath(FIND_FLAGS,{filter:(flag)=>{
                     return flag.name.indexOf('withdraw') == 0
                 }})
                 if (withdrawFlag)

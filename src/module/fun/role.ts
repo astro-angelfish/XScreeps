@@ -87,6 +87,12 @@ export function harvest_(creep_:Creep):void{
         {
             creep_.say("🤪",true)
         }
+        if (Game.time % 5 == 0)
+        {
+            var is = creep_.pos.findInRange(FIND_DROPPED_RESOURCES,1)
+            if (is.length > 0 && is[0].amount > 20 && is[0].resourceType == 'energy')
+            {creep_.pickup(is[0]);return}
+        }
         creep_.harvest(source)
     }
 }

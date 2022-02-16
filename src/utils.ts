@@ -87,8 +87,9 @@ export function adaption_body(arr:BodyPartConstant[],critical_num:number):BodyPa
 {
   while (CalculateEnergy(arr) > critical_num)
   {
+    if (critical_num <= 100) return arr
     let m_body = most_body(arr)
-    if (!m_body) {return ['move']}
+    if (!m_body) {return arr}
         var index = arr.indexOf(m_body)
         if(index > -1) {
           arr.splice(index,1);
@@ -100,17 +101,19 @@ export function adaption_body(arr:BodyPartConstant[],critical_num:number):BodyPa
 // 寻找身体部件中数量最多的部件
 export function most_body(arr:BodyPartConstant[]):BodyPartConstant{
   let bN = {}
+  if (!arr || arr.length <= 0) {console.log("【自适应】列表有问题");return null}
   for (let bc of arr)
   {
     if (!bN[bc]) bN[bc] = getSameNum(bc,arr)
   }
   let bM = null
+  if (Object.keys(bN).length == 1) return arr[0]
   for (let i in bN)
   {
-    if (bN[i] > 1 && (bM==null)?(bN[i]>1):(bN[i]>bN[bM]))
+    if (bN[i] > 1 && ((bM==null)?(bN[i]>1):(bN[i]>bN[bM])))
     bM = i
   }
-  if (!bM) {console.log("查找最多部件数量错误");return null}
+  if (!bM) {console.log("【自适应】查找最多部件数量错误 arr:",arr);return null}
   return bM
 }
 

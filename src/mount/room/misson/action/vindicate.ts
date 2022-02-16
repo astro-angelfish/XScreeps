@@ -41,9 +41,9 @@ export default class RoomMissonVindicateExtension extends Room {
             /* 计算平均价格 */
             let history = Game.market.getHistory('energy')
             let allprice = 0
-            for (var ii=0;ii<3;ii++)
+            for (var ii=13;ii<15;ii++)
                 allprice += history[ii].avgPrice
-            let avePrice = allprice/3 + 4.5 // 平均能量价格
+            let avePrice = allprice/2 + 0.6 // 平均能量价格
             if (avePrice > 20) avePrice = 20
             /* 清理过期订单 */
             if (Object.keys(Game.market.orders).length > 150)

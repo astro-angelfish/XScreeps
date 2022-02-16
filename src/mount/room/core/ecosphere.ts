@@ -90,7 +90,7 @@ export default class RoomCoreEcosphereExtension extends Room {
             if (currentNum > this.memory.structureNum)
             {
                 this.addStructureMemory()
-                console.log(`房间${this.name} 更新distribution记忆!`)
+                console.log(`房间${this.name} 更新distribution记忆! 检测到建筑:${currentNum}, memory中建筑数量:${this.memory.structureNum}`)
             }
             else if (currentNum === this.memory.structureNum)
             {
@@ -98,7 +98,7 @@ export default class RoomCoreEcosphereExtension extends Room {
             }
             else
             {
-                console.log(this.name,"检测出缺损")
+                console.log(this.name,`房间${this.name} 检测出缺损  检测到建筑:${currentNum}, memory中建筑数量:${this.memory.structureNum}`)
                 /* 运行修补函数 */
                 this.repatchDistribution()
             }
