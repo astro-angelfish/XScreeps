@@ -39,7 +39,7 @@ export default()=>{
           thisCreep.suicide()
           adaption = false
         }
-        /* adaption爬虫执行自杀 */
+        /* adaption爬虫执行自S */
       }
       /* 非任务类型爬虫 */
       let a = Game.cpu.getUsed()
@@ -53,9 +53,5 @@ export default()=>{
         thisCreep.ManageMisson()
       }
       let b = Game.cpu.getUsed()
-      if (b-a> 0.5)
-      {
-        //console.log(`爬虫${thisCreep.name}|角色${thisCreep.memory.role}消耗cpu:${b-a}`)
-      }
     }
 }

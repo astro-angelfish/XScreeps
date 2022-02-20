@@ -78,7 +78,7 @@ export default class RoomMissonVindicateExtension extends Room {
         if ((Game.time - global.Gtime[this.name]) % 9) return
         if (mission.LabBind)
         {
-            if(!this.Check_Lab(mission,'transport','complex')) return
+            if(!this.Check_Lab(mission,'transport','complex')) return // 如果目标lab的t3少于 1000 发布搬运任务
         }
         
     }

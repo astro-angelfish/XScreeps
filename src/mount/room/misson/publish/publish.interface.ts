@@ -10,4 +10,5 @@ interface Room {
     Public_support(disRoom:string,sType:'double' | 'aio' | 'squard',shard?:string):MissionModel
     Public_control(disRoom:string,shard:shardName,interval:number):MissionModel
     Public_helpBuild(disRoom:string,num:number,shard?:string,time?:number):MissionModel
+    Public_Sign(disRoom:string,shard:string,str:string):MissionModel
 }

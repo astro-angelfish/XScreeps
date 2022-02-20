@@ -36,6 +36,7 @@ export const RoleData:SpawnConstantData = {
     'double-heal':{num:0,ability:[0,0,10,0,0,28,0,12],level:10,mark:"双",must:true},
     'claim-attack':{num:0,ability:[0,0,15,0,0,0,15,0],level:10,mark:"控"},
     'architect':{num:0,ability:[15,10,10,0,0,10,0,5],level:10,mark:"援建"},
+    'scout':{num:0,ability:[0,0,1,0,0,0,0,0],level:15,mark:'签名'},
 }
 /* 爬虫部件随房间等级变化的动态列表 */
 export const RoleLevelData = {

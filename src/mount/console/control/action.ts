@@ -249,7 +249,7 @@ export default {
             else return `[market] ` + Colorful(`买资源${rType}的订单出现错误，不能下达！`,'red',true)
         },
     },
-        /* 绕过房间api */
+    /* 绕过房间api */
     bypass: {
     
     /* 添加要绕过的房间 */
@@ -340,4 +340,28 @@ export default {
         }
     },
 
+    scout:{
+        sign(roomName:string,disRoom:string,shard:shardName,str:string):string{
+            var thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[scout] 不存在房间${roomName}`
+            let task = thisRoom.Public_Sign(disRoom,shard,str)
+            if (!task) return '[scout] 任务对象生成失败'
+            if (thisRoom.AddMission(task))
+            return Colorful(`[scout] 房间${roomName}挂载房间签名任务成功 -> ${disRoom}`,'green')
+            return Colorful(`[scout] 房间${roomName}挂载房间签名任务失败 -> ${disRoom}`,'red')
+        },
+        Csign(roomName:string,disRoom:string,shard:shardName):string{
+            var thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[scout] 不存在房间${roomName}`
+            for (var i of thisRoom.memory.Misson['Creep'])
+            {
+                if (i.name =='房间签名' && i.Data.disRoom ==disRoom && i.Data.shard == shard)
+                {
+                    if (thisRoom.DeleteMission(i.id))
+                    return Colorful(`[scout] 房间${roomName}房间签名任务成功`,'green')
+                }
+            }
+            return Colorful(`[scout] 房间${roomName}房间签名任务失败`,'red')
+        },
+    },
 }

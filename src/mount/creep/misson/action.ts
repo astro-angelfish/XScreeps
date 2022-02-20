@@ -569,4 +569,30 @@ export default class CreepMissonActionExtension extends Creep {
             }
         }
     }
+
+    // 房间签名
+    public handle_sign():void{
+        let missionData = this.memory.MissionData
+        let id = missionData.id
+        let data = missionData.Data
+        if (!missionData) return
+        if (this.room.name != data.disRoom || Game.shard.name != data.shard)
+        {
+            this.arriveTo(new RoomPosition(24,24,data.disRoom),23,data.shard)
+            
+        }
+        else
+        {
+            let control = this.room.controller
+            if (control)
+            {
+                if (!this.pos.isNearTo(control)) this.goTo(control.pos,1)
+                else {this.signController(control,data.str)}
+                if (control.sign == data.str)
+                {
+                    Game.rooms[this.memory.belong].DeleteMission(id)
+                }
+            }
+        }
+    }
 }

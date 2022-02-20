@@ -245,7 +245,7 @@ export default class RoomMissonPublish extends Room {
         thisTask.CreepBind = {
             'architect':{num:num,bind:[],interval:time?time:1000},
         }
-        thisTask.LabBind = this.Bind_Lab(['XZHO2','XLH2O','XLHO2','XGHO2','XKH2O'])
+        thisTask.LabBind = this.Bind_Lab(['XZHO2','XLH2O','XLHO2','XGHO2','XKH2O']) // XGH2O (work) XLH2O (work)  (X)
         if (thisTask.LabBind)
         return thisTask
         return null
@@ -276,6 +276,23 @@ export default class RoomMissonPublish extends Room {
         if (shard)thisTask.Data.shard = shard
         else thisTask.Data.shard = Game.shard.name
         
+        return thisTask
+    }
+
+    public Public_Sign(disRoom:string,shard:string,str:string):MissionModel{
+        var thisTask:MissionModel = {
+            name:'房间签名',
+            range:'Creep',
+            delayTick:1600,
+            level:10,
+            Data:{
+                disRoom:disRoom,    // 目标房间
+                shard:shard,    // 目标shard
+                str:str,    // 签名内容
+            },
+            maxTime:2       // 最大同时任务数量
+        }
+        thisTask.CreepBind = {'scout':{num:1,bind:[]}}
         return thisTask
     }
 

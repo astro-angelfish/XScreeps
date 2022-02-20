@@ -213,8 +213,4 @@ export default class RoomCoreSpawnExtension extends Room {
         return true
     }
 
-    /* 【功能函数】定时孵化角色 [任务相关]  未完成 */
-    public TimeSpawn(role:string,interval:number,num:number,level?:number):boolean{
-        return
-    }
 }
