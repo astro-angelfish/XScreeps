@@ -4,6 +4,7 @@ interface StructureLink{
 interface StructureTerminal{
     ManageMission():void
     ResourceBalance():void
+    ResourceSend(task:MissionModel):void
 }
 
 interface RoomMemory{

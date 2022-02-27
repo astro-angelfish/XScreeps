@@ -18,7 +18,7 @@ export default class terminalExtension extends StructureTerminal {
         if (allmyTask.length >= 1)
             allmyTask.sort(compare('level'))
         thisTask = allmyTask[0]
-        if (!thisTask || !isInArray(['资源传送'],thisTask[0].name))
+        if (!thisTask || !isInArray(['资源传送'],thisTask.name))
         {
             /* terminal默认操作*/
             this.ResourceBalance()  // 资源平衡
@@ -28,7 +28,7 @@ export default class terminalExtension extends StructureTerminal {
         if (thisTask.delayTick < 99995)
             thisTask.delayTick--
         switch (thisTask.name){
-            case "资源传送":{break}
+            case "资源传送":{this.ResourceSend(thisTask);break}
             case "资源购买":{break}
         }
     }
@@ -135,5 +135,80 @@ export default class terminalExtension extends StructureTerminal {
             }
         }
         // 其他类型资源的买卖函数 暂缺
+    }
+
+    /**
+     * 资源传送
+     */
+    public ResourceSend(task:MissionModel):void{
+        if (this.cooldown && this.cooldown > 0) return
+        if (!task.Data || !task.Data.disRoom)       // 任务数据有问题
+        {
+            this.room.DeleteMission(task.id)
+            return
+        }
+        if (!task.state) task.state = 1     // 1状态下，搜集资源
+        if (task.state == 1)
+        {
+            if (Game.time % 10) return  /* 每10tick监测一次 */
+            if (task.Data.num <= 0 || task.Data.num == undefined) this.room.DeleteMission(task.id)
+            if (this.room.RoleMissionNum('manage','物流运输') > 0) return // manage爬虫有任务时就不管
+            // 路费
+            var wastage = Game.market.calcTransactionCost(task.Data.num,this.room.name,task.Data.disRoom)
+            /* 如果非能量资源且路费不够，发布资源搬运任务，优先寻找storage */
+            var storage_ = global.Stru[this.room.name]['storage'] as StructureStorage
+            // terminal的剩余资源
+            var remain = this.store.getFreeCapacity()
+            /* 路费判断 */
+            if (wastage > this.store.getUsedCapacity('energy'))
+            {
+                /* 只有在能量富裕的情况下才会允许进入下一阶段 */
+                if (storage_ && (storage_.store.getUsedCapacity('energy') + this.store.getUsedCapacity('energy') - 5000) > wastage && remain > (wastage-this.store.getUsedCapacity('energy')))
+                {
+                    /* 下布搬运任务 */
+                    var thisTask = this.room.Public_Carry({'manage':{num:1,bind:[]}},40,this.room.name,storage_.pos.x,storage_.pos.y,this.room.name,this.pos.x,this.pos.y,'energy',wastage-this.store.getUsedCapacity('energy'))
+                    this.room.AddMission(thisTask)
+                    return
+                }
+                /* 条件不满足就自动删除任务 */
+                this.room.DeleteMission(task.id)
+                return
+            }
+            console.log('资源传送任务监控中: ###########################\n 房间:',this.room.name,'--->',task.Data.disRoom,' 运送资源：',task.Data.rType)
+            console.log('路费:',Colorful(`${wastage}`,'yellow'),'energy  ','终端拥有能量:',Colorful(`${this.store.getUsedCapacity('energy')}`,'yellow'),'energy')
+            /* 资源判断 */
+            var cargoNum:number = task.Data.rType == 'energy'?this.store.getUsedCapacity(task.Data.rType)-wastage:this.store.getUsedCapacity(task.Data.rType)
+            console.log('终端拥有资源量:',Colorful(`${cargoNum}`,'blue'),' 仓库拥有资源量:',storage_.store.getUsedCapacity(task.Data.rType),' 任务所需资源量:',task.Data.num)
+            if (task.Data.num > cargoNum)
+            {
+                if (storage_ && (storage_.store.getUsedCapacity(task.Data.rType) + this.store.getUsedCapacity(task.Data.rType)) >= (task.Data.num - 1600) && remain > task.Data.num-cargoNum)
+                {
+                    /* 下布搬运任务 */
+                    var thisTask = this.room.Public_Carry({'manage':{num:1,bind:[]}},40,this.room.name,storage_.pos.x,storage_.pos.y,this.room.name,this.pos.x,this.pos.y,task.Data.rType,task.Data.num-cargoNum)
+                    this.room.AddMission(thisTask)
+                    return
+                }
+                /* 条件不满足就自动删除任务 */
+                this.room.DeleteMission(task.id)
+                return
+            }
+            /* 都满足条件了就进入状态2 */
+            task.state = 2
+        }
+        else if (task.state == 2)
+        {
+            let result = this.send(task.Data.rType as ResourceConstant,this.store.getUsedCapacity(task.Data.rType),task.Data.disRoom as string)
+            if (result == -6)   /* 能量不够就重新返回状态1 */
+            {
+                task.state = 1
+                return
+            }
+            else if (result == OK)
+            {
+                /* 如果传送成功，就删除任务 */
+                this.room.DeleteMission(task.id)
+                return
+            }
+        }
     }
 }

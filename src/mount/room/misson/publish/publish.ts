@@ -296,4 +296,29 @@ export default class RoomMissonPublish extends Room {
         return thisTask
     }
 
+    /* 资源传送任务发布函数 */
+    public Public_Send(disRoom:string,rType:ResourceConstant,num:number):MissionModel{
+        if (!this.memory.StructureIdData.terminalID) return null
+        var terminal = Game.getObjectById(this.memory.StructureIdData.terminalID) as StructureTerminal
+        if (!terminal)
+        {
+            delete this.memory.StructureIdData.terminalID
+            return null
+        }
+        var thisTask:MissionModel = {
+            name:'资源传送',
+            range:'Structure',
+            delayTick:2500,
+            structure:[terminal.id],
+            level:5,
+            Data:{
+                disRoom:disRoom,
+                rType:rType,
+                num:num
+            },
+            maxTime:8
+        }
+        return thisTask
+    }
+
 }

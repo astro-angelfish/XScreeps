@@ -364,4 +364,82 @@ export default {
             return Colorful(`[scout] 房间${roomName}房间签名任务失败`,'red')
         },
     },
+
+    /* 终端行为 */
+    terminal:{
+        // 默认最多8个传送任务
+        send(roomName:string,disRoom:string,rType:ResourceConstant,num:number):string{
+            var thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[terminal] 不存在房间${roomName}`
+            var thisTask = thisRoom.Public_Send(disRoom,rType,num)
+            /* 查看资源是否足够 */
+            var terminal_ = Game.getObjectById(thisRoom.memory.StructureIdData.terminalID) as StructureTerminal
+            var storage_ = Game.getObjectById(thisRoom.memory.StructureIdData.storageID) as StructureStorage
+            if (!terminal_ || !storage_) 
+            {delete thisRoom.memory.StructureIdData.terminalID;delete thisRoom.memory.StructureIdData.storageID;return Colorful( `[terminal] 房间${roomName}不存在终端/仓房或记忆未更新！`,'red',true)}
+            /* 查询其他资源传送任务中是否有一样的资源 */
+            var Num = 0
+            if (!thisRoom.memory.Misson['Structure']) thisRoom.memory.Misson['Structure'] = []
+            for (var tM of thisRoom.memory.Misson['Structure'])
+            {
+                if (tM.name == '资源传送' && tM.Data.rType == rType)    Num += tM.Data.num
+            }
+            /* 计算资源是否满足 */
+            if (terminal_.store.getUsedCapacity(rType) + storage_.store.getUsedCapacity(rType) - Num < num)
+            return Colorful(`[terminal] 房间${roomName} 资源${rType} 数量总合少于 ${num}，传送任务挂载失败！`,'yellow',true)
+            /* 计算路费 */
+            var cost = Game.market.calcTransactionCost(num,roomName,disRoom)
+            if (terminal_.store.getUsedCapacity('energy') + storage_.store.getUsedCapacity('energy') < cost || cost > 150000)
+            return Colorful(`[terminal] 房间${roomName}-->${disRoom}资源${rType}所需路费少于 ${cost}或大于150000，传送任务挂载失败！`,'yellow',true)
+            if(thisRoom.AddMission(thisTask))
+                return Colorful(`[terminal] 房间${roomName}-->${disRoom}资源${rType}传送挂载成功！数量：${num}；路费：${cost}`,'green',true)
+            return Colorful(`[terminal] 房间${roomName}-->${disRoom}资源${rType}传送 不明原因挂载失败！`,'red',true)
+        },
+        Csend(roomName:string,disRoom:string,rType:ResourceConstant):string{
+            var thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[terminal] 不存在房间${roomName}`
+            for (var tM of thisRoom.memory.Misson['Structure'])
+            {
+                if (tM.name == '资源传送' && tM.Data.rType == rType && tM.Data.disRoom == disRoom)
+                {
+                    if (thisRoom.DeleteMission(tM.id))return Colorful(`[terminal] 房间${roomName}-->${disRoom}资源${rType}传送任务删除成功!`,'blue',true)
+                }
+            }
+            return Colorful(`[terminal] 房间${roomName}-->${disRoom}资源${rType}传送 不明原因删除失败！`,'red',true)
+        },
+        /* 查看目前房间/全局的资源传送任务 */
+        show(roomName?:string):string{
+            var roomList:string[] = []
+            if (roomName) roomList = [roomName]
+            else
+            {
+                if (!Memory.RoomControlData) Memory.RoomControlData = {}
+                for (var rN in Memory.RoomControlData)
+                {
+                    roomList.push(rN)
+                }
+            }
+            if (roomList.length <= 0) return `[terminal] 未发现房间！`
+            for (var rN of roomList)
+            {
+                if (!Game.rooms[rN]) return `[terminal] 不存在房间${rN}！`
+            }
+            var str = ''
+            for (var rN of roomList)
+            {
+                if (!Game.rooms[rN].memory.Misson['Structure']) Game.rooms[rN].memory.Misson['Structure'] = []
+                if (Game.rooms[rN].MissionNum('Structure','资源传送') <= 0) continue
+                str += '房间 ' + Colorful(`${rN}`,'yellow',true) + '：\n'
+                for (var m of Game.rooms[rN].memory.Misson['Structure'])
+                {
+                    if (m.name == '资源传送')
+                    {
+                        str += '    '+`-->${m.Data.disRoom} | 资源：${m.Data.rType} | 数量：` + m.Data.num + ' \n'
+                    }
+                }
+            }
+            if (str == '') return `[terminal] 未发现资源传送任务！`
+            return str
+        },
+    },
 }
