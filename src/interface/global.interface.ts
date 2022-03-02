@@ -17,6 +17,7 @@ declare module NodeJS {
             [roomName:string]:globalStrcutureData
         }
         intervalData:{[roomName:string]:{[creepRole:string]:number}}
+
     }
 }
 

@@ -4,4 +4,17 @@ interface Memory {
     whitesheet?:string[]
     ignoreMissonName?:string[]
     marketAdjust?:{[res:string]:number}
+    ResourceDispatchData:RDData[]
+}
+
+interface RDData{
+    sourceRoom:string   // 请求调度资源的房间
+    rType:ResourceConstant  // 资源类型
+    num:number      // 数量
+    delayTick:number        // 超时时间 默认 500 tick
+    buy?:boolean        // 超时过后是否会寻求购买
+    mtype?:"order" | "deal" // 是deal还是创建订单  energy默认order  其他资源默认deal
+    // 自动处理
+    dealRoom?:string    // 如果有房间deal了，就添加上这个房间的名称
+    conditionTick?:number   // 默认 10 tick， 10 tick 后所有房间都没有接单 直接市场购买
 }

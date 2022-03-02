@@ -530,6 +530,7 @@ export default class CreepMissonActionExtension extends Creep {
             this.workstate('energy')
             if (this.memory.working)
             {
+                if (this.room.name != data.disRoom){this.arriveTo(new RoomPosition(24,24,data.disRoom),23,data.shard);return}
                 if (this.hits < this.hitsMax)
                 {
                     this.heal(this)
@@ -556,11 +557,14 @@ export default class CreepMissonActionExtension extends Creep {
                     {
                         this.heal(this)
                     }
-                    if (!this.pos.isNearTo(harvestFlag)) {this.goTo(harvestFlag.pos,1)}
+                    if (this.room.name != harvestFlag.pos.roomName)
+                    {
+                        this.goTo(harvestFlag.pos,1)
+                    }
                     else
                     {
-                        let source = harvestFlag.pos.lookFor(LOOK_SOURCES)
-                        if (source.length > 0) {this.harvest(source[0])}
+                        let source = this.pos.findClosestByRange(FIND_SOURCES_ACTIVE)
+                        if (source) {this.harvest_(source)}
                     }
                     return
                 }

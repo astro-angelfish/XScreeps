@@ -44,7 +44,7 @@ export default class CreepMoveExtension extends Creep {
         /* 路线查找 */
         const result = PathFinder.search(this.pos,{pos:target,range:range},{
             plainCost:2,
-            swampCost:10,
+            swampCost:5,
             maxOps:target.roomName == this.room.name?260:8000,
             roomCallback:roomName=>{
                 // 在全局绕过房间列表的房间 false

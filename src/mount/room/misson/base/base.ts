@@ -204,7 +204,7 @@ export default class RoomMissonFrameExtension extends Room {
                     for (var c of m.CreepBind[r].bind)
                     if (!Game.creeps[c])
                     {
-                        console.log(`已经清除爬虫${c}的绑定数据!`)
+                        //console.log(`已经清除爬虫${c}的绑定数据!`)
                         var index = m.CreepBind[r].bind.indexOf(c)
                         m.CreepBind[r].bind.splice(index,1)
                     }
@@ -477,5 +477,14 @@ export default class RoomMissonFrameExtension extends Room {
             }
         }
         return true
+    }
+
+    // 判断房间是否存在资源购买指定资源的任务
+    public Check_Buy(resource:ResourceConstant):boolean{
+        for (let i of this.memory.Misson['Structure'])
+        {
+            if (i.name == '资源购买' && i.Data.rType == resource) return true
+        }
+        return false
     }
 }

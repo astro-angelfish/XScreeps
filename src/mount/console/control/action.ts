@@ -1,4 +1,5 @@
-import { Colorful, compare } from "@/utils"
+import { avePrice, haveOrder } from "@/module/fun/funtion"
+import { Colorful, compare, isInArray } from "@/utils"
 
 export default {
     repair:{
@@ -209,7 +210,7 @@ export default {
             /* 按照价格从上到下 */
             var newList = list.sort(compare('price'))
             var result = `当前市场上资源${rType}的${marType}订单如下:\n`
-            if (rType == 'pixel' as ResourceConstant)
+            if (isInArray(['pixel','access_key','cpu_unlock'],rType))
             {
                 for (var i of list)
                 {
@@ -248,6 +249,17 @@ export default {
             if (result == OK) return `[market] ` + Colorful(`买资源${rType}的订单下达成功！ 数量为${amount},价格为${price}`,'blue',true)
             else return `[market] ` + Colorful(`买资源${rType}的订单出现错误，不能下达！`,'red',true)
         },
+        // 查询平均价格
+        ave(rType:ResourceConstant,day:number=1):string{
+            return `[market] 资源${rType}在近${day}天内的平均价格为${ avePrice(rType,day)}`
+        },
+        have(roomName:string,res:ResourceConstant,mtype:"sell"|'buy',p:number=null,r:number=null):string{
+            let result = haveOrder(roomName,res,mtype,p,r) 
+            if (p)
+            return `[market] 房间:${roomName};资源:${res};类型:${mtype}[价格:${p+r}以上]的单子--->${result?"有":"没有"}`
+            else
+            return `[market] 房间:${roomName};资源:${res};类型:${mtype}的单子--->${result?"有":"没有"}`
+        }
     },
     /* 绕过房间api */
     bypass: {

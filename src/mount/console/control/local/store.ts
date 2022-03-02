@@ -74,6 +74,7 @@ export function Colorful(content: string, colorName: Colors | string = null, bol
 function getRooms(): string[] {
 	let rooms = [];
 	for (let name in Memory.RoomControlData) {
+        if (Game.rooms[name])
 		rooms.push(name)
 	}
 	return rooms;
@@ -83,7 +84,6 @@ export function getStore(roomName?: string) {
 	if (roomName) {
 		let storage = Game.rooms[roomName].storage;
 		let terminal = Game.rooms[roomName].terminal;
-		
 		let factory = Game.getObjectById(Game.rooms[roomName].memory.StructureIdData?Game.rooms[roomName].memory.StructureIdData.FactoryId:'') as StructureFactory;
 		let storageUsed = storage?.store.getUsedCapacity() || 0;
 		let storeCapacity = storage?.store.getCapacity() || 1;

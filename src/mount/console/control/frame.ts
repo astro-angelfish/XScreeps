@@ -68,4 +68,27 @@ export default {
             return Colorful(`[link] 房间${roomName} id为${id}的link已加入comsume_link列表中`,'green',true)
         }
     },
+    debug:{
+        ResourceDispatch(roomName:string,rType:ResourceConstant,num:number,mtype:"deal"|"order",buy:boolean = false):string{
+            let dispatchTask:RDData = {
+                sourceRoom:roomName,
+                rType:rType,
+                num:num,
+                delayTick:300,
+                conditionTick:20,
+                buy:buy,
+                mtype:mtype
+            }
+            Memory.ResourceDispatchData.push(dispatchTask)
+            return `[debug] 资源调度任务发布,房间${roomName},资源类型${rType},数量${num},支持购买:${buy},默认超时300T`
+        },
+        ResourceBuy(roomName:string,rType:ResourceConstant,num:number,range:number,max:number = 35):string{
+            let thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[link] 不存在房间${roomName}`
+            let task = thisRoom.Public_Buy(rType,num,range,max)
+            if (task && thisRoom.AddMission(task))
+            return Colorful(`[debug] 资源购买任务发布,房间${roomName},资源类型${rType},数量${num},价格范围${range},最高价格${max}`,'blue')
+            return Colorful(`[debug] 房间${roomName}资源购买任务发布失败!`,'yellow')
+        }
+    }
 }

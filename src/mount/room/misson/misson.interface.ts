@@ -9,6 +9,7 @@ interface Room {
     Check_Carry(role:string,source:RoomPosition,pos:RoomPosition,rType:ResourceConstant):boolean
     Check_Lab(misson:MissionModel,role:string,tankType:'storage' | 'terminal' | 'complex'):boolean
     Check_Link(source:RoomPosition,pos:RoomPosition):boolean
+    Check_Buy(resource:ResourceConstant):boolean
     
     // 主动任务
     Spawn_Feed():void

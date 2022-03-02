@@ -321,4 +321,37 @@ export default class RoomMissonPublish extends Room {
         return thisTask
     }
 
+    /**
+     *  资源购买任务发布函数 做多同时允许3个
+     * @param res   要购买的资源
+     * @param num   要购买的数量
+     * @param range 价格波动可接受区间
+     * @param max   最高接受的价格
+     * @returns     任务对象
+     */
+    public Public_Buy(res:ResourceConstant,num:number,range:number,max?:number):MissionModel{
+        if (!this.memory.StructureIdData.terminalID) return null
+        var terminal = Game.getObjectById(this.memory.StructureIdData.terminalID) as StructureTerminal
+        if (!terminal)
+        {
+            delete this.memory.StructureIdData.terminalID
+            return null
+        }
+        /* 开始进行任务 */
+        var thisTask:MissionModel = {
+            name:'资源购买',
+            range:'Structure',
+            structure:[terminal.id],
+            delayTick:60,
+            level:10,
+            maxTime:3,
+            Data:{
+                rType:res,
+                num:num,
+                range:range
+            }
+        }
+        thisTask.Data.maxPrice = max?max:35
+        return thisTask
+    }
 }

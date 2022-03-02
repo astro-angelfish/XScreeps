@@ -108,7 +108,7 @@ export default class RoomMissonTransportExtension extends Room {
         var storage_ = Game.getObjectById(this.memory.StructureIdData.storageID) as StructureStorage
         if (!nuker) {delete this.memory.StructureIdData.NukerID;return}
         if (!storage_){delete this.memory.StructureIdData.storageID;return}
-        if (nuker.store.getUsedCapacity('G') < 5000 && storage_.store.getUsedCapacity('G') > 5000)
+        if (nuker.store.getUsedCapacity('G') < 5000 && storage_.store.getUsedCapacity('G') >= 5000)
         {
             var thisTask = this.Public_Carry({'transport':{num:1,bind:[]}},40,this.name,storage_.pos.x,storage_.pos.y,this.name,nuker.pos.x,nuker.pos.y,'G',5000 - nuker.store.getUsedCapacity('G'))
             this.AddMission(thisTask)

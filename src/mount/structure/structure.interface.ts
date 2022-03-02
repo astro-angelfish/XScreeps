@@ -5,6 +5,7 @@ interface StructureTerminal{
     ManageMission():void
     ResourceBalance():void
     ResourceSend(task:MissionModel):void
+    ResourceDeal(task:MissionModel):void
 }
 
 interface RoomMemory{
