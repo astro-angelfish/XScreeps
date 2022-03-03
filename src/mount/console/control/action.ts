@@ -1,4 +1,4 @@
-import { avePrice, haveOrder } from "@/module/fun/funtion"
+import { avePrice, haveOrder, highestPrice } from "@/module/fun/funtion"
 import { Colorful, compare, isInArray } from "@/utils"
 
 export default {
@@ -259,7 +259,14 @@ export default {
             return `[market] 房间:${roomName};资源:${res};类型:${mtype}[价格:${p+r}以上]的单子--->${result?"有":"没有"}`
             else
             return `[market] 房间:${roomName};资源:${res};类型:${mtype}的单子--->${result?"有":"没有"}`
-        }
+        },
+        highest(rType:ResourceConstant,mtype:'sell'|'buy',mprice:number=0):string{
+            let result = highestPrice(rType,mtype,mprice)
+            if (mprice)
+            return `[market] 资源:${rType};类型:${mtype} 最高价格${result}[低于${mprice}]`
+            else
+            return `[market] 资源:${rType};类型:${mtype} 最高价格${result}`
+        },
     },
     /* 绕过房间api */
     bypass: {

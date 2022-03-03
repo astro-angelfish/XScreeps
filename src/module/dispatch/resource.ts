@@ -2,7 +2,7 @@
 
 import { t1, t2, t3 } from "@/constant/ResourceConstant"
 import { Colorful, isInArray } from "@/utils"
-import { avePrice, haveOrder } from "../fun/funtion"
+import { avePrice, haveOrder, highestPrice } from "../fun/funtion"
 
 
 // 主调度函数
@@ -21,117 +21,62 @@ export function ResourceDispatch(thisRoom:Room):void{
             // 执行买操作
             if (i.conditionTick <= 0 && i.buy)
             {
-                console.log(`[资源调度] 房间${thisRoom.name}需求资源[${i.rType}]无法调度,将进行购买!`)
-                if (isInArray(['ops','energy'],i.rType))
+                if (i.mtype == 'order')
                 {
-                    // 基础资源
-                    let aveprice:number
-                    if (i.rType == 'energy')
+                    /**
+                     *       1.获取近两天的平均价格
+                     *       2.拉取平均价格+10以内价格最高的订单
+                     *       3.发布订单的价格比最高的订单的价格多0.01
+                    */
+                    console.log(`[资源调度] 房间${thisRoom.name}需求资源[${i.rType}]无法调度,将进行购买! 购买方式为${i.mtype}`)
+                    let ave = avePrice(i.rType,2)
+                    if (!haveOrder(thisRoom.name,i.rType,'buy',ave))
                     {
-                        if (!i.mtype) i.mtype = "order"
-                        if (i.mtype == 'deal')  // 如果是deal
-                        {
-                            if (thisRoom.Check_Buy(i.rType) || thisRoom.MissionNum('Structure','资源购买') >= 2) continue
-                            let task = thisRoom.Public_Buy(i.rType,i.num,10,20)
-                            if (task) {thisRoom.AddMission(task);i.delayTick = 0}
-                            continue
-                        }   
-                        // order
-                        aveprice = avePrice(i.rType,3) + 0.15  // 选取近两天的平均价格
-                        if (!haveOrder(thisRoom.name,i.rType,'buy',aveprice,-0.15))
-                        {
-                            let result = Game.market.createOrder({
-                                type: ORDER_BUY,
-                                resourceType: 'energy',
-                                price: aveprice,
-                                totalAmount: i.num,
-                                roomName: thisRoom.name   
-                            });
-                            if (result != OK){console.log("[资源调度]创建能量订单出错,房间",thisRoom.name);continue}
-                            console.log(Colorful(`房间${thisRoom.name}创建${i.rType}订单,价格:${aveprice};数量:${i.num}`,'green',true))
-                            i.delayTick = 0
-                        }
+                        let highest = highestPrice(i.rType,'buy',ave+10)
+                        let result = Game.market.createOrder({
+                            type: ORDER_BUY,
+                            resourceType: 'energy',
+                            price: highest + 0.01,
+                            totalAmount: i.num,
+                            roomName: thisRoom.name   
+                        });
+                        if (result != OK){console.log("[资源调度]创建能量订单出错,房间",thisRoom.name);continue}
+                        console.log(Colorful(`房间${thisRoom.name}创建${i.rType}订单,价格:${highest + 0.01};数量:${i.num}`,'green',true))
+                        i.delayTick = 0
                     }
-                    else
-                    {
-                        if (!i.mtype) i.mtype = "deal"
-                        if (i.mtype == 'deal')  // 如果是deal
-                        {
-                            if (thisRoom.Check_Buy(i.rType) || thisRoom.MissionNum('Structure','资源购买') >= 2) continue
-                            let task = thisRoom.Public_Buy(i.rType,i.num,2.5,5)
-                            if (task) {thisRoom.AddMission(task);i.delayTick = 0}
-                            continue
-                        }   
-                        aveprice = avePrice(i.rType,2) +0.1
-                        if (!haveOrder(thisRoom.name,i.rType,'buy',aveprice,-0.1))
-                        {
-                            let result = Game.market.createOrder({
-                                type: ORDER_BUY,
-                                resourceType: 'ops',
-                                price: aveprice,
-                                totalAmount: i.num,
-                                roomName: thisRoom.name   
-                            });
-                            if (result != OK){console.log("[资源调度]创建能量订单出错,房间",thisRoom.name);continue}
-                            console.log(Colorful(`房间${thisRoom.name}创建${i.rType}订单,价格:${aveprice};数量:${i.num}`,'green',true))
-                            i.delayTick = 0
-                        }
-                    }
-                    // 查找是否已经有了类似订单了
                     continue
                 }
-                if (!i.mtype) i.mtype = 'deal'
-                // 已经存在相应任务或任务数量太多则不再挂载任务
-                if (i.mtype == 'deal') if (thisRoom.Check_Buy(i.rType) || thisRoom.MissionNum('Structure','资源购买') >= 2) continue
-                if (isInArray(['X','L','H','O','Z','K','U','G','OH'],i.rType))
+                else if (i.mtype == 'deal')
                 {
-                    // 原矿
-                    if (i.mtype == 'order')
-                    {
-                        let aveprice = avePrice(i.rType,3) + 0.5  // 选取近两天的平均价格
-                        if (!haveOrder(thisRoom.name,i.rType,'buy',aveprice,-0.5))
-                        {
-                            let result = Game.market.createOrder({
-                                type: ORDER_BUY,
-                                resourceType: i.rType,
-                                price: aveprice,
-                                totalAmount: i.num,
-                                roomName: thisRoom.name   
-                            });
-                            if (result != OK){console.log("[资源调度]创建能量订单出错,房间",thisRoom.name);continue}
-                            console.log(Colorful(`房间${thisRoom.name}创建${i.rType}订单,价格:${aveprice};数量:${i.num}`,'green',true))
-                            i.delayTick = 0
-                        }
-                        continue
-                    }
-                    let task = thisRoom.Public_Buy(i.rType,i.num,10,30)
-                    if (task) {thisRoom.AddMission(task);i.delayTick = 0}
-                }
-                else if (isInArray(t3,i.rType))
-                {
+                    if (thisRoom.Check_Buy(i.rType) || thisRoom.MissionNum('Structure','资源购买') >= 2) continue
+                    // 在一定范围内寻找最便宜的订单deal 例如平均价格20 范围 10 最高价格31 便只能接受30以下的价格 （根据资源不同选择不同参数）
+                    console.log(`[资源调度] 房间${thisRoom.name}需求资源[${i.rType}]无法调度,将进行购买! 购买方式为${i.mtype}`)
+                    // 能量 ops
+                    if (isInArray(['ops','energy'],i.rType)){let task = thisRoom.Public_Buy(i.rType,i.num,5,10);
+                        if (task) {thisRoom.AddMission(task);i.delayTick = 0};continue}
+                    // 原矿 中间化合物
+                    else if (isInArray(['X','L','H','O','Z','K','U','G','OH','ZK','UL'],i.rType)){let task = thisRoom.Public_Buy(i.rType,i.num,10,30);
+                        if (task) {thisRoom.AddMission(task);i.delayTick = 0};continue}
                     // t3
-                    let task = thisRoom.Public_Buy(i.rType,i.num,50,150)
-                    if (task) {thisRoom.AddMission(task);i.delayTick = 0}
-                }
-                else if (isInArray(t2,i.rType) || isInArray(t1,i.rType))
-                {
-                    // t1 t2
-                    let task = thisRoom.Public_Buy(i.rType,i.num,20,65)
-                    if (task) {thisRoom.AddMission(task);i.delayTick = 0}
-                }
-                else if (i.rType == 'power')
-                {
+                    else if (isInArray(t3,i.rType)){let task = thisRoom.Public_Buy(i.rType,i.num,50,150);
+                        if (task) {thisRoom.AddMission(task);i.delayTick = 0};continue}
                     // power
-                    let task = thisRoom.Public_Buy(i.rType,i.num,20,60)
-                    if (task) {thisRoom.AddMission(task);i.delayTick = 0}
+                    else if (i.rType == 'power') {let task = thisRoom.Public_Buy(i.rType,i.num,20,70);
+                        if (task) {thisRoom.AddMission(task);i.delayTick = 0};continue}
+                    // t1 t2
+                    else if (isInArray(t2,i.rType) || isInArray(t1,i.rType)){let task = thisRoom.Public_Buy(i.rType,i.num,20,65);
+                        if (task) {thisRoom.AddMission(task);i.delayTick = 0};continue}
+                    // 其他商品类资源 bar类资源
+                    else{let task = thisRoom.Public_Buy(i.rType,i.num,50,200);
+                        if (task) {thisRoom.AddMission(task);i.delayTick = 0};continue}
                 }
                 else
                 {
-                    // 商品或其他
-                    let task = thisRoom.Public_Buy(i.rType,i.num,50,200)
-                    if (task) {thisRoom.AddMission(task);i.delayTick = 0}
+                    // 未定义i.mtype 便按照默认的执行
+                    if (i.rType == 'energy') i.mtype = 'order'
+                    else i.mtype = 'deal'
+                    continue
                 }
-                continue
             }
         }
         else

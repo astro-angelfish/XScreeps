@@ -34,3 +34,24 @@ export function haveOrder(roomName:string,res:ResourceConstant,mtype:'sell'|'buy
         return false
     }
 }
+
+// 计算一定范围内的最高价格
+export function highestPrice(res:ResourceConstant,mtype:'sell'|'buy',mprice?:number):number{
+    let allOrder = Game.market.getAllOrders({type: mtype, resourceType: res})
+    let highestPrice = 0
+    for (var i of allOrder)
+    {
+        if (i.price > highestPrice)
+        {
+            if (mprice){
+                if (i.price <= mprice) highestPrice = i.price
+            }
+            else
+            {
+                highestPrice = i.price
+            }
+        }
+    }
+    if (mprice && highestPrice == 0) highestPrice = mprice
+    return highestPrice
+}
