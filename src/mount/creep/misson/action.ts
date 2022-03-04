@@ -214,6 +214,7 @@ export default class CreepMissonActionExtension extends Creep {
         let missionData = this.memory.MissionData
         let id = missionData.id
         let mission = Game.rooms[this.memory.belong].GainMission(id)
+        if (!mission) return
         if (this.room.name != mission.Data.disRoom)
         {
             this.goTo(new RoomPosition(25,25,mission.Data.disRoom),20)
@@ -597,6 +598,81 @@ export default class CreepMissonActionExtension extends Creep {
                     Game.rooms[this.memory.belong].DeleteMission(id)
                 }
             }
+        }
+    }
+
+    // 攻防一体
+    public handle_aio():void{
+        let missionData = this.memory.MissionData
+        let id = missionData.id
+        let data = missionData.Data
+        if (!missionData) return
+        if (this.room.name == this.memory.belong && Game.shard.name == this.memory.shard)
+        {
+            if (!this.BoostCheck(['move','heal','tough','ranged_attack'])) return
+        }
+        if ((this.room.name != data.disRoom || Game.shard.name != data.shard) && !this.memory.swith)
+        {
+            this.heal(this)
+            this.arriveTo(new RoomPosition(24,24,data.disRoom),23,data.shard)
+        }
+        else
+        {
+            var creep_ = this.pos.findInRange(FIND_HOSTILE_CREEPS,3,{filter:(creep)=>{
+                return !isInArray(Memory.whitesheet,creep.owner.username) && !creep.pos.GetStructure('rampart')
+            }})
+            if(creep_.length>0)
+            if (this.pos.isNearTo(creep_[0]))
+            {
+                this.rangedMassAttack()
+            }
+            else
+            {
+                this.rangedAttack(creep_[0])
+            }
+            // 治疗友军
+            let otherCreeps = this.pos.findInRange(FIND_MY_CREEPS,3,{filter:(creep)=>{return creep.hits < creep.hitsMax - 200}})
+            if (otherCreeps[0] && this.hits == this.hitsMax)
+            {
+                if (otherCreeps[0].pos.isNearTo(this))
+                this.heal(otherCreeps[0])
+                else {this.rangedHeal(otherCreeps[0]);this.goTo(otherCreeps[0].pos,1);return;}
+            }
+            else
+            {
+                this.heal(this)
+            }
+            let attack_flag = this.pos.findClosestByPath(FIND_FLAGS,{filter:(flag)=>{
+                return flag.name.indexOf('attack') == 0
+            }})
+            if (attack_flag)
+            {
+                if (attack_flag.pos.GetStructure(STRUCTURE_WALL))
+                {
+                    if (!this.pos.inRangeTo(attack_flag,3))this.goTo(attack_flag.pos,3)
+                    else this.rangedAttack(attack_flag.pos.GetStructure(STRUCTURE_WALL))
+                }
+                else
+                {
+                    if (!this.pos.isNearTo(attack_flag)) this.goTo(attack_flag.pos,1)
+                    else this.rangedMassAttack()
+                }
+                if (attack_flag.pos.lookFor(LOOK_STRUCTURES).length <= 0) attack_flag.remove()
+            }
+            else
+            {
+                var clostStructure = this.pos.findClosestByPath(FIND_HOSTILE_STRUCTURES,{filter:(struc)=>{
+                    return !isInArray([STRUCTURE_CONTROLLER,STRUCTURE_RAMPART,STRUCTURE_STORAGE],struc.structureType)
+                }})
+                if (clostStructure)
+                {
+                    clostStructure.pos.createFlag(`attack_${generateID()}`,COLOR_WHITE)
+                    return
+                }
+                else
+                {return}
+            }
+            if (!attack_flag) return
         }
     }
 }

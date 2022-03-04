@@ -1,4 +1,5 @@
 import { RoleData } from "@/constant/SpawnConstant"
+import { checkDispatch, checkSend, DispatchNum } from "@/module/fun/funtion"
 import { Colorful, compare, generateID, isInArray } from "@/utils"
 
 /* 房间原型拓展   --任务  --任务框架 */
@@ -31,9 +32,11 @@ export default class RoomMissonFrameExtension extends Room {
                 case "物流运输":{this.Task_Carry(misson);break;}
                 case "墙体维护":{this.Task_Repair(misson);break;}
                 case '黄球拆迁':{this.Task_dismantle(misson);break;}
-                case '急速冲级':{this.Task_Quick_upgrade(misson);break}
-                case '紧急援建':{this.Task_HelpBuild(misson);break}
-                case '紧急支援':{this.Task_HelpDefend(misson);break}
+                case '急速冲级':{this.Task_Quick_upgrade(misson);break;}
+                case '紧急援建':{this.Task_HelpBuild(misson);break;}
+                case '紧急支援':{this.Task_HelpDefend(misson);break;}
+                case '资源合成':{this.Task_Compound(misson);break;}
+                case '攻防一体':{this.Task_aio(misson);break;}
             }
         }
     }
@@ -157,8 +160,6 @@ export default class RoomMissonFrameExtension extends Room {
         }
         console.log(Colorful(`任务删除失败 ID:${m.id} Name:${m.name} Room:${this.name}`,'red'))
         return false
-
-
     }
 
     /* 冷却计时器 */
@@ -314,6 +315,11 @@ export default class RoomMissonFrameExtension extends Room {
                 if (this.memory.RoomLabBind[i].missonID.length <= 1)
                 {
                     console.log('LabID: ',i,'------解绑-------->MissonID: ',MissonID)
+                    if (this.memory.ResourceLimit[this.memory.RoomLabBind[i].rType])
+                    {
+                        if (this.GainMission(MissonID) && this.GainMission(MissonID).name != '资源合成')
+                        delete this.memory.ResourceLimit[this.memory.RoomLabBind[i].rType]
+                    }
                     delete this.memory.RoomLabBind[i]
                     return true
                 }
@@ -404,7 +410,15 @@ export default class RoomMissonFrameExtension extends Room {
         }
         var tank_ = Game.getObjectById(id) as StructureStorage | StructureTerminal
         if (!tank_ && id) return false
-        /* 先负责lab的填充 */
+        /* 物流调度 */
+        for (var i in misson.LabBind)
+        {
+            if (!this.memory.ResourceLimit[misson.LabBind[i]])
+            this.memory.ResourceLimit[misson.LabBind[i]] = 8000
+            if (this.memory.ResourceLimit[misson.LabBind[i]] < 8000)
+            this.memory.ResourceLimit[misson.LabBind[i]] = 8000
+        }
+        /* 负责lab的填充 */
         for (var i in misson.LabBind)
         {
             var All_i_Num:number
@@ -429,8 +443,22 @@ export default class RoomMissonFrameExtension extends Room {
             All_i_Num = tank_.store.getUsedCapacity(misson.LabBind[i] as ResourceConstant)
             if (All_i_Num < 4000)
             {
-                /* 买能量  暂缺 */
-                
+                /* 资源调度 */
+                if (DispatchNum(this.name) <= 0 && this.MissionNum('Structure','资源购买') <= 0 && !checkSend(this.name,misson.LabBind[i] as ResourceConstant))
+                {
+                    console.log(Colorful(`[资源调度] 房间${this.name}没有足够的资源[${misson.LabBind[i] as ResourceConstant}],将执行资源调度!`,'yellow'))
+                    let dispatchTask:RDData = {
+                        sourceRoom:this.name,
+                        rType:misson.LabBind[i] as ResourceConstant,
+                        num:3000,
+                        delayTick:200,
+                        conditionTick:20,
+                        buy:true,
+                        mtype:'deal'
+                        }
+                    Memory.ResourceDispatchData.push(dispatchTask)
+                }
+                return
             }
             var disLab = Game.getObjectById(i)  as StructureLab
             if (!disLab) return false

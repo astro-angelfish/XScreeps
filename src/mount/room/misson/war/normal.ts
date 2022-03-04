@@ -16,4 +16,22 @@ export default class NormalWarExtension extends Room {
         if (mission.CreepBind['dismantle'].num == 0)
         mission.CreepBind['dismantle'].num = mission.Data.num
     }
+
+    // 一体机
+    public Task_aio(mission:MissionModel):void{
+        if (mission.Data.boost)
+        {
+            // 体型
+            global.SpecialBodyData[this.name]['aio'] = GenerateAbility(0,0,10,0,6,23,0,11)
+            if ((Game.time - global.Gtime[this.name]) % 10) return
+            // boost lab填充检查
+            if(!this.Check_Lab(mission,'transport','complex')) return
+        }
+        else
+        {
+            if ((Game.time - global.Gtime[this.name]) % 10) return
+        }
+        if (mission.CreepBind['aio'].num == 0)
+        mission.CreepBind['aio'].num = mission.Data.num
+    }
 }

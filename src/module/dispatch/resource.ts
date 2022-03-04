@@ -2,7 +2,7 @@
 
 import { t1, t2, t3 } from "@/constant/ResourceConstant"
 import { Colorful, isInArray } from "@/utils"
-import { avePrice, haveOrder, highestPrice } from "../fun/funtion"
+import { avePrice, checkLabBindResource, haveOrder, highestPrice } from "../fun/funtion"
 
 
 // 主调度函数
@@ -13,6 +13,7 @@ export function ResourceDispatch(thisRoom:Room):void{
     let terminal_ = global.Stru[thisRoom.name]['terminal'] as StructureTerminal
     if (thisRoom.controller.level < 6 || !storage_ || !terminal_ ) return
     if (thisRoom.MissionNum('Structure','资源传送') >= 1) return    // 如果房间有资源传送任务，则不执行
+    /* 对资源调度进行操作 */
     for (let i of Memory.ResourceDispatchData)
     {
         // 执行资源调度
@@ -86,7 +87,7 @@ export function ResourceDispatch(thisRoom:Room):void{
             var limitNum = thisRoom.memory.ResourceLimit[i.rType]?thisRoom.memory.ResourceLimit[i.rType]:0
             if (storage_.store.getUsedCapacity(i.rType) <= 0) continue  // 没有就删除
             // storage里资源大于等于调度所需资源
-            if ((storage_.store.getUsedCapacity(i.rType) + limitNum) >= i.num)
+            if ((storage_.store.getUsedCapacity(i.rType) - limitNum) >= i.num)
             {
                 var SendNum = i.num > 50000?50000:i.num
                 let task = thisRoom.Public_Send(i.sourceRoom,i.rType,SendNum)
@@ -99,7 +100,7 @@ export function ResourceDispatch(thisRoom:Room):void{
                 }
             }
             // sotrage里资源小于调度所需资源
-            if (storage_.store.getUsedCapacity(i.rType)-limitNum > 0 && storage_.store.getUsedCapacity(i.rType)-limitNum < i.num)
+            if ((storage_.store.getUsedCapacity(i.rType)-limitNum) > 0 && storage_.store.getUsedCapacity(i.rType)-limitNum < i.num)
             {
                 let SendNum = storage_.store.getUsedCapacity(i.rType)-limitNum
                 let task = thisRoom.Public_Send(i.sourceRoom,i.rType,SendNum)

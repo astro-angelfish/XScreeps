@@ -29,6 +29,8 @@ interface Room {
     Task_Quick_upgrade(mission:MissionModel):void
     Task_HelpDefend(mission:MissionModel):void
     Task_HelpBuild(mission:MissionModel):void
+    Task_Compound(misson:MissionModel):void
+    Task_aio(mission:MissionModel):void
     
 }
 

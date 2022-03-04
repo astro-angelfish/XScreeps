@@ -1,3 +1,4 @@
+import { LabMap } from "@/constant/ResourceConstant"
 import { times } from "lodash"
 
 /* 房间原型拓展   --任务  --任务发布便捷函数 */
@@ -166,6 +167,29 @@ export default class RoomMissonPublish extends Room {
             thisTask.LabBind = this.Bind_Lab(['XZHO2','XZH2O'])
         }
         thisTask.CreepBind = {'dismantle':{num:0,interval:interval?interval:1200,bind:[]}}
+        return thisTask
+    }
+
+    public Public_aio(disRoom:string,disShard:shardName,num:number,interval:number,boost:boolean){
+        var thisTask:MissionModel = {
+            name:'攻防一体',
+            range:'Creep',
+            delayTick:80000,
+            level:10,
+            Data:{
+                disRoom:disRoom,
+                num:num,
+                shard:disShard,
+            },
+        }
+        if (boost)
+        {
+            thisTask.Data.boost = true
+            thisTask.LabBind = this.Bind_Lab(['XZHO2','XGHO2','XLHO2','XKHO2'])
+        }
+        else thisTask.Data.boost = false
+        thisTask.CreepBind = {'aio':{num:0,interval:interval,bind:[]}}
+        thisTask.reserve = true
         return thisTask
     }
 
@@ -352,6 +376,51 @@ export default class RoomMissonPublish extends Room {
             }
         }
         thisTask.Data.maxPrice = max?max:35
+        return thisTask
+    }
+
+    public public_Compound(num:number,disResource:ResourceConstant,bindData:string[]):MissionModel{
+        // 检验阶段
+        if (!this.memory.StructureIdData.labInspect || Object.keys(this.memory.StructureIdData.labInspect).length < 3) return null
+        var raw1 = Game.getObjectById(this.memory.StructureIdData.labInspect.raw1) as StructureLab
+        var raw2 = Game.getObjectById(this.memory.StructureIdData.labInspect.raw2) as StructureLab
+        if (!raw1) {delete this.memory.StructureIdData.labInspect.raw1;return} 
+        if (!raw2) {delete this.memory.StructureIdData.labInspect.raw2;return}
+        for (var i of this.memory.StructureIdData.labInspect.com)
+        {
+            var thisLab = Game.getObjectById(i) as StructureLab
+            if (!thisLab)
+            {
+                var index = this.memory.StructureIdData.labInspect.com.indexOf(i)
+                this.memory.StructureIdData.labInspect.com.splice(index,1)
+                continue
+            }
+        }
+        var raw1str = LabMap[disResource].raw1
+        var raw2str = LabMap[disResource].raw2
+        /* 开始进行任务 */
+        var thisTask:MissionModel = {
+            name:'资源合成',
+            range:'Room',
+            delayTick:50000,
+            processing:true,
+            level:10,
+            LabBind:{
+            },
+            Data:{
+                num:num
+            }
+        }
+        thisTask.LabBind[this.memory.StructureIdData.labInspect.raw1] = raw1str
+        thisTask.LabBind[this.memory.StructureIdData.labInspect.raw2] = raw2str
+        var BindData = bindData
+        thisTask.Data.comData = BindData
+        for (var ii of BindData)
+        {
+            thisTask.LabBind[ii] = disResource
+        }
+        thisTask.Data.raw1 = raw1str
+        thisTask.Data.raw2 = raw2str
         return thisTask
     }
 }

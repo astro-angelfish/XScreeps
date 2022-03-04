@@ -135,7 +135,29 @@ export default {
                 }
             }
             return Colorful(`[war] 房间${roomName}控制攻击任务失败`,'red')
+        },
+        aio(roomName:string,disRoom:string,CreepNum:number,shard:shardName,time:number = 1000,boost:boolean = true):string{
+            var myRoom = Game.rooms[roomName]
+            if (!myRoom) return `[war] 未找到房间${roomName},请确认房间!`
+            var thisTask = myRoom.Public_aio(disRoom,shard,CreepNum,time,boost)
+            if (myRoom.AddMission(thisTask))
+            return `[support] 攻防一体任务挂载成功! ${Game.shard.name}/${roomName} -> ${shard}/${disRoom}`
+            return `[support] 攻防一体挂载失败!`
+        },
+        Caio(roomName:string,disRoom:string,shard:shardName):string{
+            var myRoom = Game.rooms[roomName]
+            if (!myRoom) return `[support] 未找到房间${roomName},请确认房间!`
+            for (var i of myRoom.memory.Misson['Creep'])
+            {
+                if (i.name == '攻防一体' && i.Data.disRoom == disRoom && i.Data.shard == shard)
+                {
+                    if (myRoom.DeleteMission(i.id))
+                    return `[support] 删除去往${shard}/${disRoom}的攻防一体任务成功!`
+                }
+            }
+            return `[support] 删除去往${shard}/${disRoom}的攻防一体任务失败!`
         }
+
     },
     upgrade:{
         quick(roomName:string,num:number,boostType:null| ResourceConstant):string{

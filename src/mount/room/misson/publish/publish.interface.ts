@@ -13,4 +13,6 @@ interface Room {
     Public_Sign(disRoom:string,shard:string,str:string):MissionModel
     Public_Send(disRoom:string,rType:ResourceConstant,num:number):MissionModel
     Public_Buy(res:ResourceConstant,num:number,range:number,max?:number):MissionModel
+    public_Compound(num:number,disResource:ResourceConstant,bindData:string[]):MissionModel
+    Public_aio(disRoom:string,disShard:shardName,num:number,interval:number,boost:boolean)
 }
