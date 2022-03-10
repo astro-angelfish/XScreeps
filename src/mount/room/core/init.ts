@@ -31,8 +31,8 @@ export default class RoomCoreInitExtension extends Room {
         if (!global.Stru[this.name])global.Stru[this.name] = {}
         if (!this.memory.TerminalData) this.memory.TerminalData = {'energy':{num:50000,fill:true}}
         if (!this.memory.MarketData) this.memory.MarketData = {'deal':{},'order':{}}
-        if (!this.memory.ResourceLimit) this.memory.ResourceLimit = {}
-        if (!this.memory.ResourceLimit['energy'])this.memory.ResourceLimit['energy'] = 350000
+        if (!global.ResourceLimit[this.name]) global.ResourceLimit[this.name] = {}
+        if (!this.memory.ComDispatchData) this.memory.ComDispatchData = {}
     }
 
     /**

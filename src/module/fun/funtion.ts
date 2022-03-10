@@ -1,3 +1,6 @@
+import { ResourceMapData } from "@/constant/ResourceConstant"
+import { isInArray } from "@/utils"
+
 // 计算平均价格
 export function avePrice(res:ResourceConstant,day:number):number{
     if (day > 15) return 0  // 0
@@ -140,4 +143,18 @@ export function checkLabBindResource(roomName:string,resource:ResourceConstant):
         if (room_.memory.RoomLabBind[i].rType == resource) return true
     }
     return false
+}
+
+/* 判断目标资源的上级资源是否已经达到要求 */
+export function resourceMap(rType:ResourceConstant,disType:ResourceConstant):ResourceConstant[]{
+    if (isInArray(['XGH2O','XGHO2','XLH2O','XLHO2','XUH2O','XUHO2','XKH2O','XKHO2','XZH2O','XZHO2'],rType)){console.log("是",rType,' 返回空列表');return []}
+    for (var i of ResourceMapData)
+    {
+        if (i.source == rType && i.dis == disType)
+        {
+            return i.map as ResourceConstant[]
+        }
+    }
+    console.log("resourceMap返回了空列表")
+    return []
 }

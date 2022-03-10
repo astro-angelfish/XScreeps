@@ -1,5 +1,7 @@
+import { resourceComDispatch } from "@/constant/ResourceConstant"
 import { RecognizeLab } from "@/module/fun/funtion"
 import { Colorful, isInArray } from "@/utils"
+import { object } from "lodash"
 
 export default {
     frame:
@@ -32,6 +34,35 @@ export default {
             }
             return `[frame] 房间${roomName}未找到相应建筑!`
         },
+        // 查询任务
+        task(roomName:string):string{
+            var myRoom = Game.rooms[roomName]
+            if (!myRoom) return `[frame] 未找到房间${roomName},请确认房间!`
+            let result = `[frame] 房间${roomName}任务数据如下:\n`
+            for (var rangeName in myRoom.memory.Misson)
+            {
+                if (Object.keys(myRoom.memory.Misson[rangeName]).length <=0)
+                {
+                    result += `不存在${rangeName}类任务\n`
+                }
+                else
+                {
+                    result += `------------[${rangeName}]-------------\n`
+                    for (var i of myRoom.memory.Misson[rangeName])
+                    {
+                        result += `${i.name} | 超时:${i.delayTick}, ID:${i.id}, `
+                        if (i.Data)
+                        {
+                            if (i.Data.disRoom) result += `目标房间:${i.Data.disRoom}, `
+                            if (i.Data.rType) result += `rType:${i.Data.rType}, `
+                            if (i.Data.num) result += `num:${i.Data.num}, `
+                        }
+                        result += `\n`
+                    }
+                }
+            }
+            return result
+        }
     },
     spawn:
     {
@@ -125,6 +156,36 @@ export default {
             return `[lab] 房间${roomName}合成${res}任务挂载成功! ${thisTask.Data.raw1} + ${thisTask.Data.raw2} = ${res}`
             else
             return `[lab] 房间${roomName}挂载合成任务失败!`
-        }
+        },
+        dispatch(roomName:string,res:ResourceConstant,num:number):string{
+            var myRoom = Game.rooms[roomName]
+            if (!myRoom) return `[lab] 未找到房间${roomName},请确认房间!`
+            if (!resourceComDispatch[res]) return `不存在资源${res}!`
+            if (Object.keys(myRoom.memory.ComDispatchData).length > 0) return `[lab] 房间${roomName} 已经存在资源合成调度数据`
+            myRoom.memory.ComDispatchData = {}
+            for (var i of resourceComDispatch[res])
+            {
+                myRoom.memory.ComDispatchData[i] = {res:i,dispatch_num:num}
+            }
+            return `[lab] 已经修改房间${roomName}的合成规划数据，为${resourceComDispatch[res]}，数量：${num}`
+        },
+        Cdispatch(roomName:string):string{
+            var myRoom = Game.rooms[roomName]
+            if (!myRoom) return `[lab] 未找到房间${roomName},请确认房间!`
+            myRoom.memory.ComDispatchData = {}
+            return `[lab] 已经修改房间${roomName}的资源调度数据，为{}.本房见现已无资源合成调度`
+        },
     },
+    dispatch:{
+        limit(roomName:string):string{
+            var myRoom = Game.rooms[roomName]
+            if (!myRoom) return `[dispatch] 未找到房间${roomName},请确认房间!`
+            let result = `[dispatch] 房间${roomName}的ResourceLimit信息如下:\n`
+            let data = global.ResourceLimit[roomName]
+            if (Object.keys(data).length <=0) return `[dispatch] 房间${roomName}没有ResourceLimit信息!`
+            for (var i of Object.keys(data))
+                result += `[${i}] : ${data[i]}\n`
+            return result
+        }
+    }
 }

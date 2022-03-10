@@ -24,6 +24,7 @@ export default class RoomMissonFrameExtension extends Room {
         this.Lab_Feed()     // 实验室填充\回收任务  
         this.Nuker_Feed()   // 核弹填充任务      
         this.Nuke_Defend()  // 核弹防御
+        this.Task_CompoundDispatch()    // 合成规划 （中级）
         /* 基本任务监控区域 */
         for (var index in this.memory.Misson)
         for (var misson of this.memory.Misson[index])
@@ -315,11 +316,11 @@ export default class RoomMissonFrameExtension extends Room {
                 if (this.memory.RoomLabBind[i].missonID.length <= 1)
                 {
                     console.log('LabID: ',i,'------解绑-------->MissonID: ',MissonID)
-                    if (this.memory.ResourceLimit[this.memory.RoomLabBind[i].rType])
-                    {
-                        if (this.GainMission(MissonID) && this.GainMission(MissonID).name != '资源合成')
-                        delete this.memory.ResourceLimit[this.memory.RoomLabBind[i].rType]
-                    }
+                    // if (this.memory.ResourceLimit[this.memory.RoomLabBind[i].rType])
+                    // {
+                    //     if (this.GainMission(MissonID) && this.GainMission(MissonID).name != '资源合成')
+                    //     delete this.memory.ResourceLimit[this.memory.RoomLabBind[i].rType]
+                    // }
                     delete this.memory.RoomLabBind[i]
                     return true
                 }
@@ -410,14 +411,13 @@ export default class RoomMissonFrameExtension extends Room {
         }
         var tank_ = Game.getObjectById(id) as StructureStorage | StructureTerminal
         if (!tank_ && id) return false
-        /* 物流调度 */
-        for (var i in misson.LabBind)
-        {
-            if (!this.memory.ResourceLimit[misson.LabBind[i]])
-            this.memory.ResourceLimit[misson.LabBind[i]] = 8000
-            if (this.memory.ResourceLimit[misson.LabBind[i]] < 8000)
-            this.memory.ResourceLimit[misson.LabBind[i]] = 8000
-        }
+        // for (var i in misson.LabBind)
+        // {
+        //     if (!this.memory.ResourceLimit[misson.LabBind[i]])
+        //     this.memory.ResourceLimit[misson.LabBind[i]] = 8000
+        //     if (this.memory.ResourceLimit[misson.LabBind[i]] < 8000)
+        //     this.memory.ResourceLimit[misson.LabBind[i]] = 8000
+        // }
         /* 负责lab的填充 */
         for (var i in misson.LabBind)
         {

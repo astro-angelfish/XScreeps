@@ -16,4 +16,5 @@ export function MemoryInit():void {
     if (!global.Stru)global.Stru = {}
     if (!Memory.marketAdjust)Memory.marketAdjust = {}
     if (!Memory.ResourceDispatchData)Memory.ResourceDispatchData = []
+    if (!global.ResourceLimit)global.ResourceLimit = {}
 }

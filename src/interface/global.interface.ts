@@ -17,7 +17,7 @@ declare module NodeJS {
             [roomName:string]:globalStrcutureData
         }
         intervalData:{[roomName:string]:{[creepRole:string]:number}}
-
+        ResourceLimit:resourceLimitData
     }
 }
 
@@ -25,3 +25,7 @@ interface globalStrcutureData{
     [structureName:string]:Structure | Structure[]
 }
 
+
+interface resourceLimitData{
+    [roomName:string]:{[res in ResourceConstant]?:number}
+}

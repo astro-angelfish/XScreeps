@@ -1,4 +1,4 @@
-import { checkBuy, checkDispatch, checkSend, DispatchNum } from "@/module/fun/funtion"
+import { checkBuy, checkDispatch, checkSend, DispatchNum, resourceMap } from "@/module/fun/funtion"
 import { Colorful, isInArray } from "@/utils"
 
 /* 房间原型拓展   --任务  --基本功能 */
@@ -98,22 +98,22 @@ export default class RoomMissonBehaviourExtension extends Room {
         let terminal_ = global.Stru[this.name]['terminal'] as StructureTerminal
         if (misson.Data.num <= 0 || !storage_ || !terminal_)
         {
-            delete this.memory.ResourceLimit[misson.Data.raw1]
-            delete this.memory.ResourceLimit[misson.Data.raw2]
+            // delete this.memory.ResourceLimit[misson.Data.raw1]
+            // delete this.memory.ResourceLimit[misson.Data.raw2]
             this.DeleteMission(misson.id)
             return
         }
         let raw1 = Game.getObjectById(this.memory.StructureIdData.labInspect.raw1) as StructureLab
         let raw2 = Game.getObjectById(this.memory.StructureIdData.labInspect.raw2) as StructureLab
         let re = false
-        if (!this.memory.ResourceLimit[misson.Data.raw1])
-        this.memory.ResourceLimit[misson.Data.raw1] = misson.Data.num
-        else if (this.memory.ResourceLimit[misson.Data.raw1] < misson.Data.num)
-        this.memory.ResourceLimit[misson.Data.raw1] = misson.Data.num
-        if (!this.memory.ResourceLimit[misson.Data.raw2])
-        this.memory.ResourceLimit[misson.Data.raw2] = misson.Data.num
-        else if (this.memory.ResourceLimit[misson.Data.raw2] < misson.Data.num)
-        this.memory.ResourceLimit[misson.Data.raw2] = misson.Data.num
+        // if (!this.memory.ResourceLimit[misson.Data.raw1])
+        // this.memory.ResourceLimit[misson.Data.raw1] = misson.Data.num
+        // else if (this.memory.ResourceLimit[misson.Data.raw1] < misson.Data.num)
+        // this.memory.ResourceLimit[misson.Data.raw1] = misson.Data.num
+        // if (!this.memory.ResourceLimit[misson.Data.raw2])
+        // this.memory.ResourceLimit[misson.Data.raw2] = misson.Data.num
+        // else if (this.memory.ResourceLimit[misson.Data.raw2] < misson.Data.num)
+        // this.memory.ResourceLimit[misson.Data.raw2] = misson.Data.num
         for (let i of misson.Data.comData)
         {
             var thisLab = Game.getObjectById(i) as StructureLab
@@ -144,13 +144,13 @@ export default class RoomMissonBehaviourExtension extends Room {
         if (re) return
         /* 源lab缺资源就运 */
         if (storage_.store.getUsedCapacity(misson.Data.raw1) > 0)
-        if (raw1.store.getUsedCapacity(misson.Data.raw1) < 500 && this.RoleMissionNum('transport','物流运输') < 2 && this.Check_Carry('transport',raw1.pos,storage_.pos,misson.Data.raw1))
+        if (raw1.store.getUsedCapacity(misson.Data.raw1) < 500 && this.RoleMissionNum('transport','物流运输') < 2 && this.Check_Carry('transport',storage_.pos,raw1.pos,misson.Data.raw1))
         {
             var thisTask = this.Public_Carry({'transport':{num:1,bind:[]}},30,this.name,storage_.pos.x,storage_.pos.y,this.name,raw1.pos.x,raw1.pos.y,misson.Data.raw1,storage_.store.getUsedCapacity(misson.Data.raw1)>=1000?1000:storage_.store.getUsedCapacity(misson.Data.raw1))
             this.AddMission(thisTask)
         }
         if (storage_.store.getUsedCapacity(misson.Data.raw2) > 0)
-        if (raw2.store.getUsedCapacity(misson.Data.raw2) < 500 && this.RoleMissionNum('transport','物流运输') < 2 && this.Check_Carry('transport',raw2.pos,storage_.pos,misson.Data.raw2))
+        if (raw2.store.getUsedCapacity(misson.Data.raw2) < 500 && this.RoleMissionNum('transport','物流运输') < 2 && this.Check_Carry('transport',storage_.pos,raw2.pos,misson.Data.raw2))
         {
             var thisTask = this.Public_Carry({'transport':{num:1,bind:[]}},30,this.name,storage_.pos.x,storage_.pos.y,this.name,raw2.pos.x,raw2.pos.y,misson.Data.raw2,storage_.store.getUsedCapacity(misson.Data.raw2)>=1000?1000:storage_.store.getUsedCapacity(misson.Data.raw2))
             this.AddMission(thisTask)
@@ -172,7 +172,7 @@ export default class RoomMissonBehaviourExtension extends Room {
                     rType:resource_,
                     num:10000,
                     delayTick:200,
-                    conditionTick:20,
+                    conditionTick:35,
                     buy:true,
                     mtype:'deal'
                 }
@@ -197,6 +197,77 @@ export default class RoomMissonBehaviourExtension extends Room {
                 Memory.ResourceDispatchData.push(dispatchTask)
                 return
             }
+        }
+    }
+
+    // 合成规划     (中层)    目标化合物 --> 安排一系列合成
+    public Task_CompoundDispatch():void{
+        if ((Game.time - global.Gtime[this.name]) % 50) return
+        if (Object.keys(this.memory.ComDispatchData).length <=0) return //  没有合成规划情况
+        if (this.MissionNum('Room','资源合成') > 0) return  // 有合成任务情况
+        var storage_ = global.Stru[this.name]['storage'] as StructureStorage
+        if (!storage_) return
+        var terminal_ = global.Stru[this.name]['terminal'] as StructureTerminal
+        if (!terminal_) return
+        /* 没有房间合成实验室数据，不进行合成 */
+        if (!this.memory.StructureIdData.labInspect.raw1){console.log(`房间${this.name}不存在合成实验室数据！`);return}
+        /* 查看合成实验室的被占用状态 */
+        if (this.memory.RoomLabBind[this.memory.StructureIdData.labInspect.raw1] || this.memory.RoomLabBind[this.memory.StructureIdData.labInspect.raw2])
+        {console.log(`房间${this.name}的源lab被占用!`);return}
+        var comLabs = []
+        for (var otLab of this.memory.StructureIdData.labInspect.com)
+        {
+            if (!this.memory.RoomLabBind[otLab]) comLabs.push(otLab)
+        }
+        if (comLabs.length <=0) {console.log(`房间${this.name}的合成lab全被占用!`);return}
+        /* 确认所有目标lab里都没有其他资源 */
+        for (var i of this.memory.StructureIdData.labs)
+        {
+            var thisLab = Game.getObjectById(i) as StructureLab
+            if (!thisLab) continue
+            if (thisLab.mineralType && !this.memory.RoomLabBind[i]) return
+        }
+        /**
+         * 正式开始合成规划
+         *  */ 
+        var data = this.memory.ComDispatchData
+        LoopA:
+        for (var disType in data)
+        {
+            let storeNum = storage_.store.getUsedCapacity(disType as ResourceConstant)
+            let dispatchNum = this.memory.ComDispatchData[disType].dispatch_num
+            // 不是最终目标资源的情况下
+            if (Object.keys(data)[Object.keys(data).length - 1] != disType)
+            if (storeNum < dispatchNum)
+            {
+                let diff = dispatchNum - storeNum
+                 /* 先判定一下是否已经覆盖，如果已经覆盖就不合成 例如：ZK 和 G的关系，只要G数量满足了就不考虑 */
+                var mapResource = resourceMap(disType as ResourceConstant,Object.keys(data)[Object.keys(data).length - 1] as ResourceConstant)
+                if (mapResource.length > 0)
+                {
+                    for (var mR of mapResource)
+                    {
+                        if (storage_.store.getUsedCapacity(mR) >= data[disType].dispatch_num)
+                            continue LoopA 
+                    }
+                }
+                // 下达合成命令
+                var thisTask = this.public_Compound(diff,disType as ResourceConstant,comLabs)
+                if (this.AddMission(thisTask))
+                {
+                    data[disType].ok = true
+                }
+                return
+            }
+            // 是最终目标资源的情况下
+            if (Object.keys(data)[Object.keys(data).length - 1] == disType)
+            {
+                // 下达合成命令
+                var thisTask = this.public_Compound(data[disType].dispatch_num,disType as ResourceConstant,comLabs)
+                if (this.AddMission(thisTask)) this.memory.ComDispatchData = {}
+                return
+            }
+            
         }
     }
 }

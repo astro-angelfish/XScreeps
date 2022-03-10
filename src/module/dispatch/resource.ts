@@ -13,6 +13,8 @@ export function ResourceDispatch(thisRoom:Room):void{
     let terminal_ = global.Stru[thisRoom.name]['terminal'] as StructureTerminal
     if (thisRoom.controller.level < 6 || !storage_ || !terminal_ ) return
     if (thisRoom.MissionNum('Structure','资源传送') >= 1) return    // 如果房间有资源传送任务，则不执行
+    // ResourceLimit更新
+    ResourceLimitUpdate(thisRoom)
     /* 对资源调度进行操作 */
     for (let i of Memory.ResourceDispatchData)
     {
@@ -29,7 +31,7 @@ export function ResourceDispatch(thisRoom:Room):void{
                      *       2.拉取平均价格+10以内价格最高的订单
                      *       3.发布订单的价格比最高的订单的价格多0.01
                     */
-                    console.log(`[资源调度] 房间${thisRoom.name}需求资源[${i.rType}]无法调度,将进行购买! 购买方式为${i.mtype}`)
+                    console.log(Colorful(`[资源调度] 房间${thisRoom.name}需求资源[${i.rType}]无法调度,将进行购买! 购买方式为${i.mtype},购买数量${i.num}`,'yellow'))
                     let ave = avePrice(i.rType,2)
                     if (!haveOrder(thisRoom.name,i.rType,'buy',ave))
                     {
@@ -51,7 +53,7 @@ export function ResourceDispatch(thisRoom:Room):void{
                 {
                     if (thisRoom.Check_Buy(i.rType) || thisRoom.MissionNum('Structure','资源购买') >= 2) continue
                     // 在一定范围内寻找最便宜的订单deal 例如平均价格20 范围 10 最高价格31 便只能接受30以下的价格 （根据资源不同选择不同参数）
-                    console.log(`[资源调度] 房间${thisRoom.name}需求资源[${i.rType}]无法调度,将进行购买! 购买方式为${i.mtype}`)
+                    console.log(Colorful(`[资源调度] 房间${thisRoom.name}需求资源[${i.rType}]无法调度,将进行购买! 购买方式为${i.mtype},购买数量:${i.num}`,'yellow'))
                     // 能量 ops
                     if (isInArray(['ops','energy'],i.rType)){let task = thisRoom.Public_Buy(i.rType,i.num,5,10);
                         if (task) {thisRoom.AddMission(task);i.delayTick = 0};continue}
@@ -83,8 +85,9 @@ export function ResourceDispatch(thisRoom:Room):void{
         else
         {
             if(i.dealRoom) continue
+            // 接单
             if (storage_.store.getUsedCapacity(i.rType))
-            var limitNum = thisRoom.memory.ResourceLimit[i.rType]?thisRoom.memory.ResourceLimit[i.rType]:0
+            var limitNum = global.ResourceLimit[thisRoom.name][i.rType]?global.ResourceLimit[thisRoom.name][i.rType]:0
             if (storage_.store.getUsedCapacity(i.rType) <= 0) continue  // 没有就删除
             // storage里资源大于等于调度所需资源
             if ((storage_.store.getUsedCapacity(i.rType) - limitNum) >= i.num)
@@ -130,6 +133,65 @@ export function ResourceDispatchTick():void{
         if (i.delayTick > 0)
         i.delayTick --
         if (i.conditionTick > 0)
-        i.conditionTick --
+        {
+            if (i.dealRoom) // 有deal房间的时候， conditionTick衰减减慢
+            {
+                if (Game.time % 5 == 0)
+                i.conditionTick --
+            }
+            else
+            {
+                i.conditionTick --
+            }
+        }
     }
+}
+
+// 调度信息更新器  ResourceLimit 建议放global里
+export function ResourceLimitUpdate(thisRoom:Room):void{
+    global.ResourceLimit[thisRoom.name] = {}       // 初始化
+    global.ResourceLimit[thisRoom.name]['energy'] = 350000
+    for (var i of t3) global.ResourceLimit[thisRoom.name][i] = 8000    // 所有t3保存8000基础量，以备应急
+    for (var b of ['X','L','Z','U','K','O','H']) global.ResourceLimit[thisRoom.name][b] = 15000 // 所有基础资源保存15000的基础量
+    // 监测boost
+    if (Object.keys(thisRoom.memory.RoomLabBind).length > 0)
+    {
+        for (var l in thisRoom.memory.RoomLabBind)
+        {
+            let lab = Game.getObjectById(l) as StructureLab
+            if (!lab) continue
+            if (!global.ResourceLimit[thisRoom.name][thisRoom.memory.RoomLabBind[l].rType])global.ResourceLimit[thisRoom.name][thisRoom.memory.RoomLabBind[l].rType] = 8000
+            else{
+                global.ResourceLimit[thisRoom.name][thisRoom.memory.RoomLabBind[l].rType] = global.ResourceLimit[thisRoom.name][thisRoom.memory.RoomLabBind[l].rType] > 8000?global.ResourceLimit[thisRoom.name][thisRoom.memory.RoomLabBind[l].rType]:8000
+            }
+        }
+    }
+    // 监测lab合成
+    if (thisRoom.MissionNum('Room','资源合成') > 0)
+    {
+        for (var m of thisRoom.memory.Misson['Room'])
+        if (m.name == '资源合成')
+        {
+            if (!global.ResourceLimit[thisRoom.name][m.Data.raw1]) global.ResourceLimit[thisRoom.name][m.Data.raw1] = m.Data.num
+            else{
+                global.ResourceLimit[thisRoom.name][m.Data.raw1] = global.ResourceLimit[thisRoom.name][m.Data.raw1] > m.Data.num?global.ResourceLimit[thisRoom.name][m.Data.raw1]:m.Data.num
+            }
+            if (!global.ResourceLimit[thisRoom.name][m.Data.raw2]) global.ResourceLimit[thisRoom.name][m.Data.raw2] = m.Data.num
+            else{
+                global.ResourceLimit[thisRoom.name][m.Data.raw2] = global.ResourceLimit[thisRoom.name][m.Data.raw2] > m.Data.num?global.ResourceLimit[thisRoom.name][m.Data.raw2]:m.Data.num
+            }
+        }
+    }
+    // 监测合成规划
+    if (Object.keys(thisRoom.memory.ComDispatchData).length > 0)
+    {
+        for (var g in thisRoom.memory.ComDispatchData)
+        {
+            if (!global.ResourceLimit[thisRoom.name][g])global.ResourceLimit[thisRoom.name][g] = thisRoom.memory.ComDispatchData[g].dispatch_num
+            else{
+                global.ResourceLimit[thisRoom.name][g] = global.ResourceLimit[thisRoom.name][g] > thisRoom.memory.ComDispatchData[g].dispatch_num?global.ResourceLimit[thisRoom.name][g]:thisRoom.memory.ComDispatchData[g].dispatch_num
+            }
+        }
+    }
+    // 监测工厂相关
 }

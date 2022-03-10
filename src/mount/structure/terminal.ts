@@ -104,7 +104,7 @@ export default class terminalExtension extends StructureTerminal {
             for (let j in Game.market.orders)
             {
                 let order = Game.market.getOrderById(j);
-                if (order.remainingAmount) Game.market.cancelOrder(j);
+                if (!order.remainingAmount) Game.market.cancelOrder(j);
             }
         }
         let storage_ = global.Stru[this.room.name]['storage'] as StructureStorage

@@ -21,6 +21,7 @@ interface Room {
     Task_Clink():void
     Task_ComsumeLink():void
     Nuke_Defend():void
+    Task_CompoundDispatch():void
 
     // 被动任务
     Task_Carry(misson:MissionModel):void
@@ -40,7 +41,7 @@ interface RoomMemory {
     CoolDownDic:{[Name:string]:number}      /* 冷却时间的哈希表 key为任务名 */
     nukeID?:string[]
     nukeData?:NukeData
-    
+    ComDispatchData?:{[re in ResourceConstant]?:{ok?:boolean,dispatch_num:number}}
 }
 
 interface NukeData{
