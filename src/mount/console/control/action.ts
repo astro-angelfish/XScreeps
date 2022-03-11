@@ -275,6 +275,7 @@ export default {
         ave(rType:ResourceConstant,day:number=1):string{
             return `[market] 资源${rType}在近${day}天内的平均价格为${ avePrice(rType,day)}`
         },
+        // 查询是否有订单
         have(roomName:string,res:ResourceConstant,mtype:"sell"|'buy',p:number=null,r:number=null):string{
             let result = haveOrder(roomName,res,mtype,p,r) 
             if (p)
@@ -282,12 +283,89 @@ export default {
             else
             return `[market] 房间:${roomName};资源:${res};类型:${mtype}的单子--->${result?"有":"没有"}`
         },
+        // 查询市场上的最高价格
         highest(rType:ResourceConstant,mtype:'sell'|'buy',mprice:number=0):string{
             let result = highestPrice(rType,mtype,mprice)
             if (mprice)
             return `[market] 资源:${rType};类型:${mtype} 最高价格${result}[低于${mprice}]`
             else
             return `[market] 资源:${rType};类型:${mtype} 最高价格${result}`
+        },
+        // 卖资源
+        sell(roomName:string,rType:ResourceConstant,mType:'deal'|'order',num:number,price?:number,unit:number = 2000):string{
+            var thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[support] 不存在房间${roomName}`
+            if (!thisRoom.memory.market) thisRoom.memory.market = {}
+            if (mType == 'order')
+            {
+                if (!thisRoom.memory.market['order']) thisRoom.memory.market['order'] = []
+                var bR = true
+                for (var od of thisRoom.memory.market['order'])
+                {
+                    if (od.rType == rType)
+                    bR = false
+                }
+                if (bR){
+                    thisRoom.memory.market['order'].push({rType:rType,num:num,unit:unit})
+                    return `[market] 房间${roomName}成功下达order的资源卖出指令,type:sell,rType:${rType},num:${num},unit:${unit}`
+                }
+                else return `[market] 房间${roomName}已经存在${rType}的sell订单了`
+            }
+            else if (mType == 'deal')
+            {
+                if (!thisRoom.memory.market['deal']) thisRoom.memory.market['deal'] = []
+                var bR = true
+                for (var od of thisRoom.memory.market['deal'])
+                {
+                    if (od.rType == rType)
+                    bR = false
+                }
+                if (bR){
+                    thisRoom.memory.market['deal'].push({rType:rType,num:num,price:price,unit:unit})
+                    return `[market] 房间${roomName}成功下达deal的资源卖出指令,type:sell,rType:${rType},num:${num},price:${price},unit:${unit}`
+                }
+                else return `[market] 房间${roomName}已经存在${rType}的sell订单了`
+            }
+        },
+        // 查询正在卖的资源
+        query(roomName:string):string{
+            var thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[support] 不存在房间${roomName}`
+            let result = `[market] 目前房间${roomName}存在如下资源卖出订单:\n`
+            for (var mtype in thisRoom.memory.market)
+            for (var i of thisRoom.memory.market[mtype])
+            result += `[${mtype}] 资源:${i.rType} 数量:${i.num}\n`
+            return result
+        },
+        // 取消卖资源
+        cancel(roomName:string,mtype:'order'|'deal',rType:ResourceConstant):string{
+            var thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[support] 不存在房间${roomName}`
+            for (let i of thisRoom.memory.market[mtype])
+            {
+                if (i.rType == rType)
+                {
+                    if (mtype == 'order')
+                    {
+                        if (i.rType != 'energy')
+                        delete thisRoom.memory.TerminalData[i.rType]
+                        let order = Game.market.getOrderById(i.id)
+                        if (order) Game.market.cancelOrder(order.id)
+                        var index = thisRoom.memory.market['order'].indexOf(i)
+                        thisRoom.memory.market['order'].splice(index,1)
+                        return Colorful(`[market] 房间${roomName}取消资源[${rType}----${mtype}]卖出配置成功`,'blue')
+                    }
+                    else
+                    {
+                        if (i.rType != 'energy')
+                        delete thisRoom.memory.TerminalData[i.rType]
+                        var index = thisRoom.memory.market['deal'].indexOf(i)
+                        thisRoom.memory.market['deal'].splice(index,1)
+                        return Colorful(`[market] 房间${roomName}取消资源[${rType}----${mtype}]卖出配置成功`,'blue')
+                    }
+                }
+            }
+            return Colorful(`[market] 房间${roomName}取消资源[${rType}----${mtype}]卖出配置失败`,'red')
         },
     },
     /* 绕过房间api */

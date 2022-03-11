@@ -157,7 +157,7 @@ export default class CreepMissonTransportExtension extends Creep {
                         if (targets.length > 0)
                         {
                             var target = targets[0] as StructureStorage
-                            if (!target.store || target.store[Data.rType] == 0)
+                            if ((!target.store || target.store[Data.rType] == 0) && this.store.getUsedCapacity(Data.rType) <= 0)
                             {
                                 /* 如果发现没资源了，就取消搬运任务 */
                                 Game.rooms[this.memory.belong].DeleteMission(this.memory.MissionData.id)

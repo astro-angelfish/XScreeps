@@ -25,6 +25,7 @@ export default class RoomMissonFrameExtension extends Room {
         this.Nuker_Feed()   // 核弹填充任务      
         this.Nuke_Defend()  // 核弹防御
         this.Task_CompoundDispatch()    // 合成规划 （中级）
+        this.Task_monitorMineral()  // 挖矿
         /* 基本任务监控区域 */
         for (var index in this.memory.Misson)
         for (var misson of this.memory.Misson[index])

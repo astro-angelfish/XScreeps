@@ -62,6 +62,13 @@ export default {
                 }
             }
             return result
+        },
+        // 经济模式
+        economy(roomName:string):string{
+            var myRoom = Game.rooms[roomName]
+            if (!myRoom) return `[frame] 未找到房间${roomName},请确认房间!`
+            myRoom.memory.economy = !myRoom.memory.economy
+            return `[frame] 房间${roomName}的economy选项改为${myRoom.memory.economy}`
         }
     },
     spawn:

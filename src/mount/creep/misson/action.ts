@@ -675,4 +675,64 @@ export default class CreepMissonActionExtension extends Creep {
             if (!attack_flag) return
         }
     }
+
+    /* 原矿开采任务处理 */
+    public handle_mineral():void{
+        var extractor = Game.getObjectById(Game.rooms[this.memory.belong].memory.StructureIdData.extractID) as StructureExtractor
+        if (!extractor) return
+        var container:StructureContainer
+        if (!this.memory.containerID)
+        {
+            var con = extractor.pos.findInRange(FIND_STRUCTURES,1,{filter:(stru)=>{
+                return stru.structureType == 'container'
+            }}) as StructureContainer[]
+            if (con.length >0) this.memory.containerID = con[0].id
+            return
+        }
+        else{
+            container = Game.getObjectById(this.memory.containerID) as StructureContainer
+            if (!container) return
+            /* container杂志清理 */
+            if (container.store && container.store.getUsedCapacity() > 0 && this.pos.isEqualTo(container))
+            {
+                for (var i in container.store)
+                {
+                    this.withdraw(container,i as ResourceConstant)
+                }
+            }
+            if (!this.memory.working) this.memory.working = false
+            if (this.memory.working && this.store.getFreeCapacity() == this.store.getCapacity()) this.memory.working = false
+            if (!this.memory.working && this.store.getFreeCapacity() == 0) this.memory.working = true
+            if (this.memory.working)
+            {
+                var storage_ = Game.getObjectById(Game.rooms[this.memory.belong].memory.StructureIdData.storageID) as StructureStorage
+                if (!storage_) return
+                if (!this.pos.isNearTo(storage_)) this.goTo(storage_.pos,1)
+                else
+                {
+                    for (var i in this.store)
+                    {
+                        this.transfer(storage_,i as ResourceConstant)
+                        return
+                    }
+                }
+            }
+            else
+            {
+                if (!this.pos.isEqualTo(container.pos)) {this.goTo(container.pos,0);return}
+                else
+                {
+                    if (this.ticksToLive < 15) this.suicide()
+                    var mineral = Game.getObjectById(Game.rooms[this.memory.belong].memory.StructureIdData.mineralID) as Mineral
+                    if (!mineral.mineralAmount)
+                    {
+                        Game.rooms[this.memory.belong].DeleteMission(this.memory.MissionData.id)
+                        this.suicide()
+                        return
+                    }
+                    if (!extractor.cooldown) this.harvest(mineral)
+                }
+            }
+        }
+    }
 }

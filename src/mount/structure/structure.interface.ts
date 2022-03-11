@@ -10,18 +10,19 @@ interface StructureTerminal{
 
 interface RoomMemory{
     TerminalData:{[resource:string]:{num:number,fill?:boolean}}
-    MarketData:marketData
+    market:MarketData
 }
 
-interface marketData{
-    [str:string]:{
-        [res:string]:{
-            num:number
-            mType?:'buy'|'sell'
-            value:number    // 创建订单时的权重值
-            max?:number // 最大价值
-            min?:number // 最小值
-            range?:number   // 最大范围
-        }
-    }
+interface MarketData{
+    [kind:string]:LittleMarketData[]
+}
+interface LittleMarketData{
+    rType:ResourceConstant
+    num:number
+    price?:number
+    unit?:number    // terminal量
+    id?:string      // 交易ID
+    continue?:boolean   // 卖完了一批次是否填充
+    changePrice?:boolean    // 是否需要修改价格
+    time?:number
 }

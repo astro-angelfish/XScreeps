@@ -193,5 +193,14 @@ export function ResourceLimitUpdate(thisRoom:Room):void{
             }
         }
     }
+    // 监测资源卖出
+    for (var mtype in thisRoom.memory.market)
+    for (var obj of thisRoom.memory.market[mtype])
+    {
+        if (!global.ResourceLimit[thisRoom.name][obj.rType])global.ResourceLimit[thisRoom.name][obj.rType] = obj.num
+        else{
+            global.ResourceLimit[thisRoom.name][obj.rType] = global.ResourceLimit[thisRoom.name][obj.rType]>obj.num?global.ResourceLimit[thisRoom.name][obj.rType]:obj.num
+        }
+    }
     // 监测工厂相关
 }

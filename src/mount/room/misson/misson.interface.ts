@@ -22,6 +22,7 @@ interface Room {
     Task_ComsumeLink():void
     Nuke_Defend():void
     Task_CompoundDispatch():void
+    Task_monitorMineral():void
 
     // 被动任务
     Task_Carry(misson:MissionModel):void
@@ -42,6 +43,7 @@ interface RoomMemory {
     nukeID?:string[]
     nukeData?:NukeData
     ComDispatchData?:{[re in ResourceConstant]?:{ok?:boolean,dispatch_num:number}}
+    mineralType:ResourceConstant
 }
 
 interface NukeData{

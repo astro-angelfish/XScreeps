@@ -98,22 +98,12 @@ export default class RoomMissonBehaviourExtension extends Room {
         let terminal_ = global.Stru[this.name]['terminal'] as StructureTerminal
         if (misson.Data.num <= 0 || !storage_ || !terminal_)
         {
-            // delete this.memory.ResourceLimit[misson.Data.raw1]
-            // delete this.memory.ResourceLimit[misson.Data.raw2]
             this.DeleteMission(misson.id)
             return
         }
         let raw1 = Game.getObjectById(this.memory.StructureIdData.labInspect.raw1) as StructureLab
         let raw2 = Game.getObjectById(this.memory.StructureIdData.labInspect.raw2) as StructureLab
         let re = false
-        // if (!this.memory.ResourceLimit[misson.Data.raw1])
-        // this.memory.ResourceLimit[misson.Data.raw1] = misson.Data.num
-        // else if (this.memory.ResourceLimit[misson.Data.raw1] < misson.Data.num)
-        // this.memory.ResourceLimit[misson.Data.raw1] = misson.Data.num
-        // if (!this.memory.ResourceLimit[misson.Data.raw2])
-        // this.memory.ResourceLimit[misson.Data.raw2] = misson.Data.num
-        // else if (this.memory.ResourceLimit[misson.Data.raw2] < misson.Data.num)
-        // this.memory.ResourceLimit[misson.Data.raw2] = misson.Data.num
         for (let i of misson.Data.comData)
         {
             var thisLab = Game.getObjectById(i) as StructureLab

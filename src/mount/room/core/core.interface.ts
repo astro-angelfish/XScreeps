@@ -16,6 +16,7 @@ interface Room {
     SpawnListRoleNum(role:string):number
     NumSpawn(role:string,num:number,level?:number):boolean
     SingleSpawn(role:string,level?:number,mem?:SpawnMemory):boolean
+    Economy():void
 
     // ecosphere
     RoomEcosphere():void

@@ -12,6 +12,7 @@ export default class RoomCoreSpawnExtension extends Room {
         this.SpawnConfigInit()
         this.SpawnConfigModify()
         this.SpawnManager()
+        this.Economy()
     }
 
     /* 爬虫孵化配置初始化 */
@@ -213,4 +214,14 @@ export default class RoomCoreSpawnExtension extends Room {
         return true
     }
 
+    /* 经济模式特殊处理 */
+    public Economy():void{
+        if (this.controller.level == 8 && this.memory.economy)
+        {
+            if (this.controller.ticksToDowngrade < 180000)
+                this.memory.SpawnConfig['upgrade'].num = 1
+            else
+            this.memory.SpawnConfig['upgrade'].num = 0
+        }
+    }
 }
