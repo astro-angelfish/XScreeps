@@ -193,6 +193,7 @@ export default class RoomMissonBehaviourExtension extends Room {
     // 合成规划     (中层)    目标化合物 --> 安排一系列合成
     public Task_CompoundDispatch():void{
         if ((Game.time - global.Gtime[this.name]) % 50) return
+        if (this.RoleMissionNum('transport','物流运输') > 0) return
         if (Object.keys(this.memory.ComDispatchData).length <=0) return //  没有合成规划情况
         if (this.MissionNum('Room','资源合成') > 0) return  // 有合成任务情况
         var storage_ = global.Stru[this.name]['storage'] as StructureStorage
@@ -260,4 +261,61 @@ export default class RoomMissonBehaviourExtension extends Room {
             
         }
     }
+
+    /* 烧Power发布函数任务 */
+    public Task_montitorPower():void{
+        if (Game.time % 7) return
+        if (this.controller.level < 8) return
+        if (!this.memory.switch.StopPower) return
+        // 有任务了就不发布烧帕瓦的任务
+        if (this.MissionNum('Room','power升级') > 0) return
+        let storage_ = global.Stru[this.name]['storage'] as StructureStorage
+        //  powerspawn_ = global.Stru[this.name]['powerspawn'] as StructurePowerSpawn
+        if (!storage_) return
+        // SavePower 是节省能量的一种"熔断"机制 防止烧power致死
+        if (storage_.store.getUsedCapacity('energy') > this.memory.switch.SavePower?250000:150000 && storage_.store.getUsedCapacity('power') > 100)
+        {
+            /* 发布烧power任务 */
+            var thisTask:MissionModel = {
+                name:'power升级',
+                delayTick:200,
+                range:'Room',
+                state:1
+            }
+            this.AddMission(thisTask)
+        }
+    }
+
+    /* 烧Power执行函数 */
+    public Task_ProcessPower(misson:MissionModel):void{
+        let storage_ = global.Stru[this.name]['storage'] as StructureStorage
+        let powerspawn_ = global.Stru[this.name]['powerspawn'] as StructurePowerSpawn
+        let terminal_ = global.Stru[this.name]['terminal'] as StructureTerminal
+        if (!storage_ || !powerspawn_ || !terminal_)return
+        if (misson.state == 1)
+        {
+            if (this.RoleMissionNum('manage','物流运输')>0)return
+            if (powerspawn_.store.getFreeCapacity('energy') > 0)
+            {
+                var carryTask = this.Public_Carry({'manage':{num:1,bind:[]}},10,this.name,storage_.pos.x,storage_.pos.y,this.name,powerspawn_.pos.x,powerspawn_.pos.y,'energy',powerspawn_.store.getFreeCapacity('energy'))
+                this.AddMission(carryTask)
+                return
+            }
+            if (powerspawn_.store.getFreeCapacity('power') > 0)
+            {
+                var carryTask = this.Public_Carry({'manage':{num:1,bind:[]}},10,this.name,storage_.pos.x,storage_.pos.y,this.name,powerspawn_.pos.x,powerspawn_.pos.y,'power',powerspawn_.store.getFreeCapacity('power'))
+                this.AddMission(carryTask)
+                return
+            }
+            misson.state = 2
+
+        }
+        else if (misson.state == 2)
+        {
+            powerspawn_.processPower()
+            if (powerspawn_.store.getUsedCapacity('energy') == 0 || powerspawn_.store.getUsedCapacity('power') == 0)
+                this.DeleteMission(misson.id)
+        }
+    }
+
 }

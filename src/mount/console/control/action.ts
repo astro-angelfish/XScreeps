@@ -1,5 +1,5 @@
 import { avePrice, haveOrder, highestPrice } from "@/module/fun/funtion"
-import { Colorful, compare, isInArray } from "@/utils"
+import { Colorful, compare, isInArray, unzipPosition, zipPosition } from "@/utils"
 
 export default {
     repair:{
@@ -559,6 +559,58 @@ export default {
             }
             if (str == '') return `[terminal] 未发现资源传送任务！`
             return str
+        },
+    },
+
+    /* 外矿 */
+    mine:{
+        harvest(roomName:string,x:number,y:number,disRoom:string):string{
+            var thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[mine] 不存在房间${roomName}`
+            var thisTask = thisRoom.public_OutMine(roomName,x,y,disRoom)
+            thisTask.maxTime = 8
+            if(thisRoom.AddMission(thisTask)) return `[mine] ${roomName} -> ${disRoom} 的外矿任务挂载成功！`
+            return `[mine] ${roomName} -> ${disRoom} 的外矿任务挂载失败！`
+        },
+        Charvest(roomName:string,disRoom:string):string{
+            var thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[mine] 不存在房间${roomName}`
+            for (var i of thisRoom.memory.Misson['Creep'])
+            {
+                if (i.name == '外矿开采' && i.Data.disRoom == disRoom)
+                {
+                    if (thisRoom.DeleteMission(i.id)) return `[mine] ${roomName} -> ${disRoom} 的外矿任务删除成功！`
+                }
+            }
+            return `[mine] ${roomName} -> ${disRoom} 的外矿任务删除失败！`
+        },
+        road(roomName:string):string{
+            if (!Game.rooms[roomName]) return `[mine] 不存在相应视野`
+            let roads = Game.rooms[roomName].find(FIND_STRUCTURES,{filter:(stru)=>{
+                return stru.structureType == 'road'
+            }})
+            let cons = Game.rooms[roomName].find(FIND_CONSTRUCTION_SITES,{filter:(cons)=>{
+                return cons.structureType == 'road'
+            }})
+            // 去除road记忆
+            for (var i of Memory.outMineData[roomName].road)
+            {
+                let pos_ = unzipPosition(i) as RoomPosition
+                if (pos_.roomName== roomName &&  !pos_.GetStructure('road'))
+                {
+                    let index = Memory.outMineData[roomName].road.indexOf(i)
+                    Memory.outMineData[roomName].road.splice(index,1)
+                }
+            }
+            let posList = []
+            for (let r of roads) posList.push(zipPosition(r.pos))
+            for (let c of cons) posList.push(zipPosition(c.pos))
+            for (let p of posList)
+            {
+                if (!isInArray(Memory.outMineData[roomName].road,p))
+                Memory.outMineData[roomName].road.push(p)
+            }
+            return `[mine] 已经更新房间${roomName}的外矿信息!`
         },
     },
 }

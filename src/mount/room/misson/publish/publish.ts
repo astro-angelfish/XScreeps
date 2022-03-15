@@ -1,4 +1,5 @@
 import { LabMap } from "@/constant/ResourceConstant"
+import { zipPosition } from "@/utils"
 import { times } from "lodash"
 
 /* 房间原型拓展   --任务  --任务发布便捷函数 */
@@ -421,6 +422,31 @@ export default class RoomMissonPublish extends Room {
         }
         thisTask.Data.raw1 = raw1str
         thisTask.Data.raw2 = raw2str
+        return thisTask
+    }
+
+    /* 外矿开采任务发布函数 */
+    public public_OutMine(sourceRoom:string,x:number,y:number,disRoom:string):MissionModel{
+        var pos = new RoomPosition(x,y,sourceRoom)
+        if (!this.memory.StructureIdData.storageID) return null
+        if (!pos) return null
+        // 检查是否已经存在重复任务了
+        for (var i of this.memory.Misson['Creep'])
+        {
+            if (i.name == '外矿开采' && i.Data.disRoom == disRoom)
+            return null
+        }
+        var thisTask:MissionModel = {
+            name:'外矿开采',
+            range:'Creep',
+            delayTick:99999,
+            level:10,
+            Data:{
+                disRoom:disRoom,
+                startpoint:zipPosition(pos)
+            },
+        }
+        thisTask.CreepBind = {'out-claim':{num:0,bind:[]},'out-harvest':{num:0,bind:[]},'out-car':{num:0,bind:[]},'out-defend':{num:0,bind:[]}}
         return thisTask
     }
 }

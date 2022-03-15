@@ -15,4 +15,5 @@ interface Room {
     Public_Buy(res:ResourceConstant,num:number,range:number,max?:number):MissionModel
     public_Compound(num:number,disResource:ResourceConstant,bindData:string[]):MissionModel
     Public_aio(disRoom:string,disShard:shardName,num:number,interval:number,boost:boolean)
+    public_OutMine(sourceRoom:string,x:number,y:number,disRoom:string):MissionModel
 }

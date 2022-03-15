@@ -145,4 +145,43 @@ export default class PositionFunctionFindExtension extends RoomPosition {
         }
         return null
     }
+    /* 寻找两个点之间的路线 */
+    public FindPath(target:RoomPosition,range:number):RoomPosition[]{
+                /* 全局路线存储 */
+                if (!global.routeCache) global.routeCache = {}
+                /* 路线查找 */
+                const result = PathFinder.search(this,{pos:target,range:range},{
+                    plainCost:2,
+                    swampCost:10,
+                    maxOps:8000,
+                    roomCallback:roomName=>{
+                        // 在全局绕过房间列表的房间 false
+                        if (Memory.bypassRooms && Memory.bypassRooms.includes(roomName)) return false
+                        const room = Game.rooms[roomName]
+                        // 没有视野的房间只观察地形
+                        if (!room) return
+                        // 有视野的房间
+                        let costs = new PathFinder.CostMatrix
+                        // 将道路的cost设置为1，无法行走的建筑设置为255
+                        room.find(FIND_STRUCTURES).forEach(struct=>{
+                            if (struct.structureType === STRUCTURE_ROAD)
+                            {
+                                costs.set(struct.pos.x,struct.pos.y,1)
+                            }
+                            else if (struct.structureType !== STRUCTURE_CONTAINER && 
+                                (struct.structureType !==STRUCTURE_RAMPART || (!struct.my)))
+                                costs.set(struct.pos.x,struct.pos.y,0xff)
+                        })
+                        room.find(FIND_MY_CONSTRUCTION_SITES).forEach(cons=>{
+                            if (cons.structureType != 'road' && cons.structureType != 'rampart' && cons.structureType != 'container')
+                            costs.set(cons.pos.x,cons.pos.y,255)
+                        })
+                        return costs
+                        }
+                    })
+                // 寻路异常返回null
+                if (result.path.length <= 0) return null
+                // 寻路结果压缩
+                return result.path
+    }
 }

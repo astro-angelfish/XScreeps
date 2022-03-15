@@ -23,6 +23,7 @@ interface Room {
     Nuke_Defend():void
     Task_CompoundDispatch():void
     Task_monitorMineral():void
+    Task_montitorPower():void
 
     // 被动任务
     Task_Carry(misson:MissionModel):void
@@ -33,7 +34,8 @@ interface Room {
     Task_HelpBuild(mission:MissionModel):void
     Task_Compound(misson:MissionModel):void
     Task_aio(mission:MissionModel):void
-    
+    Task_OutMine(misson:MissionModel):void
+    Task_ProcessPower(misson:MissionModel):void
 }
 
 interface RoomMemory {
@@ -86,6 +88,5 @@ interface MissonLabBind{
 interface RoomLabBind{
     [id:string]:{missonID:string[],rType:ResourceConstant,occ?:boolean}     // occ为true时不允许新增占用lab
 }
-
 
 

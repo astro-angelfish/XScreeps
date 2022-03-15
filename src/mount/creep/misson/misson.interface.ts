@@ -18,7 +18,7 @@ interface Creep{
     handle_sign():void
     handle_aio():void
     handle_mineral():void
-    
+    handle_outmine():void
 }
 
 interface CreepMemory{
@@ -26,4 +26,7 @@ interface CreepMemory{
     double?:string  // 双人小队
     captain?:boolean
     swith?:boolean
+    disPos?:string
+    num?:number
+    bindpoint?:string
 }

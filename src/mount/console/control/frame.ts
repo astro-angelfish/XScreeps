@@ -4,6 +4,56 @@ import { Colorful, isInArray } from "@/utils"
 import { object } from "lodash"
 
 export default {
+    /* 绕过房间api */
+    bypass: {
+    
+    /* 添加要绕过的房间 */
+    add(roomNames: string):string {
+        if (!Memory.bypassRooms) Memory.bypassRooms = []
+
+        // 确保新增的房间名不会重复
+        Memory.bypassRooms = _.uniq([ ...Memory.bypassRooms, roomNames])
+        return `[bypass]已添加绕过房间 \n ${this.show()}`
+    },
+
+    show():string{
+        if (!Memory.bypassRooms || Memory.bypassRooms.length <= 0) return '[bypass]当前无绕过房间'
+        return `[bypass]当前绕过房间列表：${Memory.bypassRooms.join(' ')}`
+    },
+    clean():string{
+        Memory.bypassRooms = []
+        return `[bypass]已清空绕过房间列表，当前列表：${Memory.bypassRooms.join(' ')}`
+    },
+    remove(roomNames: string):string {
+        if (!Memory.bypassRooms) Memory.bypassRooms = []
+        if (roomNames.length <= 0) delete Memory.bypassRooms
+        else Memory.bypassRooms = _.difference(Memory.bypassRooms,[roomNames])
+        return `[bypass]已移除绕过房间${roomNames}`
+    }
+    },
+    /* 白名单api */
+    whitesheet:{
+        add(username:string):string{
+            if (!Memory.whitesheet) Memory.whitesheet = []
+            Memory.whitesheet = _.uniq([...Memory.whitesheet,username])
+            return `[whitesheet]已添加用户${username}进白名单！\n${this.show()}`
+        },
+        show():string{
+            if (!Memory.whitesheet || Memory.whitesheet.length <= 0) return "[whitesheet]当前白名单为空！"
+            return `[whitesheet]白名单列表：${Memory.whitesheet.join(' ')}`
+        },
+        clean():string{
+            Memory.whitesheet = []
+            return '[whitesheet]当前白名单已清空'
+        },
+        remove(username:string):string{
+            // if (! (username in Memory.whitesheet)) return `[whitesheet]白名单里没有玩家“${username}”`
+            if (!Memory.whitesheet) Memory.whitesheet = []
+            if (Memory.whitesheet.length <= 0) delete Memory.whitesheet
+            else Memory.whitesheet = _.difference(Memory.whitesheet,[username])
+            return `[whitesheet]已移除${username}出白名单`
+        }
+    },
     frame:
     {
         set(roomName:string,plan:'man'|'hoho'|'dev',x:number,y:number):string
@@ -63,7 +113,7 @@ export default {
             }
             return result
         },
-        // 经济模式
+        // 经济模式 （不再升级）
         economy(roomName:string):string{
             var myRoom = Game.rooms[roomName]
             if (!myRoom) return `[frame] 未找到房间${roomName},请确认房间!`
@@ -131,7 +181,6 @@ export default {
         }
     },
     lab:{
-        /* 寻找房间名/数字的旗帜，初始化一个房间的lab合成配置，没有配置的房间不可以进行合成任务*/
         init(roomName:string):string{
             var myRoom = Game.rooms[roomName]
             if (!myRoom) return `[lab] 未找到房间${roomName},请确认房间!`

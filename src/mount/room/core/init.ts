@@ -33,6 +33,7 @@ export default class RoomCoreInitExtension extends Room {
         if (!this.memory.market) this.memory.market = {'deal':[],'order':[]}
         if (!global.ResourceLimit[this.name]) global.ResourceLimit[this.name] = {}
         if (!this.memory.ComDispatchData) this.memory.ComDispatchData = {}
+        if (!this.memory.switch) this.memory.switch = {}
     }
 
     /**

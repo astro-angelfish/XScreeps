@@ -8,4 +8,5 @@ interface RoomPosition {
     GetStructure(stru:StructureConstant):Structure
     GetStructureList(stru:StructureConstant[]):StructureStorage[]
     GetRuin():Ruin
+    FindPath(target:RoomPosition,range:number):RoomPosition[]
 }

@@ -39,6 +39,11 @@ export const RoleData:SpawnConstantData = {
     'scout':{num:0,ability:[0,0,1,0,0,0,0,0],level:15,mark:'签名'},
     'aio':{num:0,ability:[0,0,25,0,10,15,0,0],level:10,mark:"一体"},
     'mineral':{num:0,ability:[15,15,15,0,0,0,0,0],level:11,mark:"原矿"},
+    /* 外矿 */
+    'out-claim':{num:0,ability:[0,0,2,0,0,0,2,0],level:11,mark:"外预"},
+    'out-harvest':{num:0,ability:[4,2,4,0,0,0,0,0],level:12,mark:"外挖"},
+    'out-car':{num:0,ability:[1,5,6,0,0,0,0,0],level:12,mark:"外运"},
+    'out-defend':{num:0,ability:[0,0,5,5,0,5,0,0],level:10,mark:"外防"},
 }
 /* 爬虫部件随房间等级变化的动态列表 */
 export const RoleLevelData = {
@@ -156,5 +161,34 @@ export const RoleLevelData = {
         7:{bodypart:[10,10,20,0,0,0,0,0],num:0},
         8:{bodypart:[10,10,20,0,0,0,0,0],num:0},
     },
-
+    "out-harvest":{
+        1:{bodypart:[1,1,1,0,0,0,0,0],num:0},
+        2:{bodypart:[1,1,1,0,0,0,0,0],num:0},
+        3:{bodypart:[1,1,1,0,0,0,0,0],num:0},
+        4:{bodypart:[2,1,1,0,0,0,0,0],num:0},
+        5:{bodypart:[4,1,2,0,0,0,0,0],num:0},
+        6:{bodypart:[6,1,3,0,0,0,0,0],num:0},
+        7:{bodypart:[7,2,7,0,0,0,0,0],num:0},
+        8:{bodypart:[8,2,7,0,0,0,0,0],num:0},
+    },
+    "out-car":{
+        1:{bodypart:[1,1,2,0,0,0,0,0],num:0},
+        2:{bodypart:[1,2,2,0,0,0,0,0],num:0},
+        3:{bodypart:[1,2,3,0,0,0,0,0],num:0},
+        4:{bodypart:[1,5,3,0,0,0,0,0],num:0},
+        5:{bodypart:[1,7,4,0,0,0,0,0],num:0},
+        6:{bodypart:[1,11,6,0,0,0,0,0],num:0},
+        7:{bodypart:[2,26,14,0,0,0,0,0],num:0},
+        8:{bodypart:[2,30,16,0,0,0,0,0],num:0},
+    },
+    "out-defend":{
+        1:{bodypart:[0,0,1,0,0,1,0,0],num:0},
+        2:{bodypart:[0,0,1,0,0,1,0,0],num:0},
+        3:{bodypart:[0,0,1,0,0,1,0,0],num:0},
+        4:{bodypart:[0,0,3,0,2,2,0,0],num:0},
+        5:{bodypart:[0,0,6,0,3,3,0,0],num:0},
+        6:{bodypart:[0,0,8,0,4,4,0,0],num:0},
+        7:{bodypart:[0,0,16,0,8,8,0,0],num:0},
+        8:{bodypart:[0,0,20,0,10,10,0,0],num:0},
+    },
 }

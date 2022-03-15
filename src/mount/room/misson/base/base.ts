@@ -26,6 +26,7 @@ export default class RoomMissonFrameExtension extends Room {
         this.Nuke_Defend()  // 核弹防御
         this.Task_CompoundDispatch()    // 合成规划 （中级）
         this.Task_monitorMineral()  // 挖矿
+        this.Task_montitorPower()   // 烧power任务监控
         /* 基本任务监控区域 */
         for (var index in this.memory.Misson)
         for (var misson of this.memory.Misson[index])
@@ -39,12 +40,15 @@ export default class RoomMissonFrameExtension extends Room {
                 case '紧急支援':{this.Task_HelpDefend(misson);break;}
                 case '资源合成':{this.Task_Compound(misson);break;}
                 case '攻防一体':{this.Task_aio(misson);break;}
+                case '外矿开采':{this.Task_OutMine(misson);break;}
+                case "power升级":{this.Task_ProcessPower(misson);break;}
             }
         }
     }
 
     /* 添加任务 */
     public AddMission(mis:MissionModel):boolean{
+        if (!mis) return false
         var Index:string
         if (mis.range == 'Creep') Index = 'C-'
         else if (mis.range == 'Room') Index = 'R-'
@@ -317,11 +321,6 @@ export default class RoomMissonFrameExtension extends Room {
                 if (this.memory.RoomLabBind[i].missonID.length <= 1)
                 {
                     console.log('LabID: ',i,'------解绑-------->MissonID: ',MissonID)
-                    // if (this.memory.ResourceLimit[this.memory.RoomLabBind[i].rType])
-                    // {
-                    //     if (this.GainMission(MissonID) && this.GainMission(MissonID).name != '资源合成')
-                    //     delete this.memory.ResourceLimit[this.memory.RoomLabBind[i].rType]
-                    // }
                     delete this.memory.RoomLabBind[i]
                     return true
                 }

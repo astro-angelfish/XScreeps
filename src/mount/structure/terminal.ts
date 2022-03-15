@@ -100,7 +100,7 @@ export default class terminalExtension extends StructureTerminal {
     }
 
     /**
-     * 资源买卖函数 未完成   目标：只买能量、挂单、卖 (不deal买资源)
+     * 资源买卖函数 只买能量、挂单、卖 (不deal买资源)
      */
     public ResourceMarket():void{
         if ((Game.time - global.Gtime[this.room.name]) % 27) return
@@ -121,8 +121,9 @@ export default class terminalExtension extends StructureTerminal {
         {
             /* 计算平均价格 */
             let history = Game.market.getHistory('energy')
+            let HistoryLength = history.length
             let allprice = 0
-            for (var ii=12;ii<15;ii++)
+            for (var ii=HistoryLength-3;ii<HistoryLength;ii++)
                 allprice += history[ii].avgPrice
             let avePrice = allprice/3 + (Memory.marketAdjust['energy']?Memory.marketAdjust['energy']:0.2) // 平均能量价格
             if (avePrice > 20) avePrice = 20    // 最大不超过20
@@ -376,13 +377,14 @@ export default class terminalExtension extends StructureTerminal {
         let rType = task.Data.rType
         let num = task.Data.num
         var HistoryList = Game.market.getHistory(rType)
-        if (HistoryList.length < 15) return // 以防特殊情况
+        let HistoryLength = HistoryList.length
+        if (HistoryList.length < 3) {console.log("marketHistroy错误");return}// 以防特殊情况
         var allNum:number = 0
-        for (var iii = 12;iii<15;iii++)
+        for (var iii = HistoryLength-3;iii<HistoryLength;iii++)
         {
             allNum += HistoryList[iii].avgPrice
         }
-        var avePrice = allNum/3    // 平均价格 [近两天]
+        var avePrice = allNum/3    // 平均价格 [近3天]
         // 获取该资源的平均价格
         var maxPrice = avePrice + (task.Data.range?task.Data.range:50 )  // 范围
         /* 在市场上寻找 */
