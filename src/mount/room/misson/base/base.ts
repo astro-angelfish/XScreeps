@@ -42,6 +42,8 @@ export default class RoomMissonFrameExtension extends Room {
                 case '攻防一体':{this.Task_aio(misson);break;}
                 case '外矿开采':{this.Task_OutMine(misson);break;}
                 case "power升级":{this.Task_ProcessPower(misson);break;}
+                case '过道采集':{this.Task_Cross(misson);break;}
+                case 'power采集':{this.Task_PowerHarvest(misson);break}
             }
         }
     }

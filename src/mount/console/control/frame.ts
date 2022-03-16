@@ -180,58 +180,6 @@ export default {
             return Colorful(`[debug] 房间${roomName}资源购买任务发布失败!`,'yellow')
         }
     },
-    lab:{
-        init(roomName:string):string{
-            var myRoom = Game.rooms[roomName]
-            if (!myRoom) return `[lab] 未找到房间${roomName},请确认房间!`
-            /* 初始化 原先配置清零 */
-            myRoom.memory.StructureIdData.labInspect=  {}
-            let result = RecognizeLab(roomName)
-            if (result == null) return `[lab] 房间${roomName}初始化合成lab信息失败!`
-            myRoom.memory.StructureIdData.labInspect['raw1'] = result.raw1
-            myRoom.memory.StructureIdData.labInspect['raw2'] = result.raw2
-            myRoom.memory.StructureIdData.labInspect['com'] = result.com
-            let str = ''
-            str += `[lab] 房间${roomName}初始化lab信息成功!\n`
-            str += `底物lab:\n${result.raw1}\n${result.raw2}\n`
-            str += "合成lab:\n"
-            for (let i of result.com) str += `${i}\n`
-            return str
-        },
-        compound(roomName:string,res:ResourceConstant,num:number):string{
-            var myRoom = Game.rooms[roomName]
-            if (!myRoom) return `[lab] 未找到房间${roomName},请确认房间`
-            let str = []
-            for (var i of myRoom.memory.StructureIdData.labInspect.com)
-            {
-                if (!myRoom.memory.RoomLabBind[i]) str.push(i)
-            }
-            var thisTask = myRoom.public_Compound(num,res,str)
-            if (thisTask === null) return `[lab] 挂载合成任务失败!`
-            if (myRoom.AddMission(thisTask))
-            return `[lab] 房间${roomName}合成${res}任务挂载成功! ${thisTask.Data.raw1} + ${thisTask.Data.raw2} = ${res}`
-            else
-            return `[lab] 房间${roomName}挂载合成任务失败!`
-        },
-        dispatch(roomName:string,res:ResourceConstant,num:number):string{
-            var myRoom = Game.rooms[roomName]
-            if (!myRoom) return `[lab] 未找到房间${roomName},请确认房间!`
-            if (!resourceComDispatch[res]) return `不存在资源${res}!`
-            if (Object.keys(myRoom.memory.ComDispatchData).length > 0) return `[lab] 房间${roomName} 已经存在资源合成调度数据`
-            myRoom.memory.ComDispatchData = {}
-            for (var i of resourceComDispatch[res])
-            {
-                myRoom.memory.ComDispatchData[i] = {res:i,dispatch_num:num}
-            }
-            return `[lab] 已经修改房间${roomName}的合成规划数据，为${resourceComDispatch[res]}，数量：${num}`
-        },
-        Cdispatch(roomName:string):string{
-            var myRoom = Game.rooms[roomName]
-            if (!myRoom) return `[lab] 未找到房间${roomName},请确认房间!`
-            myRoom.memory.ComDispatchData = {}
-            return `[lab] 已经修改房间${roomName}的资源调度数据，为{}.本房见现已无资源合成调度`
-        },
-    },
     dispatch:{
         limit(roomName:string):string{
             var myRoom = Game.rooms[roomName]

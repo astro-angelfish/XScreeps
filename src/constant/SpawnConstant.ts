@@ -44,6 +44,12 @@ export const RoleData:SpawnConstantData = {
     'out-harvest':{num:0,ability:[4,2,4,0,0,0,0,0],level:12,mark:"外挖"},
     'out-car':{num:0,ability:[1,5,6,0,0,0,0,0],level:12,mark:"外运"},
     'out-defend':{num:0,ability:[0,0,5,5,0,5,0,0],level:10,mark:"外防"},
+    /* 帕瓦 */
+    'power-attack':{num:0,ability:[0,0,20,20,0,0,0,0],level:10,mark:"🍎攻"},
+    'power-heal':{num:0,ability:[0,0,25,0,0,25,0,0],level:10,mark:"🍎疗"},
+    'power-carry':{num:0,ability:[0,32,16,0,0,0,0,0],level:10,mark:"🍎运"},
+    /* 沉积物 */
+    'deposit':{num:0,ability:[15,10,25,0,0,0,0,0],level:11,mark:"沉积"},
 }
 /* 爬虫部件随房间等级变化的动态列表 */
 export const RoleLevelData = {

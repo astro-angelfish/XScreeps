@@ -19,6 +19,8 @@ interface Creep{
     handle_aio():void
     handle_mineral():void
     handle_outmine():void
+    handle_power():void
+    handle_deposit():void
 }
 
 interface CreepMemory{
@@ -29,4 +31,5 @@ interface CreepMemory{
     disPos?:string
     num?:number
     bindpoint?:string
+    tick?:number
 }

@@ -449,4 +449,47 @@ export default class RoomMissonPublish extends Room {
         thisTask.CreepBind = {'out-claim':{num:0,bind:[]},'out-harvest':{num:0,bind:[]},'out-car':{num:0,bind:[]},'out-defend':{num:0,bind:[]}}
         return thisTask
     }
+
+    /* power采集任务发布函数 */
+    public public_PowerHarvest(disRoom:string,x:number,y:number,num:number):MissionModel{
+        var thisTask:MissionModel = {
+            name:'power采集',
+            range:'Creep',
+            delayTick:5000,
+            level:10,
+            Data:{
+                room:disRoom,
+                x:x,
+                y:y,
+                state:1,
+                num:num,
+                Cnum:Math.ceil(num/1600)
+            },
+            maxTime:2,
+        }
+        thisTask.CreepBind = {'power-attack':{num:1,bind:[]},'power-heal':{num:1,bind:[]},'power-carry':{num: 0 ,bind:[]}} 
+        return thisTask
+    }
+
+    /* deposit采集任务发布函数 */
+    public public_DepositHarvest(disRoom:string,x:number,y:number,rType:DepositConstant):MissionModel{
+        var thisTask:MissionModel = {
+            name:'deposit采集',
+            range:'Creep',
+            delayTick:2000,
+            level:10,
+            Data:{
+                room:disRoom,
+                x:x,
+                y:y,
+                state:1,
+                rType:rType
+            },
+        }
+        thisTask.CreepBind = {'deposit':{num:1,bind:[]}}
+        var MissonNum = this.MissionNum('Creep','deposit采集')
+        if (MissonNum > 2) return null
+        thisTask.maxTime = MissonNum
+        return thisTask
+    }
 }

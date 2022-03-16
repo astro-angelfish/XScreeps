@@ -97,7 +97,11 @@ export default {
             {
                 if (i.name == '外矿开采' && i.Data.disRoom == disRoom)
                 {
-                    if (thisRoom.DeleteMission(i.id)) return `[mine] ${roomName} -> ${disRoom} 的外矿任务删除成功！`
+                    if (thisRoom.DeleteMission(i.id))
+                    {
+                        if (Memory.outMineData[disRoom]) delete Memory.outMineData[disRoom]
+                        return `[mine] ${roomName} -> ${disRoom} 的外矿任务删除成功！`
+                    }
                 }
             }
             return `[mine] ${roomName} -> ${disRoom} 的外矿任务删除失败！`
@@ -358,6 +362,174 @@ export default {
             if (!myRoom.memory.switch.SavePower) myRoom.memory.switch.SavePower = true
             else myRoom.memory.switch.SavePower = false
             return `[power] 房间${roomName}的power升级的SavePower选项已经设置为${myRoom.memory.switch.SavePower}`
+        },
+    },
+
+        /* 过道行为 */
+    cross:{
+        // 初始化过道任务
+        init(roomName:string,relateRoom:string[]):string{
+            relateRoom =  relateRoom // ['start'].concat(relateRoom)
+            var thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[cross] 不存在房间${roomName}`
+            if (thisRoom.controller.level < 8) return `[cross] 房间${roomName}控制器等级不足！`
+            var thisTask:MissionModel = {
+                name:"过道采集",
+                range:'Room',
+                delayTick:99999,
+                Data:{
+                    power:false,
+                    deposit:false,
+                    relateRooms:relateRoom
+                }
+            }
+            if (thisRoom.AddMission(thisTask)) return `[cross] 房间${roomName}初始化过道采集任务成功！ 房间：${relateRoom}`
+            else return `[cross] 房间${roomName}初始化过道采集任务失败！请检查房间内是否已经存在该任务！`
+        },
+        // active power
+        power(roomName:string):string{
+            var thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[cross] 不存在房间${roomName}`
+            for (var i of thisRoom.memory.Misson['Room'])
+            {
+                if (i.name == '过道采集')
+                {
+                    i.Data.power = !i.Data.power
+                    if (i.Data.power)
+                    return Colorful(`[cross] 房间${roomName}过道采集任务的power属性已经更改为${i.Data.power}`,'blue')
+                    else
+                    return Colorful(`[cross] 房间${roomName}过道采集任务的power属性已经更改为${i.Data.power}`,'yellow')
+                }
+            }
+            return `[cross] 房间${roomName}更改过道采集任务power属性失败！请检查房间内是否已经存在该任务！`
+        },
+        deposit(roomName:string):string{
+            var thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[cross] 不存在房间${roomName}`
+            for (var i of thisRoom.memory.Misson['Room'])
+            {
+                if (i.name == '过道采集')
+                {
+                    i.Data.deposit = !i.Data.deposit
+                    if (i.Data.deposit)
+                    return Colorful(`[cross] 房间${roomName}过道采集任务的deposit属性已经更改为${i.Data.deposit}`,'blue')
+                    else
+                    return Colorful(`[cross] 房间${roomName}过道采集任务的deposit属性已经更改为${i.Data.deposit}`,'yellow')
+                }
+            }
+            return `[cross] 房间${roomName}更改过道采集任务deposit属性失败！请检查房间内是否已经存在该任务！`
+        },
+        room(roomName:string,roomData:string[]):string{
+            roomData = roomData
+            var thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[cross] 不存在房间${roomName}`
+            for (var i of thisRoom.memory.Misson['Room'])
+            {
+                if (i.name == '过道采集')
+                {
+                    i.Data.relateRooms =roomData
+                    return `[cross] 房间${roomName}过道采集任务的房间已经更改为${roomData}`
+                }
+            }
+            return `[cross] 房间${roomName}更改过道采集任务deposit属性失败！请检查房间内是否已经存在该任务！`
+        },
+        /* 删除某个房间 */
+        remove(roomName:string,delRoomName:string):string{
+            var thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[cross] 不存在房间${roomName}`
+            for (var i of thisRoom.memory.Misson['Room'])
+            {
+                if (i.name == '过道采集')
+                {
+                    /* 进行删除 */
+                    for (var j of i.Data.relateRooms)
+                    {
+                        if (j == delRoomName)
+                        {
+                            var list = i.Data.relateRooms as string[]
+                            var index = list.indexOf(j)
+                            list.splice(index,1)
+                            return `[cross] 房间${roomName}的过道采集清单里已经删除房间${j}！ 现有房间列表为${i.Data.relateRooms}`
+                        }
+                    }
+                    return `[cross] 房间${roomName}过道采集任务的房间清单未找到房间${delRoomName}`
+                }
+            }
+            return `[cross] 房间${roomName}更改过道采集任务房间清单失败！请检查房间内是否已经存在该任务！`
+        },
+        /* 增加某个房间s */
+        add(roomName:string,addRoomName:string):string{
+            var thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[cross] 不存在房间${roomName}`
+            for (var i of thisRoom.memory.Misson['Room'])
+            {
+                if (i.name == '过道采集')
+                {
+                    /* 进行删除 */
+                    if (isInArray(i.Data.relateRooms,addRoomName))
+                        return `[cross] 房间${roomName}过道采集任务的房间清单已经存在房间${addRoomName}`
+                    else
+                    {
+                        i.Data.relateRooms.push(addRoomName)
+                        return `[cross] 房间${roomName}过道采集任务的房间清单已经添加房间${addRoomName}！以下为房间清单：${i.Data.relateRooms}`
+                    }
+                }
+            }
+            return `[cross] 房间${roomName}更改过道采集任务房间清单失败！请检查房间内是否已经存在该任务！`
+        },
+        /* 删除某个具体power任务 */
+        delpower(roomName:string,disRoom:string):string{
+            var thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[cross] 不存在房间${roomName}`
+            for (var i of thisRoom.memory.Misson['Creep'])
+            {
+                if (i.name == 'power采集' && i.Data.room == disRoom)
+                {
+                    if(thisRoom.DeleteMission(i.id))
+                        return `[cross] 删除${roomName}-->${disRoom}的power采集任务成功！`
+                    else
+                        return `[cross] 删除${roomName}-->${disRoom}的power采集任务失败！`
+                }
+            }
+            return `[cross] 未找到${roomName}-->${disRoom}的power采集任务`
+        },
+        show(roomName:string):string{
+            var thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[cross] 不存在房间${roomName}`
+            var str = ''
+            for (var i of thisRoom.memory.Misson['Room'])
+            {
+                if (i.name == '过道采集')
+                {
+                    str += `[cross] 房间${roomName}的过道采集任务详情配置如下：\n`
+                    str += `     房间：${i.Data.relateRooms}\n`
+                    str += `     power:${i.Data.power}\n`
+                    str += `     deposit:${i.Data.deposit}\n`
+                    str += `     目前存在如下任务：`
+                    /* 寻找目前存在的过道采集任务 */
+                    for (var j of thisRoom.memory.Misson['Creep'])
+                    {
+                        if (j.name == 'power采集') str += `power采集任务 ${roomName}-->${j.Data.room}  state:${j.Data.role}\n`
+                        if (j.name == 'deposit采集') str += `deposit采集任务 ${roomName}-->${j.Data.rom}  state:${j.Data.role}\n`
+                    }
+                    return str
+                }
+            }
+            return `[cross] 房间${roomName}展示过道采集任务失败！请检查房间内是否已经存在该任务！`
+        },
+        /* 取消过道采集开关 */
+        cancel(roomName:string):string{
+            var thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[cross] 不存在房间${roomName}`
+            for (var i of thisRoom.memory.Misson['Room'])
+            {
+                if (i.name == '过道采集')
+                {
+                    thisRoom.DeleteMission(i.id)
+                    return `[cross] 房间${roomName}已经取消过道采集任务！`
+                }
+            }
+            return `[cross] 房间${roomName}取消过道采集任务失败！请检查房间内是否已经存在该任务！`
         },
     },
 }

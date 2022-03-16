@@ -263,6 +263,337 @@ export default class CreepMissonMineExtension extends Creep {
             }
         }
     }
-    /* 烧power任务 */
+    
+    /* power采集 */
+    public handle_power():void{
+        var creepMisson = this.memory.MissionData.Data
+        var globalMisson = Game.rooms[this.memory.belong].GainMission(this.memory.MissionData.id)
+        if (!globalMisson) {this.say("找不到全局任务了！");this.memory.MissionData = {};return}
+        var role = this.memory.role
+        var missonPostion = new RoomPosition(creepMisson.x,creepMisson.y,creepMisson.room)
+        if (!missonPostion) {this.say("找不到目标地点！");return}
+        if (role == 'power-attack')
+        {
+            this.memory.standed  = true
+            if(globalMisson.Data.state == 1)
+            {
+                /* 先组队 */
+                if (!this.memory.double)
+                {
+                    if (Game.time % 7 == 0)
+                    {
+                        if (globalMisson.CreepBind['power-heal'].bind.length > 0)
+                        {
+                            for (var c of globalMisson.CreepBind['power-heal'].bind)
+                            {
+                                if (Game.creeps[c] && Game.creeps[c].pos.roomName == this.room.name && !Game.creeps[c].memory.double)
+                                {
+                                    var disCreep = Game.creeps[c]
+                                    disCreep.memory.double = this.name
+                                    this.memory.double = disCreep.name
+                                }
+                            }
+                        }
+                    }
+                    return
+                }
+                /* 附件没有治疗虫就等 */
+                if (!Game.creeps[this.memory.double]) {this.suicide();return}
+                if (Game.creeps[this.memory.double] && !this.pos.isNearTo(Game.creeps[this.memory.double]) && (!isInArray([0,49],this.pos.x) && !isInArray([0,49],this.pos.y)))
+                return
+                if (this.fatigue || Game.creeps[this.memory.double].fatigue)
+                return
+                /* 先寻找powerbank周围的空点，并寻找空点上有没有人 */
+                if (!this.pos.isNearTo(missonPostion))
+                {
+                    if (!Game.rooms[missonPostion.roomName])
+                    {
+                        this.goTo(missonPostion,1)
+                        return
+                    }
+                    var harvest_void:RoomPosition[] = missonPostion.getSourceVoid()
+                    var active_void:RoomPosition[] = []
+                    for (var v of harvest_void)
+                    {
+                        var creep_ = v.lookFor(LOOK_CREEPS)
+                        if (creep_.length <= 0) active_void.push(v)
 
+                    }
+                    if (active_void.length > 0)
+                    {
+                        this.goTo(missonPostion,1)
+                    }
+                    else
+                    {
+                        if(!missonPostion.inRangeTo(this.pos.x,this.pos.y,3))
+                            this.goTo(missonPostion,3)
+                        else
+                        {
+                            if (Game.time % 10 == 0)
+                            {
+                                var enemy_creep = powerbank_.pos.findInRange(FIND_HOSTILE_CREEPS,3)
+                                var powerbank_ = missonPostion.GetStructure('powerBank')
+                                if (enemy_creep.length > 0 && powerbank_ && powerbank_.hits < 600000)
+                                {
+                                    globalMisson.Data.state = 2
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    /* 这是被攻击了 */
+                    if (this.hits < 1500)
+                    {
+                        /* 被攻击停止所有爬虫生产 */
+                            globalMisson.CreepBind['power-attack'].num = 0
+                            globalMisson.CreepBind['power-heal'].num = 0
+                            let hostileCreep = this.pos.findClosestByRange(FIND_HOSTILE_CREEPS)
+                            Game.notify(`[warning] 采集爬虫小队${this.name}遭受${hostileCreep?hostileCreep.owner.username:"不明"}攻击，地点在${this.room.name}！已经停止该power爬虫孵化！`)
+                            return
+                    }
+                    if (!this.memory.tick) this.memory.tick = this.ticksToLive
+                    var powerbank_ = missonPostion.GetStructure('powerBank')
+                    if (powerbank_)
+                    {
+                        this.attack(powerbank_)
+                        if ((powerbank_.hits / 600) + 30 > this.ticksToLive) // 快没有生命了就增加爬虫数量，以方便继续采集
+                        {
+                            /* 填充完毕就这么干 */
+                            
+                            if (globalMisson.CreepBind['power-attack'].num == 2 && globalMisson.CreepBind['power-attack'].num == globalMisson.CreepBind['power-attack'].bind.length && globalMisson.CreepBind['power-heal'].num == globalMisson.CreepBind['power-heal'].bind.length)
+                            {
+                                globalMisson.CreepBind['power-attack'].num = 1
+                                globalMisson.CreepBind['power-heal'].num = 1
+                                if (globalMisson.CreepBind['power-attack'].bind.length < 2) return
+                            }
+                            else
+                            {
+                                if (this.ticksToLive < (1500 - this.memory.tick + 200))
+                                {
+                                    globalMisson.CreepBind['power-attack'].num = 2
+                                    globalMisson.CreepBind['power-heal'].num = 2
+                                }
+                            }
+                            /* 新增一层逻辑判断 */
+                            if (this.ticksToLive < 40)
+                            {
+                                globalMisson.CreepBind['power-attack'].num = 1
+                                globalMisson.CreepBind['power-heal'].num = 1
+                            }
+                        }
+                        var enemy_creep = powerbank_.pos.findInRange(FIND_HOSTILE_CREEPS,2)
+                        if (enemy_creep.length == 0 && powerbank_.hits < 280000)
+                        {
+                            globalMisson.Data.state = 2
+                        }
+                        else if (enemy_creep.length > 0 && powerbank_.hits < 550000)
+                        {
+                            globalMisson.Data.state = 2
+                        }
+                    }
+                    else
+                    {
+                        /* 说明过期了，删除任务，自杀 */
+                        for (var ii in globalMisson.CreepBind)
+                        for (var jj of globalMisson.CreepBind[ii].bind) 
+                        Game.creeps[jj].suicide()
+                        Game.rooms[this.memory.belong].DeleteMission(globalMisson.id)
+                    }
+                }
+            }
+            else
+            {
+                if (!this.pos.isNearTo(missonPostion))
+                {
+                    this.goTo(missonPostion,1)
+                    return
+                }
+                /* 没有powerbank说明已经打掉了 */
+                var powerbank_ = missonPostion.GetStructure('powerBank')
+                if (!powerbank_) this.suicide()
+                else this.attack(powerbank_)   
+            }
+        }
+        else if (role == 'power-heal')
+        {
+            if (!this.memory.double) return
+            if (Game.creeps[this.memory.double])
+            {
+                if (this.hits < this.hitsMax)
+                {
+                    this.heal(this)
+                    return
+                }
+                if (Game.creeps[this.memory.double].hits < Game.creeps[this.memory.double].hitsMax)
+                {
+                    this.heal(Game.creeps[this.memory.double])
+                }
+                if (!this.pos.inRangeTo(missonPostion,3))
+                {
+                    this.memory.standed = false
+                    if (this.room.name == this.memory.belong) 
+                    this.goTo(Game.creeps[this.memory.double].pos,0)
+                    else
+                    this.moveTo(Game.creeps[this.memory.double].pos)
+                }
+                else
+                {
+                    this.memory.standed = true
+                    if (!this.pos.isNearTo(Game.creeps[this.memory.double]))
+                    this.goTo(Game.creeps[this.memory.double].pos,1)
+                }
+            }
+            else
+            {
+                this.suicide()
+            }
+        }
+        else if (role == 'power-carry')
+        {
+            this.workstate('power')
+            if (!this.memory.working)
+            {
+                if (!this.pos.inRangeTo(missonPostion,5))
+                {
+                    this.goTo(missonPostion,5)
+                }
+                else
+                {
+                    /* 寻找powerbank */
+                    var powerbank_ = missonPostion.GetStructure('powerBank')
+                    if (powerbank_){
+                        this.goTo(missonPostion,4)
+                        if (!this.memory.standed)this.memory.standed = true
+                    }
+                    else
+                    {
+                        /* 寻找掉落资源 */
+                        /* 优先寻找ruin */
+                        var ruins = missonPostion.lookFor(LOOK_RUINS)
+                        if (ruins.length > 0 && ruins[0].store.getUsedCapacity('power') > 0)
+                        {
+                            if (this.memory.standed) this.memory.standed = false
+                            if (!this.pos.isNearTo(ruins[0])) this.goTo(ruins[0].pos,1)
+                            else this.withdraw(ruins[0],'power')
+                            return
+                        }
+                        var drop_power = missonPostion.lookFor(LOOK_RESOURCES)
+                        if (drop_power.length > 0)
+                        {
+                            for (var i of drop_power)
+                            {
+                                if (i.resourceType == 'power')
+                                {
+                                        if (this.memory.standed) this.memory.standed = true
+                                        if (!this.pos.isNearTo(i)) this.goTo(i.pos,1)
+                                        else this.pickup(i)
+                                        return
+                                }
+                            }
+                        }
+                        /* 说明没有资源了 */
+                        if (this.store.getUsedCapacity('power') > 0) this.memory.working = true
+                        if (ruins.length <= 0 && drop_power.length <= 0 && this.store.getUsedCapacity('power') <= 0)
+                        {
+                            this.suicide()
+                        }
+                            
+                            
+                            
+                    }
+                }
+            }
+            else
+            {
+                var storage_ = Game.getObjectById(Game.rooms[this.memory.belong].memory.StructureIdData.storageID) as StructureStorage
+                if (!storage_)return
+                if (!this.pos.isNearTo(storage_)) this.goTo(storage_.pos,1)
+                else
+                {
+                    this.transfer(storage_,'power')
+                    this.suicide()
+                }
+            }
+        }
+    }
+
+    /* deposit采集任务处理 */
+    public handle_deposit():void{
+        var creepMisson = this.memory.MissionData.Data
+        if (!Game.rooms[this.memory.belong].GainMission(this.memory.MissionData.id)){this.memory.MissionData = {};return}
+        if (!creepMisson) return
+        /* 判断是否正在遭受攻击 */
+        if (this.hits < this.hitsMax/2)
+        {
+            let hcreep = this.pos.findClosestByRange(FIND_HOSTILE_CREEPS)
+            Game.notify(`来自${this.memory.belong}的商品爬虫遭受攻击,攻击者疑似为${hcreep?hcreep.owner.username:"不明生物"}`)
+        }
+        this.workstate(creepMisson.rType)
+        if (this.memory.working)
+        {
+            var storage_ = Game.getObjectById(Game.rooms[this.memory.belong].memory.StructureIdData.storageID) as StructureStorage
+            if (!storage_)return
+            if (!this.pos.isNearTo(storage_)) this.goTo(storage_.pos,1)
+            else
+            {
+                this.transfer(storage_,creepMisson.rType)
+                Game.rooms[this.memory.belong].DeleteMission(this.memory.MissionData.id)
+                this.suicide()
+            }
+        }
+        else
+        {
+            var missonPostion = new RoomPosition(creepMisson.x,creepMisson.y,creepMisson.room)
+            if (!missonPostion) {this.say("找不到目标地点！");return}
+            if (!this.pos.isNearTo(missonPostion))
+            {
+                if(!Game.rooms[missonPostion.roomName])
+                {
+                    this.goTo(missonPostion,1)
+                    return
+                } 
+                var harvest_void:RoomPosition[] = missonPostion.getSourceVoid()
+                var active_void:RoomPosition[] = []
+                for (var v of harvest_void)
+                {
+                    var creep_ = v.lookFor(LOOK_CREEPS)
+                    if (creep_.length <= 0) active_void.push(v)
+                }
+                if (active_void.length > 0)
+                {
+                    this.goTo(missonPostion,1)
+                }
+                else
+                {
+                    if(!missonPostion.inRangeTo(this.pos.x,this.pos.y,3))
+                        this.goTo(missonPostion,3)
+                }
+            }
+            else
+            {
+                if (!this.memory.tick) this.memory.tick = this.ticksToLive
+                if (this.ticksToLive < (1500 - (this.memory.tick?this.memory.tick:1000) + 70) && this.store.getUsedCapacity(creepMisson.rType) > 0)
+                {
+                    this.memory.working = true
+                }
+                /* 开始采集 */
+                var deposit_ = missonPostion.lookFor(LOOK_DEPOSITS)[0] as Deposit
+                if (deposit_)
+                {
+                    if (!deposit_.cooldown)
+                    {
+                        this.harvest(deposit_)
+                    }
+                }
+                else
+                {
+                    Game.rooms[this.memory.belong].DeleteMission(this.memory.MissionData.id)
+                    return
+                }
+            }
+        }
+
+    }
 }

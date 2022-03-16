@@ -100,6 +100,8 @@ export default class CreepMissonBaseExtension extends Creep {
                 case '攻防一体':{this.handle_aio();break}
                 case '原矿开采':{this.handle_mineral();break}
                 case '外矿开采':{this.handle_outmine();break}
+                case 'power采集':{this.handle_power();break}
+                case 'deposit采集':{this.handle_deposit();break}
             }
         }
     }

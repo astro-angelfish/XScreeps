@@ -1,4 +1,4 @@
-import { isInArray, unzipPosition, zipPosition } from "@/utils"
+import { Colorful, isInArray, unzipPosition, zipPosition } from "@/utils"
 
 
 /* 房间原型拓展   --行为  --采矿任务 */
@@ -205,4 +205,132 @@ export default class RoomMissonMineExtension extends Room {
             }
         }
     }
+
+    /* 过道采集监控发布任务 */
+    public Task_Cross(misson:MissionModel):void{
+        if (this.controller.level < 8 || !this.memory.StructureIdData.ObserverID) return
+        var observer_ = Game.getObjectById(this.memory.StructureIdData.ObserverID) as StructureObserver
+        if (!observer_) {delete this.memory.StructureIdData.ObserverID;return}
+        if (!misson.Data.relateRooms) misson.Data.relateRooms = []
+        if (misson.Data.relateRooms.length <= 0) return
+        if (!misson.Data.index) misson.Data.index = 0
+        if (!misson.Data.state) misson.Data.state = 1
+        if (misson.Data.index >= misson.Data.relateRooms.length) misson.Data.index = 0
+        if (misson.Data.state == 1)
+        {
+            /* 观察房间 */
+            observer_.observeRoom(misson.Data.relateRooms[misson.Data.index])
+            // console.log(`observer正在观察房间${misson.Data.relateRooms[misson.Data.index]}`)
+            /* 获取上个tick的房间名 */
+            let beforRoom:string
+            if (misson.Data.relateRooms.length == 1) beforRoom = misson.Data.relateRooms[0]
+            else if (misson.Data.relateRooms.length > 1)
+            {
+                if (misson.Data.index == 0) beforRoom = misson.Data.relateRooms[misson.Data.relateRooms.length -1]
+                else beforRoom = misson.Data.relateRooms[misson.Data.index -1]
+            }
+            if (Game.rooms[beforRoom])
+            {
+                /* 查找power和deposit */
+                if (misson.Data.power)
+                {
+                    var powerbank = Game.rooms[beforRoom].find(FIND_STRUCTURES,{filter:(stru)=>{
+                        return stru.structureType == 'powerBank' && stru.ticksToDecay >= 3600 && stru.power > 3000
+                    }}) as StructurePowerBank[]
+                    if (powerbank.length > 0)
+                    {
+                        let BR = true
+                        for (var i of this.memory.Misson['Creep'])
+                        {
+                            if (i.name == 'power采集' && i.Data.room == beforRoom && i.Data.x == powerbank[0].pos.x && i.Data.y == powerbank[0].pos.y)
+                            {
+                                BR = false
+                            }
+                        }
+                        if (BR)
+                        {
+                            /* 下达采集任务 */
+                            
+                            var thisTask = this.public_PowerHarvest(beforRoom,powerbank[0].pos.x,powerbank[0].pos.y,powerbank[0].power)
+                            if (thisTask != null)
+                            {
+                                this.AddMission(thisTask)
+                            }
+                        }
+                    }
+                }
+                if (misson.Data.deposit)
+                {
+                    var deposit = Game.rooms[beforRoom].find(FIND_DEPOSITS,{filter:(stru)=>{
+                        return  stru.ticksToDecay >= 3800  && stru.lastCooldown < 150
+                    }})
+                    if (deposit.length > 0)
+                    {
+                        let BR = true
+                        for (var i of this.memory.Misson['Creep'])
+                        {
+                            if (i.name == 'deposit采集' && i.Data.room == beforRoom && i.Data.x == deposit[0].pos.x && i.Data.y == deposit[0].pos.y)
+                            {
+                                BR = false
+                            }
+                        }
+                        if (BR)
+                        {
+                            /* 下达采集任务 */
+                            var thisTask = this.public_DepositHarvest(beforRoom,deposit[0].pos.x,deposit[0].pos.y,deposit[0].depositType)
+                            if (thisTask != null)
+                            {
+                                this.AddMission(thisTask)
+                            }
+                        }  
+                    }
+                }
+            }
+            misson.Data.index ++
+            if (Game.rooms[beforRoom] && misson.Data.index == 1)
+            {
+                // console.log(Colorful("进入休息模式",'blue'))
+                misson.Data.time = Game.time
+                misson.Data.state = 2
+            }
+        }
+        else if (misson.Data.state == 2)
+        {
+            if (Game.time - misson.Data.time != 0 && (Game.time-misson.Data.time) % 60 == 0)
+            {
+                misson.Data.state = 1
+                // console.log(Colorful("进入观察模式",'blue'))
+            }
+        }
+    }
+
+    /* Power采集 */
+    public Task_PowerHarvest(misson:MissionModel):void{
+        if (this.controller.level < 8) return
+        if (!misson.Data.state) misson.Data.state = 1
+        if (misson.Data.state == 1)
+        {
+            misson.CreepBind['power-carry'].num = 0
+        }
+        else if (misson.Data.state == 2)
+        {
+            if (!misson.Data.down) misson.Data.down = false
+            if (!misson.Data.down)
+            {
+                misson.CreepBind['power-carry'].num = Math.ceil(misson.Data.num/1600)
+                misson.Data.down = true
+            }
+            misson.CreepBind['power-attack'].num = 0
+            misson.CreepBind['power-heal'].num = 0
+            if (misson.CreepBind['power-carry'].num == misson.CreepBind['power-carry'].bind.length && misson.CreepBind['power-carry'].num != 0)
+            {
+                misson.CreepBind['power-carry'].num = 0
+            }
+            if (misson.CreepBind['power-attack'].bind.length <= 0 && misson.CreepBind['power-heal'].bind.length <= 0 && misson.CreepBind['power-carry'].bind.length <= 0)
+            {
+                this.DeleteMission(misson.id)
+            }
+        }
+    }
+
 }

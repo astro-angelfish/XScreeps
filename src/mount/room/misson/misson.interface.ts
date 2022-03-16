@@ -36,6 +36,8 @@ interface Room {
     Task_aio(mission:MissionModel):void
     Task_OutMine(misson:MissionModel):void
     Task_ProcessPower(misson:MissionModel):void
+    Task_Cross(misson:MissionModel):void
+    Task_PowerHarvest(misson:MissionModel):void
 }
 
 interface RoomMemory {
