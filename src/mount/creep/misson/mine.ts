@@ -64,9 +64,9 @@ export default class CreepMissonMineExtension extends Creep {
                 }
                 else
                 {
-                    if (!this.room.controller.sign ||!this.room.controller.sign.username || this.room.controller.sign.username != this.owner.username)
+                    if (this.room.controller && (!this.room.controller.sign || (Game.time-this.room.controller.sign.time) > 50000))
                     {
-                        this.signController(this.room.controller,'三点多啦，饮茶先啦！')
+                        this.signController(this.room.controller,`${this.owner.username}'s 🌾🌾🌾 room!  Auto clean, Please keep distance!`)
                     }
                     this.reserveController(this.room.controller)
                     if (Game.time % 91 == 0)

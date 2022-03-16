@@ -19,6 +19,8 @@ interface Creep{
     // 跨shard移动
     arriveTo(target:RoomPosition,range:number,shard:shardName):void
     serializeFarPath(positions:RoomPosition[]):string
+    goTo_defend(target:RoomPosition,range:number):CreepMoveReturnCode | ERR_NO_PATH | ERR_NOT_IN_RANGE | ERR_INVALID_TARGET
+    findPath_defend(target:RoomPosition,range:number):string|null
 }
 
 /* 爬虫移动记忆 */

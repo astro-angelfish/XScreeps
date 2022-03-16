@@ -10,7 +10,7 @@ interface Room {
     Check_Lab(misson:MissionModel,role:string,tankType:'storage' | 'terminal' | 'complex'):boolean
     Check_Link(source:RoomPosition,pos:RoomPosition):boolean
     Check_Buy(resource:ResourceConstant):boolean
-    
+    MissionName(range:string,name:string):MissionModel|null
     // 主动任务
     Spawn_Feed():void
     Constru_Build():void
@@ -24,6 +24,7 @@ interface Room {
     Task_CompoundDispatch():void
     Task_monitorMineral():void
     Task_montitorPower():void
+    Task_Auto_Defend():void
 
     // 被动任务
     Task_Carry(misson:MissionModel):void
@@ -38,6 +39,9 @@ interface Room {
     Task_ProcessPower(misson:MissionModel):void
     Task_Cross(misson:MissionModel):void
     Task_PowerHarvest(misson:MissionModel):void
+    Task_Red_Defend(mission:MissionModel):void
+    Task_Blue_Defend(mission:MissionModel):void
+    Task_Double_Defend(mission:MissionModel):void
 }
 
 interface RoomMemory {

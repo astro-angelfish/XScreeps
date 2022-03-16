@@ -20,30 +20,35 @@ export default class RoomMissonFrameExtension extends Room {
         this.Task_ComsumeLink() // 消费、冲级link
         this.Constru_Build()   // 建筑任务
         this.Task_Clink()       // 链接送仓任务
-        this.Tower_Feed()   // 防御塔填充任务 
+        this.Tower_Feed()   // 防御塔填充任务
         this.Lab_Feed()     // 实验室填充\回收任务  
         this.Nuker_Feed()   // 核弹填充任务      
         this.Nuke_Defend()  // 核弹防御
         this.Task_CompoundDispatch()    // 合成规划 （中级）
         this.Task_monitorMineral()  // 挖矿
         this.Task_montitorPower()   // 烧power任务监控
+        this.Task_Auto_Defend()     // 主动防御任务发布
         /* 基本任务监控区域 */
         for (var index in this.memory.Misson)
         for (var misson of this.memory.Misson[index])
         {
+            A:
             switch (misson.name){
-                case "物流运输":{this.Task_Carry(misson);break;}
-                case "墙体维护":{this.Task_Repair(misson);break;}
-                case '黄球拆迁':{this.Task_dismantle(misson);break;}
-                case '急速冲级':{this.Task_Quick_upgrade(misson);break;}
-                case '紧急援建':{this.Task_HelpBuild(misson);break;}
-                case '紧急支援':{this.Task_HelpDefend(misson);break;}
-                case '资源合成':{this.Task_Compound(misson);break;}
-                case '攻防一体':{this.Task_aio(misson);break;}
-                case '外矿开采':{this.Task_OutMine(misson);break;}
-                case "power升级":{this.Task_ProcessPower(misson);break;}
-                case '过道采集':{this.Task_Cross(misson);break;}
-                case 'power采集':{this.Task_PowerHarvest(misson);break}
+                case "物流运输":{this.Task_Carry(misson);break A;}
+                case "墙体维护":{this.Task_Repair(misson);break A;}
+                case '黄球拆迁':{this.Task_dismantle(misson);break A;}
+                case '急速冲级':{this.Task_Quick_upgrade(misson);break A;}
+                case '紧急援建':{this.Task_HelpBuild(misson);break A;}
+                case '紧急支援':{this.Task_HelpDefend(misson);break A;}
+                case '资源合成':{this.Task_Compound(misson);break A;}
+                case '攻防一体':{this.Task_aio(misson);break A;}
+                case '外矿开采':{this.Task_OutMine(misson);break A;}
+                case "power升级":{this.Task_ProcessPower(misson);break A;}
+                case '过道采集':{this.Task_Cross(misson);break A;}
+                case 'power采集':{this.Task_PowerHarvest(misson);break A;}
+                case '红球防御':{this.Task_Red_Defend(misson);break A;}
+                case '蓝球防御':{this.Task_Blue_Defend(misson);break A;}
+                case '双人防御':{this.Task_Double_Defend(misson);break A;}
             }
         }
     }
@@ -257,6 +262,18 @@ export default class RoomMissonFrameExtension extends Room {
                 if (t.id == id)
                     return t
             }
+        return null
+    }
+
+    /* 通过名称获取唯一任务 */
+    public MissionName(range:string,name:string):MissionModel|null{
+        for (var i of this.memory.Misson[range])
+        {
+            if (i.name == name)
+            {
+                return i
+            }
+        }
         return null
     }
 

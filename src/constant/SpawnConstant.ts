@@ -37,7 +37,7 @@ export const RoleData:SpawnConstantData = {
     'claim-attack':{num:0,ability:[0,0,15,0,0,0,15,0],level:10,mark:"控"},
     'architect':{num:0,ability:[15,10,10,0,0,10,0,5],level:10,mark:"援建"},
     'scout':{num:0,ability:[0,0,1,0,0,0,0,0],level:15,mark:'签名'},
-    'aio':{num:0,ability:[0,0,25,0,10,15,0,0],level:10,mark:"一体"},
+    'aio':{num:0,ability:[0,0,25,0,10,15,0,0],level:10,mark:"🌈"},
     'mineral':{num:0,ability:[15,15,15,0,0,0,0,0],level:11,mark:"原矿"},
     /* 外矿 */
     'out-claim':{num:0,ability:[0,0,2,0,0,0,2,0],level:11,mark:"外预"},
@@ -45,11 +45,16 @@ export const RoleData:SpawnConstantData = {
     'out-car':{num:0,ability:[1,5,6,0,0,0,0,0],level:12,mark:"外运"},
     'out-defend':{num:0,ability:[0,0,5,5,0,5,0,0],level:10,mark:"外防"},
     /* 帕瓦 */
-    'power-attack':{num:0,ability:[0,0,20,20,0,0,0,0],level:10,mark:"🍎攻"},
-    'power-heal':{num:0,ability:[0,0,25,0,0,25,0,0],level:10,mark:"🍎疗"},
-    'power-carry':{num:0,ability:[0,32,16,0,0,0,0,0],level:10,mark:"🍎运"},
+    'power-attack':{num:0,ability:[0,0,20,20,0,0,0,0],level:10,mark:"🟥"},
+    'power-heal':{num:0,ability:[0,0,25,0,0,25,0,0],level:10,mark:"🟩"},
+    'power-carry':{num:0,ability:[0,32,16,0,0,0,0,0],level:10,mark:"🟫"},
     /* 沉积物 */
-    'deposit':{num:0,ability:[15,10,25,0,0,0,0,0],level:11,mark:"沉积"},
+    'deposit':{num:0,ability:[15,10,25,0,0,0,0,0],level:11,mark:"⚙️"},
+    /* 主动防御 */
+    'defend-attack':{num:0,ability:[0,0,10,40,0,0,0,0],level:8,mark:"🔴",must:true},
+    'defend-range':{num:0,ability:[0,0,10,0,40,0,0,0],level:8,mark:"🔵",must:true},
+    'defend-douAttack':{num:0,ability:[0,0,10,30,0,0,0,10],level:7,mark:"🔴",must:true},
+    'defend-douHeal':{num:0,ability:[0,0,10,0,0,30,0,10],level:7,mark:"🟢",must:true},
 }
 /* 爬虫部件随房间等级变化的动态列表 */
 export const RoleLevelData = {

@@ -5,6 +5,7 @@ import CreepMissonBaseExtension from "./misson/base"
 import CreepMissonTransportExtension from "./misson/transport"
 import CreepMissonActionExtension from "./misson/action"
 import CreepMissonMineExtension from "./misson/mine"
+import CreepMissonWarExtension from "./misson/war"
 // 定义好挂载顺序
 const plugins = [
     CreepMoveExtension,
@@ -13,6 +14,7 @@ const plugins = [
     CreepMissonTransportExtension,
     CreepMissonActionExtension,
     CreepMissonMineExtension,
+    CreepMissonWarExtension,
     ]
 
 /**

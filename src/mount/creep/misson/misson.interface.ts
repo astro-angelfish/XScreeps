@@ -21,6 +21,9 @@ interface Creep{
     handle_outmine():void
     handle_power():void
     handle_deposit():void
+    handle_defend_attack():void
+    handle_defend_range():void
+    handle_defend_double():void
 }
 
 interface CreepMemory{

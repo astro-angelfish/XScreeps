@@ -365,7 +365,7 @@ export default {
         },
     },
 
-        /* 过道行为 */
+    /* 过道行为 */
     cross:{
         // 初始化过道任务
         init(roomName:string,relateRoom:string[]):string{

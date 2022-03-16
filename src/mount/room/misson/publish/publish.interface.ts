@@ -18,4 +18,7 @@ interface Room {
     public_OutMine(sourceRoom:string,x:number,y:number,disRoom:string):MissionModel
     public_PowerHarvest(disRoom:string,x:number,y:number,num:number):MissionModel
     public_DepositHarvest(disRoom:string,x:number,y:number,rType:DepositConstant):MissionModel
+    public_red_defend(num:number):MissionModel
+    public_blue_defend(num:number):MissionModel
+    public_double_defend(num:number):MissionModel
 }

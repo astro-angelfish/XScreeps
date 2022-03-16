@@ -79,8 +79,8 @@ export default class CreepFunctionExtension extends Creep {
         this.memory.standed = false
     }
 
-        // 确认是否boost了,并进行相应Boost
-        public BoostCheck(boostBody:string[]):boolean{
+    // 确认是否boost了,并进行相应Boost
+    public BoostCheck(boostBody:string[]):boolean{
             for (var body in this.memory.boostData)
             {
                 if (!isInArray(boostBody,body)) continue
@@ -123,5 +123,23 @@ export default class CreepFunctionExtension extends Creep {
                 }
             }
             return true
+    }
+
+    // 召唤所有房间内的防御塔治疗/攻击 自己/爬虫 [不一定成功]
+    public optTower(otype:'heal'|'attack',creep:Creep):void{
+        if (this.room.name != this.memory.belong || Game.shard.name != this.memory.shard) return
+        for (var i of Game.rooms[this.memory.belong].memory.StructureIdData.AtowerID)
+        {
+            let tower_ = Game.getObjectById(i) as StructureTower
+            if (!tower_) continue
+            if (otype == 'heal')
+            {
+                tower_.heal(creep)
+            }
+            else
+            {
+                tower_.attack(creep)
+            }
         }
+    }
 }

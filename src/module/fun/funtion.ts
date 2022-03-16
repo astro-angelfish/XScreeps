@@ -158,3 +158,47 @@ export function resourceMap(rType:ResourceConstant,disType:ResourceConstant):Res
     console.log("resourceMap返回了空列表")
     return []
 }
+
+/* 判断爬虫是否是值得防御的目标 */
+export function deserveDefend(creep:Creep):boolean{
+    for (var b of creep.body)
+    {
+        if (b.boost && isInArray(['XGHO2','XKHO2','XUHO2','XZH2O',],b.boost))
+        {
+            return true
+        }
+    }
+    return false
+}
+
+/* 判断爬虫是否有某类型部件 */
+export function parts(creep:Creep,bo:BodyPartConstant):boolean{
+    for (var b of creep.body)
+    {
+        if (b.type == bo) return true
+    }
+    return false
+}
+
+/* 爬虫攻击部件数据 */
+export function hurts(creep:Creep):{[bo:string]:number}{
+    var result = {'attack':0,'ranged_attack':0}
+    for (var i of creep.body)
+    {
+        if (i.type == 'attack')
+        {
+            if (!i.boost) result['attack'] += 30
+            else if (i.boost == 'UH') result['attack'] += 60
+            else if (i.boost == 'UH2O') result['attack'] += 90
+            else if (i.boost == 'XUH2O') result['attack'] += 120
+        }
+        else if (i.type == 'ranged_attack')
+        {
+            if (!i.boost) result['ranged_attack'] += 10
+            else if (i.boost == 'KO') result['ranged_attack'] += 20
+            else if (i.boost == 'KHO2') result['ranged_attack'] += 30
+            else if (i.boost == 'XKHO2') result['ranged_attack'] += 40
+        }
+    }
+    return result
+}

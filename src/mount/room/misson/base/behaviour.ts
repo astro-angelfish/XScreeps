@@ -193,6 +193,7 @@ export default class RoomMissonBehaviourExtension extends Room {
     // 合成规划     (中层)    目标化合物 --> 安排一系列合成
     public Task_CompoundDispatch():void{
         if ((Game.time - global.Gtime[this.name]) % 50) return
+        if (this.memory.switch.AutoDefend) return
         if (this.RoleMissionNum('transport','物流运输') > 0) return
         if (Object.keys(this.memory.ComDispatchData).length <=0) return //  没有合成规划情况
         if (this.MissionNum('Room','资源合成') > 0) return  // 有合成任务情况

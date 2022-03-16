@@ -1,5 +1,5 @@
 import { LabMap } from "@/constant/ResourceConstant"
-import { zipPosition } from "@/utils"
+import { isInArray, zipPosition } from "@/utils"
 import { times } from "lodash"
 
 /* 房间原型拓展   --任务  --任务发布便捷函数 */
@@ -490,6 +490,61 @@ export default class RoomMissonPublish extends Room {
         var MissonNum = this.MissionNum('Creep','deposit采集')
         if (MissonNum > 2) return null
         thisTask.maxTime = MissonNum
+        return thisTask
+    }
+
+    /* 红球防御任务发布函数 */
+    public public_red_defend(num:number):MissionModel{
+        var thisTask:MissionModel = {
+            name:'红球防御',
+            range:'Creep',
+            delayTick:99999,
+            level:10,
+            Data:{},
+        }
+        var comList = ['XZHO2','XUH2O']
+        thisTask.CreepBind = {}
+        thisTask.CreepBind['defend-attack'] = {num:1,bind:[]}
+        var labData = this.Bind_Lab(comList as ResourceConstant[])
+        if (labData === null) return null
+        thisTask.LabBind = labData
+        return thisTask
+    }
+
+    /* 蓝球防御任务发布函数 */
+    public public_blue_defend(num:number):MissionModel{
+        var thisTask:MissionModel = {
+            name:'蓝球防御',
+            range:'Creep',
+            delayTick:99999,
+            level:10,
+            Data:{}
+        }
+        var comList = ['XZHO2','XKHO2']
+        thisTask.CreepBind = {}
+        thisTask.CreepBind['defend-range'] = {num:num,bind:[]}
+        var labData = this.Bind_Lab(comList as ResourceConstant[])
+        if (labData === null) return null
+        thisTask.LabBind = labData
+        return thisTask
+    }
+
+    /* 双人小队防御任务发布函数 */
+    public public_double_defend(num:number):MissionModel{
+        var thisTask:MissionModel = {
+            name:'双人防御',
+            range:'Creep',
+            delayTick:99999,
+            level:10,
+            Data:{}
+        }
+        var comList = ['XZHO2','XLHO2','XUH2O','XGHO2']
+        thisTask.CreepBind = {}
+        thisTask.CreepBind['defend-douAttack'] = {num:num,bind:[]}
+        thisTask.CreepBind['defend-douHeal'] = {num:num,bind:[]}
+        var labData = this.Bind_Lab(comList as ResourceConstant[])
+        if (labData === null) return null
+        thisTask.LabBind = labData
         return thisTask
     }
 }

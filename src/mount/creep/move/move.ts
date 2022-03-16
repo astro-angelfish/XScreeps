@@ -1,6 +1,7 @@
 // import { RequestShard } from "@/shard/base"
+import { hurts, parts } from "@/module/fun/funtion"
 import { RequestShard } from "@/module/shard/base"
-import { closestPotalRoom, getOppositeDirection } from "@/utils"
+import { closestPotalRoom, getOppositeDirection, isInArray } from "@/utils"
 
 /* 本地寻路移动 */
 export default class CreepMoveExtension extends Creep {
@@ -274,6 +275,120 @@ export default class CreepMoveExtension extends Creep {
         return
     }
 
+    // 主动防御寻路
+    public findPath_defend(target:RoomPosition,range:number):string|null{
+        /* 全局路线存储 */
+        if (!global.routeCache) global.routeCache = {}
+        if (!this.memory.moveData) this.memory.moveData = {}
+        this.memory.moveData.index = 0
+        const routeKey = `${this.standardizePos(this.pos)} ${this.standardizePos(target)}`
+        /* 路线查找 */
+        const result = PathFinder.search(this.pos,{pos:target,range:range},{
+            plainCost:3,
+            swampCost:10,
+            maxOps:600,
+            roomCallback:roomName=>{
+                // 在全局绕过房间列表的房间 false
+                if (Memory.bypassRooms && Memory.bypassRooms.includes(roomName)) return false
+                // 在爬虫记忆绕过房间列表的房间 false
+                if (this.memory.bypassRooms && this.memory.bypassRooms.includes(roomName)) return false
+                const room = Game.rooms[roomName]
+                // 没有视野的房间只观察地形
+                if (!room) return
+                // 有视野的房间
+                let costs = new PathFinder.CostMatrix
+                /* 设置主动防御范围 */
+                if (room.name == this.memory.belong)
+                {
+                    /* 将房间边界设置为255 */
+                    for (var x=0;x<50;x++)
+                    for (var y=0;y<50;y++)
+                    {
+                        if (isInArray([0,49],x) || isInArray([0,49],y))
+                        {
+                            costs.set(x,y,255)
+                        }
+                    }
+                }
+                // 将rampart设置为 1 
+                room.find(FIND_MY_STRUCTURES).forEach(struct=>{
+                    if (struct.structureType === STRUCTURE_RAMPART)
+                    {
+                        costs.set(struct.pos.x,struct.pos.y,1)
+                    }
+                })
+                // 将道路的cost设置为2，无法行走的建筑设置为255
+                room.find(FIND_STRUCTURES).forEach(struct=>{
+                    if (struct.structureType === STRUCTURE_ROAD)
+                    {
+                        costs.set(struct.pos.x,struct.pos.y,2)
+                    }
+                    else if (struct.structureType !== STRUCTURE_CONTAINER && 
+                        (struct.structureType !==STRUCTURE_RAMPART || !struct.my))
+                        costs.set(struct.pos.x,struct.pos.y,255)
+                })
+                room.find(FIND_MY_CONSTRUCTION_SITES).forEach(cons=>{
+                    if (cons.structureType != 'road' && cons.structureType != 'rampart' && cons.structureType != 'container')
+                    costs.set(cons.pos.x,cons.pos.y,255)
+                })
+                room.find(FIND_HOSTILE_CREEPS).forEach(creep=>{
+                    if (parts(creep,'ranged_attack') && hurts(creep)['ranged_attack'] > 1000)
+                    {
+                        for (var i = creep.pos.x-3;i<creep.pos.x+4;i++)
+                        for (var j = creep.pos.y-3;j<creep.pos.y+4;j++)
+                        if (i>0 && i< 49 && j>0 && j<49)
+                        {
+                            var nearpos = new RoomPosition(i,j,creep.room.name)
+                            if(!nearpos.GetStructure('rampart'))
+                            costs.set(i,j,20)
+                        }
+                    }
+                })
+                /* 防止撞到其他虫子造成堵虫 */
+                room.find(FIND_HOSTILE_CREEPS).forEach(creep=>{
+                    costs.set(creep.pos.x,creep.pos.y,255)
+                })
+                room.find(FIND_MY_CREEPS).forEach(creep=>{
+                    if ((creep.memory.crossLevel && creep.memory.crossLevel > this.memory.crossLevel) || creep.memory.standed)
+                    costs.set(creep.pos.x,creep.pos.y,255)
+                    else
+                    costs.set(creep.pos.x,creep.pos.y,3)
+                })              
+                return costs
+                }
+            })
+        // 寻路异常返回null
+        if (result.path.length <= 0) return null
+        // 寻路结果压缩
+        var route = this.serializeFarPath(result.path)
+        if (!result.incomplete) global.routeCache[routeKey] = route
+        return route
 
-    
+    }
+    /* 主动防御移动 */
+    public goTo_defend(target:RoomPosition,range:number = 1):CreepMoveReturnCode | ERR_NO_PATH | ERR_NOT_IN_RANGE | ERR_INVALID_TARGET{
+        var a = Game.cpu.getUsed()
+        if (this.memory.moveData == undefined) this.memory.moveData = {}
+        // 确认目标没有变化，如果变化了就重新规划路线
+        this.memory.moveData.path = this.findPath_defend(target,range)
+        // 还为空的话就是没有找到路径
+        if (!this.memory.moveData.path)
+        {
+            delete this.memory.moveData.path
+            return OK
+        }
+        // 使用缓存进行移动
+        const goResult = this.goByPath()
+        // 如果发生撞停或者参数异常，说明缓存可能存在问题，移除缓存
+        if (goResult === ERR_INVALID_TARGET){
+            delete this.memory.moveData
+        }
+        else if (goResult != OK && goResult != ERR_TIRED)
+        {
+            this.say(`异常码：${goResult}`)
+        }
+        var b = Game.cpu.getUsed()
+        //this.say(`b-a`)
+        return goResult
+    }
 }
