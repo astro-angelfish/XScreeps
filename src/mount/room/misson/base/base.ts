@@ -14,6 +14,9 @@ export default class RoomMissonFrameExtension extends Room {
         this.UnbindMonitor()
         // 任务-爬虫 孵化
         this.MissonRoleSpawn()
+        /* PC任务管理器 */
+        this.PowerCreep_TaskManager()
+
         /* [全自动] 任务挂载区域 需要按照任务重要程度进行排序 */
         this.Spawn_Feed()    // 虫卵填充任务 
         this.Task_CenterLink()  // 能量采集  
@@ -28,6 +31,7 @@ export default class RoomMissonFrameExtension extends Room {
         this.Task_monitorMineral()  // 挖矿
         this.Task_montitorPower()   // 烧power任务监控
         this.Task_Auto_Defend()     // 主动防御任务发布
+
         /* 基本任务监控区域 */
         for (var index in this.memory.Misson)
         for (var misson of this.memory.Misson[index])

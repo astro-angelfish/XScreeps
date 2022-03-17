@@ -1,3 +1,4 @@
+import { parts } from "@/module/fun/funtion"
 import { getDistance, isInArray } from "@/utils"
 
 export default class CreepMissonWarExtension extends Creep {
@@ -39,20 +40,33 @@ export default class CreepMissonWarExtension extends Creep {
         if (Game.rooms[this.memory.belong].memory.enemy[this.name].length <= 0)
         {
             /* 领取敌对爬虫 */
+            let creeps_ = []
             for (var creep of hostileCreep)
             {
                 /* 判断一下该爬虫的id是否存在于其他爬虫的分配里了 */
                 if (this.isInDefend(creep)) continue
                 else
                 {
-                    /* 进行判定 */
-                    Game.rooms[this.memory.belong].memory.enemy[this.name].push(creep.id)
-                    /* 防止小队，把周围的爬也放进去 【如果本来不是小队但暂时在周围的，后续会有更新】 */
-                    let nearHCreep = creep.pos.findInRange(FIND_HOSTILE_CREEPS,1,{filter:(creep)=>{
-                        return !isInArray(Memory.whitesheet,creep.name) && !this.isInDefend(creep)
-                    }})
-                    if (nearHCreep.length > 0) for (var n of nearHCreep) Game.rooms[this.memory.belong].memory.enemy[this.name].push(n.id)
+                    creeps_.push(creep)
                 }
+            }
+            if (creeps_.length > 0)
+            {
+                let highestAim:Creep = creeps_[0]
+                for (var i of creeps_)
+                {
+                    if (parts(i,'attack') || parts(i,'work'))
+                    {
+                        highestAim = i
+                        break
+                    }
+                }
+                Game.rooms[this.memory.belong].memory.enemy[this.name].push(highestAim.id)
+                /* 方便识别小队，把周围的爬也放进去 【如果本来不是小队但暂时在周围的，后续爬虫会自动更新】 */
+                let nearHCreep = creep.pos.findInRange(FIND_HOSTILE_CREEPS,1,{filter:(creep)=>{
+                    return !isInArray(Memory.whitesheet,creep.name) && !this.isInDefend(creep)
+                }})
+                if (nearHCreep.length > 0) for (var n of nearHCreep) Game.rooms[this.memory.belong].memory.enemy[this.name].push(n.id)
             }
         }
         else
@@ -130,7 +144,7 @@ export default class CreepMissonWarExtension extends Creep {
             }})
             if (nearstCreep.length > 0) this.rangedMassAttack()
             else this.rangedAttack(nearCreep[0])
-            if (nearCreep[0].hits/nearCreep[0].hitsMax <= 0.9)
+            if (nearCreep[0].hits/nearCreep[0].hitsMax <= 0.85)
                 this.optTower('attack',nearCreep[0])
         }
         /* 寻路去距离敌对爬虫最近的rampart */
@@ -156,20 +170,33 @@ export default class CreepMissonWarExtension extends Creep {
         if (Game.rooms[this.memory.belong].memory.enemy[this.name].length <= 0)
         {
             /* 领取敌对爬虫 */
+            let creeps_ = []
             for (var creep of hostileCreep)
             {
                 /* 判断一下该爬虫的id是否存在于其他爬虫的分配里了 */
                 if (this.isInDefend(creep)) continue
                 else
                 {
-                    /* 进行判定 */
-                    Game.rooms[this.memory.belong].memory.enemy[this.name].push(creep.id)
-                    /* 防止小队，把周围的爬也放进去 【如果本来不是小队但暂时在周围的，后续会有更新】 */
-                    let nearHCreep = creep.pos.findInRange(FIND_HOSTILE_CREEPS,1,{filter:(creep)=>{
-                        return !isInArray(Memory.whitesheet,creep.name) && !this.isInDefend(creep)
-                    }})
-                    if (nearHCreep.length > 0) for (var n of nearHCreep) Game.rooms[this.memory.belong].memory.enemy[this.name].push(n.id)
+                    creeps_.push(creep)
                 }
+            }
+            if (creeps_.length > 0)
+            {
+                let highestAim:Creep = creeps_[0]
+                for (var i of creeps_)
+                {
+                    if (parts(i,'ranged_attack'))
+                    {
+                        highestAim = i
+                        break
+                    }
+                }
+                Game.rooms[this.memory.belong].memory.enemy[this.name].push(highestAim.id)
+                /* 方便识别小队，把周围的爬也放进去 【如果本来不是小队但暂时在周围的，后续爬虫会自动更新】 */
+                let nearHCreep = creep.pos.findInRange(FIND_HOSTILE_CREEPS,1,{filter:(creep)=>{
+                    return !isInArray(Memory.whitesheet,creep.name) && !this.isInDefend(creep)
+                }})
+                if (nearHCreep.length > 0) for (var n of nearHCreep) Game.rooms[this.memory.belong].memory.enemy[this.name].push(n.id)
             }
         }
         else
@@ -339,5 +366,4 @@ export default class CreepMissonWarExtension extends Creep {
             }
         }
     }
-
 }

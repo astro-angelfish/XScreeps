@@ -6,9 +6,10 @@ export default()=>{
     /* powercreep */
     for (var pc in Game.powerCreeps)
     {
-      let thisCreep = Game.powerCreeps[c]
-      if (!thisCreep) continue
-      
+      if (Game.powerCreeps[pc].ticksToLive)
+      {
+          Game.powerCreeps[pc].ManageMisson()
+      }
     }
 
     /* creep */

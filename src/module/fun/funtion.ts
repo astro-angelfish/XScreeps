@@ -163,7 +163,7 @@ export function resourceMap(rType:ResourceConstant,disType:ResourceConstant):Res
 export function deserveDefend(creep:Creep):boolean{
     for (var b of creep.body)
     {
-        if (b.boost && isInArray(['XGHO2','XKHO2','XUHO2','XZH2O',],b.boost))
+        if (b.boost && isInArray(['XGHO2','XKHO2','XUHO2','XZH2O'],b.boost))
         {
             return true
         }
