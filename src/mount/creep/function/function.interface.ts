@@ -11,4 +11,5 @@ interface Creep{
     withdraw_(distination:Structure,rType:ResourceConstant) : void
     BoostCheck(boostBody:string[]):boolean
     optTower(otype:'heal'|'attack',creep:Creep):void
+    isInDefend(creep:Creep):boolean
 }

@@ -8,12 +8,11 @@ export default class DefendWarExtension extends Room {
         if (Game.time % 5) return
         if (this.controller.level < 6) return
         if (!this.memory.state) return
-        if (this.memory.state != 'war') {this.memory.switch.AutoDefend = false;return}
+        if (this.memory.state != 'war') {this.memory.switch.AutoDefend = false;this.memory.enemy = {};return}
         /* 激活主动防御 */
         var enemys = this.find(FIND_HOSTILE_CREEPS,{filter:(creep)=>{
             return !isInArray(Memory.whitesheet,creep.owner.username) && (creep.owner.username != 'Invader') && deserveDefend(creep)
         }})
-        console.log("-----")
         if (enemys.length <= 0) return
         /* 如果有合成任务，删除合成任务 */
         let compoundTask = this.MissionName('Room','资源合成')
@@ -124,7 +123,23 @@ export default class DefendWarExtension extends Room {
                 }
             }
         }
-
+        /* 主动防御分配系统更新 删除过期敌对爬虫数据 */
+        for (let myCreepName in this.memory.enemy)
+        {
+            if (!Game.creeps[myCreepName]) delete this.memory.enemy[myCreepName]
+            else
+            {
+                /* 查找项目里的爬虫是否已经死亡 */
+                for (let enemyID of this.memory.enemy[myCreepName])
+                {
+                    if (!Game.getObjectById(enemyID))
+                    {
+                        let index = this.memory.enemy[myCreepName].indexOf(enemyID)
+                        this.memory.enemy[myCreepName].splice(index,1)
+                    }
+                }
+            }
+        }
     }
 
     /* 红球防御 */

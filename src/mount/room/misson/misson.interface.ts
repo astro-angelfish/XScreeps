@@ -52,6 +52,7 @@ interface RoomMemory {
     nukeData?:NukeData
     ComDispatchData?:{[re in ResourceConstant]?:{ok?:boolean,dispatch_num:number}}
     mineralType:ResourceConstant
+    enemy?:enemyAllotData
 }
 
 interface NukeData{
@@ -95,4 +96,6 @@ interface RoomLabBind{
     [id:string]:{missonID:string[],rType:ResourceConstant,occ?:boolean}     // occ为true时不允许新增占用lab
 }
 
-
+interface enemyAllotData{
+    [myCreepName:string]:string[]   // 敌人分配
+}

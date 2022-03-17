@@ -34,6 +34,7 @@ export default class RoomCoreInitExtension extends Room {
         if (!global.ResourceLimit[this.name]) global.ResourceLimit[this.name] = {}
         if (!this.memory.ComDispatchData) this.memory.ComDispatchData = {}
         if (!this.memory.switch) this.memory.switch = {}
+        if (!this.memory.enemy) this.memory.enemy = {}
     }
 
     /**

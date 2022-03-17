@@ -35,4 +35,9 @@ interface CreepMemory{
     num?:number
     bindpoint?:string
     tick?:number
+    enemy?:enemyAllotData
+}
+
+interface enemyAllotData{
+    [myCreepName:string]:string[]   // 敌人分配
 }

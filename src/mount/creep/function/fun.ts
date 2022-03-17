@@ -142,4 +142,13 @@ export default class CreepFunctionExtension extends Creep {
             }
         }
     }
+
+    public isInDefend(creep:Creep):boolean{
+        for (var i in Game.rooms[this.memory.belong].memory.enemy)
+        {
+            for (var id of Game.rooms[this.memory.belong].memory.enemy[i])
+            if (creep.id == id) return true
+        }
+        return false
+    }
 }

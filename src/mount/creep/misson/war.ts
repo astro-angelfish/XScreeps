@@ -1,10 +1,11 @@
-import { isInArray } from "@/utils"
+import { getDistance, isInArray } from "@/utils"
 
 export default class CreepMissonWarExtension extends Creep {
     // 红球防御
     public handle_defend_attack():void{
         if (!this.BoostCheck(['move','attack'])) return
         if (this.hitsMax - this.hits > 200) this.optTower('heal',this)
+        this.memory.crossLevel = 16
         /* 如果周围1格发现敌人，爬虫联合防御塔攻击 */
         var nearCreep = this.pos.findInRange(FIND_HOSTILE_CREEPS,1,{filter:(creep)=>{
             return !isInArray(Memory.whitesheet,creep.name)
@@ -25,50 +26,87 @@ export default class CreepMissonWarExtension extends Creep {
             if (c.hits/c.hitsMax <= 0.8)
             this.optTower('attack',c)
         }
-        // 以gather_attack开头的旗帜  例如： gather_attack_0 优先前往该旗帜附近
+        else return
+        // 以gather_attack开头的旗帜  例如： defend_attack_0 优先前往该旗帜附近
         let gatherFlag = this.pos.findClosestByPath(FIND_FLAGS,{filter:(flag)=>{
-                return flag.name.indexOf('gather_attack') == 0
+                return flag.name.indexOf('defend_attack') == 0
         }})
         if (gatherFlag){
             this.goTo(gatherFlag.pos,0)
             return
         }
-        var ramparts = Game.rooms[this.memory.belong].find(FIND_MY_STRUCTURES,{filter:(stru)=>{
-            return stru.structureType == 'rampart' && stru.pos.GetStructureList(['extension','link','observer','tower','controller','extractor']).length <= 0 && stru.pos.lookFor(LOOK_CREEPS).length <= 0
-        }})
-        if (ramparts.length > 0)
+        if (!Game.rooms[this.memory.belong].memory.enemy[this.name])Game.rooms[this.memory.belong].memory.enemy[this.name] = []
+        if (Game.rooms[this.memory.belong].memory.enemy[this.name].length <= 0)
         {
-            var ramData= {num:0,ram:null}
-            for(var r of ramparts)
+            /* 领取敌对爬虫 */
+            for (var creep of hostileCreep)
             {
-                var nearCreeps = r.pos.findInRange(FIND_HOSTILE_CREEPS,Game.shard.name == 'shard3'?1:5,{filter:(creep)=>{
-                    return !isInArray(Memory.whitesheet,creep.name)
-                }})
-                if (nearCreeps.length > ramData.num) {ramData.num = nearCreeps.length;ramData.ram = r}
-            }
-            if (!ramData.ram)
-            {
-                var closestCreep = this.pos.findClosestByRange(FIND_HOSTILE_CREEPS,{filter:(creep)=>{
-                    return !isInArray(Memory.whitesheet,creep.name)
-                }})
-                
-                if (closestCreep && !this.pos.inRangeTo(closestCreep.pos,3))
+                /* 判断一下该爬虫的id是否存在于其他爬虫的分配里了 */
+                if (this.isInDefend(creep)) continue
+                else
                 {
-                    /* 找离虫子最近的rampart */
-                    var nearstram = closestCreep.pos.findClosestByRange(FIND_MY_STRUCTURES,{filter:(stru)=>{
-                        return stru.structureType == 'rampart' && stru.pos.GetStructureList(['extension','link','observer','tower','controller','extractor']).length <= 0 && (stru.pos.lookFor(LOOK_CREEPS).length <= 0 ||stru.pos.lookFor(LOOK_CREEPS)[0] == this )
+                    /* 进行判定 */
+                    Game.rooms[this.memory.belong].memory.enemy[this.name].push(creep.id)
+                    /* 防止小队，把周围的爬也放进去 【如果本来不是小队但暂时在周围的，后续会有更新】 */
+                    let nearHCreep = creep.pos.findInRange(FIND_HOSTILE_CREEPS,1,{filter:(creep)=>{
+                        return !isInArray(Memory.whitesheet,creep.name) && !this.isInDefend(creep)
                     }})
-                    this.goTo_defend(nearstram.pos,0)
+                    if (nearHCreep.length > 0) for (var n of nearHCreep) Game.rooms[this.memory.belong].memory.enemy[this.name].push(n.id)
                 }
-            }
-            else
-            {
-                this.goTo_defend(ramData.ram.pos,0)
             }
         }
         else
         {
-            this.moveTo(hostileCreep[0])
+            let en = Game.getObjectById(Game.rooms[this.memory.belong].memory.enemy[this.name][0]) as Creep
+            if (!en) {
+                Game.rooms[this.memory.belong].memory.enemy[this.name].splice(0,1)
+                return
+            }
+            let nstC = en
+            // 查找是否是小队爬, 发现不是小队爬就删除
+            if (Game.rooms[this.memory.belong].memory.enemy[this.name].length > 1)
+            {
+                B:
+                for (var id of Game.rooms[this.memory.belong].memory.enemy[this.name])
+                {
+                    let idCreep = Game.getObjectById(id) as Creep
+                    if (!idCreep) continue B
+                    if (Math.abs(idCreep.pos.x-en.pos.x) >= 2 || Math.abs(idCreep.pos.y-en.pos.y) >= 2)
+                    {
+                        let index = Game.rooms[this.memory.belong].memory.enemy[this.name].indexOf(id)
+                        Game.rooms[this.memory.belong].memory.enemy[this.name].splice(index,1)
+                        continue B
+                    }
+                    if (getDistance(this.pos,idCreep.pos) < getDistance(this.pos,nstC.pos))
+                    nstC = idCreep
+                }
+            }
+            if (nstC)
+            {
+                // 寻找最近的爬距离最近的rampart,去那里呆着
+            var nearstram = nstC.pos.findClosestByRange(FIND_MY_STRUCTURES,{filter:(stru)=>{
+                return stru.structureType == 'rampart' && stru.pos.GetStructureList(['extension','link','observer','tower','controller','extractor']).length <= 0 && (stru.pos.lookFor(LOOK_CREEPS).length <= 0 ||stru.pos.lookFor(LOOK_CREEPS)[0] == this )
+                }})
+                if (nearstram)
+                this.goTo_defend(nearstram.pos,0)
+                else this.moveTo(nstC.pos)
+            }
+        }
+        // 仍然没有说明主动防御已经饱和
+        if (Game.rooms[this.memory.belong].memory.enemy[this.name].length <= 0)
+        {
+            this.say("🔍")
+            var closestCreep = this.pos.findClosestByRange(FIND_HOSTILE_CREEPS,{filter:(creep)=>{
+                return !isInArray(Memory.whitesheet,creep.name)
+            }})
+            if (closestCreep && !this.pos.inRangeTo(closestCreep.pos,3))
+            {
+                /* 找离虫子最近的rampart */
+                var nearstram = closestCreep.pos.findClosestByRange(FIND_MY_STRUCTURES,{filter:(stru)=>{
+                    return stru.structureType == 'rampart' && stru.pos.GetStructureList(['extension','link','observer','tower','controller','extractor']).length <= 0 && (stru.pos.lookFor(LOOK_CREEPS).length <= 0 ||stru.pos.lookFor(LOOK_CREEPS)[0] == this )
+                }})
+                this.goTo_defend(nearstram.pos,0)
+            }
         }
         if (this.pos.x >= 48 || this.pos.x <= 1 || this.pos.y >= 48 || this.pos.y <= 1)
         {
@@ -79,6 +117,7 @@ export default class CreepMissonWarExtension extends Creep {
     // 蓝球防御
     public handle_defend_range():void{
         if (!this.BoostCheck(['move','ranged_attack'])) return
+        this.memory.crossLevel = 15
         if (this.hitsMax - this.hits > 200) this.optTower('heal',this)
         /* 如果周围1格发现敌人，爬虫联合防御塔攻击 */
         var nearCreep = this.pos.findInRange(FIND_HOSTILE_CREEPS,3,{filter:(creep)=>{
@@ -89,9 +128,10 @@ export default class CreepMissonWarExtension extends Creep {
             var nearstCreep = this.pos.findInRange(FIND_HOSTILE_CREEPS,1,{filter:(creep)=>{
                 return !isInArray(Memory.whitesheet,creep.name)
             }})
-            if (nearstCreep) this.rangedMassAttack()
+            if (nearstCreep.length > 0) this.rangedMassAttack()
             else this.rangedAttack(nearCreep[0])
-            this.optTower('attack',nearCreep[0])
+            if (nearCreep[0].hits/nearCreep[0].hitsMax <= 0.9)
+                this.optTower('attack',nearCreep[0])
         }
         /* 寻路去距离敌对爬虫最近的rampart */
         var hostileCreep = Game.rooms[this.memory.belong].find(FIND_HOSTILE_CREEPS,{filter:(creep)=>{
@@ -104,50 +144,86 @@ export default class CreepMissonWarExtension extends Creep {
             if (c.hits/c.hitsMax <= 0.8)
             this.optTower('attack',c)
         }
-        // 以gather_attack开头的旗帜  例如： gather_range_0 优先前往该旗帜附近
+        // 以gather_attack开头的旗帜  例如： defend_range_0 优先前往该旗帜附近
         let gatherFlag = this.pos.findClosestByPath(FIND_FLAGS,{filter:(flag)=>{
-                return flag.name.indexOf('gather_range') == 0
+                return flag.name.indexOf('defend_range') == 0
         }})
         if (gatherFlag){
             this.goTo(gatherFlag.pos,0)
             return
         }
-        var ramparts = Game.rooms[this.memory.belong].find(FIND_MY_STRUCTURES,{filter:(stru)=>{
-            return stru.structureType == 'rampart' && stru.pos.GetStructureList(['extension','link','observer','tower','controller','extractor']).length <= 0 && stru.pos.lookFor(LOOK_CREEPS).length <= 0
-        }})
-        if (ramparts.length > 0)
+        if (!Game.rooms[this.memory.belong].memory.enemy[this.name])Game.rooms[this.memory.belong].memory.enemy[this.name] = []
+        if (Game.rooms[this.memory.belong].memory.enemy[this.name].length <= 0)
         {
-            var ramData= {num:0,ram:null}
-            for(var r of ramparts)
+            /* 领取敌对爬虫 */
+            for (var creep of hostileCreep)
             {
-                var nearCreeps = r.pos.findInRange(FIND_HOSTILE_CREEPS,Game.shard.name == 'shard3'?1:5,{filter:(creep)=>{
-                    return !isInArray(Memory.whitesheet,creep.name)
-                }})
-                if (nearCreeps.length > ramData.num) {ramData.num = nearCreeps.length;ramData.ram = r}
-            }
-            if (!ramData.ram)
-            {
-                var closestCreep = this.pos.findClosestByRange(FIND_HOSTILE_CREEPS,{filter:(creep)=>{
-                    return !isInArray(Memory.whitesheet,creep.name)
-                }})
-                
-                if (closestCreep && !this.pos.inRangeTo(closestCreep.pos,3))
+                /* 判断一下该爬虫的id是否存在于其他爬虫的分配里了 */
+                if (this.isInDefend(creep)) continue
+                else
                 {
-                    /* 找离虫子最近的rampart */
-                    var nearstram = closestCreep.pos.findClosestByRange(FIND_MY_STRUCTURES,{filter:(stru)=>{
-                        return stru.structureType == 'rampart' && stru.pos.GetStructureList(['extension','link','observer','tower','controller','extractor']).length <= 0 && (stru.pos.lookFor(LOOK_CREEPS).length <= 0 ||stru.pos.lookFor(LOOK_CREEPS)[0] == this )
+                    /* 进行判定 */
+                    Game.rooms[this.memory.belong].memory.enemy[this.name].push(creep.id)
+                    /* 防止小队，把周围的爬也放进去 【如果本来不是小队但暂时在周围的，后续会有更新】 */
+                    let nearHCreep = creep.pos.findInRange(FIND_HOSTILE_CREEPS,1,{filter:(creep)=>{
+                        return !isInArray(Memory.whitesheet,creep.name) && !this.isInDefend(creep)
                     }})
-                    this.goTo_defend(nearstram.pos,0)
+                    if (nearHCreep.length > 0) for (var n of nearHCreep) Game.rooms[this.memory.belong].memory.enemy[this.name].push(n.id)
                 }
-            }
-            else
-            {
-                this.goTo_defend(ramData.ram.pos,0)
             }
         }
         else
         {
-            this.moveTo(hostileCreep[0])
+            let en = Game.getObjectById(Game.rooms[this.memory.belong].memory.enemy[this.name][0]) as Creep
+            if (!en) {
+                Game.rooms[this.memory.belong].memory.enemy[this.name].splice(0,1)
+                return
+            }
+            let nstC = en
+            // 查找是否是小队爬, 发现不是小队爬就删除
+            if (Game.rooms[this.memory.belong].memory.enemy[this.name].length > 1)
+            {
+                B:
+                for (var id of Game.rooms[this.memory.belong].memory.enemy[this.name])
+                {
+                    let idCreep = Game.getObjectById(id) as Creep
+                    if (!idCreep) continue B
+                    if (Math.abs(idCreep.pos.x-en.pos.x) >= 2 || Math.abs(idCreep.pos.y-en.pos.y) >= 2)
+                    {
+                        let index = Game.rooms[this.memory.belong].memory.enemy[this.name].indexOf(id)
+                        Game.rooms[this.memory.belong].memory.enemy[this.name].splice(index,1)
+                        continue B
+                    }
+                    if (getDistance(this.pos,idCreep.pos) < getDistance(this.pos,nstC.pos))
+                    nstC = idCreep
+                }
+            }
+            if (nstC)
+            {
+                // 寻找最近的爬距离最近的rampart,去那里呆着
+            var nearstram = nstC.pos.findClosestByRange(FIND_MY_STRUCTURES,{filter:(stru)=>{
+                return stru.structureType == 'rampart' && stru.pos.GetStructureList(['extension','link','observer','tower','controller','extractor']).length <= 0 && (stru.pos.lookFor(LOOK_CREEPS).length <= 0 ||stru.pos.lookFor(LOOK_CREEPS)[0] == this )
+                }})
+                if (nearstram)
+                this.goTo_defend(nearstram.pos,0)
+                else this.moveTo(nstC.pos)
+            }
+        }
+        // 仍然没有说明主动防御已经饱和
+        if (Game.rooms[this.memory.belong].memory.enemy[this.name].length <= 0)
+        {
+            this.say("🔍")
+            var closestCreep = this.pos.findClosestByRange(FIND_HOSTILE_CREEPS,{filter:(creep)=>{
+                return !isInArray(Memory.whitesheet,creep.name)
+            }})
+            if (closestCreep && !this.pos.inRangeTo(closestCreep.pos,3))
+            {
+                /* 找离虫子最近的rampart */
+                var nearstram = closestCreep.pos.findClosestByRange(FIND_MY_STRUCTURES,{filter:(stru)=>{
+                    return stru.structureType == 'rampart' && stru.pos.GetStructureList(['extension','link','observer','tower','controller','extractor']).length <= 0 && (stru.pos.lookFor(LOOK_CREEPS).length <= 0 ||stru.pos.lookFor(LOOK_CREEPS)[0] == this )
+                }})
+                this.goTo_defend(nearstram.pos,0)
+            }
         }
         if (this.pos.x >= 48 || this.pos.x <= 1 || this.pos.y >= 48 || this.pos.y <= 1)
         {
@@ -201,7 +277,7 @@ export default class CreepMissonWarExtension extends Creep {
         else
         {
             let flag = this.pos.findClosestByPath(FIND_FLAGS,{filter:(flag)=>{
-                    return flag.name.indexOf('gather_double') == 0
+                    return flag.name.indexOf('defend_double') == 0
             }})
             if (flag)
             {
@@ -263,4 +339,5 @@ export default class CreepMissonWarExtension extends Creep {
             }
         }
     }
+
 }
