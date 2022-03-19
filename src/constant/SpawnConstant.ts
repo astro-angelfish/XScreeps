@@ -28,7 +28,7 @@ export const RoleData:SpawnConstantData = {
     'cupgrade':{num:0,ability:[2,5,7,0,0,0,0,0],level:11,mark:"C"},
     'dismantle':{num:0,ability:[25,0,25,0,0,0,0,0],level:11,mark:"拆家"},
     'rush':{num:0,ability:[10,2,5,0,0,0,0,0],level:11,mark:"升级"},
-    'truck':{num:0,ability:[0,10,10,0,0,0,0,0],level:12,mark:"顺丰"},
+    'truck':{num:0,ability:[0,10,10,0,0,0,0,0],level:9,mark:"顺丰"},
     'claim':{num:0,ability:[0,0,1,0,0,0,1,0],level:10,mark:"扩张"}, 
     'Ebuild':{num:0,ability:[1,1,2,0,0,0,0,0],level:13,mark:"援建"},
     'Eupgrade':{num:0,ability:[1,1,2,0,0,0,0,0],level:13,mark:"援建"},

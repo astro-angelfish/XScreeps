@@ -363,6 +363,49 @@ export default {
             else myRoom.memory.switch.SavePower = false
             return `[power] 房间${roomName}的power升级的SavePower选项已经设置为${myRoom.memory.switch.SavePower}`
         },
+        option(roomName:string,stru:string):string{
+            var myRoom = Game.rooms[roomName]
+            if (!myRoom) return `[power] 未找到房间${roomName},请确认房间!`
+            let switch_:string
+            switch (stru){
+                case 'storage':{switch_ = 'StopEnhanceStorage';break;}
+                case 'tower':{switch_ = 'StopEnhanceTower';break;}
+                case 'lab':{switch_ = 'StopEnhanceLab';break;}
+                case 'extension':{switch_ = 'StopEnhanceExtension';break;}
+                case 'spawn':{switch_ = 'StopEnhanceSpawn';break;}
+                case 'factory':{switch_ = 'StopEnhanceFactory';break;}
+                case 'powerspawn':{switch_ = 'StopEnhancePowerSpawn';break;}
+                default :{return `[power] stru数据错误!`}
+            }
+            if (!myRoom.memory.switch[switch_]){
+                myRoom.memory.switch[switch_] = true
+                return `[power] 房间${roomName}的${switch_}选项调整为true! 将不执行对应的power操作`
+            }
+            else
+            {
+                delete myRoom.memory.switch[switch_]
+                return `[power] 房间${roomName}的${switch_}选项调整为false! 将执行对应的power操作`
+            }
+        },
+        show(roomName:string):string{
+            var myRoom = Game.rooms[roomName]
+            if (!myRoom) return `[power] 未找到房间${roomName},请确认房间!`
+            let list = [
+                'StopEnhanceStorage',
+                'StopEnhanceTower',
+                'StopEnhanceLab',
+                'StopEnhanceExtension',
+                'StopEnhanceFactory',
+                'StopEnhancePowerSpawn'
+            ]
+            let result = `[power] 房间${roomName}的power操作开关:\n`
+            for (var i of list)
+            {
+                if (myRoom.memory.switch[i])result += Colorful(`${i}:true\n`,'red',true)
+                else result += Colorful(`${i}:false\n`,'green',true)
+            }
+            return result
+        }
     },
 
     /* 过道行为 */
@@ -532,4 +575,5 @@ export default {
             return `[cross] 房间${roomName}取消过道采集任务失败！请检查房间内是否已经存在该任务！`
         },
     },
+
 }

@@ -1,3 +1,5 @@
+import { avePrice, haveOrder, highestPrice } from "@/module/fun/funtion";
+import { Colorful } from "@/utils";
 import { times } from "lodash";
 
 /* 房间原型拓展   --行为  --维护任务 */
@@ -37,38 +39,19 @@ export default class RoomMissonVindicateExtension extends Room {
         if (Game.time % 40) return
         if (terminal_.store.getUsedCapacity('energy') < 100000 && Game.market.credits >= 1000000)
         {
-            /* 查找市场上能量订单 */
-            /* 计算平均价格 */
-            let history = Game.market.getHistory('energy')
-            let allprice = 0
-            for (var ii=13;ii<15;ii++)
-                allprice += history[ii].avgPrice
-            let avePrice = allprice/2 + 0.6 // 平均能量价格
-            if (avePrice > 20) avePrice = 20
-            /* 清理过期订单 */
-            if (Object.keys(Game.market.orders).length > 150)
+            let ave = avePrice('energy',2)
+            let highest = highestPrice('energy','buy',ave+6)
+            if (!haveOrder(this.name,'energy','buy',highest,-0.2))
             {
-                for (let j in Game.market.orders)
-                {
-                    let order = Game.market.getOrderById(j)
-                    if (!order.active) delete Game.market.orders[j]
-                }
-            }
-            /* 判断有无自己的订单 */
-            let thisRoomOrder = Game.market.getAllOrders(order =>
-                order.type == ORDER_BUY && order.resourceType == 'energy' && order.price >= avePrice - 0.5 && order.roomName == this.name)
-            /* 没有就创建订单 */
-            if ((!thisRoomOrder || thisRoomOrder.length <= 0) && terminal_.store.getUsedCapacity('energy') <= 100000)
-            {
-                console.log("订单操作中")
-                Game.market.createOrder({
+                let result = Game.market.createOrder({
                     type: ORDER_BUY,
                     resourceType: 'energy',
-                    price: avePrice,
+                    price: highest + 0.1,
                     totalAmount: 100000,
                     roomName: this.name   
                 });
-                console.log(`房间${this.name}创建能量订单，价格:${avePrice};数量:100000`)
+                if (result != OK){console.log("创建能量订单出错,房间",this.name)}
+                console.log(Colorful(`[急速冲级]房间${this.name}创建energy订单,价格:${highest + 0.01};数量:100000`,'green',true))
             }
         }
     }

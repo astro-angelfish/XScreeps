@@ -72,7 +72,7 @@ export default class PowerCreepMissonBase extends PowerCreep {
                 if (Object.keys(this.memory.MissionData).length <= 0)
                 {
                     /* 没有任务就生产ops */
-                    if(!this.powers[PWR_GENERATE_OPS].cooldown) {this.usePower(PWR_GENERATE_OPS)}
+                    if(this.powers[PWR_GENERATE_OPS] && !this.powers[PWR_GENERATE_OPS].cooldown) {this.usePower(PWR_GENERATE_OPS)}
                     // 如果ops过多，就转移ops
                     if (this.store.getUsedCapacity('ops') == this.store.getCapacity())
                     {
@@ -96,10 +96,12 @@ export default class PowerCreepMissonBase extends PowerCreep {
             switch (this.memory.MissionData.name) 
             {
             case "仓库扩容":{this.handle_pwr_storage(); break;}
-            // case '强化防御塔':{this.handle_pwr_tower();break;}
-            // case 'lab加速':{this.handle_pwr_lab();break;}
-            // case '操作扩展':{this.handle_pwr_extension();break;}
-            // case '虫卵强化':{this.handle_pwr_spawn();break;}
+            case '塔防增强':{this.handle_pwr_tower();break;}
+            case '合成加速':{this.handle_pwr_lab();break;}
+            case '扩展填充':{this.handle_pwr_extension();break;}
+            case '虫卵强化':{this.handle_pwr_spawn();break;}
+            case '工厂强化':{this.handle_pwr_factory();break;}
+            case 'power强化':{this.handle_pwr_powerspawn();break;}
             }
         }
     }
@@ -120,6 +122,7 @@ export default class PowerCreepMissonBase extends PowerCreep {
         let num = this.store.getUsedCapacity('ops')
         if (num < 200 || num <  Math.ceil(this.store.getCapacity()/4))
         {
+            this.usePower(PWR_GENERATE_OPS)
             // 过少就去提取ops资源
             if (storage_.store.getUsedCapacity('ops') < 2500)
             {
@@ -143,7 +146,9 @@ export default class PowerCreepMissonBase extends PowerCreep {
             }
             if (storage_.store.getUsedCapacity('ops') > 0)
             if (this.withdraw(storage_,'ops',Math.ceil(this.store.getCapacity()/2)) == ERR_NOT_IN_RANGE)
-            this.goTo(storage_.pos,1)
+            {
+                this.goTo(storage_.pos,1)
+            }
             return false
         }
         else

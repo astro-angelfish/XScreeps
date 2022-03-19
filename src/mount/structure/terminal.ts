@@ -1,5 +1,5 @@
 import { loop } from "@/main"
-import { haveOrder } from "@/module/fun/funtion"
+import { avePrice, haveOrder, highestPrice } from "@/module/fun/funtion"
 import { Colorful, compare, isInArray } from "@/utils"
 
 // terminal 扩展
@@ -119,29 +119,43 @@ export default class terminalExtension extends StructureTerminal {
         // 能量购买函数
         if (storage_.store.getUsedCapacity('energy') + this.store.getUsedCapacity('energy') < 250000)
         {
-            /* 计算平均价格 */
-            let history = Game.market.getHistory('energy')
-            let HistoryLength = history.length
-            let allprice = 0
-            for (var ii=HistoryLength-3;ii<HistoryLength;ii++)
-                allprice += history[ii].avgPrice
-            let avePrice = allprice/3 + (Memory.marketAdjust['energy']?Memory.marketAdjust['energy']:0.2) // 平均能量价格
-            if (avePrice > 20) avePrice = 20    // 最大不超过20
-            /* 下单 */
-            let thisRoomOrder = Game.market.getAllOrders(order =>
-                order.type == ORDER_BUY && order.resourceType == 'energy' && order.price >= avePrice - 0.2 && order.roomName == this.room.name)
-            if ((!thisRoomOrder || thisRoomOrder.length <= 0))
+            let ave = avePrice('energy',2)
+            let highest = highestPrice('energy','buy',ave+6)
+            if (!haveOrder(this.room.name,'energy','buy',highest,-0.2))
             {
-                console.log("房间",this.room.name,"订单操作中")
-                Game.market.createOrder({
+                let result = Game.market.createOrder({
                     type: ORDER_BUY,
                     resourceType: 'energy',
-                    price: avePrice,
+                    price: highest + 0.01,
                     totalAmount: 100000,
                     roomName: this.room.name   
                 });
-                console.log(Colorful(`房间${this.room.name}创建能量订单，价格:${avePrice};数量:100000`,'yellow',true))
+                if (result != OK){console.log("创建能量订单出错,房间",this.room.name)}
+                console.log(Colorful(`房间${this.room.name}创建energy订单,价格:${highest + 0.01};数量:100000`,'green',true))
             }
+            /* 计算平均价格 */
+            // let history = Game.market.getHistory('energy')
+            // let HistoryLength = history.length
+            // let allprice = 0
+            // for (var ii=HistoryLength-3;ii<HistoryLength;ii++)
+            //     allprice += history[ii].avgPrice
+            // let avePrice = allprice/3 + (Memory.marketAdjust['energy']?Memory.marketAdjust['energy']:0.2) // 平均能量价格
+            // if (avePrice > 20) avePrice = 20    // 最大不超过20
+            // /* 下单 */
+            // let thisRoomOrder = Game.market.getAllOrders(order =>
+            //     order.type == ORDER_BUY && order.resourceType == 'energy' && order.price >= avePrice - 0.2 && order.roomName == this.room.name)
+            // if ((!thisRoomOrder || thisRoomOrder.length <= 0))
+            // {
+            //     console.log("房间",this.room.name,"订单操作中")
+            //     Game.market.createOrder({
+            //         type: ORDER_BUY,
+            //         resourceType: 'energy',
+            //         price: avePrice,
+            //         totalAmount: 100000,
+            //         roomName: this.room.name   
+            //     });
+            //     console.log(Colorful(`房间${this.room.name}创建能量订单，价格:${avePrice};数量:100000`,'yellow',true))
+            // }
         }
         /* 仓库资源过于饱和就卖掉能量 */
         if (storage_.store.getFreeCapacity() < 50000)

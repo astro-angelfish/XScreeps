@@ -38,7 +38,7 @@ export function ResourceDispatch(thisRoom:Room):void{
                         let highest = highestPrice(i.rType,'buy',ave+10)
                         let result = Game.market.createOrder({
                             type: ORDER_BUY,
-                            resourceType: 'energy',
+                            resourceType: i.rType,
                             price: highest + 0.01,
                             totalAmount: i.num,
                             roomName: thisRoom.name   

@@ -5,6 +5,7 @@ export default class CreepMissonWarExtension extends Creep {
     // 红球防御
     public handle_defend_attack():void{
         if (!this.BoostCheck(['move','attack'])) return
+        this.memory.standed = true
         if (this.hitsMax - this.hits > 200) this.optTower('heal',this)
         this.memory.crossLevel = 16
         /* 如果周围1格发现敌人，爬虫联合防御塔攻击 */
@@ -85,6 +86,7 @@ export default class CreepMissonWarExtension extends Creep {
                 {
                     let idCreep = Game.getObjectById(id) as Creep
                     if (!idCreep) continue B
+                    if (Game.time % 10 == 0)    // 防止敌方爬虫bug
                     if (Math.abs(idCreep.pos.x-en.pos.x) >= 2 || Math.abs(idCreep.pos.y-en.pos.y) >= 2)
                     {
                         let index = Game.rooms[this.memory.belong].memory.enemy[this.name].indexOf(id)
@@ -144,7 +146,7 @@ export default class CreepMissonWarExtension extends Creep {
             }})
             if (nearstCreep.length > 0) this.rangedMassAttack()
             else this.rangedAttack(nearCreep[0])
-            if (nearCreep[0].hits/nearCreep[0].hitsMax <= 0.85)
+            if (Game.time % 4 == 0)
                 this.optTower('attack',nearCreep[0])
         }
         /* 寻路去距离敌对爬虫最近的rampart */
@@ -215,6 +217,7 @@ export default class CreepMissonWarExtension extends Creep {
                 {
                     let idCreep = Game.getObjectById(id) as Creep
                     if (!idCreep) continue B
+                    if (Game.time % 10 == 0)
                     if (Math.abs(idCreep.pos.x-en.pos.x) >= 2 || Math.abs(idCreep.pos.y-en.pos.y) >= 2)
                     {
                         let index = Game.rooms[this.memory.belong].memory.enemy[this.name].indexOf(id)
