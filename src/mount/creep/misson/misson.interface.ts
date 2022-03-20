@@ -24,6 +24,7 @@ interface Creep{
     handle_defend_attack():void
     handle_defend_range():void
     handle_defend_double():void
+    handle_task_squard():void
 }
 
 interface CreepMemory{
@@ -35,4 +36,9 @@ interface CreepMemory{
     num?:number
     bindpoint?:string
     tick?:number
+    controlledBySquardFrame?:boolean
+    squad?:Squad
+    arrived?:boolean
 }
+
+

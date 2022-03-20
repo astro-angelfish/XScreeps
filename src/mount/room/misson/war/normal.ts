@@ -1,4 +1,4 @@
-import { GenerateAbility } from "@/utils"
+import { GenerateAbility, generateID } from "@/utils"
 
 /* 房间原型拓展   --任务  --常规战争 */
 export default class NormalWarExtension extends Room {
@@ -33,5 +33,30 @@ export default class NormalWarExtension extends Room {
         }
         if (mission.CreepBind['aio'].num == 0)
         mission.CreepBind['aio'].num = mission.Data.num
+    }
+
+    // 四人小队
+    public Task_squad(mission:MissionModel):void{
+        if ((Game.time - global.Gtime[this.name])% 7) return
+        if (!mission.Data.squadID)
+        {
+            if (!Memory.squadMemory) Memory.squadMemory = {}
+            for (var i = 1;i<100;i++)
+            {
+                if (!Memory.squadMemory[`${mission.Data.flag}${i}|${Game.shard.name}`])
+                {
+                    mission.Data.squadID = `${mission.Data.flag}${i}|${Game.shard.name}`
+                    break
+                }
+            }
+        }
+        else
+        {
+            if (Memory.squadMemory[mission.Data.squadID] && Object.keys(Memory.squadMemory[mission.Data.squadID].creepData).length >= 4)
+            {
+                delete mission.Data.squadID
+            }
+        }
+        if (!this.Check_Lab(mission,'transport','complex')) return
     }
 }

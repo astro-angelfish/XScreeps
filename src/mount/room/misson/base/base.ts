@@ -53,6 +53,7 @@ export default class RoomMissonFrameExtension extends Room {
                 case '红球防御':{this.Task_Red_Defend(misson);break A;}
                 case '蓝球防御':{this.Task_Blue_Defend(misson);break A;}
                 case '双人防御':{this.Task_Double_Defend(misson);break A;}
+                case '四人小队':{this.Task_squad(misson);break A;}
             }
         }
     }
@@ -375,6 +376,8 @@ export default class RoomMissonFrameExtension extends Room {
             {
                 for (var role in misson.CreepBind)
                 {
+                    let memData = {}
+                    if (RoleData[role].mem) memData = RoleData[role].mem
                     /* 间隔型 未测试 */
                     if (misson.CreepBind[role].interval)
                     {
@@ -385,16 +388,17 @@ export default class RoomMissonFrameExtension extends Room {
                         if (!misson.Data.intervalTime) misson.Data.intervalTime = Game.time
                         if ((Game.time - misson.Data.intervalTime) % misson.CreepBind[role].interval == 0)
                         {
-                            /* 如果孵化队列里太多这种类型的爬虫就不孵化 最高允许8个 */
+                            /* 如果孵化队列里太多这种类型的爬虫就不孵化 最高允许10个 */
                             let n = 0
                             for (var ii of this.memory.SpawnList)
                             {
                                 if (ii.role == role) n += 1
                             }
-                            if (n > 8) continue
+                            if (n > 10) continue
+                            memData["taskRB"] = misson.id
                             for (let i=0;i<misson.CreepBind[role].num;i++)
                             {
-                                this.SingleSpawn(role,RoleData[role].level?RoleData[role].level:10,{taskRB:misson.id})
+                                this.SingleSpawn(role,RoleData[role].level?RoleData[role].level:10,memData)
                             }
                         }
                         continue
@@ -409,7 +413,7 @@ export default class RoomMissonFrameExtension extends Room {
                         let relateCreeps = _.filter(Game.creeps,(creep) => creep.memory.belong == this.name && creep.memory.role == role && (!creep.memory.MissionData || !creep.memory.MissionData.id)).length
                         if (relateSpawnList+relateCreeps < spawnNum)
                         {
-                            this.SingleSpawn(role)
+                            this.SingleSpawn(role,RoleData[role].level?RoleData[role].level:10,memData)
                         }
                     }
                 }

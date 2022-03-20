@@ -547,4 +547,47 @@ export default class RoomMissonPublish extends Room {
         thisTask.LabBind = labData
         return thisTask
     }
+
+    /* 四人小队任务发布函数 */
+    public public_squad(disRoom:string,shard:shardName,interval:number,RNum:number,ANum:number,DNum:number,HNum:number,AIONum:number,flag:string):MissionModel{
+        var thisTask:MissionModel = {
+            name:'四人小队',
+            range:'Creep',
+            delayTick:40000,
+            level:10,
+            Data:{
+                disRoom:disRoom,
+                shard:shard,
+                flag:flag
+            },
+            CreepBind:{},
+            maxTime:3,
+            reserve:true
+        }
+        if (RNum + ANum + DNum + HNum + AIONum != 4) return null    // 防止数量不对
+        if (HNum != 2 && AIONum != 4) return null   // 防止搭配不均
+        let creepData = {
+            'x-range':{num:RNum,bd:['XZHO2','XLHO2','XKHO2','XGHO2']},
+            'x-heal':{num:HNum,bd:['XZHO2','XLHO2','XKHO2','XGHO2']},
+            'x-aio':{num:AIONum,bd:['XZHO2','XLHO2','XKHO2','XGHO2']},
+            'x-attack':{num:ANum,bd:['XZHO2','XUH2O','XGHO2']},
+            'x-dismantle':{num:DNum,bd:['XZHO2','XZH2O','XGHO2']},
+        }
+        let tbd = []
+        for (var i in creepData)
+        {
+            if (creepData[i].num > 0)
+            {
+                thisTask.CreepBind[i] = {num:creepData[i].num,bind:[],interval:interval}
+                for (var j of creepData[i].bd)
+                {
+                    if (!isInArray(tbd,j)) tbd.push(j)
+                }
+            }
+        }
+        var labData = this.Bind_Lab(tbd)
+        if (labData === null) return null
+        thisTask.LabBind = labData
+        return thisTask
+    }
 }

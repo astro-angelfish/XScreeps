@@ -110,7 +110,7 @@ export default class RoomCoreSpawnExtension extends Room {
             if (thisSpawn.spawning) continue
             
             var spawnlist = this.memory.SpawnList
-            if (spawnlist.length <= 0) continue
+            if (spawnlist.length <= 0) return
             let roleName = spawnlist[0].role
             let mem = spawnlist[0].memory
             let bd = spawnlist[0].body
@@ -141,7 +141,7 @@ export default class RoomCoreSpawnExtension extends Room {
                 }
             }
             // 名称整理
-            let mark = RoleData[roleName].mark?RoleData[roleName].mark:"＃"
+            let mark = RoleData[roleName].mark?RoleData[roleName].mark:"#"
             let timestr = Game.time.toString().substr(Game.time.toString().length - 4)
             let randomStr = Math.random().toString(36).substr(3)
             // 记忆整理
@@ -170,9 +170,11 @@ export default class RoomCoreSpawnExtension extends Room {
             let result = thisSpawn.spawnCreep(body,`【${mark}】${randomStr}|${timestr}`,{memory:thisMem})
             if (result == OK)
             {
+                // console.log("即将删除：",spawnlist[0].role,",spawnID:",thisSpawn.id)
                 spawnlist.splice(0,1)   // 孵化成功，删除该孵化数据
                 if (global.SpecialBodyData[this.name][roleName]) delete global.SpecialBodyData[this.name][roleName] // 删除特殊体型数据
             }
+            return
         }
         /* 说明所有spawn都繁忙或当前能量不适合孵化该creep */
         return

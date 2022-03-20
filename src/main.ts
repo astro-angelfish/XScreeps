@@ -10,6 +10,7 @@ import { pixel } from './module/fun/pixel'
 import { InitShardMemory, InterShardRun } from './module/shard/base'
 import { ResourceDispatchTick } from './module/dispatch/resource'
 import layoutVisual from './module/layoutVisual'
+import { SquadManager } from './module/squad/squard'
 /**
  * 主运行函数
  */
@@ -31,6 +32,7 @@ export const loop = ErrorMapper.wrapLoop(() =>{
     let cpu3 = Game.cpu.getUsed()
     /* 爬虫运行 */
     CreepWork()
+    SquadManager() // 四人小队框架
     let cpu4 = Game.cpu.getUsed()
     /* 资源调度超时管理 */
     ResourceDispatchTick()

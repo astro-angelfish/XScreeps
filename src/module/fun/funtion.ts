@@ -202,3 +202,74 @@ export function hurts(creep:Creep):{[bo:string]:number}{
     }
     return result
 }
+
+/* 寻找后一级的爬 */
+export function findNextData(creep:Creep):string {
+    if (!creep.memory.squad) return null
+    for (var i in creep.memory.squad)
+    {
+        if (creep.memory.squad[i].index - creep.memory.squad[creep.name].index == 1)
+        {
+            return i
+        }
+    }
+    return null
+}
+
+/* 判断两个房间是否靠近以及目标房间 (必须是有出口的靠近)*/
+export function identifyNext(thisRoom:string,disRoom:string):boolean{
+    var thisRoomData = regularRoom(thisRoom)
+    var disRoomData = regularRoom(disRoom)
+    if (thisRoomData.coor[0]== disRoomData.coor[0] && thisRoomData.coor[1] == disRoomData.coor[1])
+    {
+        var Xdistanceabs = Math.abs(thisRoomData.num[0]-disRoomData.num[0])
+        var Ydistanceabs = Math.abs(thisRoomData.num[1]-disRoomData.num[1])
+        if ((Xdistanceabs == 0 && Ydistanceabs == 1) || (Xdistanceabs == 1 && Ydistanceabs == 0) && Game.rooms[thisRoom].findExitTo(disRoom)!= -2  && Game.rooms[thisRoom].findExitTo(disRoom)!= -10)
+        {
+        return true
+        }
+    }
+
+    return false
+}
+
+export function regularRoom(roomName:string):{coor:string[],num:number[]}
+{
+    var roomName =  roomName
+    const regRoom = /[A-Z]/g
+    const regNum = /\d{1,2}/g
+    let Acoord = regRoom.exec(roomName)[0]
+    let AcoordNum = parseInt(regNum.exec(roomName)[0])
+    let Bcoord = regRoom.exec(roomName)[0]
+    let BcoordNum = parseInt(regNum.exec(roomName)[0])
+    return {coor:[Acoord,Bcoord],num:[AcoordNum,BcoordNum]}
+}
+/* 判断是否可以组队了  需要一个方块的位置都没有墙壁，而且坐标需要 5 -> 45 */
+
+export function identifyGarrison(creep:Creep):boolean{
+    if (creep.pos.x > 45 || creep.pos.x < 5 || creep.pos.y > 45 || creep.pos.y < 5) return false
+    for (var i = creep.pos.x;i<creep.pos.x+2;i++)
+    for (var j=creep.pos.y;j<creep.pos.y+2;j++)
+    {
+        var thisPos = new RoomPosition(i,j,creep.room.name)
+        if (thisPos.lookFor(LOOK_TERRAIN)[0] == 'wall')
+        {
+            return false
+        }
+        if (thisPos.GetStructureList(['spawn','constructedWall','rampart','observer','link','nuker','storage','tower','terminal','powerSpawn','extension']).length > 0) return false
+    }
+    return true
+}
+
+/* 寻找前一级的爬 */
+export function findFollowData(creep:Creep):string {
+    if (!creep.memory.squad) return null
+    for (var i in creep.memory.squad)
+    {
+        if (creep.memory.squad[creep.name].index - creep.memory.squad[i].index == 1)
+        {
+            return i
+        }
+    }
+    return null
+}

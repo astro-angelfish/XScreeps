@@ -141,8 +141,8 @@ export default {
             if (!myRoom) return `[war] 未找到房间${roomName},请确认房间!`
             var thisTask = myRoom.Public_aio(disRoom,shard,CreepNum,time,boost)
             if (myRoom.AddMission(thisTask))
-            return `[support] 攻防一体任务挂载成功! ${Game.shard.name}/${roomName} -> ${shard}/${disRoom}`
-            return `[support] 攻防一体挂载失败!`
+            return `[war] 攻防一体任务挂载成功! ${Game.shard.name}/${roomName} -> ${shard}/${disRoom}`
+            return `[war] 攻防一体挂载失败!`
         },
         Caio(roomName:string,disRoom:string,shard:shardName):string{
             var myRoom = Game.rooms[roomName]
@@ -152,10 +152,59 @@ export default {
                 if (i.name == '攻防一体' && i.Data.disRoom == disRoom && i.Data.shard == shard)
                 {
                     if (myRoom.DeleteMission(i.id))
-                    return `[support] 删除去往${shard}/${disRoom}的攻防一体任务成功!`
+                    return `[war] 删除去往${shard}/${disRoom}的攻防一体任务成功!`
                 }
             }
-            return `[support] 删除去往${shard}/${disRoom}的攻防一体任务失败!`
+            return `[war] 删除去往${shard}/${disRoom}的攻防一体任务失败!`
+        },
+        squad(roomName:string,disRoom:string,shard:shardName,mtype:'R'|'A'|'D'|'Aio'|'RA'|'DA'|'DR',time:number= 1000):string{
+            var myRoom = Game.rooms[roomName]
+            if (!myRoom) return `[war] 未找到房间${roomName},请确认房间!`
+            let thisTask:MissionModel
+            if (mtype == 'R')
+            {
+                thisTask = myRoom.public_squad(disRoom,shard,time,2,0,0,2,0,mtype)
+            }
+            else if (mtype == 'A')
+            {
+                thisTask = myRoom.public_squad(disRoom,shard,time,0,2,0,2,0,mtype)
+            }
+            else if (mtype == 'D')
+            {
+                thisTask = myRoom.public_squad(disRoom,shard,time,0,0,2,2,0,mtype)
+            }
+            else if (mtype == 'Aio')
+            {
+                thisTask = myRoom.public_squad(disRoom,shard,time,0,0,0,0,4,mtype)
+            }
+            else if (mtype == 'RA')
+            {
+                thisTask = myRoom.public_squad(disRoom,shard,time,1,1,0,2,0,mtype)
+            }
+            else if (mtype == 'DA')
+            {
+                thisTask = myRoom.public_squad(disRoom,shard,time,0,1,1,2,0,mtype)
+            }
+            else if (mtype == 'DR')
+            {
+                thisTask = myRoom.public_squad(disRoom,shard,time,1,0,1,2,0,mtype)
+            }
+            if (myRoom.AddMission(thisTask))
+            return `[war] 四人小队任务挂载成功! ${Game.shard.name}/${roomName} -> ${shard}/${disRoom}`
+            return `[war] 四人小队挂载失败!`
+        },
+        Csquad(roomName:string,disRoom:string,shard:shardName,mtype:'R'|'A'|'D'|'Aio'|'RA'|'DA'|'DR'):string{
+            var myRoom = Game.rooms[roomName]
+            if (!myRoom) return `[war] 未找到房间${roomName},请确认房间!`
+            for (var i of myRoom.memory.Misson['Creep'])
+            {
+                if (i.name == '四人小队' && i.Data.disRoom == disRoom && i.Data.shard == shard && i.Data.flag == mtype)
+                {
+                    if (myRoom.DeleteMission(i.id))
+                    return `[war] 删除去往${shard}/${disRoom}的四人小队任务成功!`
+                }
+            }
+            return `[war] 删除去往${shard}/${disRoom}的四人小队任务失败!`
         }
 
     },

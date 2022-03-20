@@ -87,8 +87,8 @@ export default class PowerCreepMissonBase extends PowerCreep {
         else
         {
             /* 处理任务 */
-            this.memory.MissionData.MissonDelay --     // 爬虫内置Tick计时
-            if (this.memory.MissionData.MissonDelay <= 0)
+            this.memory.MissionData.delay --     // 爬虫内置Tick计时
+            if (this.memory.MissionData.delay <= 0)
             {
                 this.memory.MissionData = {}
                 return

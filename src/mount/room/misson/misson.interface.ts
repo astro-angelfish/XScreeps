@@ -42,6 +42,7 @@ interface Room {
     Task_Red_Defend(mission:MissionModel):void
     Task_Blue_Defend(mission:MissionModel):void
     Task_Double_Defend(mission:MissionModel):void
+    Task_squad(mission:MissionModel):void
 }
 
 interface RoomMemory {

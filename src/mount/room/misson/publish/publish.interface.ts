@@ -21,4 +21,5 @@ interface Room {
     public_red_defend(num:number):MissionModel
     public_blue_defend(num:number):MissionModel
     public_double_defend(num:number):MissionModel
+    public_squad(disRoom:string,shard:shardName,interval:number,RNum:number,ANum:number,DNum:number,HNum:number,AIONum:number,flag:string):MissionModel
 }

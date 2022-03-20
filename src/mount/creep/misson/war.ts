@@ -1,4 +1,4 @@
-import { parts } from "@/module/fun/funtion"
+import { findFollowData, findNextData, identifyGarrison, identifyNext, parts } from "@/module/fun/funtion"
 import { getDistance, isInArray } from "@/utils"
 
 export default class CreepMissonWarExtension extends Creep {
@@ -365,6 +365,205 @@ export default class CreepMissonWarExtension extends Creep {
                 {
                     this.heal(this)
                     this.moveTo(Game.creeps[this.memory.double])
+                }
+            }
+        }
+    }
+
+    public handle_task_squard():void{
+        var misson = this.memory.MissionData.Data
+        var shard = misson.shard
+        var roomName = misson.disRoom
+        var squadID = misson.squadID
+        if (this.memory.controlledBySquardFrame)
+        {
+            /* 说明到达指定房间，并到达合适位置了 */
+            /* 添加战争框架控制信息 */
+            if (!Memory.squadMemory) Memory.squadMemory = {}
+            if (!squadID) {this.say("找不到squardID!");return}
+            if (!Memory.squadMemory[squadID])
+            {
+                Memory.squadMemory[squadID] = {
+                    creepData:this.memory.squad,
+                    sourceRoom:this.memory.belong,
+                    presentRoom:this.room.name,
+                    disRoom:misson.disRoom,
+                    ready:false,
+                    array:'free',
+                    sourceShard:this.memory.shard,
+                    disShard:this.memory.targetShard,
+                    squardType:misson.flag
+                }
+            }
+            /* 赋予全局Memory记忆后，即可交由全局四人小队框架控制 */
+            return
+        }
+        else
+        {
+            /* 任务开始前准备 */
+            if (this.room.name == this.memory.belong && this.memory.shard == Game.shard.name)
+            {
+                var thisRoom = Game.rooms[this.memory.belong]
+                /* boost检查 */
+                if(this.getActiveBodyparts('move')>0)
+                {
+                    if (!this.BoostCheck([,'move'])) return
+                }
+                if(this.getActiveBodyparts('heal')>0)
+                {
+                    if (!this.BoostCheck([,'heal'])) return
+                }
+                if(this.getActiveBodyparts('work')>0)
+                {
+                    if (!this.BoostCheck([,'work'])) return
+                }
+                if(this.getActiveBodyparts('attack')>0)
+                {
+                    if (!this.BoostCheck([,'attack'])) return
+                }
+                if(this.getActiveBodyparts('ranged_attack')>0)
+                {
+                    if (!this.BoostCheck([,'ranged_attack'])) return
+                }
+                if(this.getActiveBodyparts('tough')>0)
+                {
+                    if (!this.BoostCheck([,'tough'])) return
+                }
+                /* 组队检查 */
+                if(!squadID) return
+                if (!this.memory.MissionData.id) return
+                if (!thisRoom.memory.squadData) Game.rooms[this.memory.belong].memory.squadData = {}
+                var MissonSquardData = thisRoom.memory.squadData[squadID]
+                if (!MissonSquardData) thisRoom.memory.squadData[squadID] = {}
+                if (!MissonSquardData) return
+                if (this.memory.creepType == 'heal')
+                {
+                    if (this.memory.role == 'x-aio')
+                    {
+                        if (Object.keys(MissonSquardData).length <= 0 ) MissonSquardData[this.name] = {position:'↙',index:1,role:this.memory.role,creepType:this.memory.creepType}
+                        if (Object.keys(MissonSquardData).length == 1 && !isInArray(Object.keys(MissonSquardData),this.name) ) MissonSquardData[this.name] = {position:'↖',index:0,role:this.memory.role,creepType:this.memory.creepType}
+                        if (Object.keys(MissonSquardData).length == 2 && !isInArray(Object.keys(MissonSquardData),this.name) ) MissonSquardData[this.name] = {position:'↘',index:3,role:this.memory.role,creepType:this.memory.creepType}
+                        if (Object.keys(MissonSquardData).length == 3 && !isInArray(Object.keys(MissonSquardData),this.name) ) MissonSquardData[this.name] = {position:'↗',index:2,role:this.memory.role,creepType:this.memory.creepType}
+                    }
+                    else
+                    {
+                        if (Object.keys(MissonSquardData).length <= 0 ) MissonSquardData[this.name] = {position:'↙',index:1,role:this.memory.role,creepType:this.memory.creepType}
+                        if (Object.keys(MissonSquardData).length == 2 && !isInArray(Object.keys(MissonSquardData),this.name) ) MissonSquardData[this.name] = {position:'↘',index:3,role:this.memory.role,creepType:this.memory.creepType}
+                    }
+                    
+                }
+                else if (this.memory.creepType == 'attack')
+                {
+                    if (Object.keys(MissonSquardData).length == 1 && !isInArray(Object.keys(MissonSquardData),this.name) ) MissonSquardData[this.name] = {position:'↖',index:0,role:this.memory.role,creepType:this.memory.creepType}
+                    if (Object.keys(MissonSquardData).length == 3 && !isInArray(Object.keys(MissonSquardData),this.name) ) MissonSquardData[this.name] = {position:'↗',index:2,role:this.memory.role,creepType:this.memory.creepType}
+                }
+                if (Object.keys(thisRoom.memory.squadData[squadID]).length == 4 && !this.memory.squad)
+                {
+                    console.log(this.name, '添加squard记忆')
+                    this.memory.squad = thisRoom.memory.squadData[squadID]
+                    return
+                }
+                /* 朝前面的爬移动 */
+                if (!this.memory.squad) return
+                 /* 检查是否所有爬虫都赋予记忆了 */
+                for (var mem in this.memory.squad)
+                {
+                    if (!Game.creeps[mem]) return
+                    if (!Game.creeps[mem].memory.squad)return
+                }
+            }
+            /* 到达任务房间前自卫 */
+            if (this.getActiveBodyparts('ranged_attack'))
+            {
+                var enemy = this.pos.findInRange(FIND_HOSTILE_CREEPS,3,{filter:(creep)=>{
+                    return !isInArray(Memory.whitesheet,creep.owner.username)
+                }})
+                if (enemy[0])
+                this.rangedAttack(enemy[0])
+            }
+            if (this.getActiveBodyparts('heal'))
+            {
+                var bol = true
+                for (var i in this.memory.squad)
+                {
+                    if(Game.creeps[i] && Game.creeps[i].hits < Game.creeps[i].hitsMax && this.pos.isNearTo(Game.creeps[i]))
+                    {
+                        bol =false
+                        this.heal(Game.creeps[i])
+                    }
+                }
+                if(bol) this.heal(this)
+            }
+            /* 线性队列行走规则设定 */
+            for (var cc in this.memory.squad)
+            {
+                if (Game.creeps[cc] && Game.creeps[cc].fatigue) return
+            }
+            if (this.memory.squad[this.name].index != 3 && (!isInArray([0,49],this.pos.x) && !isInArray([0,49],this.pos.y)))
+            {
+                var followCreepName = findNextData(this)
+                if (followCreepName == null) return
+                var portal = this.pos.findClosestByRange(FIND_STRUCTURES,{filter:(stru)=>{
+                    return stru.structureType == 'portal'
+                }})
+                var followCreep = Game.creeps[followCreepName]
+                if (!followCreep && portal) {return}
+                if (followCreep)
+                {
+                // 跟随爬不靠在一起就等一等
+                if (!this.pos.isNearTo(followCreep)) return
+                }
+                
+            }
+            if (this.memory.squad[this.name].index != 0)
+            {
+                var disCreepName = findFollowData(this)
+                var portal = this.pos.findClosestByRange(FIND_STRUCTURES,{filter:(stru)=>{
+                    return stru.structureType == 'portal'
+                }})
+                if (disCreepName == null || (!Game.creeps[disCreepName] && !portal)) return
+                if (!Game.creeps[disCreepName] && portal){this.arriveTo(new RoomPosition(25,25,roomName),20,shard);return}
+                if (Game.shard.name == shard && !Game.creeps[disCreepName]) return
+                var disCreep = Game.creeps[disCreepName]
+                if (this.room.name == this.memory.belong)  this.goTo(disCreep.pos,0)
+                else this.moveTo(disCreep,{ignoreCreeps:true})
+            }
+            /* 判断在不在目标房间入口房间 */
+            if (identifyNext(this.room.name,roomName) == false)
+            {
+                if (this.memory.squad[this.name].index == 0)
+                this.arriveTo(new RoomPosition(25,25,roomName),20,shard)
+            }
+            else
+            {
+                if (this.memory.squad[this.name].index == 0)
+                {
+                    this.say('🔪',true)
+                    if (!this.memory.arrived)
+                    {
+                        var blueFlag = this.pos.findClosestByRange(FIND_FLAGS,{filter:(flag)=>{
+                            return flag.color == COLOR_BLUE
+                        }})
+                        if (blueFlag)
+                        this.arriveTo(blueFlag.pos,5,shard)
+                        else
+                        this.arriveTo(new RoomPosition(25,25,this.room.name),10,shard)
+                        /* 寻找周围有没有空地 */
+                        if (identifyGarrison(this) && shard == Game.shard.name)
+                        {
+                            this.memory.arrived = true
+                            return
+                        }
+                    }
+                    else
+                    {
+                        // 到达了的逻辑
+                        for (var crp in this.memory.squad)
+                        {
+                            if (Game.creeps[crp])
+                                Game.creeps[crp].memory.controlledBySquardFrame = true
+                        }
+                    }
                 }
             }
         }
