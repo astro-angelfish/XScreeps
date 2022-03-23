@@ -202,8 +202,12 @@ export default class terminalExtension extends StructureTerminal {
                         continue LoopB
                     }
                     if (this.cooldown) continue LoopA   // 冷却模式下进行不了其他deal了
+                    let a = 0,b=50000;
+                    COMMODITIES[i.rType] && COMMODITIES[i.rType].level?a=0:a
+                    let price = 0.05
+                    if (i.price) price = i.price
                     var orders = Game.market.getAllOrders(order => order.resourceType == i.rType &&
-                        order.type == ORDER_BUY && order.amount >= 1000 && order.amount <= 30000)
+                        price <= order.price && order.type == ORDER_BUY && order.amount >= a && order.amount <= b)
                     if (orders.length <= 0) continue LoopB
                     /* 按价格从低到高排列 */
                     var newOrderList = orders.sort(compare('price'))

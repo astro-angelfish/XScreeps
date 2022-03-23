@@ -11,7 +11,7 @@ export default ()=>{
         /* 房间核心 */
         thisRoom.RoomInit()         // 房间数据初始化
         thisRoom.RoomEcosphere()    // 房间状态、布局
-        thisRoom.SpawnMain()        // 定时、补员型孵化管理
+        thisRoom.SpawnMain()        // 常驻爬虫的孵化管理 [不涉及任务相关爬虫的孵化]
 
         /* 房间运维 */ 
         thisRoom.MissionManager()   // 任务管理器

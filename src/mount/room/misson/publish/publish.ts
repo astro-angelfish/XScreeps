@@ -270,7 +270,7 @@ export default class RoomMissonPublish extends Room {
         thisTask.CreepBind = {
             'architect':{num:num,bind:[],interval:time?time:1000},
         }
-        thisTask.LabBind = this.Bind_Lab(['XZHO2','XLH2O','XLHO2','XGHO2','XKH2O']) // XGH2O (work) XLH2O (work)  (X)
+        thisTask.LabBind = this.Bind_Lab(['XZHO2','XLH2O','XLHO2','XGHO2','XKH2O'])
         if (thisTask.LabBind)
         return thisTask
         return null

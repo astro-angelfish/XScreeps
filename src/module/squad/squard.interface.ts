@@ -11,7 +11,7 @@ interface squadData{
     disShard:string     // 目标shard
     sourceShard:string  // 源shard
     ready?:boolean  // 是否小队已经组队完成
-    squardType?:string      // 小队类型 目前包括 XR - 远程蓝球, XD - 拆墙黄球, XA - 近战红球, XC - 黄红混合, XM - 黄蓝混合
+    squardType?:string      // 小队类型 目前包括
     lastAttack?:string          // 上一个被攻击的爬 如果所有爬生命都大于0做治疗预判用
     init?:boolean           // 是否已经初始化方向了
     gather?:boolean         // 是否已经集结了

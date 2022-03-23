@@ -35,7 +35,9 @@ export const RoleData:SpawnConstantData = {
     'double-attack':{num:0,ability:[0,0,10,28,0,0,0,12],level:10,mark:"⚔️",must:true},
     'double-heal':{num:0,ability:[0,0,10,0,0,28,0,12],level:10,mark:"💉",must:true},
     'claim-attack':{num:0,ability:[0,0,15,0,0,0,15,0],level:10,mark:"🟣"},
+
     'architect':{num:0,ability:[15,10,10,0,0,10,0,5],level:10,mark:"🚒"},
+    
     'scout':{num:0,ability:[0,0,1,0,0,0,0,0],level:15,mark:'✏️'},
     'aio':{num:0,ability:[0,0,25,0,10,15,0,0],level:10,mark:"🌈"},
     'mineral':{num:0,ability:[15,15,15,0,0,0,0,0],level:11,mark:"⛏️"},

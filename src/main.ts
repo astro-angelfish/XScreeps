@@ -15,30 +15,37 @@ import { SquadManager } from './module/squad/squard'
  * 主运行函数
  */
 export const loop = ErrorMapper.wrapLoop(() =>{
-    let cpu1 = Game.cpu.getUsed()
+
     /* Memory初始化 */
     MemoryInit()            // Memory room creep flag 
-    /* InterShard初始化 */
+
+    /* 跨shard初始化 */
     InitShardMemory()
-    /* 跨区记忆运行 */
+
+    /* 跨shard记忆运行 */
     InterShardRun()
+
     /* 原型拓展挂载 */
     Mount()
-    let cpu2 = Game.cpu.getUsed()
-    /* 爬虫统计及死亡Memory回收 */
+
+    /* 爬虫数量统计及死亡Memory回收 */
     CreepNumStatistic()
+
     /* 房间框架运行 */
     RoomWork()
-    let cpu3 = Game.cpu.getUsed()
+
     /* 爬虫运行 */
     CreepWork()
-    SquadManager() // 四人小队框架
-    let cpu4 = Game.cpu.getUsed()
+
+    /* 四人小队模块 */
+    SquadManager()
+
     /* 资源调度超时管理 */
     ResourceDispatchTick()
+
     /* 像素 */
     pixel()
-    // console.log(`cpu消耗统计:\n初始化及原型挂载:${cpu2-cpu1}\n房间框架运行:${cpu3-cpu2}\n爬虫运行:${cpu4-cpu3}\n总cpu:${cpu4}`)
+    
     /* 布局可视化 */
     layoutVisual()
 

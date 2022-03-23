@@ -56,6 +56,7 @@ export default {
     },
     frame:
     {
+        // 添加控制某房间 [添加了房间才会运行代码]
         set(roomName:string,plan:'man'|'hoho'|'dev',x:number,y:number):string
         {
             let thisRoom = Game.rooms[roomName]
@@ -63,11 +64,13 @@ export default {
             Memory.RoomControlData[roomName] = {arrange:plan,center:[x,y]}
             return `[frame] 房间${roomName}加入房间控制列表，布局${plan}，中心点[${x},${y}]`
         },
+        // 不控制某房间
         remove(roomName):string
         {
             delete Memory.RoomControlData[roomName]
             return `[frame] 删除房间${roomName}出房间控制列表`
         },
+        // 删除某房间的建筑
         del(roomName:string,x:number,y:number,mold:BuildableStructureConstant):string{
             var myRoom = Game.rooms[roomName]
             if (!myRoom) return `[frame] 未找到房间${roomName},请确认房间!`

@@ -42,6 +42,42 @@ export default class CreepMoveExtension extends Creep {
         {
             return route
         }
+        // 过道路口优先
+        let allowedRooms = { [this.pos.roomName]: true ,[target.roomName]:true};
+        let swi =false
+        if (target.roomName != this.room.name)
+        {
+            let myroomparsed = Number((/^[WE]([0-9]+)[NS]([0-9]+)$/.exec(this.room.name)));
+            let disRoomparsed = Number((/^[WE]([0-9]+)[NS]([0-9]+)$/.exec(target.roomName)));
+            /* 计算距离 如果两个房间之间距离过短就不这样做 */
+            let enoughDistance = Math.sqrt(Math.abs(myroomparsed[0]-disRoomparsed[0])**2+Math.abs(myroomparsed[1]-disRoomparsed[1])**2)
+            if (enoughDistance > 4.3) swi = true
+            if (swi)
+            {
+                let ret=Game.map.findRoute(this.pos.roomName, target.roomName, {
+                    routeCallback(roomName) {
+                        // 在全局绕过房间列表的房间 false
+                        if (Memory.bypassRooms && Memory.bypassRooms.includes(roomName)) return Infinity
+                        let parsed = Number((/^[WE]([0-9]+)[NS]([0-9]+)$/.exec(roomName)));
+                        let isHighway = (parsed[1] % 10 === 0) ||
+                            (parsed[2] % 10 === 0);
+                        let isMyRoom = Game.rooms[roomName] &&
+                            Game.rooms[roomName].controller &&
+                            Game.rooms[roomName].controller.my;
+                        if (isHighway || isMyRoom) {
+                            return 1;
+                        } else {
+                            return 2;
+                        }
+                    }
+                })
+                if (ret != ERR_NO_PATH) {
+                    ret.forEach(function (info) {
+                        allowedRooms[info.room] = true;
+                    });
+                }
+            }
+        }
         /* 路线查找 */
         const result = PathFinder.search(this.pos,{pos:target,range:range},{
             plainCost:2,
@@ -49,9 +85,11 @@ export default class CreepMoveExtension extends Creep {
             maxOps:target.roomName == this.room.name?1000:8000,
             roomCallback:roomName=>{
                 // 在全局绕过房间列表的房间 false
-                if (Memory.bypassRooms && Memory.bypassRooms.includes(roomName)) return false
+                if (!swi && Memory.bypassRooms && Memory.bypassRooms.includes(roomName)) return false
+                if (swi && allowedRooms[roomName] === undefined) {
+                    return false;
+                }
                 // 在爬虫记忆绕过房间列表的房间 false
-                if (this.memory.bypassRooms && this.memory.bypassRooms.includes(roomName)) return false
                 const room = Game.rooms[roomName]
                 // 没有视野的房间只观察地形
                 if (!room) return

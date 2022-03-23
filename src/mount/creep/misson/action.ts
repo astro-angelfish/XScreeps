@@ -217,7 +217,7 @@ export default class CreepMissonActionExtension extends Creep {
         if (!mission) return
         if (this.room.name != mission.Data.disRoom)
         {
-            this.goTo(new RoomPosition(25,25,mission.Data.disRoom),20)
+            this.goTo(new RoomPosition(24,24,mission.Data.disRoom),20)
             return
         }
         this.workstate('energy')
@@ -281,6 +281,7 @@ export default class CreepMissonActionExtension extends Creep {
         {
             if (this.memory.working)
             {
+                this.say("upgrade")
                 this.upgrade_()
             }
             else

@@ -552,8 +552,8 @@ export default {
                     /* 寻找目前存在的过道采集任务 */
                     for (var j of thisRoom.memory.Misson['Creep'])
                     {
-                        if (j.name == 'power采集') str += `power采集任务 ${roomName}-->${j.Data.room}  state:${j.Data.role}\n`
-                        if (j.name == 'deposit采集') str += `deposit采集任务 ${roomName}-->${j.Data.rom}  state:${j.Data.role}\n`
+                        if (j.name == 'power采集') str += `power采集任务 ${roomName}-->${j.Data.room}  state:${j.Data.state}\n`
+                        if (j.name == 'deposit采集') str += `deposit采集任务 ${roomName}-->${j.Data.room}  state:${j.Data.state}\n`
                     }
                     return str
                 }

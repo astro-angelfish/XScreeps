@@ -66,8 +66,6 @@ interface MissionModel{
     name:string     // 任务名称 
     range: 'Room' | 'Creep' | 'Structure' | 'PowerCreep'    // 任务所属范围  新增powerCreep任务
     delayTick:number    // 过期时间 1000 99999 (x)
-
-
     structure?:string[] // 与任务有关的建筑id Structure A B(link) ['Aid']
     state?:number       // 任务状态 0 (A 1) 1 (B 2 A 0) 2 
     maxTime?:number     // 最大重复任务数  默认1 例如我可以同时发布两个签名任务，1个去E1S1 一个去E1S2 物流运输( 3 )

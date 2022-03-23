@@ -96,7 +96,8 @@ export default class RoomFunctionFindExtension extends Room {
                 stru.ManageMission()
         }
     }
-/**
+    
+    /**
     * 建筑任务初始化 目前包含terminal factory link
     */
     public StructureMission():void{

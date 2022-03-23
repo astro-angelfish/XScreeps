@@ -64,5 +64,4 @@ export default class RoomFunctionTowerExtension extends Room {
             }
         }
     }
-
 }

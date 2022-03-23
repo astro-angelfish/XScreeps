@@ -29,6 +29,7 @@ export default()=>{
         continue
       }
       if (!RoleData[thisCreep.memory.role]) continue
+      // 自适应体型生产的爬虫执行恢复体型的相关逻辑
       if (adaption && thisCreep.memory.adaption && thisCreep.store.getUsedCapacity()==0 )
       {
         let room = Game.rooms[thisCreep.memory.belong]
@@ -53,6 +54,5 @@ export default()=>{
       {
         thisCreep.ManageMisson()
       }
-      let b = Game.cpu.getUsed()
     }
 }
