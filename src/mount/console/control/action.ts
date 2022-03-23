@@ -72,21 +72,21 @@ export default {
         },
     },
     war:{
-        dismantle(roomName:string,disRoom:string,num:number,boost?:boolean,interval?:number):string{
+        dismantle(roomName:string,disRoom:string,shard:shardName,num:number,boost?:boolean,interval?:number):string{
             var thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[war] 不存在房间${roomName}`
             let interval_ = interval?interval:1000
-            let task = thisRoom.Public_dismantle(disRoom,num,interval_,boost)
+            let task = thisRoom.Public_dismantle(disRoom,shard,num,interval_,boost)
             if (thisRoom.AddMission(task))
             return Colorful(`[war] 房间${roomName}挂载拆迁任务成功 -> ${disRoom}`,'green')
             return Colorful(`[war] 房间${roomName}挂载拆迁任务失败 -> ${disRoom}`,'red')
         },
-        Cdismantle(roomName:string,disRoom:string):string{
+        Cdismantle(roomName:string,disRoom:string,shard:shardName = Game.shard.name as shardName):string{
             var thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[war] 不存在房间${roomName}`
             for (var i of thisRoom.memory.Misson['Creep'])
             {
-                if (i.name =='黄球拆迁' && i.Data.disRoom ==disRoom)
+                if (i.name =='黄球拆迁' && i.Data.disRoom ==disRoom && i.Data.shard == shard)
                 {
                     if (thisRoom.DeleteMission(i.id))
                     return Colorful(`[plan] 房间${roomName}删除拆迁任务成功`,'green')
@@ -115,7 +115,7 @@ export default {
             }
             return Colorful(`[war] 房间${roomName}紧急支援任务失败`,'red')
         },
-        control(roomName:string,disRoom:string,interval:number,shard:shardName = Game.shard.name as shardName):string{
+        control(roomName:string,disRoom:string,shard:shardName = Game.shard.name as shardName,interval:number):string{
             var thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[war] 不存在房间${roomName}`
             let task = thisRoom.Public_control(disRoom,shard,interval)
@@ -136,7 +136,7 @@ export default {
             }
             return Colorful(`[war] 房间${roomName}控制攻击任务失败`,'red')
         },
-        aio(roomName:string,disRoom:string,CreepNum:number,shard:shardName,time:number = 1000,boost:boolean = true):string{
+        aio(roomName:string,disRoom:string,shard:shardName,CreepNum:number,time:number = 1000,boost:boolean = true):string{
             var myRoom = Game.rooms[roomName]
             if (!myRoom) return `[war] 未找到房间${roomName},请确认房间!`
             var thisTask = myRoom.Public_aio(disRoom,shard,CreepNum,time,boost)

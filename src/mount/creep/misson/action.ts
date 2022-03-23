@@ -300,11 +300,12 @@ export default class CreepMissonActionExtension extends Creep {
         if (mission.boost)
         {
             /* boost检查 暂缺 */
+            if (!this.BoostCheck(['move','worl'])) return
         }
-        if (this.room.name != mission.disRoom){this.goTo(new RoomPosition(25,25,mission.disRoom),20);return}
-        /* 黄灰旗 */
+        if (this.room.name != mission.disRoom || mission.shard != Game.shard.name){this.goTo(new RoomPosition(25,25,mission.disRoom),20);return}
+        /* dismantle_0 */
         let disFlag = this.pos.findClosestByPath(FIND_FLAGS,{filter:(flag)=>{
-            return flag.color == COLOR_YELLOW && flag.secondaryColor == COLOR_GREY
+            return  flag.name.indexOf('dismantle') == 0
         }})
         if (!disFlag)
         {
@@ -313,7 +314,7 @@ export default class CreepMissonActionExtension extends Creep {
             }})
             if (clostStructure)
             {
-                clostStructure.pos.createFlag(generateID(),COLOR_YELLOW,COLOR_GREY)
+                clostStructure.pos.createFlag(`${generateID()}`,COLOR_WHITE)
                 return
             }
             else

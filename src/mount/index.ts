@@ -4,6 +4,7 @@ import mountRoom from './room'
 import mountConsole from './console'
 import mountStructure from './structure'
 import mountPowerCreep from './powercreep'
+import mountHelp from './help'
 export default function():void {
     if (!global.Mounted)
     {
@@ -13,6 +14,7 @@ export default function():void {
     mountStructure()
     mountCreep()
     mountPowerCreep()
+    mountHelp()
     global.Mounted = true
     }
 }

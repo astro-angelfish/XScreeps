@@ -3,7 +3,7 @@ interface Room {
     public_repair(Rtype:'global' | 'special' | 'nuker',num:number,boostType:ResourceConstant,vindicate:boolean):MissionModel
     public_planC(disRoom:string,Cnum:number,upNum:number,shard?:shardName,):MissionModel
     Public_link(structure:string[],disStructure:string,level:number,delayTick?:number):MissionModel
-    Public_dismantle(disRoom:string,num:number,interval?:number,boost?:boolean):MissionModel
+    Public_dismantle(disRoom:string,shard:shardName,num:number,interval?:number,boost?:boolean):MissionModel
     Check_Lab(misson:MissionModel,role:string,tankType:'storage' | 'terminal' | 'complex')
     Public_quick(num:number,boostType:ResourceConstant | null):MissionModel
     Public_expand(disRoom:string,num:number,cnum?:number):MissionModel

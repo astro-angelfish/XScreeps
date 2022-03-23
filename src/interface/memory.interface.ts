@@ -6,6 +6,7 @@ interface Memory {
     marketAdjust?:{[res:string]:number}
     ResourceDispatchData:RDData[]
     outMineData:{[roomName:string]:OutMineData}
+    stats :any
 }
 
 interface RDData{

@@ -1,4 +1,5 @@
-import { isInArray } from "@/utils"
+import { Colorful, isInArray } from "@/utils"
+import { result } from "lodash"
 import { allResource, roomResource } from "../control/local/resource"
 import { getStore } from "../control/local/store"
 
@@ -16,6 +17,22 @@ export default {
             roomResource(roomName)
             return `[resource] 房间${roomName}资源统计完毕!`
         },
+        com():string{
+            let result = '压缩商品资源:\n'
+            result += 'battery(wn) utrium_bar(U) lemergium_bar(L) keanium_bar(K) zynthium_bar(Z) \n'
+            result += 'ghodium_melt(G) oxidant(O) reductant(H) purifier(X)\n'
+            result += '基础商品资源:\n'
+            result += 'wire cell alloy condensate composite crystal liquid\n'
+            result += Colorful('机械商品:\n','#f8a505',true)
+            result += Colorful('tube fixtures frame hydraulics machine\n','#f8a505',false)
+            result += Colorful('生物商品:\n','#05f817',true)
+            result += Colorful('phlegm tissue muscle organoid organism\n','#05f817',false)
+            result += Colorful('电子商品:\n','blue',true)
+            result += Colorful('switch transistor microchip circuit device\n','blue',false)
+            result += Colorful('奥秘商品:\n','#5147ea',true)
+            result += Colorful('concentrate extract spirit emanation essence\n','#5147ea',false)
+            return result
+        }
     },
     store:{
         all():string{

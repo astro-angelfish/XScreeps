@@ -149,7 +149,7 @@ export default class RoomMissonPublish extends Room {
      * @param boost     是否boost
      * @returns         任务对象
      */
-    public Public_dismantle(disRoom:string,num:number,interval?:number,boost?:boolean):MissionModel{
+    public Public_dismantle(disRoom:string,shard:shardName,num:number,interval?:number,boost?:boolean):MissionModel{
         var thisTask:MissionModel = {
             name:'黄球拆迁',
             range:'Creep',
@@ -157,7 +157,8 @@ export default class RoomMissonPublish extends Room {
             level:10,
             Data:{
                 disRoom:disRoom,
-                num:num
+                num:num,
+                shard:shard
             },
         }
         thisTask.reserve = true

@@ -194,5 +194,14 @@ export default {
                 result += `[${i}] : ${data[i]}\n`
             return result
         }
-    }
+    },
+    // 获取工厂对象
+    getFactory(roomName:string):StructureFactory{
+        var myRoom = Game.rooms[roomName]
+        if (!myRoom) return null
+        let factory = Game.getObjectById(myRoom.memory.StructureIdData.FactoryId) as StructureFactory
+        if (factory) return factory
+        else 
+        return null
+    },
 }
