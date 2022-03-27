@@ -38,6 +38,7 @@ export default class RoomMissonTransportExtension extends Room {
             if (Game.time % 5) return
         }
         if (!this.memory.StructureIdData.storageID) return
+        if (!this.memory.StructureIdData.AtowerID) this.memory.StructureIdData.AtowerID = []
         for (let id of this.memory.StructureIdData.AtowerID)
         {
             let tower = Game.getObjectById(id) as StructureTower

@@ -2,7 +2,7 @@
 
 import { t1, t2, t3 } from "@/constant/ResourceConstant"
 import { Colorful, isInArray } from "@/utils"
-import { avePrice, checkLabBindResource, haveOrder, highestPrice } from "../fun/funtion"
+import { avePrice, checkDispatch, checkLabBindResource, checkSend, DispatchNum, haveOrder, highestPrice } from "../fun/funtion"
 
 
 // 主调度函数
@@ -203,4 +203,39 @@ export function ResourceLimitUpdate(thisRoom:Room):void{
         }
     }
     // 监测工厂相关
+}
+
+/* 判断是否能调度 + 其他房间是否有足够资源调度 可能比较消耗cpu */
+export function canDispatch(thisRoom:Room,resource_:ResourceConstant,num:number,disNum:number = 1):boolean{
+
+    if (DispatchNum(thisRoom.name) >= disNum) return false // 资源调度数量过多则不执行资源调度
+    if (checkDispatch(thisRoom.name,resource_)) return false  // 已经存在调用信息的情况
+    if (checkSend(thisRoom.name,resource_)) return false  // 已经存在其它房间的传送信息的情况
+    // 再判断其他房间是否有足够资源调度
+    for (var i in Memory.RoomControlData)
+    {
+        if (Game.rooms[i] && Game.rooms[i].controller && Game.rooms[i].controller.my)
+        {
+            let storage_ = global.Stru[i]['storage'] as StructureStorage
+            if (!storage_) continue
+            let limit = global.ResourceLimit[i][resource_]?global.ResourceLimit[i][resource_]:0
+            if (storage_.store.getUsedCapacity(resource_) - limit > 0) return true
+        }
+    }
+    return false
+}
+
+/* 判断是否能调度 */
+export function identifyDispatch(thisRoom:Room,resource_:ResourceConstant,num:number,disNum:number = 1,mtype?:'deal'|'order'):boolean{
+        // 先判断是否已经存在该房间的调度了
+        if (mtype)
+        {
+            if (Game.market.credits < 1000000) return false
+            if (mtype == 'deal' && thisRoom.MissionNum('Structure','资源购买') > 0) return false // 存在资源购买任务的情况下，不执行资源调度
+            if (mtype == 'order' && haveOrder(thisRoom.name,resource_,'buy')) return false  // 如果是下单类型 已经有单就不进行资源调度
+        }
+        if (DispatchNum(thisRoom.name) >= disNum) return false // 资源调度数量过多则不执行资源调度
+        if (checkDispatch(thisRoom.name,resource_)) return false  // 已经存在调用信息的情况
+        if (checkSend(thisRoom.name,resource_)) return false  // 已经存在其它房间的传送信息的情况
+        return true
 }

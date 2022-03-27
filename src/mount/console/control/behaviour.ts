@@ -327,6 +327,18 @@ export default {
             else
             return `[lab] 房间${roomName}挂载合成任务失败!`
         },
+        Ccompound(roomName:string):string{
+            var myRoom = Game.rooms[roomName]
+            if (!myRoom) return `[lab] 未找到房间${roomName},请确认房间`
+            for (var i of myRoom.memory.Misson['Room'])
+            {
+                if (i.name == '资源合成')
+                {
+                    if (myRoom.DeleteMission(i.id)) return  `[lab] 房间${roomName}合成任务删除成功!`
+                }
+            }
+            return Colorful(`[lab] 房间${roomName}删除合成任务失败!`,'red')
+        },
         dispatch(roomName:string,res:ResourceConstant,num:number):string{
             var myRoom = Game.rooms[roomName]
             if (!myRoom) return `[lab] 未找到房间${roomName},请确认房间!`
@@ -343,7 +355,7 @@ export default {
             var myRoom = Game.rooms[roomName]
             if (!myRoom) return `[lab] 未找到房间${roomName},请确认房间!`
             myRoom.memory.ComDispatchData = {}
-            return `[lab] 已经修改房间${roomName}的资源调度数据，为{}.本房见现已无资源合成调度`
+            return `[lab] 已经修改房间${roomName}的合成规划数据，为{}.本房见现已无资源合成调度`
         },
     },
 
@@ -575,5 +587,29 @@ export default {
             return `[cross] 房间${roomName}取消过道采集任务失败！请检查房间内是否已经存在该任务！`
         },
     },
+
+    factory:{
+        switch(roomName:string):string{
+            var myRoom = Game.rooms[roomName]
+            if (!myRoom) return `[factory] 未找到房间${roomName},请确认房间!`
+            if (!myRoom.memory.switch.StopFactory) myRoom.memory.switch.StopFactory = true
+            else myRoom.memory.switch.StopFactory = false
+            return `[factory] 房间${roomName}的工厂加工已经设置为${myRoom.memory.switch.StopFactory}`
+        },
+        show(roomName:string):string{
+            var myRoom = Game.rooms[roomName]
+            if (!myRoom) return `[factory] 未找到房间${roomName},请确认房间!`
+            let result = `[factory] 房间${roomName}的工厂加工信息如下:\n`
+            result += `工厂等级:${myRoom.memory.productData.level}\n`
+            result += `基本加工资源列表:`
+            for (var i in myRoom.memory.productData.baseList)
+            {
+                result += `\t${i}:${myRoom.memory.productData.baseList[i].num}\n`
+            }
+            result += `正在合成的资源:${myRoom.memory.productData.producing.com?myRoom.memory.productData.producing.com:'无'},数量：${myRoom.memory.productData.producing.num?myRoom.memory.productData.producing.num:'无'}\n`
+            result += `流水线商品:${myRoom.memory.productData.flowCom}\n`
+            return result
+        }
+    }
 
 }
