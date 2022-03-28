@@ -378,7 +378,7 @@ export default class CreepMissonWarExtension extends Creep {
         if (!missionData) return
         if (this.room.name == this.memory.belong && Game.shard.name == this.memory.shard)
         {
-            if (!this.BoostCheck(['move','heal','tough','ranged_attack'])) return
+            if (data.boost && !this.BoostCheck(['move','heal','tough','ranged_attack'])) return
         }
         if ((this.room.name != data.disRoom || Game.shard.name != data.shard))
         {
