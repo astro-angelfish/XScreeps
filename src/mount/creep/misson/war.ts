@@ -380,68 +380,128 @@ export default class CreepMissonWarExtension extends Creep {
         {
             if (!this.BoostCheck(['move','heal','tough','ranged_attack'])) return
         }
-        if ((this.room.name != data.disRoom || Game.shard.name != data.shard) && !this.memory.swith)
+        if ((this.room.name != data.disRoom || Game.shard.name != data.shard))
         {
             this.heal(this)
             this.arriveTo(new RoomPosition(24,24,data.disRoom),23,data.shard)
         }
         else
         {
-            var creep_ = this.pos.findInRange(FIND_HOSTILE_CREEPS,3,{filter:(creep)=>{
+            // 对方开安全模式情况下 删除任务
+            if (this.room.controller && this.room.controller.safeMode)
+            {
+                if (Game.shard.name == this.memory.shard)
+                {
+                    Game.rooms[this.memory.belong].DeleteMission(id)
+                }
+                return
+            }
+            // 刷新一下全部的敌对爬虫
+            var hostileCreeps = this.room.find(FIND_HOSTILE_CREEPS,{filter:(creep)=>{
+                return !isInArray(Memory.whitesheet,creep.owner.username)
+            }})
+            let nearCreeps = this.pos.findInRange(FIND_HOSTILE_CREEPS,3,{filter:(creep)=>{
                 return !isInArray(Memory.whitesheet,creep.owner.username) && !creep.pos.GetStructure('rampart')
             }})
-            if(creep_.length>0)
-            if (this.pos.isNearTo(creep_[0]))
+            // 自动攻击爬虫
+            if (nearCreeps.length > 0)
             {
+                if (this.pos.isNearTo(nearCreeps[0]))
+                {
+                this.rangedMassAttack()
+                }
+                else
+                {
+                this.rangedAttack(nearCreeps[0])
+                }
+            }
+            // 自动插旗/攻击建筑 旗子附近没有能破自己防的爬虫
+            let attack_flag = this.pos.findClosestByPath(FIND_FLAGS,{filter:(flag)=>{
+                return flag.name.indexOf('aio') == 0
+            }})
+            if (!attack_flag)
+            {
+                var Attstructure = this.pos.findClosestByPath(FIND_HOSTILE_STRUCTURES,{filter:(stru)=>{
+                    return isInArray(['nuker','spawn','terminal','extension','tower','link','observer','lab','powerspawn','factory'],stru.structureType) && !stru.pos.GetStructure('rampart')
+                }})
+                if (Attstructure)
+                {
+                    let randomStr = Math.random().toString(36).substr(3)
+                    if (!Game.flags[`aio_${randomStr}`])
+                    Attstructure.pos.createFlag(`aio_${randomStr}`)
+                }
+            }
+            if (!attack_flag)
+            {
+                // 还找不到就找重要的被ram覆盖的重要建筑攻击
+                var CoverStructure = this.pos.findClosestByPath(FIND_HOSTILE_STRUCTURES,{filter:(stru)=>{
+                    return stru.structureType == 'rampart' && stru.pos.GetStructureList(['spawn','tower','storage','terminal']).length > 0
+                }})
+                if (CoverStructure)
+                {
+                    let randomStr = Math.random().toString(36).substr(3)
+                    if (!Game.flags[`aio_${randomStr}`])
+                    CoverStructure.pos.createFlag(`aio_${randomStr}`)
+                }
+                else
+                {
+                    // 还找不到就直接找最近的wall或者rampart攻击
+                    var walls = this.pos.findClosestByPath(FIND_STRUCTURES,{filter:(stru)=>{
+                        return isInArray([STRUCTURE_WALL,STRUCTURE_RAMPART],stru.structureType)
+                    }})
+                    if (walls)
+                    {
+                        let randomStr = Math.random().toString(36).substr(3)
+                        if (!Game.flags[`aio_${randomStr}`])
+                        walls.pos.createFlag(`aio_${randomStr}`)
+                    }
+                }
                 this.rangedMassAttack()
             }
             else
             {
-                this.rangedAttack(creep_[0])
-            }
-            // 治疗友军
-            let otherCreeps = this.pos.findInRange(FIND_MY_CREEPS,3,{filter:(creep)=>{return creep.hits < creep.hitsMax - 200}})
-            if (otherCreeps[0] && this.hits == this.hitsMax)
-            {
-                if (otherCreeps[0].pos.isNearTo(this))
-                this.heal(otherCreeps[0])
-                else {this.rangedHeal(otherCreeps[0]);this.goTo(otherCreeps[0].pos,1);return;}
-            }
-            else
-            {
-                this.heal(this)
-            }
-            let attack_flag = this.pos.findClosestByPath(FIND_FLAGS,{filter:(flag)=>{
-                return flag.name.indexOf('aio') == 0
-            }})
-            if (attack_flag)
-            {
-                if (attack_flag.pos.GetStructure(STRUCTURE_WALL))
+                // 有旗子就攻击旗子下的建筑
+                let stru = attack_flag.pos.lookFor(LOOK_STRUCTURES)
+                if (stru.length > 0)
                 {
-                    if (!this.pos.inRangeTo(attack_flag,3))this.goTo(attack_flag.pos,3)
-                    else this.rangedAttack(attack_flag.pos.GetStructure(STRUCTURE_WALL))
+                    if (isInArray([STRUCTURE_WALL,STRUCTURE_ROAD,STRUCTURE_CONTAINER],stru[0].structureType))
+                    {
+                        this.rangedAttack(stru[0])
+                    }
+                    else
+                    {
+                        if (stru[0].pos.isNearTo(this))
+                        {
+                            this.rangedMassAttack()
+                        }
+                        else
+                        {
+                            this.goTo(stru[0].pos,1)
+                            this.rangedAttack(stru[0])
+                        }
+                    }
                 }
                 else
                 {
-                    if (!this.pos.isNearTo(attack_flag)) this.goTo(attack_flag.pos,1)
-                    else this.rangedMassAttack()
+                    attack_flag.remove()    // 没有建筑就删除旗帜
                 }
-                if (attack_flag.pos.lookFor(LOOK_STRUCTURES).length <= 0) attack_flag.remove()
             }
-            else
+            // 自动规避
+            if (nearCreeps.length > 0)
             {
-                var clostStructure = this.pos.findClosestByPath(FIND_HOSTILE_STRUCTURES,{filter:(struc)=>{
-                    return !isInArray([STRUCTURE_CONTROLLER,STRUCTURE_RAMPART,STRUCTURE_STORAGE],struc.structureType)
-                }})
-                if (clostStructure)
+                // 防御塔伤害数据
+                let towerHurt = 3600    // 暂时认为是全满 后续会更新防御塔数据
+                if (!canSustain(nearCreeps,this,towerHurt))
                 {
-                    clostStructure.pos.createFlag(`aio_${generateID()}`,COLOR_WHITE)
-                    return
+                    this.heal(this)
+                    let closestHurtCreep = this.closestCreep(nearCreeps,true)
+                    if (closestHurtCreep)
+                    {
+                        this.Flee(closestHurtCreep.pos,3)
+                        return
+                    }
                 }
-                else
-                {return}
             }
-            if (!attack_flag) return
         }
     }
 
@@ -937,7 +997,7 @@ export default class CreepMissonWarExtension extends Creep {
                 if (!attack_flag)
                 {
                     var Attstructure = this.pos.findClosestByPath(FIND_HOSTILE_STRUCTURES,{filter:(stru)=>{
-                        return isInArray(['nuker','spawn','terminal','extension','tower','link','observer','lab'],stru.structureType)
+                        return isInArray(['nuker','spawn','terminal','extension','tower','link','observer','lab','powerspawn','factory'],stru.structureType) && !stru.pos.GetStructure('rampart')
                     }})
                     if (Attstructure)
                     {
@@ -948,11 +1008,37 @@ export default class CreepMissonWarExtension extends Creep {
                 }
                 if (!attack_flag)
                 {
-
+                    // 还找不到就找重要的被ram覆盖的重要建筑攻击
+                    var CoverStructure = this.pos.findClosestByPath(FIND_HOSTILE_STRUCTURES,{filter:(stru)=>{
+                        return stru.structureType == 'rampart' && stru.pos.GetStructureList(['spawn','tower','storage','terminal']).length > 0
+                    }})
+                    if (CoverStructure)
+                    {
+                        this.say("⚔️",true)
+                        if (this.attack(CoverStructure) == ERR_NOT_IN_RANGE) this.goTo(CoverStructure.pos,1)
+                        return
+                    }
+                    // 还找不到就直接找最近的wall或者rampart攻击
+                    var walls = this.pos.findClosestByPath(FIND_STRUCTURES,{filter:(stru)=>{
+                        return isInArray([STRUCTURE_WALL,STRUCTURE_RAMPART],stru.structureType)
+                    }})
+                    if (walls)
+                    {
+                        this.say("⚔️",true)
+                        if (this.attack(walls) == ERR_NOT_IN_RANGE) this.goTo(walls.pos,1)
+                        return
+                    }
                 }
                 else
                 {
-
+                    // 有旗子就攻击旗子下的建筑
+                    let stru = attack_flag.pos.lookFor(LOOK_STRUCTURES)
+                    if (stru.length > 0)
+                    {
+                        if (this.attack(stru[0]) == ERR_NOT_IN_RANGE) this.goTo(stru[0].pos,1)
+                        return
+                    }
+                    attack_flag.remove()    // 没有建筑就删除旗帜
                 }
             }
         }
@@ -978,7 +1064,55 @@ export default class CreepMissonWarExtension extends Creep {
                     return
                 }
                 // 开始拆墙
-
+                let attack_flag = this.pos.findClosestByPath(FIND_FLAGS,{filter:(flag)=>{
+                    return flag.name.indexOf('double_dismantle') == 0
+                }})
+                if (!attack_flag)
+                {
+                    var Attstructure = this.pos.findClosestByPath(FIND_HOSTILE_STRUCTURES,{filter:(stru)=>{
+                        return isInArray(['nuker','spawn','terminal','extension','tower','link','observer','lab','powerspawn','factory'],stru.structureType) && !stru.pos.GetStructure('rampart')
+                    }})
+                    if (Attstructure)
+                    {
+                        let randomStr = Math.random().toString(36).substr(3)
+                        if (!Game.flags[`double_dismantle_${randomStr}`])
+                        Attstructure.pos.createFlag(`double_dismantle_${randomStr}`)
+                    }
+                }
+                if (!attack_flag)
+                {
+                    // 还找不到就找重要的被ram覆盖的重要建筑攻击
+                    var CoverStructure = this.pos.findClosestByPath(FIND_HOSTILE_STRUCTURES,{filter:(stru)=>{
+                        return stru.structureType == 'rampart' && stru.pos.GetStructureList(['spawn','tower','storage','terminal']).length > 0
+                    }})
+                    if (CoverStructure)
+                    {
+                        this.say("⚔️",true)
+                        if (this.dismantle(CoverStructure) == ERR_NOT_IN_RANGE) this.goTo(CoverStructure.pos,1)
+                        return
+                    }
+                    // 还找不到就直接找最近的wall或者rampart攻击
+                    var walls = this.pos.findClosestByPath(FIND_STRUCTURES,{filter:(stru)=>{
+                        return isInArray([STRUCTURE_WALL,STRUCTURE_RAMPART],stru.structureType)
+                    }})
+                    if (walls)
+                    {
+                        this.say("⚔️",true)
+                        if (this.dismantle(walls) == ERR_NOT_IN_RANGE) this.goTo(walls.pos,1)
+                        return
+                    }
+                }
+                else
+                {
+                    // 有旗子就攻击旗子下的建筑
+                    let stru = attack_flag.pos.lookFor(LOOK_STRUCTURES)
+                    if (stru.length > 0)
+                    {
+                        if (this.dismantle(stru[0]) == ERR_NOT_IN_RANGE) this.goTo(stru[0].pos,1)
+                        return
+                    }
+                    attack_flag.remove()    // 没有建筑就删除旗帜
+                }
             }
         }
         else

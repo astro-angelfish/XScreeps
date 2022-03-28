@@ -246,6 +246,7 @@ export function canSustain(creeps:Creep[],mycreep:Creep,towerData?:number):boole
     let bodyData = bodypartData(mycreep)
     let toughNum = mycreep.getActiveBodyparts('tough')
     let toughBoostType = null
+    if (creeps.length <=0) return true
     for (var i of mycreep.body) // 确定boost类型
     {
         if (i.type == 'tough')

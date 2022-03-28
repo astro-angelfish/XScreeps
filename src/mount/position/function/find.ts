@@ -184,4 +184,13 @@ export default class PositionFunctionFindExtension extends RoomPosition {
                 // 寻路结果压缩
                 return result.path
     }
+
+    /* 获取该位置n格内的敌对爬虫 */
+    public FindRangeCreep(num:number):Creep[]{
+        let creep_ = this.findInRange(FIND_CREEPS,num,{filter:(creep)=>{
+            return !isInArray(Memory.whitesheet,creep.owner.username)
+        }})
+        if (creep_.length > 0) return creep_
+        return []
+    }
 }

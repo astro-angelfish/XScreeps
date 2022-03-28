@@ -12,4 +12,5 @@ interface Creep{
     BoostCheck(boostBody:string[]):boolean
     optTower(otype:'heal'|'attack',creep:Creep):void
     isInDefend(creep:Creep):boolean
+    closestCreep(creep:Creep[],hurt?:boolean):Creep
 }

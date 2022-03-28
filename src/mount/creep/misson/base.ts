@@ -112,6 +112,7 @@ export default class CreepMissonBaseExtension extends Creep {
                 case '蓝球防御':{this.handle_defend_range();break}
                 case '双人防御':{this.handle_defend_double();break}
                 case '四人小队':{this.handle_task_squard();break}
+                case '双人小队':{this.handle_double();break}
             }
         }
     }

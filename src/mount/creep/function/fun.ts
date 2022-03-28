@@ -150,4 +150,24 @@ export default class CreepFunctionExtension extends Creep {
         }
         return false
     }
+
+    // 寻找数组里距离自己最近的爬虫 hurt为true则去除没有攻击部件的爬
+    public closestCreep(creep:Creep[],hurt?:boolean):Creep{
+        if (creep.length <=0) return null
+        let result = creep[0]
+        // 计算距离
+        for (var i of creep)
+        {
+            // 距离
+            if (hurt)
+            {
+                if (!i.getActiveBodyparts('attack') && !i.getActiveBodyparts('ranged_attack')) continue
+            }
+            let distance0 = Math.max.apply(Math.abs(this.pos.x-result.pos.x),Math.abs(this.pos.y-result.pos.y))
+            let distance1 = Math.max.apply(Math.abs(this.pos.x-i.pos.x),Math.abs(this.pos.y-i.pos.y))
+            if (distance1 < distance0)
+            result = i
+        }
+        return result
+    }
 }
