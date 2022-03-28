@@ -203,6 +203,53 @@ export function ResourceLimitUpdate(thisRoom:Room):void{
         }
     }
     // 监测工厂相关
+    for (var b in thisRoom.memory.productData.baseList)
+    {
+        // 基础合成物品也做一定限制
+        global.ResourceLimit[thisRoom.name][b] = Math.ceil(thisRoom.memory.productData.baseList[b].num/2)
+        // 所有基础合成物品的底物也做一定限制
+        LoopC:
+        for (let row in COMMODITIES[b].components){
+            if (isInArray(['L','G','H','O','Z','U','Z'],row)) global.ResourceLimit[thisRoom.name][row] = 15000
+            else if (row == 'energy') continue LoopC
+            else{
+                if (!isInArray(Object.keys(thisRoom.memory.productData.baseList),row))
+                {
+                    global.ResourceLimit[thisRoom.name][row] = 5000
+                }
+                else continue LoopC
+            }
+        }
+    }
+    if (thisRoom.memory.productData.flowCom)
+    {
+        let disCom = thisRoom.memory.productData.flowCom
+        if (COMMODITIES[disCom].level >= 4)
+        {
+            for (let row in COMMODITIES[b].components)
+            {
+                if (!global.ResourceLimit[thisRoom.name][row] || global.ResourceLimit[thisRoom.name][row] < COMMODITIES[b].components[row] * 10)
+                global.ResourceLimit[thisRoom.name][row] = COMMODITIES[b].components[row] * 10
+            }
+        }
+        else if (COMMODITIES[disCom].level == 3)
+        {
+            for (let row in COMMODITIES[b].components)
+            {
+                if (!global.ResourceLimit[thisRoom.name][row] || global.ResourceLimit[thisRoom.name][row] < COMMODITIES[b].components[row] * 40)
+                global.ResourceLimit[thisRoom.name][row]= COMMODITIES[b].components[row] * 40
+            }
+        }
+        else if ((COMMODITIES[disCom].level <= 2))
+        {
+            for (let row in COMMODITIES[b].components)
+            {
+                if (!global.ResourceLimit[thisRoom.name][row] || global.ResourceLimit[thisRoom.name][row] < COMMODITIES[b].components[row] * 100)
+                global.ResourceLimit[thisRoom.name][row]= COMMODITIES[b].components[row] * 100
+            }
+        }
+    }
+
 }
 
 /* 判断是否能调度 + 其他房间是否有足够资源调度 可能比较消耗cpu */

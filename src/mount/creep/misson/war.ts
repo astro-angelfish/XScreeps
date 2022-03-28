@@ -1,5 +1,5 @@
-import { findFollowData, findNextData, identifyGarrison, identifyNext, parts } from "@/module/fun/funtion"
-import { getDistance, isInArray } from "@/utils"
+import { canSustain, findFollowData, findNextData, identifyGarrison, identifyNext, parts } from "@/module/fun/funtion"
+import { generateID, getDistance, isInArray } from "@/utils"
 
 export default class CreepMissonWarExtension extends Creep {
     // 红球防御
@@ -370,6 +370,82 @@ export default class CreepMissonWarExtension extends Creep {
         }
     }
 
+    // 攻防一体
+    public handle_aio():void{
+        let missionData = this.memory.MissionData
+        let id = missionData.id
+        let data = missionData.Data
+        if (!missionData) return
+        if (this.room.name == this.memory.belong && Game.shard.name == this.memory.shard)
+        {
+            if (!this.BoostCheck(['move','heal','tough','ranged_attack'])) return
+        }
+        if ((this.room.name != data.disRoom || Game.shard.name != data.shard) && !this.memory.swith)
+        {
+            this.heal(this)
+            this.arriveTo(new RoomPosition(24,24,data.disRoom),23,data.shard)
+        }
+        else
+        {
+            var creep_ = this.pos.findInRange(FIND_HOSTILE_CREEPS,3,{filter:(creep)=>{
+                return !isInArray(Memory.whitesheet,creep.owner.username) && !creep.pos.GetStructure('rampart')
+            }})
+            if(creep_.length>0)
+            if (this.pos.isNearTo(creep_[0]))
+            {
+                this.rangedMassAttack()
+            }
+            else
+            {
+                this.rangedAttack(creep_[0])
+            }
+            // 治疗友军
+            let otherCreeps = this.pos.findInRange(FIND_MY_CREEPS,3,{filter:(creep)=>{return creep.hits < creep.hitsMax - 200}})
+            if (otherCreeps[0] && this.hits == this.hitsMax)
+            {
+                if (otherCreeps[0].pos.isNearTo(this))
+                this.heal(otherCreeps[0])
+                else {this.rangedHeal(otherCreeps[0]);this.goTo(otherCreeps[0].pos,1);return;}
+            }
+            else
+            {
+                this.heal(this)
+            }
+            let attack_flag = this.pos.findClosestByPath(FIND_FLAGS,{filter:(flag)=>{
+                return flag.name.indexOf('aio') == 0
+            }})
+            if (attack_flag)
+            {
+                if (attack_flag.pos.GetStructure(STRUCTURE_WALL))
+                {
+                    if (!this.pos.inRangeTo(attack_flag,3))this.goTo(attack_flag.pos,3)
+                    else this.rangedAttack(attack_flag.pos.GetStructure(STRUCTURE_WALL))
+                }
+                else
+                {
+                    if (!this.pos.isNearTo(attack_flag)) this.goTo(attack_flag.pos,1)
+                    else this.rangedMassAttack()
+                }
+                if (attack_flag.pos.lookFor(LOOK_STRUCTURES).length <= 0) attack_flag.remove()
+            }
+            else
+            {
+                var clostStructure = this.pos.findClosestByPath(FIND_HOSTILE_STRUCTURES,{filter:(struc)=>{
+                    return !isInArray([STRUCTURE_CONTROLLER,STRUCTURE_RAMPART,STRUCTURE_STORAGE],struc.structureType)
+                }})
+                if (clostStructure)
+                {
+                    clostStructure.pos.createFlag(`aio_${generateID()}`,COLOR_WHITE)
+                    return
+                }
+                else
+                {return}
+            }
+            if (!attack_flag) return
+        }
+    }
+
+    // 四人小队
     public handle_task_squard():void{
         var misson = this.memory.MissionData.Data
         var shard = misson.shard
@@ -522,14 +598,14 @@ export default class CreepMissonWarExtension extends Creep {
                     return stru.structureType == 'portal'
                 }})
                 if (disCreepName == null || (!Game.creeps[disCreepName] && !portal)) return
-                if (!Game.creeps[disCreepName] && portal){this.arriveTo(new RoomPosition(25,25,roomName),20,shard);return}
+                if (!Game.creeps[disCreepName] && portal){this.arriveTo(new RoomPosition(24,24,roomName),20,shard);return}
                 if (Game.shard.name == shard && !Game.creeps[disCreepName]) return
                 var disCreep = Game.creeps[disCreepName]
                 if (this.room.name == this.memory.belong)  this.goTo(disCreep.pos,0)
                 else this.moveTo(disCreep,{ignoreCreeps:true})
             }
             /* 判断在不在目标房间入口房间 */
-            if (identifyNext(this.room.name,roomName) == false)
+            if (identifyNext(this.room.name,roomName) == false || Game.shard.name != misson.shard)
             {
                 if (this.memory.squad[this.name].index == 0)
                 this.arriveTo(new RoomPosition(25,25,roomName),20,shard)
@@ -565,6 +641,389 @@ export default class CreepMissonWarExtension extends Creep {
                         }
                     }
                 }
+            }
+        }
+    }
+
+    // 紧急支援 已经修改，但未作充分测试 可能有bug
+    public handle_support():void{
+        let missionData = this.memory.MissionData
+        let id = missionData.id
+        let data = missionData.Data
+        if (!missionData) return
+        var roomName = data.disRoom
+        if (this.room.name == this.memory.belong && data.boost)
+        {
+            if (this.memory.role == 'double-attack')
+            {
+                if (!this.BoostCheck(['move','attack','tough'])) return
+            }
+            else if (this.memory.role == 'double-heal')
+            {
+                if (!this.BoostCheck(['move','heal','ranged_attack','tough'])) return
+            }
+            else if (this.memory.role == 'aio')
+            {
+                if (!this.BoostCheck(['move','heal','ranged_attack','tough'])) return
+            }
+        }
+        if (this.memory.role != 'aio' && !this.memory.double)
+        {
+            if (this.memory.role == 'double-heal')
+            {
+                /* 由heal来进行组队 */
+                if (Game.time % 7 == 0)
+                {
+                    var disCreep = this.pos.findClosestByRange(FIND_MY_CREEPS,{filter:(creep)=>{
+                        return creep.memory.role == 'double-attack' && !creep.memory.double
+                    }})
+                    if (disCreep)
+                    {
+                        this.memory.double = disCreep.name
+                        disCreep.memory.double = this.name
+                        this.memory.captain = false
+                        disCreep.memory.captain = true
+                    }
+                }
+            }
+            return
+        }
+        if (this.memory.role == 'double-attack')
+        {
+            if (!Game.creeps[this.memory.double]) return
+            if (this.fatigue || Game.creeps[this.memory.double].fatigue) return
+            if (Game.creeps[this.memory.double] && !this.pos.isNearTo(Game.creeps[this.memory.double]) && (!isInArray([0,49],this.pos.x) && !isInArray([0,49],this.pos.y)))
+            return
+            /* 去目标房间 */
+            if (this.room.name != roomName || Game.shard.name != data.shard)
+            {
+                this.arriveTo(new RoomPosition(24,24,roomName),23,data.shard)
+            }
+            else
+            {
+                let creeps = this.pos.findClosestByRange(FIND_HOSTILE_CREEPS,{filter:(creep)=>{
+                    return !isInArray(Memory.whitesheet,creep.owner.username )
+                }})
+                if (creeps)
+                {
+                    if (this.attack(creeps) == ERR_NOT_IN_RANGE) this.goTo(creeps.pos,1)
+                }
+                else
+                {
+                    this.goTo(new RoomPosition(24,24,data.disRoom),10)
+                }
+                // 支援旗帜 support_double
+                let flag = this.pos.findClosestByRange(FIND_FLAGS,{filter:(flag)=>{
+                    return flag.name.indexOf('support_double') == 0
+                }})
+                if (flag)
+                {
+                    let creeps = this.pos.findInRange(FIND_HOSTILE_CREEPS,1,{filter:(creep)=>{
+                        return !isInArray(Memory.whitesheet,creep.owner.username )
+                    }})
+                    if (creeps[0])this.attack(creeps[0])
+                    this.goTo(flag.pos,0)
+                    return
+                }
+                // 攻击建筑
+                let attack_flag = this.pos.findClosestByPath(FIND_FLAGS,{filter:(flag)=>{
+                    return flag.name.indexOf('support_double_attack') == 0
+                }})
+                if (attack_flag)
+                {
+                    if (attack_flag.pos.lookFor(LOOK_STRUCTURES).length > 0)
+                    {
+                        if (this.attack(attack_flag.pos.lookFor(LOOK_STRUCTURES)[0]) == ERR_NOT_IN_RANGE) this.goTo(creeps.pos,1)
+                    }
+                    else attack_flag.remove()
+                }
+            }
+        }
+        if (this.memory.role == 'double-heal')
+        {
+            var disCreepName = this.memory.double
+            var portal = this.pos.findClosestByRange(FIND_STRUCTURES,{filter:(stru)=>{
+                return stru.structureType == 'portal'
+            }})
+            if (!Game.creeps[disCreepName] && portal){this.arriveTo(new RoomPosition(25,25,roomName),20,data.shard);return}
+            if (Game.creeps[this.memory.double])this.moveTo(Game.creeps[this.memory.double])
+            // 寻找敌人 远程攻击
+            let enemy = this.pos.findInRange(FIND_HOSTILE_CREEPS,3,{filter:(creep)=>{
+                return !isInArray(Memory.whitesheet,creep.owner.username )
+            }})
+            if (enemy[0])this.rangedAttack(enemy[0])
+            // 奶
+            if(Game.creeps[this.memory.double])
+            {
+                if (this.hits < this.hitsMax || Game.creeps[this.memory.double].hits < Game.creeps[this.memory.double].hitsMax)
+                {
+                    if (this.hits < Game.creeps[this.memory.double].hits) this.heal(this)
+                    else
+                    {
+                        if (this.pos.isNearTo(Game.creeps[this.memory.double])) this.heal(Game.creeps[this.memory.double])
+                        else this.rangedHeal(Game.creeps[this.memory.double])
+                    }
+                    return
+                }
+            }
+            // 默认治疗攻击爬，如果周围有友军，在自身血量满的情况下治疗友军
+            let allys = this.pos.findInRange(FIND_CREEPS,3,{filter:(creep)=>{
+                return (creep.my || isInArray(Memory.whitesheet,creep.owner.username)) && creep.hitsMax-creep.hits > 350
+            }})
+            if (allys.length > 0)
+            {
+                // 寻找最近的爬
+                let ally_ = allys[0]
+                for (var i of allys) if (getDistance(this.pos,i.pos) < getDistance(ally_.pos,this.pos)) ally_ = i
+                if (this.pos.isNearTo(ally_)) this.heal(ally_)
+                else this.rangedHeal(ally_)
+            }
+            else
+            {
+                if (Game.creeps[this.memory.double]) this.heal(Game.creeps[this.memory.double])
+                else this.heal(this)
+            }
+        }
+        if (this.memory.role == 'aio')
+        {
+            if (this.room.name != roomName || Game.shard.name != data.shard)
+            {
+                this.heal(this)
+                this.arriveTo(new RoomPosition(24,24,roomName),23,data.shard)
+            }
+            else
+            {
+                // 寻找敌人 远程攻击
+                let enemy = this.pos.findInRange(FIND_HOSTILE_CREEPS,3,{filter:(creep)=>{
+                    return !isInArray(Memory.whitesheet,creep.owner.username ) 
+                }})
+                let disenemy = null
+                for (var e of enemy)
+                {
+                    if (!e.pos.GetStructure('rampart')) disenemy = e
+                }
+                if (disenemy)
+                {
+                    if (this.pos.isNearTo(disenemy)) this.rangedMassAttack()
+                    else if (this.pos.inRangeTo(disenemy,3)) this.rangedAttack(disenemy)
+                }
+                // 治疗自己和周围友军
+                if (this.hits < this.hitsMax) this.heal(this)
+                else
+                {
+                    let allys = this.pos.findInRange(FIND_CREEPS,3,{filter:(creep)=>{
+                        return (creep.my || isInArray(Memory.whitesheet,creep.owner.username)) && creep.hitsMax-creep.hits > 350
+                    }})
+                    if (allys.length > 0)
+                    {
+                        // 寻找最近的爬
+                        let ally_ = allys[0]
+                        for (var i of allys) if (getDistance(this.pos,i.pos) < getDistance(ally_.pos,this.pos)) ally_ = i
+                        if (this.pos.isNearTo(ally_)) this.heal(ally_)
+                        else this.rangedHeal(ally_)
+                    }
+                    else this.heal(this)
+                }
+                // 移动旗
+                let move_flag = this.pos.findClosestByPath(FIND_FLAGS,{filter:(flag)=>{
+                    return flag.name.indexOf('support_aio') == 0
+                }})
+                if (move_flag)
+                {
+                    this.heal(this)
+                    this.goTo(move_flag.pos,1)
+                    return
+                }
+                // 放风筝 计算自己奶量 敌对爬伤害
+                if (enemy.length > 0 && !canSustain(enemy,this))
+                {
+                    // 放风筝 寻找最近的有攻击性的爬 离他远点
+                    let closestAttackCreep = this.pos.findClosestByPath(FIND_HOSTILE_CREEPS,{filter:(creep)=>{
+                    return !isInArray(Memory.whitesheet,creep.owner.username) && (creep.getActiveBodyparts('attack') > 0 || creep.getActiveBodyparts('ranged_attack') > 0)
+                }})
+                    if (closestAttackCreep) this.Flee(closestAttackCreep.pos,3)
+                    return
+                }
+                // 寻找最近的敌人攻击
+                let closestCreep = this.pos.findClosestByPath(FIND_HOSTILE_CREEPS,{filter:(creep)=>{
+                    return !isInArray(Memory.whitesheet,creep.owner.username) && !creep.pos.GetStructure('rampart')
+                }})
+                if (closestCreep && !this.pos.isNearTo(closestCreep))
+                {
+                    this.goTo(closestCreep.pos,3)
+                }
+            }
+        }
+    }
+
+    // 双人小队
+    public handle_double():void{
+        let missionData = this.memory.MissionData
+        let id = missionData.id
+        let data = missionData.Data
+        if (!missionData) return
+        var roomName = data.disRoom
+        if (this.room.name == this.memory.belong)
+        {
+            if (this.memory.role == 'double-attack')
+            {
+                if (!this.BoostCheck(['move','attack','tough'])) return
+            }
+            else if (this.memory.role == 'double-heal')
+            {
+                if (!this.BoostCheck(['move','heal','ranged_attack','tough'])) return
+            }
+            else if (this.memory.role == 'double-dismantle')
+            {
+                if (!this.BoostCheck(['move','work','tough'])) return
+            }
+        }
+        if (!this.memory.double)
+        {
+            if (this.memory.role == 'double-heal')
+            {
+                /* 由heal来进行组队 */
+                if (Game.time % 7 == 0)
+                {
+                    var disCreep = this.pos.findClosestByRange(FIND_MY_CREEPS,{filter:(creep)=>{
+                        return creep.memory.role == 'double-attack' && !creep.memory.double
+                    }})
+                    if (disCreep)
+                    {
+                        this.memory.double = disCreep.name
+                        disCreep.memory.double = this.name
+                        this.memory.captain = false
+                        disCreep.memory.captain = true
+                    }
+                }
+            }
+            return
+        }
+        if (this.memory.role == 'double-attack')
+        {
+            if (!Game.creeps[this.memory.double]) return
+            if (this.fatigue || Game.creeps[this.memory.double].fatigue) return
+            if (Game.creeps[this.memory.double] && !this.pos.isNearTo(Game.creeps[this.memory.double]) && (!isInArray([0,49],this.pos.x) && !isInArray([0,49],this.pos.y)))
+            return
+            if (this.room.name != roomName || Game.shard.name != data.shard)
+            {
+                this.arriveTo(new RoomPosition(24,24,roomName),23,data.shard)
+            }
+            else
+            {
+                // 对方开安全模式情况下 删除任务
+                if (this.room.controller && this.room.controller.safeMode)
+                {
+                    if (Game.shard.name == this.memory.shard)
+                    {
+                        Game.rooms[this.memory.belong].DeleteMission(id)
+                    }
+                    return
+                }
+                // 展开攻击
+                var enemys = this.pos.findInRange(FIND_HOSTILE_CREEPS,4,{filter:(creep)=>{
+                    return !isInArray(Memory.whitesheet,creep.owner.username) && !creep.pos.GetStructure('rampart')
+                }})
+                if (enemys.length > 0)
+                {
+                    this.goTo(enemys[0].pos,1)
+                    this.attack(enemys[0])
+                    return
+                }
+                // 没有发现敌人就攻击建筑物
+                let attack_flag = this.pos.findClosestByPath(FIND_FLAGS,{filter:(flag)=>{
+                    return flag.name.indexOf('double_attack') == 0
+                }})
+                if (!attack_flag)
+                {
+                    var Attstructure = this.pos.findClosestByPath(FIND_HOSTILE_STRUCTURES,{filter:(stru)=>{
+                        return isInArray(['nuker','spawn','terminal','extension','tower','link','observer','lab'],stru.structureType)
+                    }})
+                    if (Attstructure)
+                    {
+                        let randomStr = Math.random().toString(36).substr(3)
+                        if (!Game.flags[`double_attack_${randomStr}`])
+                        Attstructure.pos.createFlag(`double_attack_${randomStr}`)
+                    }
+                }
+                if (!attack_flag)
+                {
+
+                }
+                else
+                {
+
+                }
+            }
+        }
+        else if (this.memory.role == 'double-dismantle')
+        {
+            if (!Game.creeps[this.memory.double]) return
+            if (this.fatigue || Game.creeps[this.memory.double].fatigue) return
+            if (Game.creeps[this.memory.double] && !this.pos.isNearTo(Game.creeps[this.memory.double]) && (!isInArray([0,49],this.pos.x) && !isInArray([0,49],this.pos.y)))
+            return
+            if (this.room.name != roomName || Game.shard.name != data.shard)
+            {
+                this.arriveTo(new RoomPosition(24,24,roomName),23,data.shard)
+            }
+            else
+            {
+                // 对方开安全模式情况下 删除任务
+                if (this.room.controller && this.room.controller.safeMode)
+                {
+                    if (Game.shard.name == this.memory.shard)
+                    {
+                        Game.rooms[this.memory.belong].DeleteMission(id)
+                    }
+                    return
+                }
+                // 开始拆墙
+
+            }
+        }
+        else
+        {
+            var disCreepName = this.memory.double
+            var portal = this.pos.findClosestByRange(FIND_STRUCTURES,{filter:(stru)=>{
+                return stru.structureType == 'portal'
+            }})
+            if (!Game.creeps[disCreepName] && portal){this.arriveTo(new RoomPosition(25,25,roomName),20,data.shard);return}
+            if (Game.creeps[this.memory.double])this.moveTo(Game.creeps[this.memory.double])
+            // 寻找敌人 远程攻击
+            let enemy = this.pos.findInRange(FIND_HOSTILE_CREEPS,3,{filter:(creep)=>{
+                return !isInArray(Memory.whitesheet,creep.owner.username )
+            }})
+            if (enemy[0])this.rangedAttack(enemy[0])
+            // 奶
+            if(Game.creeps[this.memory.double])
+            {
+                if (this.hits < this.hitsMax || Game.creeps[this.memory.double].hits < Game.creeps[this.memory.double].hitsMax)
+                {
+                    if (this.hits < Game.creeps[this.memory.double].hits) this.heal(this)
+                    else
+                    {
+                        if (this.pos.isNearTo(Game.creeps[this.memory.double])) this.heal(Game.creeps[this.memory.double])
+                        else this.rangedHeal(Game.creeps[this.memory.double])
+                    }
+                    return
+                }
+            }
+            // 默认治疗攻击爬，如果周围有友军，在自身血量满的情况下治疗友军
+            let allys = this.pos.findInRange(FIND_CREEPS,3,{filter:(creep)=>{
+                return (creep.my || isInArray(Memory.whitesheet,creep.owner.username)) && creep.hitsMax-creep.hits > 350
+            }})
+            if (allys.length > 0)
+            {
+                // 寻找最近的爬
+                let ally_ = allys[0]
+                for (var i of allys) if (getDistance(this.pos,i.pos) < getDistance(ally_.pos,this.pos)) ally_ = i
+                if (this.pos.isNearTo(ally_)) this.heal(ally_)
+                else this.rangedHeal(ally_)
+            }
+            else
+            {
+                if (Game.creeps[this.memory.double]) this.heal(Game.creeps[this.memory.double])
+                else this.heal(this)
             }
         }
     }

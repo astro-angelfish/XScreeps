@@ -7,7 +7,7 @@ interface Room {
     Check_Lab(misson:MissionModel,role:string,tankType:'storage' | 'terminal' | 'complex')
     Public_quick(num:number,boostType:ResourceConstant | null):MissionModel
     Public_expand(disRoom:string,num:number,cnum?:number):MissionModel
-    Public_support(disRoom:string,sType:'double' | 'aio' | 'squard',shard?:string):MissionModel
+    Public_support(disRoom:string,sType:'double' | 'aio',shard:shardName,num:number,boost:boolean):MissionModel
     Public_control(disRoom:string,shard:shardName,interval:number):MissionModel
     Public_helpBuild(disRoom:string,num:number,shard?:string,time?:number):MissionModel
     Public_Sign(disRoom:string,shard:string,str:string):MissionModel
@@ -22,4 +22,5 @@ interface Room {
     public_blue_defend(num:number):MissionModel
     public_double_defend(num:number):MissionModel
     public_squad(disRoom:string,shard:shardName,interval:number,RNum:number,ANum:number,DNum:number,HNum:number,AIONum:number,flag:string):MissionModel
+    Public_Double(disRoom:string,shard:shardName,CreepNum:number,cType:'dismantle' | 'attack',interval:number):MissionModel
 }

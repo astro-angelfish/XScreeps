@@ -1,6 +1,7 @@
 import { resourceComDispatch } from "@/constant/ResourceConstant"
 import { avePrice, haveOrder, highestPrice, RecognizeLab } from "@/module/fun/funtion"
 import { Colorful, compare, isInArray, unzipPosition, zipPosition } from "@/utils"
+import { remove } from "lodash"
 export default {
     /* 终端行为 */
     terminal:{
@@ -82,6 +83,7 @@ export default {
 
     /* 外矿 */
     mine:{
+        // 采集外矿
         harvest(roomName:string,x:number,y:number,disRoom:string):string{
             var thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[mine] 不存在房间${roomName}`
@@ -90,6 +92,7 @@ export default {
             if(thisRoom.AddMission(thisTask)) return `[mine] ${roomName} -> ${disRoom} 的外矿任务挂载成功！`
             return `[mine] ${roomName} -> ${disRoom} 的外矿任务挂载失败！`
         },
+        // 取消采集
         Charvest(roomName:string,disRoom:string):string{
             var thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[mine] 不存在房间${roomName}`
@@ -106,6 +109,7 @@ export default {
             }
             return `[mine] ${roomName} -> ${disRoom} 的外矿任务删除失败！`
         },
+        // 更新外矿road信息
         road(roomName:string):string{
             if (!Game.rooms[roomName]) return `[mine] 不存在相应视野`
             let roads = Game.rooms[roomName].find(FIND_STRUCTURES,{filter:(stru)=>{
@@ -295,6 +299,7 @@ export default {
 
     /* lab */
     lab:{
+        // 初始化lab
         init(roomName:string):string{
             var myRoom = Game.rooms[roomName]
             if (!myRoom) return `[lab] 未找到房间${roomName},请确认房间!`
@@ -312,6 +317,7 @@ export default {
             for (let i of result.com) str += `${i}\n`
             return str
         },
+        // 挂载具体合成任务
         compound(roomName:string,res:ResourceConstant,num:number):string{
             var myRoom = Game.rooms[roomName]
             if (!myRoom) return `[lab] 未找到房间${roomName},请确认房间`
@@ -327,6 +333,7 @@ export default {
             else
             return `[lab] 房间${roomName}挂载合成任务失败!`
         },
+        // 取消具体合成任务
         Ccompound(roomName:string):string{
             var myRoom = Game.rooms[roomName]
             if (!myRoom) return `[lab] 未找到房间${roomName},请确认房间`
@@ -339,6 +346,7 @@ export default {
             }
             return Colorful(`[lab] 房间${roomName}删除合成任务失败!`,'red')
         },
+        // lab合成规划 (自动执行具体合成任务 无需挂载)
         dispatch(roomName:string,res:ResourceConstant,num:number):string{
             var myRoom = Game.rooms[roomName]
             if (!myRoom) return `[lab] 未找到房间${roomName},请确认房间!`
@@ -351,6 +359,7 @@ export default {
             }
             return `[lab] 已经修改房间${roomName}的合成规划数据，为${resourceComDispatch[res]}，数量：${num}`
         },
+        // 取消lab合成规划
         Cdispatch(roomName:string):string{
             var myRoom = Game.rooms[roomName]
             if (!myRoom) return `[lab] 未找到房间${roomName},请确认房间!`
@@ -361,6 +370,7 @@ export default {
 
     /* power */
     power:{
+        // 开始、停止升级gpl
         switch(roomName:string):string{
             var myRoom = Game.rooms[roomName]
             if (!myRoom) return `[power] 未找到房间${roomName},请确认房间!`
@@ -368,6 +378,7 @@ export default {
             else myRoom.memory.switch.StopPower = false
             return `[power] 房间${roomName}的power升级已经设置为${myRoom.memory.switch.StopPower}`
         },
+        // 节省能量和Power的模式
         save(roomName:string):string{
             var myRoom = Game.rooms[roomName]
             if (!myRoom) return `[power] 未找到房间${roomName},请确认房间!`
@@ -375,6 +386,7 @@ export default {
             else myRoom.memory.switch.SavePower = false
             return `[power] 房间${roomName}的power升级的SavePower选项已经设置为${myRoom.memory.switch.SavePower}`
         },
+        // 限制pc的技能
         option(roomName:string,stru:string):string{
             var myRoom = Game.rooms[roomName]
             if (!myRoom) return `[power] 未找到房间${roomName},请确认房间!`
@@ -399,6 +411,7 @@ export default {
                 return `[power] 房间${roomName}的${switch_}选项调整为false! 将执行对应的power操作`
             }
         },
+        // 输出pc的技能限制清单
         show(roomName:string):string{
             var myRoom = Game.rooms[roomName]
             if (!myRoom) return `[power] 未找到房间${roomName},请确认房间!`
@@ -512,7 +525,7 @@ export default {
             }
             return `[cross] 房间${roomName}更改过道采集任务房间清单失败！请检查房间内是否已经存在该任务！`
         },
-        /* 增加某个房间s */
+        /* 增加某个房间 */
         add(roomName:string,addRoomName:string):string{
             var thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[cross] 不存在房间${roomName}`
@@ -548,6 +561,7 @@ export default {
             }
             return `[cross] 未找到${roomName}-->${disRoom}的power采集任务`
         },
+        // 输出过道详细信息
         show(roomName:string):string{
             var thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[cross] 不存在房间${roomName}`
@@ -588,28 +602,74 @@ export default {
         },
     },
 
+    /* 工厂行为 */
     factory:{
+        // 启动、关闭工厂
         switch(roomName:string):string{
             var myRoom = Game.rooms[roomName]
             if (!myRoom) return `[factory] 未找到房间${roomName},请确认房间!`
             if (!myRoom.memory.switch.StopFactory) myRoom.memory.switch.StopFactory = true
             else myRoom.memory.switch.StopFactory = false
-            return `[factory] 房间${roomName}的工厂加工已经设置为${myRoom.memory.switch.StopFactory}`
+            if (myRoom.memory.switch.StopFactory) return `[factory] 房间${roomName}的工厂加工已经停止!`
+            return `[factory] 房间${roomName}的工厂加工已经启动!`
         },
+        // 输出工厂状态
         show(roomName:string):string{
             var myRoom = Game.rooms[roomName]
             if (!myRoom) return `[factory] 未找到房间${roomName},请确认房间!`
             let result = `[factory] 房间${roomName}的工厂加工信息如下:\n`
             result += `工厂等级:${myRoom.memory.productData.level}\n`
-            result += `基本加工资源列表:`
+            result += `工厂状态:${myRoom.memory.productData.state}\n`
+            result += `基本加工资源列表:\n`
             for (var i in myRoom.memory.productData.baseList)
             {
                 result += `\t${i}:${myRoom.memory.productData.baseList[i].num}\n`
             }
-            result += `正在合成的资源:${myRoom.memory.productData.producing.com?myRoom.memory.productData.producing.com:'无'},数量：${myRoom.memory.productData.producing.num?myRoom.memory.productData.producing.num:'无'}\n`
             result += `流水线商品:${myRoom.memory.productData.flowCom}\n`
+            if (myRoom.memory.productData.producing)
+            result += `正在合成的资源:${myRoom.memory.productData.producing.com?myRoom.memory.productData.producing.com:'无'},数量：${myRoom.memory.productData.producing.num?myRoom.memory.productData.producing.num:'无'}\n`
             return result
-        }
+        },
+        // 初始化等级
+        level(roomName:string):string{
+            var myRoom = Game.rooms[roomName]
+            if (!myRoom) return `[factory] 未找到房间${roomName},请确认房间!`
+            if (!Game.powerCreeps[`${this.room.name}/queen/${Game.shard.name}`]) return `[factory] ${this.room.name}此房间无pc请先孵化pc!`
+            this.room.enhance_factory();
+            return `[factory] 房间${roomName}发布pc确定工厂等级任务成功!`
+        },
+        // 添加工厂基本物资合成清单
+        add(roomName:string,cType:CommodityConstant,num:number):string{
+            var myRoom = Game.rooms[roomName]
+            if (!myRoom) return `[factory] 未找到房间${roomName},请确认房间!`
+            let factory_ = Game.getObjectById(myRoom.memory.StructureIdData.FactoryId) as StructureFactory
+            if (!factory_) return Colorful(`[factory] 未找到房间${roomName}的工厂!`,'red',true)
+            return factory_.add(cType,num)
+        },
+        // 删除工厂基本物资合成
+        remove(roomName:string,cType:CommodityConstant):string{
+            var myRoom = Game.rooms[roomName]
+            if (!myRoom) return `[factory] 未找到房间${roomName},请确认房间!`
+            let factory_ = Game.getObjectById(myRoom.memory.StructureIdData.FactoryId) as StructureFactory
+            if (!factory_) return Colorful(`[factory] 未找到房间${roomName}的工厂!`,'red',true)
+            return factory_.remove(cType)
+        },
+        // 设置工厂流水线生产物资
+        set(roomName:string,cType:CommodityConstant):string{
+            var myRoom = Game.rooms[roomName]
+            if (!myRoom) return `[factory] 未找到房间${roomName},请确认房间!`
+            let factory_ = Game.getObjectById(myRoom.memory.StructureIdData.FactoryId) as StructureFactory
+            if (!factory_) return Colorful(`[factory] 未找到房间${roomName}的工厂!`,'red',true)
+            return factory_.set(cType)
+        },
+        // 取消工厂流水线生产物资
+        del(roomName:string,cType:CommodityConstant):string{
+            var myRoom = Game.rooms[roomName]
+            if (!myRoom) return `[factory] 未找到房间${roomName},请确认房间!`
+            let factory_ = Game.getObjectById(myRoom.memory.StructureIdData.FactoryId) as StructureFactory
+            if (!factory_) return Colorful(`[factory] 未找到房间${roomName}的工厂!`,'red',true)
+            return factory_.del(cType)
+        },
     }
 
 }

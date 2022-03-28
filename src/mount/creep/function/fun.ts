@@ -35,7 +35,6 @@ export default class CreepFunctionExtension extends Creep {
         {
             this.goTo(distination.pos,1)
         }
-        this.memory.standed = false
     }
 
     public upgrade_():void{

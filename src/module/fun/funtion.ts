@@ -203,6 +203,125 @@ export function hurts(creep:Creep):{[bo:string]:number}{
     return result
 }
 
+/* 爬虫攻击数据 */
+export function bodypartData(creep:Creep):{[bo:string]:number}{
+    var result = {'attack':0,'ranged_attack':0,'heal':0,'tough':0}
+    // 其中tough是抵抗的伤害值
+    for (var i of creep.body)
+    {
+        if (i.type == 'heal')
+        {
+            if (!i.boost) result['heal'] += 12
+            else if (i.boost == 'LO') result['heal'] += 24
+            else if (i.boost == 'LHO2') result['heal'] += 36
+            else if (i.boost == 'XLHO2') result['heal'] += 48
+        }
+        if (i.type == 'attack')
+        {
+            if (!i.boost) result['attack'] += 30
+            else if (i.boost == 'UH') result['attack'] += 60
+            else if (i.boost == 'UH2O') result['attack'] += 90
+            else if (i.boost == 'XUH2O') result['attack'] += 120
+        }
+        else if (i.type == 'ranged_attack')
+        {
+            if (!i.boost) result['ranged_attack'] += 10
+            else if (i.boost == 'KO') result['ranged_attack'] += 20
+            else if (i.boost == 'KHO2') result['ranged_attack'] += 30
+            else if (i.boost == 'XKHO2') result['ranged_attack'] += 40
+        }
+        else if (i.type == 'tough')
+        {
+            if (!i.boost) result['tough'] += 100
+            else if (i.boost == 'GO') result['tough'] += 200
+            else if (i.boost == 'GHO2') result['tough'] += 300
+            else if (i.boost == 'XGHO2') result['tough'] += 400
+        }
+    }
+    return result
+}
+
+/* 判断是否抵抗的住爬虫的攻击  敌方爬虫 活跃的tough数量 免伤数据 治疗数据 防御塔数据(敌方)  返回true代表不会破防*/
+export function canSustain(creeps:Creep[],mycreep:Creep,towerData?:number):boolean{
+    let bodyData = bodypartData(mycreep)
+    let toughNum = mycreep.getActiveBodyparts('tough')
+    let toughBoostType = null
+    for (var i of mycreep.body) // 确定boost类型
+    {
+        if (i.type == 'tough')
+        {
+            if (!i.boost) {toughBoostType = null;break}
+            else if (i.boost == 'GO')  {toughBoostType = 'GO';break}
+            else if (i.boost == 'GHO2')  {toughBoostType = 'GHO2';break}
+            else if (i.boost == 'XGHO2')  {toughBoostType = 'XGHO2';break}
+        }
+    }
+    let myhealData = bodyData['heal']
+    let hurtData = 0
+    // 计算敌方伤害 hurtData是总伤害
+    for (var c of creeps)
+    {
+        let enData = bodypartData(c)
+        let hurt = enData['attack']
+        if (enData['ranged_attack'] > hurt) hurt = enData['ranged_attack']
+        hurtData += hurt
+    }
+    if (towerData) hurtData += towerData
+    mycreep.say(`${hurtData}`)
+    // 判断总伤害能否破防
+    if (toughNum <= 0)
+    {
+        if(hurtData > myhealData) return false
+    }
+    else
+    {
+        if(!toughBoostType)
+        {
+            if(hurtData > myhealData) return false
+        }
+        else if (toughBoostType == 'GO')
+        {
+            let hurt = hurtData/2
+            if (hurt <= toughNum*100)
+            {
+                if(hurt > myhealData) return false
+            }
+            else
+            {
+                let superfluous = (hurt-toughNum)*2
+                if (hurt+superfluous > myhealData) return false
+            }
+        }
+        else if (toughBoostType == 'GHO2')
+        {
+            let hurt = hurtData/3
+            if (hurt <= toughNum*100)
+            {
+                if(hurt > myhealData) return false
+            }
+            else
+            {
+                let superfluous = (hurt-toughNum)*3
+                if (hurt+superfluous > myhealData) return false
+            }
+        }
+        else if (toughBoostType == 'XGHO2')
+        {
+            let hurt = hurtData/4
+            if (hurt <= toughNum*100)
+            {
+                if(hurt > myhealData) return false
+            }
+            else
+            {
+                let superfluous = (hurt-toughNum)*4
+                if (hurt+superfluous > myhealData) return false
+            }
+        }
+    }
+    return true
+}
+
 /* 寻找后一级的爬 */
 export function findNextData(creep:Creep):string {
     if (!creep.memory.squad) return null
@@ -261,7 +380,7 @@ export function identifyGarrison(creep:Creep):boolean{
     return true
 }
 
-/* 寻找前一级的爬 */
+/* 寻找前一级的爬 四人小队用 */
 export function findFollowData(creep:Creep):string {
     if (!creep.memory.squad) return null
     for (var i in creep.memory.squad)

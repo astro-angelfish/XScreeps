@@ -64,7 +64,7 @@ export default {
             Memory.RoomControlData[roomName] = {arrange:plan,center:[x,y]}
             return `[frame] 房间${roomName}加入房间控制列表，布局${plan}，中心点[${x},${y}]`
         },
-        // 不控制某房间
+        // 移除本代码对某房间的控制
         remove(roomName):string
         {
             delete Memory.RoomControlData[roomName]
@@ -121,6 +121,9 @@ export default {
             var myRoom = Game.rooms[roomName]
             if (!myRoom) return `[frame] 未找到房间${roomName},请确认房间!`
             myRoom.memory.economy = !myRoom.memory.economy
+            if (!myRoom.memory.economy){
+                myRoom.memory.SpawnConfig['upgrade'].num = 1
+            }
             return `[frame] 房间${roomName}的economy选项改为${myRoom.memory.economy}`
         }
     },

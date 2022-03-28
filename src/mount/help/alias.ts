@@ -21,9 +21,7 @@ export default [
         exec: function (): string {
             return [
                 ...projectTitle.map(line => colorful(line, 'blue', true)),
-                `\n    ${colorful('Do ♂ you ♂ like ♂ play ♂ a ♂ game ♂', 'yellow', true)}`,
-
-
+                `\n    ${colorful('superbitch bot', 'yellow', true)}`,
                 createHelp(
                     {
                         name: '全局指令',
@@ -226,17 +224,21 @@ export default [
                                 params: [
                                     { name: 'roomName', desc: '我的房间名' },
                                     { name: 'disRoom', desc: '目标房间' },
-                                    { name: 'shard', desc: 'shardname (默认同一shard)' },
+                                    { name: 'shard', desc: '目标房间所在shard' },
                                 ],
                                 functionName: 'war.Cdismantle'
                             },
                             {
                                 title: '紧急支援:',
-                                describe: '支援友军房间 也可以支援自己 (t3 boost) 例: war.support("W1N1","W1N2","double")',
+                                describe: '支援友军房间 包含双人小队和一体机',
                                 params: [
-                                    { name: 'roomName', desc: '我的房间名' },
-                                    { name: 'disRoom', desc: '目标房间' },
-                                    { name: 'rType', desc: '小队类型 double:双人小队 (别的没写)' },
+                                    { name: 'roomName', desc: '我的房间名 (roomName)' },
+                                    { name: 'disRoom', desc: '目标房间 (roomName)' },
+                                    { name: 'shard', desc: '目标房间所在shard (shardName)' },
+                                    { name: 'num', desc: '数量 (number)' },
+                                    { name: 'sType', desc: '小队类型 double:双人小队; aio:一体机' },
+                                    { name: 'interval', desc: '出兵间隔时间 (number)' },
+                                    { name: 'boost', desc: '是否boost 默认true 只适合aio (boolean)' },
                                 ],
                                 functionName: 'war.support'
                             },
@@ -245,7 +247,8 @@ export default [
                                 params: [
                                     { name: 'roomName', desc: '我的房间名' },
                                     { name: 'disRoom', desc: '目标房间' },
-                                    { name: 'rType', desc: '小队类型 double:双人小队 (别的没写)' },
+                                    { name: 'shard', desc: '目标房间所在shard (shardName)' },
+                                    { name: 'sType', desc: '小队类型 double:双人小队; aio:一体机' },
                                 ],
                                 functionName: 'war.Csupport'
                             },

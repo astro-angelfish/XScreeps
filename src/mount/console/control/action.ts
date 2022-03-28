@@ -94,26 +94,31 @@ export default {
             }
             return Colorful(`[war] 房间${roomName}删除拆迁任务失败`,'red')
         },
-        support(roomName:string,disRoom:string,rType:'double'):string{
+        support(roomName:string,disRoom:string,shard:shardName,num:number,sType:'double'|'aio',interval:number = 1000,boost:boolean = true):string{
             var thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[war] 不存在房间${roomName}`
-            let task = thisRoom.Public_support(disRoom,rType,'shard3')
+            let task = thisRoom.Public_support(disRoom,sType,shard,num,boost)
+            if (task)
+            {
+                for (var i in task.CreepBind)
+                    task.CreepBind[i].interval = interval
+            }
             if (thisRoom.AddMission(task))
-            return Colorful(`[war] 房间${roomName}挂载紧急支援任务成功 -> ${disRoom}`,'green')
-            return Colorful(`[war] 房间${roomName}挂载紧急支援任务失败 -> ${disRoom}`,'red')
+            return Colorful(`[war] 房间${roomName}挂载紧急支援任务成功 -(${shard})-> ${disRoom},类型为${sType},数量为${num},间隔时间${interval}`,'green')
+            return Colorful(`[war] 房间${roomName}挂载紧急支援任务失败 -(${shard})-> ${disRoom}`,'red')
         },
-        Csupport(roomName:string,disRoom:string,rType:string):string{
+        Csupport(roomName:string,disRoom:string,shard:shardName,rType:string):string{
             var thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[war] 不存在房间${roomName}`
             for (var i of thisRoom.memory.Misson['Creep'])
             {
-                if (i.name =='紧急支援' && i.Data.disRoom ==disRoom && i.Data.sType == rType)
+                if (i.name =='紧急支援' && i.Data.disRoom ==disRoom && i.Data.sType == rType && i.Data.shard == shard)
                 {
                     if (thisRoom.DeleteMission(i.id))
-                    return Colorful(`[war] 房间${roomName}紧急支援任务成功`,'green')
+                    return Colorful(`[war] 房间${roomName}-(${shard})->${disRoom}|[${rType}]紧急支援任务删除成功`,'green')
                 }
             }
-            return Colorful(`[war] 房间${roomName}紧急支援任务失败`,'red')
+            return Colorful(`[war] 房间${roomName}-(${shard})->${disRoom}|[${rType}]紧急支援任务删除失败`,'red')
         },
         control(roomName:string,disRoom:string,shard:shardName = Game.shard.name as shardName,interval:number):string{
             var thisRoom = Game.rooms[roomName]
@@ -205,7 +210,27 @@ export default {
                 }
             }
             return `[war] 删除去往${shard}/${disRoom}的四人小队任务失败!`
-        }
+        },
+        double(roomName:string,disRoom:string,shard:shardName = Game.shard.name as shardName,mType:'dismantle' | 'attack',num:number,interval:number):string{
+            var thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[war] 不存在房间${roomName}`
+            var thisTask = thisRoom.Public_Double(disRoom,shard,num,mType,interval)
+            thisTask.maxTime = 2
+            if(thisRoom.AddMission(thisTask)) return `[war] 双人小队 ${roomName} -> ${disRoom} 的 ${mType}任务挂载成功！`
+            return `[war] 双人小队 ${roomName} -(${shard})-> ${disRoom} 的 ${mType}任务挂载失败！`
+        },
+        Cdouble(roomName:string,disRoom:string,shard:shardName,mType:'dismantle'|'attack'):string{
+            var thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[war] 不存在房间${roomName}`
+            for (var i of thisRoom.memory.Misson['Creep'])
+            {
+                if (i.name == "双人小队" && i.Data.disRoom == disRoom && i.Data.teamType == mType && i.Data.shard == shard)
+                {
+                    if (thisRoom.DeleteMission(i.id)) return `[war] 双人小队 ${roomName} -(${shard})-> ${disRoom} 的 ${mType}任务删除成功！`
+                }
+            }
+            return `[war] 双人小队 ${roomName} -(${shard})-> ${disRoom} 的 ${mType}任务删除失败！`
+        },
 
     },
     upgrade:{

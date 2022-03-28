@@ -8,11 +8,7 @@ export class factoryExtension extends StructureFactory {
         if (this.room.memory.switch.StopFactory) return
         this.ResourceMemory()
         this.ResourceBalance()
-        let a = Game.cpu.getUsed()
         this.factoryProduce()
-        let b = Game.cpu.getUsed()
-        if (this.room.name == 'E25N1' && Game.shard.name == 'shard3')
-        console.log('工厂生产消耗cpu:',b-a)
     }
 
     // 资源平衡
@@ -49,6 +45,8 @@ export class factoryExtension extends StructureFactory {
                 {
                     if (this.store.getFreeCapacity() < 2000) continue
                     if (i == 'energy') {
+                        // 能量特殊
+                        if (this.room.memory.productData.balanceData[i].num - num > 50 && this.room.memory.productData.balanceData[i].num - num < 1000) continue  // 相差太少就不搬了
                         if (storage_.store.getUsedCapacity('energy') <= 20000) continue
                         else
                         {
@@ -99,20 +97,12 @@ export class factoryExtension extends StructureFactory {
         else this.room.memory.Factory.level = 0
         for (var i in factoryData) {
             /* 数量小于0就删除数据，节省memory */
-            if (factoryData[i].num <= 0) delete factoryData[i]
+            if (factoryData[i].num <= 0) 
+            {
+                console.log(`[factory] 房间${this.room.name}删除balanceData数据${i}`)
+                delete factoryData[i]
+            }
         }
-    }
-
-    // 创建资源平衡
-    public createBalance(type: CommodityConstant | MineralConstant | "energy" | "G", num: number = 5000, fill: boolean = true): string {
-        this.room.memory.productData.balanceData[type] = { num: num, fill: fill };
-        return `创建成功${type}:{num:${num} , fill:${fill}}`
-    }
-
-    // 删除资源平衡
-    public removeBalance(type: CommodityConstant | MineralConstant | "energy" | "G"): string {
-        if (this.room.memory.productData.balanceData[type]) { delete this.room.memory.productData.balanceData[type]; return `删除资源平衡成功${type}` }
-        else return `删除资源平衡失败${type}`
     }
 
     // 工厂生产
@@ -145,16 +135,16 @@ export class factoryExtension extends StructureFactory {
                     if (COMMODITIES[disCom].level >= 4)
                     {
                         // 如果仓库内的底物少于规定量
-                        if (numList[i] < COMMODITIES[disCom].components[i].num)
+                        if (numList[i] < COMMODITIES[disCom].components[i])
                         {
                             // 判断一下能否调度 不能调度直接跳转到baseList相关合成判断
-                            if (canDispatch(this.room,i as ResourceConstant,COMMODITIES[disCom].components[i].num,1))
+                            if (canDispatch(this.room,i as ResourceConstant,COMMODITIES[disCom].components[i],1))
                             {
                                 console.log(`[dispatch] 房间${this.room.name}将进行资源为${i}的资源调度!`)
                                 let dispatchTask:RDData = {
                                     sourceRoom:this.room.name,
                                     rType:i as ResourceConstant,
-                                    num:COMMODITIES[disCom].components[i].num,
+                                    num:COMMODITIES[disCom].components[i],
                                     delayTick:200,
                                     conditionTick:35,
                                     buy:false,
@@ -174,14 +164,14 @@ export class factoryExtension extends StructureFactory {
                     }
                     else
                     {
-                        if (numList[i] < COMMODITIES[disCom].components[i].num * 4)
+                        if (numList[i] < COMMODITIES[disCom].components[i] * 4)
                         {
-                            if (canDispatch(this.room,i as ResourceConstant,COMMODITIES[disCom].components[i].num * 4,1))
+                            if (canDispatch(this.room,i as ResourceConstant,COMMODITIES[disCom].components[i] * 4,1))
                             {
                                 let dispatchTask:RDData = {
                                     sourceRoom:this.room.name,
                                     rType:i as ResourceConstant,
-                                    num:COMMODITIES[disCom].components[i].num * 4,
+                                    num:COMMODITIES[disCom].components[i] * 4,
                                     delayTick:200,
                                     conditionTick:35,
                                     buy:false,
@@ -280,8 +270,9 @@ export class factoryExtension extends StructureFactory {
                 }
                 else
                 {
-                    this.room.memory.productData.balanceData[i] = {num:COMMODITIES[disCom].components[i].num * 10,fill:true}
-                    if (this.room.RoleMissionNum('manage','物流运输') > 0) break
+                    // console.log(COMMODITIES[disCom].components[i] * 10)
+                    this.room.memory.productData.balanceData[i] = {num:COMMODITIES[disCom].components[i] * 10,fill:true}
+                    if (this.room.RoleMissionNum('manage','物流运输') <= 0)
                     if (this.store.getUsedCapacity(i as ResourceConstant) + storage_.store.getUsedCapacity(i as ResourceConstant) < COMMODITIES[disCom].components[i].num)
                     {
                         this.room.memory.productData.state = 'sleep'
@@ -312,20 +303,28 @@ export class factoryExtension extends StructureFactory {
             {
                 if ( COMMODITIES[disCom].level < 4)
                 {
-                    this.room.memory.productData.balanceData[i] = {num:COMMODITIES[disCom].components[i].num * 4,fill:true}
+                    if (isInArray(['energy'],i))
+                    this.room.memory.productData.balanceData[i] = {num:5000,fill:true}
+                    else
+                    this.room.memory.productData.balanceData[i] = {num:COMMODITIES[disCom].components[i] * 4,fill:true}
                     if (this.room.RoleMissionNum('manage','物流运输') > 0) break
-                    if (this.store.getUsedCapacity(i as ResourceConstant) + storage_.store.getUsedCapacity(i as ResourceConstant) < COMMODITIES[disCom].components[i].num )
+                    if (this.store.getUsedCapacity(i as ResourceConstant) + storage_.store.getUsedCapacity(i as ResourceConstant) < COMMODITIES[disCom].components[i] )
                     {
+                        console.log(`[factory] 房间${this.room.name}转入sleep生产模式`)
                         this.room.memory.productData.state = 'sleep'
                         return
                     }
                 }
                 else
                 {
-                    this.room.memory.productData.balanceData[i] = {num: COMMODITIES[disCom].components[i].num,fill:true}
+                    if (isInArray(['energy'],i))
+                    this.room.memory.productData.balanceData[i] = {num:5000,fill:true}
+                    else
+                    this.room.memory.productData.balanceData[i] = {num:COMMODITIES[disCom].components[i],fill:true}
                     if (this.room.RoleMissionNum('manage','物流运输') > 0) break
-                    if (this.store.getUsedCapacity(i as ResourceConstant) + storage_.store.getUsedCapacity(i as ResourceConstant) < COMMODITIES[disCom].components[i].num)
+                    if (this.store.getUsedCapacity(i as ResourceConstant) + storage_.store.getUsedCapacity(i as ResourceConstant) < COMMODITIES[disCom].components[i])
                     {
+                        console.log(`[factory] 房间${this.room.name}转入sleep生产模式`)
                         this.room.memory.productData.state = 'sleep'
                         return
                     }
@@ -344,8 +343,6 @@ export class factoryExtension extends StructureFactory {
                 this.room.enhance_factory();
                 else console.log(`[factory] 房间${this.room.name}出现工厂等级错误,不能生产${disCom}`)
             }
-            if (this.room.memory.productData.producing.num <= 0) 
-            this.room.memory.productData.state = 'sleep'
 
         }
     }
@@ -378,217 +375,6 @@ export class factoryExtension extends StructureFactory {
         delete this.room.memory.productData.flowCom
         return`[factory] 房间${this.room.name}的流水线资源已删除!`
     }
-    /**
-    * 添加合成
-    */
-    // public add(type: CommodityConstant | MineralConstant | "energy" | "G"): string {
-    //     this.room.memory.Factory.produce[type] = true;
-    //     return `添加合成${type}`;
-    // }
-
-    /**
-    * 查看合成
-    */
-    // public stats(): string {
-    //     let produce = this.room.memory.Factory.produce;
-    //     let a: string;
-    //     for (let i in produce) a = i + " ";
-    //     return a;
-    // }
-
-    /**
-    * 删除合成
-    */
-    // public remove(type: CommodityConstant | MineralConstant | "energy" | "G"): string {
-    //     if (this.room.memory.Factory.produce[type]) { delete this.room.memory.Factory.produce[type]; return `删除合成${type}成功`; }
-    //     else return `删除合成${type}失败`;
-    // }
-
-    /**
-     * 工厂合成
-     */
-    // public factoryProduce(): void {
-    //     if (this.cooldown) return
-    //     let Factory = this.room.memory.Factory;
-    //     for (let i in Factory.dataProduce) {
-    //         if (!COMMODITIES[i]) { delete Factory.dataProduce[i]; continue }
-    //         if (COMMODITIES[i].level) {
-    //             if (this.levelProduce(i as CommodityConstant | MineralConstant | "energy" | "G")) return;
-    //         }
-    //         else {
-    //             if (this.Produce(i as CommodityConstant | MineralConstant | "energy" | "G")) return;
-    //         }
-    //     }
-    // }
-
-    /**
-     * 无等级工厂合成
-     */
-    // public Produce(type: CommodityConstant | MineralConstant | "energy" | "G"): boolean {
-    //     let Factory = this.room.memory.Factory;
-    //     //根据合成固定数量的资源创建或者删除资源平衡
-    //     if (!COMMODITIES[type]) { delete Factory.dataProduce[type]; return false }
-    //     if (Factory.dataProduce[type].num <= 0) {
-    //         for (let j in COMMODITIES[type].components)//根据要合成的原料删除资源平衡
-    //             if (Factory.factoryData[j]) this.removeCreatingResourceBalance(j as CommodityConstant | MineralConstant | "energy" | "G")
-
-    //         this.remove(type as CommodityConstant | MineralConstant | "energy" | "G")//删除合成
-    //         delete Factory.dataProduce[type]//删除单个物品合成
-    //     }
-    //     else {
-    //         if (!Factory.produce[type]) this.add(type as CommodityConstant | MineralConstant | "energy" | "G");//添加合成
-    //         for (let j in COMMODITIES[type].components) {//根据要合成的原料添加资源平衡
-    //             if (!Factory.factoryData[j]) {
-    //                 let num = 4900
-    //                 this.CreatingResourceBalance(j as CommodityConstant | MineralConstant | "energy" | "G", num);
-    //             }
-    //         }
-    //         let a = Factory.produce[type] && this.produce(type)//合成
-    //         if (a == 0) {
-    //             if (Factory.dataProduce[type]) {//如果有单个物品合成就减少数量，没有的话就无脑合
-    //                 Factory.dataProduce[type].num -= COMMODITIES[type].amount //api里的自带的查询合成数量
-    //             }
-    //             return true
-    //         }
-    //     }
-    //     return false
-    // }
-
-
-    /**
-     * 有等级工厂合成
-     */
-    // public levelProduce(type: CommodityConstant | MineralConstant | "energy" | "G"): boolean {
-    //     let Factory = this.room.memory.Factory;
-    //     //根据合成固定数量的资源创建或者删除资源平衡
-    //     if (!COMMODITIES[type]) { delete Factory.dataProduce[type]; return false }
-    //     if (Factory.dataProduce[type].num <= 0) {
-    //         for (let j in COMMODITIES[type].components)//根据要合成的原料删除资源平衡
-    //         {
-    //             if (Factory.factoryData[j]) this.removeCreatingResourceBalance(j as CommodityConstant | MineralConstant | "energy" | "G")
-    //         }
-    //         this.remove(type as CommodityConstant | MineralConstant | "energy" | "G")//删除合成
-    //         delete Factory.dataProduce[type]//删除单个物品合成
-    //     }
-    //     else {
-    //         if (!Factory.produce[type]) {
-    //             if (Game.time % 10) return false
-    //             for (let j in COMMODITIES[type].components) {//根据要合成的原料添加资源平衡
-    //                 if (j == 'energy' && !Factory.factoryData['energy']) {
-    //                     this.CreatingResourceBalance('energy', 4900);
-    //                     continue
-    //                 }
-
-    //                 //总底物需要的数量 = 总数量*底物单次合成的数量/单次合成的数量 
-    //                 let num = Factory.dataProduce[type].num * COMMODITIES[type].components[j] / COMMODITIES[type].amount;
-    //                 //统计全局所有的这种资源数量
-    //                 let numAll = StatisticalResources(j as CommodityConstant | MineralConstant | "energy" | "G")
-    //                 console.log(`合成：${type} 底物:${j} 需要数量:${num}   全局数量:${numAll} `)
-    //                 //我的资源是否够合高级资源，不够就先合低级  够就创建资源平衡
-    //                 if (numAll >= num) {
-    //                     if (!Factory.factoryData[j]) {
-    //                         let num = COMMODITIES[type].components[j]
-    //                         if (COMMODITIES[type].level < 4)
-    //                             num *= 4
-    //                         this.CreatingResourceBalance(j as CommodityConstant | MineralConstant | "energy" | "G", num);
-    //                     }
-    //                     continue
-    //                 }
-    //                 else {
-    //                     //检测我的房间或者其他房间是否在合成这种资源
-    //                     if (this.findProduce(j as CommodityConstant | MineralConstant | "energy" | "G")) return false;
-    //                     else {//创建原料合成
-    //                         if (COMMODITIES[j].level) {//有等级就在别的房间创建生产
-    //                             let room = this.findFactoryLevel(COMMODITIES[j].level)
-    //                             if (!room) {//找不到这个等级的工厂就删掉
-    //                                 console.log(`因为原料不够 合成${j}时找不到${COMMODITIES[j].level}等级的工厂 删除${type}合成`);
-    //                                 Factory.dataProduce[type].num = 0;
-    //                             }
-    //                             else {//找到就创建生产
-    //                                 let factory = Game.getObjectById(room.memory.StructureIdData.FactoryId) as factoryExtension;
-    //                                 factory.addDataProduce(j as CommodityConstant | MineralConstant | "energy" | "G", num - numAll);
-    //                                 console.log(`合成${type}需要底物${j}不足 在${room.name}:创建${j}合成`)
-    //                             }
-    //                         }
-    //                         else {//无等级就在自己的房间创建生产
-    //                             this.addDataProduce(j as CommodityConstant | MineralConstant | "energy" | "G", num - numAll)
-    //                         }
-    //                     }
-    //                     return false
-    //                 }
-    //             }
-    //         }
-    //         if (!Factory.produce[type]) this.add(type as CommodityConstant | MineralConstant | "energy" | "G");//添加合成
-    //         if (!Factory.produce[type])  return false
-    //         let a = this.produce(type) //合成
-    //         if (a == 0) {
-    //             if (Factory.dataProduce[type]) {//如果有单个物品合成就减少数量，没有的话就无脑合
-    //                 Factory.dataProduce[type].num -= COMMODITIES[type].amount //api里的自带的查询合成数量
-    //             }
-    //             return true
-    //         }
-    //         if (a == ERR_BUSY && Factory.level == COMMODITIES[type].level && Game.powerCreeps[`${this.room.name}/queen/${Game.shard.name}`])
-    //             this.room.enhance_factory();
-    //     }
-    //     return false
-    // }
-
-    /**
-     * 查找其他房间是否有此物品的合成
-     */
-    // public findProduce(type: CommodityConstant | MineralConstant | "energy" | "G"): boolean {
-    //     for (let name in Memory.RoomControlData) {
-    //         let room = Game.rooms[name];
-    //         if (!room) continue;
-    //         let Factory = room.memory.Factory;
-    //         if (Factory.dataProduce[type]) return true;
-    //     }
-    //     return false;
-    // }
-
-    /**
-     * 查找这个等级工厂的房间
-     */
-    // public findFactoryLevel(level: number): Room {
-    //     for (let name in Memory.RoomControlData) {
-    //         let room = Game.rooms[name];
-    //         if (!room) continue;
-    //         if (room.memory.Factory.level == level) return room;
-    //         else continue;
-    //     }
-    //     return;
-    // }
-
-    /**
-     * 添加单个物品合成
-     */
-    // public addDataProduce(type: CommodityConstant | MineralConstant | "energy" | "G", num: number): string {
-    //     if (!COMMODITIES[type]) return `${type}不可合成`
-    //     let Factory = this.room.memory.Factory
-    //     if (!Factory.dataProduce) Factory.dataProduce = {}
-    //     Factory.dataProduce[type] = {}
-    //     Factory.dataProduce[type].num = num;
-    //     return `添加合成${type} 数量:${num}`;
-    // }
-
-    /**
-     * 删除单个物品合成
-     */
-    // public removeDataProduce(type: CommodityConstant | MineralConstant | "energy" | "G"): string {
-    //     if (this.room.memory.Factory.dataProduce[type]) { this.room.memory.Factory.dataProduce[type].num = 0; return `删除合成${type}成功`; }
-    //     else return `删除合成${type}失败`;
-    // }
-
-    /**
-     * 资源平衡初始化
-     */
-    // public init(): string {
-    //     let produce = this.room.memory.Factory.produce;
-    //     for (var i in produce) {
-    //         delete produce[i];
-    //     }
-    //     return `初始化完成`
-    // }
 
     /**
      * 改变工厂等级

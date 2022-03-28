@@ -35,6 +35,12 @@ export default class NormalWarExtension extends Room {
         mission.CreepBind['aio'].num = mission.Data.num
     }
 
+    // 双人小队
+    public Task_double(mission:MissionModel):void{
+        if ((Game.time - global.Gtime[this.name])% 11) return
+        if (!this.Check_Lab(mission,'transport','complex')) return
+    }
+
     // 四人小队
     public Task_squad(mission:MissionModel):void{
         if ((Game.time - global.Gtime[this.name])% 7) return
@@ -58,5 +64,18 @@ export default class NormalWarExtension extends Room {
             }
         }
         if (!this.Check_Lab(mission,'transport','complex')) return
+    }
+
+    // 紧急支援
+    public Task_HelpDefend(mission:MissionModel):void{
+        if (mission.Data.sType =='aio' && mission.Data.boost)
+        {
+            global.SpecialBodyData[this.name]['aio'] = GenerateAbility(0,0,10,0,6,23,0,11)
+        }
+        if ((Game.time-global.Gtime[this.name]) % 7) return
+        if (mission.LabBind)
+        {
+            if(!this.Check_Lab(mission,'transport','complex')) return
+        }
     }
 }

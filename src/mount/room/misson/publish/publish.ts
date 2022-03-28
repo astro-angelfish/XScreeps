@@ -264,7 +264,8 @@ export default class RoomMissonPublish extends Room {
                 num:num,
                 shard:shard?shard:Game.shard.name
             },
-            maxTime:2
+            maxTime:2,
+            reserve:true
             
         }
         thisTask.reserve = true
@@ -277,7 +278,7 @@ export default class RoomMissonPublish extends Room {
         return null
     }
 
-    public Public_support(disRoom:string,sType:'double' | 'aio' | 'squard',shard?:string):MissionModel{
+    public Public_support(disRoom:string,sType:'double' | 'aio',shard:shardName,num:number = 1,boost:boolean):MissionModel{
         var thisTask:MissionModel = {
             name:'紧急支援',
             range:'Creep',
@@ -286,22 +287,56 @@ export default class RoomMissonPublish extends Room {
             Data:{
                 disRoom:disRoom,
                 sType:sType,
+                boost:boost
             },
-            maxTime:3
+            maxTime:3,
         }
         thisTask.reserve = true
         if (sType == 'double')
         {
-            thisTask.CreepBind = {'double-attack':{num:1,bind:[]},'double-heal':{num:1,bind:[]}}
-            thisTask.LabBind = this.Bind_Lab(['XUH2O','XLHO2','XZHO2','XGHO2'])
+            thisTask.CreepBind = {'double-attack':{num:num,bind:[],interval:1000},'double-heal':{num:num,bind:[],interval:1000}}
+            thisTask.LabBind = this.Bind_Lab(['XUH2O','XLHO2','XZHO2','XGHO2','XKHO2'])
         }
         else if (sType == 'aio')
         {
-
+            thisTask.CreepBind = {'aio':{num:num,bind:[],interval:1000}}
+            if (boost) thisTask.LabBind = this.Bind_Lab(['XLHO2','XZHO2','XGHO2','XKHO2'])
         }
         if (shard)thisTask.Data.shard = shard
         else thisTask.Data.shard = Game.shard.name
         
+        return thisTask
+    }
+
+    /* 双人小队发布函数 */
+    public Public_Double(disRoom:string,shard:shardName,CreepNum:number,cType:'dismantle' | 'attack',interval:number):MissionModel{
+        var thisTask:MissionModel = {
+            name:'双人小队',
+            range:'Creep',
+            delayTick:20000,
+            level:10,
+            Data:{
+                disRoom:disRoom,
+                shard:shard,
+                teamType:cType,
+                num:CreepNum
+            },
+            reserve:true
+        }
+        if (cType == 'dismantle')
+        {
+            thisTask.CreepBind = {'double-dismantle':{num:CreepNum,bind:[],interval:interval},'double-heal':{num:CreepNum,bind:[],interval:interval}}
+            var labData = this.Bind_Lab(['XZHO2','XZH2O','XGHO2','XLHO2','XKHO2'])
+            if (labData === null) return null
+            thisTask.LabBind = labData
+        }
+        else
+        {
+            thisTask.CreepBind = {'double-attack':{num:CreepNum,bind:[]},'double-heal':{num:CreepNum,bind:[]}}
+            var labData = this.Bind_Lab(['XUH2O','XZHO2','XGHO2','XLHO2','XKHO2'])
+            if (labData === null) return null
+            thisTask.LabBind = labData
+        }
         return thisTask
     }
 

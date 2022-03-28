@@ -32,6 +32,10 @@ export function SquadManager():void{
                     {
                         Game.rooms[i].memory.squadData = {}
                     }
+                    else
+                    {
+                        if (Game.rooms[i].memory.squadData[squadID]) delete Game.rooms[i].memory.squadData[squadID]
+                    }
                 }
             }
         }
@@ -101,8 +105,11 @@ export function squardFrameWork(squardID:string):void{
                 var Attackdirection = SquadAttackDirection(Data.creepData)
                 if (SquadPosDirection(squadData,attack_flag.pos) != null && Attackdirection != SquadPosDirection(squadData,attack_flag.pos))
                 {
-                    SquadAttackOrient(Attackdirection,SquadPosDirection(squadData,attack_flag.pos),squadData)
-                    return
+                    if (!isInArray(['↙','↗','↘','↖'],SquadPosDirection(squadData,attack_flag.pos)))
+                    {
+                        SquadAttackOrient(Attackdirection,SquadPosDirection(squadData,attack_flag.pos),squadData)
+                        return
+                    }
                 }
                 if (!squadNear(squadData,attack_flag.pos)  ){
                     squadMove(squadData,attack_flag.pos,1)

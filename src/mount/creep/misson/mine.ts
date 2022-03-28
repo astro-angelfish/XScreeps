@@ -266,6 +266,7 @@ export default class CreepMissonMineExtension extends Creep {
     
     /* power采集 */
     public handle_power():void{
+        this.notifyWhenAttacked(false)
         var creepMisson = this.memory.MissionData.Data
         var globalMisson = Game.rooms[this.memory.belong].GainMission(this.memory.MissionData.id)
         if (!globalMisson) {this.say("找不到全局任务了！");this.memory.MissionData = {};return}
@@ -521,6 +522,7 @@ export default class CreepMissonMineExtension extends Creep {
 
     /* deposit采集任务处理 */
     public handle_deposit():void{
+        this.notifyWhenAttacked(false)
         var creepMisson = this.memory.MissionData.Data
         if (!Game.rooms[this.memory.belong].GainMission(this.memory.MissionData.id)){this.memory.MissionData = {};return}
         if (!creepMisson) return

@@ -429,4 +429,51 @@ export default class CreepMoveExtension extends Creep {
         //this.say(`b-a`)
         return goResult
     }
+
+    // 逃离寻路
+    public Flee(target:RoomPosition,range:number):void{
+        let path = PathFinder.search(this.pos,{pos:target,range:range},{
+            plainCost:1,
+            swampCost:20,
+            maxOps:600,
+            flee:true,
+            roomCallback:roomName=>{
+                if (Memory.bypassRooms && Memory.bypassRooms.includes(roomName)) return false
+                // 在爬虫记忆绕过房间列表的房间 false
+                const room = Game.rooms[roomName]
+                // 没有视野的房间只观察地形
+                if (!room) return
+                // 有视野的房间
+                let costs = new PathFinder.CostMatrix
+                // 将道路的cost设置为1，无法行走的建筑设置为255
+                room.find(FIND_STRUCTURES).forEach(struct=>{
+                    if (struct.structureType === STRUCTURE_ROAD)
+                    {
+                        costs.set(struct.pos.x,struct.pos.y,1)
+                    }
+                    else if (struct.structureType !== STRUCTURE_CONTAINER && 
+                        (struct.structureType !==STRUCTURE_RAMPART || !struct.my))
+                        costs.set(struct.pos.x,struct.pos.y,0xff)
+                })
+                room.find(FIND_MY_CONSTRUCTION_SITES).forEach(cons=>{
+                    if (cons.structureType != 'road' && cons.structureType != 'rampart' && cons.structureType != 'container')
+                    costs.set(cons.pos.x,cons.pos.y,255)
+                })
+                /* 防止撞到其他虫子造成堵虫 */
+                room.find(FIND_HOSTILE_CREEPS).forEach(creep=>{
+                    costs.set(creep.pos.x,creep.pos.y,255)
+                })
+                room.find(FIND_MY_CREEPS).forEach(creep=>{
+                    if ((creep.memory.crossLevel && creep.memory.crossLevel > this.memory.crossLevel) || creep.memory.standed)
+                    costs.set(creep.pos.x,creep.pos.y,255)
+                    else
+                    costs.set(creep.pos.x,creep.pos.y,3)
+                })
+                return costs
+                }
+        })
+        var direction = this.pos.getDirectionTo(path.path[0])
+        if (!direction)return
+        this.move(direction)
+    }
 }

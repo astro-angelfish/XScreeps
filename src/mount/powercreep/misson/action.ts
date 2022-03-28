@@ -66,7 +66,7 @@ export default class PowerCreepMissonAction extends PowerCreep {
             return
         }
         if (!this.OpsPrepare()) return
-        for (var id of this.memory.MissionData.data.lab)
+        for (var id of this.memory.MissionData.Data.lab)
         {
             var lab_ = Game.getObjectById(id) as StructureTower
             if (!isOPWR(lab_))

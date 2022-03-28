@@ -1,6 +1,5 @@
 import { avePrice, haveOrder, highestPrice } from "@/module/fun/funtion";
 import { Colorful } from "@/utils";
-import { times } from "lodash";
 
 /* 房间原型拓展   --行为  --维护任务 */
 export default class RoomMissonVindicateExtension extends Room {
@@ -66,12 +65,4 @@ export default class RoomMissonVindicateExtension extends Room {
         
     }
 
-    /* 紧急支援 */
-    public Task_HelpDefend(mission:MissionModel):void{
-        // if ((Game.time - global.Gtime[this.name]) % 9) return
-        if (mission.LabBind)
-        {
-            if(!this.Check_Lab(mission,'transport','complex')) return
-        }
-    }
 }

@@ -35,7 +35,7 @@ export default class PowerCreepMisson extends Room {
         var storage_ = global.Stru[this.name]['storage'] as StructureStorage
         if (!storage_) return
         let pc = Game.powerCreeps[`${this.name}/queen/${Game.shard.name}`]
-        if (!pc || !pc.powers[PWR_OPERATE_STORAGE]) return
+        if (!pc || !pc.powers[PWR_OPERATE_STORAGE] ||pc.powers[PWR_OPERATE_STORAGE].cooldown ) return
         let effectDelay:boolean = false
         if (!storage_.effects) storage_.effects = []
         if (!isOPWR(storage_) && this.MissionNum('PowerCreep','仓库扩容') <= 0)
@@ -120,7 +120,7 @@ export default class PowerCreepMisson extends Room {
         var storage_ = global.Stru[this.name]['storage'] as StructureStorage
         if (!storage_ || storage_.store.getUsedCapacity('energy') < 20000) return
         let pc = Game.powerCreeps[`${this.name}/queen/${Game.shard.name}`]
-        if (!pc || !pc.powers[PWR_OPERATE_EXTENSION]) return
+        if (!pc || !pc.powers[PWR_OPERATE_EXTENSION] || pc.powers[PWR_OPERATE_EXTENSION].cooldown) return
         if (this.energyAvailable < this.energyCapacityAvailable*0.3 && this.MissionNum('PowerCreep','拓展填充') <= 0)
         {
             var thisTask:MissionModel = {
@@ -142,7 +142,7 @@ export default class PowerCreepMisson extends Room {
         var storage_ = global.Stru[this.name]['storage'] as StructureStorage
         if (!storage_) return
         let pc = Game.powerCreeps[`${this.name}/queen/${Game.shard.name}`]
-        if (!pc || !pc.powers[PWR_OPERATE_SPAWN]) return
+        if (!pc || !pc.powers[PWR_OPERATE_SPAWN]|| pc.powers[PWR_OPERATE_SPAWN].cooldown) return
         // 在战争时期、对外战争时期，启动
         var ssss = false
         let list = ['攻防一体','双人小队','四人小队','紧急支援']
@@ -168,7 +168,7 @@ export default class PowerCreepMisson extends Room {
         var storage_ = global.Stru[this.name]['storage'] as StructureStorage
         if (!storage_) return
         let pc = Game.powerCreeps[`${this.name}/queen/${Game.shard.name}`]
-        if (!pc || !pc.powers[PWR_OPERATE_FACTORY]) return
+        if (!pc || !pc.powers[PWR_OPERATE_FACTORY] || pc.powers[PWR_OPERATE_FACTORY].cooldown) return
         if (this.MissionNum("Room",'工厂合成') > 0) return
         var thisTask:MissionModel = {
             name:"工厂强化",
@@ -187,7 +187,7 @@ export default class PowerCreepMisson extends Room {
         var storage_ = global.Stru[this.name]['storage'] as StructureStorage
         if (!storage_) return
         let pc = Game.powerCreeps[`${this.name}/queen/${Game.shard.name}`]
-        if (!pc || !pc.powers[PWR_OPERATE_POWER]) return
+        if (!pc || !pc.powers[PWR_OPERATE_POWER] || pc.powers[PWR_OPERATE_POWER].cooldown) return
         if (this.MissionNum("Room",'power升级') > 0) return
         var thisTask:MissionModel = {
             name:"power强化",

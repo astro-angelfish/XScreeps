@@ -7,19 +7,25 @@ export default class CreepMissonBaseExtension extends Creep {
         if (this.spawning) return
         if (!this.memory.MissionData) this.memory.MissionData = {}
         /* 生命低于10就将资源上交 */
-        if(this.ticksToLive < 10 && (isInArray(['transport','manage'],this.memory.role)))
+        if (isInArray(['transport','manage'],this.memory.role))
         {
-            let storage_ = Game.getObjectById(Game.rooms[this.memory.belong].memory.StructureIdData.storageID) as StructureStorage
-            if (!storage_) return
-            if (this.store.getUsedCapacity() > 0)
+            if (Game.time % 5 == 0)
+            this.memory.standed = true
+            else this.memory.standed = false
+            if(this.ticksToLive < 10)
             {
-                for (let i in this.store)
+                let storage_ = Game.getObjectById(Game.rooms[this.memory.belong].memory.StructureIdData.storageID) as StructureStorage
+                if (!storage_) return
+                if (this.store.getUsedCapacity() > 0)
                 {
-                    this.transfer_(storage_,i as ResourceConstant)
-                    return
+                    for (let i in this.store)
+                    {
+                        this.transfer_(storage_,i as ResourceConstant)
+                        return
+                    }
                 }
+                return
             }
-            return
         }
         if (Object.keys(this.memory.MissionData).length <= 0)
         {

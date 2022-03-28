@@ -46,5 +46,8 @@ interface factoryData{
 }
 
 interface StructureFactory{
-    
+    add(res:CommodityConstant,num:number):string
+    remove(res:CommodityConstant):string
+    set(res:CommodityConstant):string
+    del(res:CommodityConstant):string
 }

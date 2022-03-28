@@ -54,6 +54,7 @@ export default class RoomMissonFrameExtension extends Room {
                 case '蓝球防御':{this.Task_Blue_Defend(misson);break A;}
                 case '双人防御':{this.Task_Double_Defend(misson);break A;}
                 case '四人小队':{this.Task_squad(misson);break A;}
+                case '双人小队':{this.Task_double(misson);break A;}
             }
         }
     }
