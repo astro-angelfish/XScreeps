@@ -466,6 +466,7 @@ export default class CreepMissonWarExtension extends Creep {
                 {
                     if (isInArray([STRUCTURE_WALL,STRUCTURE_ROAD,STRUCTURE_CONTAINER],stru[0].structureType))
                     {
+                        this.goTo(stru[0].pos,1)
                         this.rangedAttack(stru[0])
                     }
                     else
@@ -844,7 +845,7 @@ export default class CreepMissonWarExtension extends Creep {
                 else this.heal(this)
             }
         }
-        if (this.memory.role == 'aio')
+        if (this.memory.role == 'saio')
         {
             if (this.room.name != roomName || Game.shard.name != data.shard)
             {

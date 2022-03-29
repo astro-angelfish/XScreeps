@@ -4,18 +4,18 @@ import { filter } from "lodash"
 
 /* 爬虫原型拓展   --任务  --任务行为 */
 export default class CreepMissonActionExtension extends Creep {
-    // 刷墙 未完成
+    // 刷墙
     public handle_repair():void{
         let missionData = this.memory.MissionData
         let id = missionData.id
         let mission = Game.rooms[this.memory.belong].GainMission(id)
         if (!id) return
         let storage_ = Game.getObjectById(Game.rooms[this.memory.belong].memory.StructureIdData.storageID) as StructureStorage
-        // if (!storage_){delete Game.rooms[this.memory.belong].memory.StructureIdData.storageID;return}
         this.workstate('energy')
-        /* boost检查 暂缺 */
+        /* boost检查 */
         if (mission.LabBind)
         {
+            if (!storage_) return   // 如果是boost的，没有仓库就不刷了
             // 需要boost检查，必要情况下可以不检查
             let boo = false
             for (var ids in mission.LabBind)
@@ -70,17 +70,15 @@ export default class CreepMissonActionExtension extends Creep {
                 }
                 let tank_ = Game.getObjectById(this.memory.containerID) as StructureStorage
                 this.withdraw_(tank_,'energy')
-                // if(storage_)
-                // this.withdraw_(storage_,'energy')
-                // else
-                // {
-                //     let closestStore = this.pos.findClosestByRange(FIND_STRUCTURES,{filter:(stru)=>{return (stru.structureType == 'container' || stru.structureType == 'tower') && stru.store.getUsedCapacity('energy') >= this.store.getFreeCapacity()}})
-                //     if (closestStore)this.withdraw_(closestStore,'energy')
-                // }
             }
         }
         else if (mission.Data.RepairType == 'nuker')
         {
+            // 没有仓库和终端就不防了
+            if (!storage_){delete Game.rooms[this.memory.belong].memory.StructureIdData.storageID;
+                storage_ = Game.getObjectById(Game.rooms[this.memory.belong].memory.StructureIdData.terminalID) as StructureStorage
+                return;}
+            if (!storage_) return
             // 核弹防御
             /* 防核函数  测试成功！*/
             if (!Game.rooms[this.memory.belong].memory.nukeData) return
@@ -138,6 +136,67 @@ export default class CreepMissonActionExtension extends Creep {
                 return
             }
         }
+        else if (mission.Data.RepairType == 'special')
+        {
+            if (this.memory.working)
+            {
+                if (this.memory.targetID)
+                {
+                    this.say("🛠️")
+                    var target_ = Game.getObjectById(this.memory.targetID) as StructureRampart
+                    if (!target_) {delete this.memory.targetID;return}
+                    this.repair_(target_)
+                }
+                else
+                {
+                    var leastRam = this.room.getListHitsleast([STRUCTURE_RAMPART,STRUCTURE_WALL],3)
+                    if (!leastRam) return
+                    this.memory.targetID = leastRam.id
+                }
+                delete this.memory.containerID
+            }
+            else
+            {
+                /* 寻找插了旗子的hits最小的墙 */
+                var flags = this.room.find(FIND_FLAGS,{filter:(flag)=>{
+                    return flag.name.indexOf('repair') == 0
+                }})
+                if (flags.length <= 0) return
+                let disWall = null
+                for (var f of flags)
+                {
+                    let fwall = f.pos.GetStructureList(['rampart','constructedWall'])[0]
+                    if (!fwall) f.remove()
+                    else
+                    {
+                        if (!disWall || fwall.hits < disWall.hits) disWall = fwall
+                    }
+                }
+                if (!disWall)
+                {
+                    // 没有旗子就删除任务
+                    Game.rooms[this.memory.belong].DeleteMission(id)
+                    return
+                }
+                this.memory.targetID = disWall.id
+                if (!this.memory.containerID)
+                {
+                    var tank = this.pos.findClosestByPath(FIND_MY_STRUCTURES,{filter:(stru)=>{
+                        return stru.structureType == 'storage' || 
+                        (stru.structureType=='link' && isInArray(Game.rooms[this.memory.belong].memory.StructureIdData.comsume_link,stru.id) && stru.store.getUsedCapacity('energy') > this.store.getCapacity())
+                    }})
+                    if (tank) this.memory.containerID = tank.id
+                    else {
+                            let closestStore = this.pos.findClosestByRange(FIND_STRUCTURES,{filter:(stru)=>{return (stru.structureType == 'container' || stru.structureType == 'tower') && stru.store.getUsedCapacity('energy') >= this.store.getFreeCapacity()}})
+                            if (closestStore)this.withdraw_(closestStore,'energy')
+                            return
+                    }
+                    
+                }
+                let tank_ = Game.getObjectById(this.memory.containerID) as StructureStorage
+                this.withdraw_(tank_,'energy')
+            }
+        }
     }
 
     // C计划
@@ -161,10 +220,6 @@ export default class CreepMissonActionExtension extends Creep {
                     this.signController(this.room.controller,'better to rua BB cat at home!')
                 }
             }
-            // if (Game.rooms[mission.Data.disRoom].controller.level && Game.rooms[mission.Data.disRoom].controller.owner)
-            // {
-            //     mission.CreepBind[this.memory.role].num = 0
-            // }
         }
         else
         {
@@ -213,26 +268,29 @@ export default class CreepMissonActionExtension extends Creep {
     public handle_expand():void{
         let missionData = this.memory.MissionData
         let id = missionData.id
-        let mission = Game.rooms[this.memory.belong].GainMission(id)
-        if (!mission) return
-        if (this.room.name != mission.Data.disRoom)
+        if (this.room.name != missionData.Data.disRoom || Game.shard.name != missionData.Data.shard)
         {
-            this.goTo(new RoomPosition(24,24,mission.Data.disRoom),20)
+            this.arriveTo(new RoomPosition(24,24,missionData.Data.disRoom),20,missionData.Data.shard)
             return
         }
         this.workstate('energy')
         if (this.memory.role == 'claim')
         {
-            if (!this.pos.isNearTo(Game.rooms[mission.Data.disRoom].controller))
-            this.goTo(Game.rooms[mission.Data.disRoom].controller.pos,1)
+            if (!this.pos.isNearTo(Game.rooms[missionData.Data.disRoom].controller))
+            this.goTo(Game.rooms[missionData.Data.disRoom].controller.pos,1)
             else
             {
-                this.claimController(Game.rooms[mission.Data.disRoom].controller)
+                this.claimController(Game.rooms[missionData.Data.disRoom].controller)
                 this.say("claim")
             }
-            if (Game.rooms[mission.Data.disRoom].controller.level && Game.rooms[mission.Data.disRoom].controller.owner)
+            if (missionData.Data.shard == this.memory.shard)
             {
-                mission.CreepBind[this.memory.role].num = 0
+                if (Game.rooms[missionData.Data.disRoom].controller.level && Game.rooms[missionData.Data.disRoom].controller.owner)
+                {
+                    let mission = Game.rooms[this.memory.belong].GainMission(id)
+                    if (!mission) return
+                    mission.CreepBind[this.memory.role].num = 0
+                }
             }
         }
         else if (this.memory.role == 'Ebuild')

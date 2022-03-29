@@ -182,6 +182,7 @@ export default class terminalExtension extends StructureTerminal {
                     let a = 100,b=50000;
                     COMMODITIES[i.rType] && COMMODITIES[i.rType].level?a=0:a
                     let price = 0.05
+                    if (COMMODITIES[i.rType]) price = 10000
                     if (i.price) price = i.price
                     var orders = Game.market.getAllOrders(order => order.resourceType == i.rType &&
                         price <= order.price && order.type == ORDER_BUY && order.amount > a && order.amount <= b)

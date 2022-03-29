@@ -6,7 +6,7 @@ interface Room {
     Public_dismantle(disRoom:string,shard:shardName,num:number,interval?:number,boost?:boolean):MissionModel
     Check_Lab(misson:MissionModel,role:string,tankType:'storage' | 'terminal' | 'complex')
     Public_quick(num:number,boostType:ResourceConstant | null):MissionModel
-    Public_expand(disRoom:string,num:number,cnum?:number):MissionModel
+    Public_expand(disRoom:string,shard:shardName,num:number,cnum?:number):MissionModel
     Public_support(disRoom:string,sType:'double' | 'aio',shard:shardName,num:number,boost:boolean):MissionModel
     Public_control(disRoom:string,shard:shardName,interval:number):MissionModel
     Public_helpBuild(disRoom:string,num:number,shard?:string,time?:number):MissionModel

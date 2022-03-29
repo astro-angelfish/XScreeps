@@ -70,7 +70,7 @@ export default class NormalWarExtension extends Room {
     public Task_HelpDefend(mission:MissionModel):void{
         if (mission.Data.sType =='aio' && mission.Data.boost)
         {
-            global.SpecialBodyData[this.name]['aio'] = GenerateAbility(0,0,10,0,6,23,0,11)
+            global.SpecialBodyData[this.name]['saio'] = GenerateAbility(0,0,10,0,6,23,0,11)
         }
         if ((Game.time-global.Gtime[this.name]) % 7) return
         if (mission.LabBind)

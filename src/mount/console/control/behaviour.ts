@@ -1,7 +1,6 @@
 import { resourceComDispatch } from "@/constant/ResourceConstant"
 import { avePrice, haveOrder, highestPrice, RecognizeLab } from "@/module/fun/funtion"
 import { Colorful, compare, isInArray, unzipPosition, zipPosition } from "@/utils"
-import { remove } from "lodash"
 export default {
     /* 终端行为 */
     terminal:{
@@ -79,6 +78,46 @@ export default {
             if (str == '') return `[terminal] 未发现资源传送任务！`
             return str
         },
+    },
+
+    /* 全局资源传送 */
+    give:{
+        set(roomName:string,rType:ResourceConstant,num:number,pass?:boolean):string{
+            if (num > 200000) return `[give] 资源数量太多!不能挂载全局资源传送任务!`
+            if (!Game.rooms[roomName] && !pass)
+            {
+                // 不是自己房间需要确认
+                return `[give] 未授权的传送命令,目标房间非自己房间!`
+            }
+            for (var i of Memory.ResourceDispatchData)
+            {
+                if (i.sourceRoom == roomName && i.rType == rType)
+                    return `[give] 已经存在全局资源传送任务了!`
+            }
+            let dispatchTask:RDData = {
+                sourceRoom:roomName,
+                rType:rType,
+                num:num,
+                delayTick:1500,
+                conditionTick:500,
+                buy:false,
+                mtype:'deal'    // 可以删了
+            }
+            Memory.ResourceDispatchData.push(dispatchTask)
+            return `[give] 全局资源传送任务发布,房间${roomName},资源类型${rType},数量${num}`
+        },
+        remove(roomName:string,rType:ResourceConstant):string{
+            for (var i of Memory.ResourceDispatchData)
+            {
+                if (i.sourceRoom == roomName && i.rType == rType)
+                {
+                    let index = Memory.ResourceDispatchData.indexOf(i)
+                    Memory.ResourceDispatchData.splice(index,1)
+                    return `[give] 成功删除房间${roomName}[${rType}]全局资源传送任务!`
+                }
+            }
+            return `[give] 未发现房间${roomName}[${rType}]全局资源传送任务!`
+        }
     },
 
     /* 外矿 */
@@ -617,6 +656,7 @@ export default {
         show(roomName:string):string{
             var myRoom = Game.rooms[roomName]
             if (!myRoom) return `[factory] 未找到房间${roomName},请确认房间!`
+            if (myRoom.memory.switch.StopFactory) return `[factory] 房间${roomName}工厂停工中`
             let result = `[factory] 房间${roomName}的工厂加工信息如下:\n`
             result += `工厂等级:${myRoom.memory.productData.level}\n`
             result += `工厂状态:${myRoom.memory.productData.state}\n`
@@ -670,6 +710,7 @@ export default {
             if (!factory_) return Colorful(`[factory] 未找到房间${roomName}的工厂!`,'red',true)
             return factory_.del(cType)
         },
-    }
+    },
+
 
 }

@@ -67,7 +67,7 @@ export default class RoomMissonTransportExtension extends Room {
         if (!this.memory.StructureIdData.storageID) return
         if (!this.memory.StructureIdData.labs || this.memory.StructureIdData.labs.length <= 0)return
         let missionNum = this.RoleMissionNum('transport','物流运输')
-        if (missionNum > 3) {console.log("任务数量过多!为",missionNum);return}
+        if (missionNum > 3) return
         for (var id of this.memory.StructureIdData.labs)
         {
             var thisLab = Game.getObjectById(id) as StructureLab
@@ -103,6 +103,7 @@ export default class RoomMissonTransportExtension extends Room {
     // 核弹填充任务
     public Nuker_Feed():void{
         if (Game.time % 103) return
+        if (this.memory.switch.StopFillNuker) return
         if (!this.memory.StructureIdData.NukerID || !this.memory.StructureIdData.storageID) return
         if (this.RoleMissionNum('transport','物流运输') >= 1) return
         var nuker = Game.getObjectById(this.memory.StructureIdData.NukerID) as StructureNuker

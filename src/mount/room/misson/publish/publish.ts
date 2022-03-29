@@ -234,14 +234,15 @@ export default class RoomMissonPublish extends Room {
         return thisTask
     }
 
-    public Public_expand(disRoom:string,num:number,cnum?:number):MissionModel{
+    public Public_expand(disRoom:string,shard:shardName,num:number,cnum?:number):MissionModel{
         var thisTask:MissionModel = {
             name:'扩张援建',
             range:'Creep',
             delayTick:40000,
             level:10,
             Data:{
-                disRoom:disRoom
+                disRoom:disRoom,
+                shard:shard
             },
         }
         thisTask.reserve = true
@@ -299,7 +300,7 @@ export default class RoomMissonPublish extends Room {
         }
         else if (sType == 'aio')
         {
-            thisTask.CreepBind = {'aio':{num:num,bind:[],interval:1000}}
+            thisTask.CreepBind = {'saio':{num:num,bind:[],interval:1000}}
             if (boost) thisTask.LabBind = this.Bind_Lab(['XLHO2','XZHO2','XGHO2','XKHO2'])
         }
         if (shard)thisTask.Data.shard = shard

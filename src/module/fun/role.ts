@@ -111,6 +111,7 @@ export function carry_(creep_:Creep):void{
             for (var i in Game.rooms[creep_.memory.belong].memory.harvestData)
             {
                 var data_ = Game.rooms[creep_.memory.belong].memory.harvestData[i]
+                if (!data_.containerID) continue
                 if (data_.carry == creep_.name)
                 {
                     creep_.memory.containerID = data_.containerID
@@ -165,7 +166,19 @@ export function carry_(creep_:Creep):void{
     else
     {
         let container = Game.getObjectById(creep_.memory.containerID) as StructureContainer
-        if (!container) {delete creep_.memory.containerID;return}
+        if (!container){
+            /* 删除房间相关的记忆 */
+            for (var hdata in Game.rooms[this.memory.belong].memory.harvestData)
+            {
+                if(Game.rooms[this.memory.belong].memory.harvestData[hdata].containerID && Game.rooms[this.memory.belong].memory.harvestData[hdata].containerID == creep_.memory.containerID)
+                {
+                    delete Game.rooms[this.memory.belong].memory.harvestData[hdata].containerID
+                }
+            }
+            /* 删除爬虫相关记忆 */
+            delete creep_.memory.containerID
+            return
+        }
         if (!creep_.pos.isNearTo(container)) creep_.goTo(container.pos,1)
         else {if(container.store.getUsedCapacity('energy')>creep_.store.getFreeCapacity())creep_.withdraw(container,'energy')}
     }
