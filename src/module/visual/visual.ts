@@ -12,11 +12,10 @@ export function showTowerData():void{
     {
         /* 数据 */
         let posXY = unzipXandY(posData)
-        if (!posData) continue LoopV
         let tx = posXY[0]
         let ty = posXY[1]
         var Data = global.warData.tower[roomName].data[posData]
-        new RoomVisual(roomName).text(`${Data.attack}`,tx,ty,{color:'red',font:0.4})
+        Game.rooms[roomName].visual.text(`${Data.attack}`,tx,ty,{color: 'red', font:0.4,align:'center'})
     }
 }
 

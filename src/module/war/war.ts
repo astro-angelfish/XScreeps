@@ -38,10 +38,8 @@ export function classifyStructure(stru:Structure[]):StructureData{
     for (var i of stru)
     {
         if (!result[i.structureType]) result[i.structureType] = []
-        else
-        {
-            result[i.structureType].push(i)
-        }
+        result[i.structureType].push(i)
+        
     }
     return result
 }
@@ -53,13 +51,13 @@ export function geyTowerData(room:Room):TowerRangeMapData{
         return stru.structureType == 'tower'
     }}) as StructureTower[]
     if (towers.length <= 0) return {}
-    let terrianData = this.getTerrain()
+    let terrianData = room.getTerrain()
     let tempData:TowerRangeMapData = {}
     for (let i=0;i<50;i++)
     LoopTerrian:
     for (let j=0;j<50;j++)
     {
-        let thisPos = new RoomPosition(i,j,this.name)
+        let thisPos = new RoomPosition(i,j,room.name)
         // 0 平原 1 墙壁 2 沼泽
         if (terrianData.get(i,j) == 1)
         continue LoopTerrian
@@ -147,7 +145,7 @@ export function warDataInit(room:Room):void{
 export function PathClosestCreep(pos:RoomPosition,creeps:Creep[],attack?:boolean,ram?:boolean):Creep | null{
     if (!pos) return null
     return pos.findClosestByPath(creeps,{filter:(creep)=>{
-        return attack?(creep.getActiveBodyparts('attack') || creep.getActiveBodyparts('ranged_attack')):1 &&  ram?!creep.pos.GetStructure('rampart'):1
+        return (attack?(creep.getActiveBodyparts('attack') || creep.getActiveBodyparts('ranged_attack')):1) &&  (ram?!creep.pos.GetStructure('rampart'):1)
     }})
 }
 
@@ -155,7 +153,7 @@ export function PathClosestCreep(pos:RoomPosition,creeps:Creep[],attack?:boolean
 export function RangeClosestCreep(pos:RoomPosition,creeps:Creep[],attack?:boolean,ram?:boolean):Creep | null{
     if (!pos) return null
     return pos.findClosestByRange(creeps,{filter:(creep)=>{
-        return attack?(creep.getActiveBodyparts('attack') || creep.getActiveBodyparts('ranged_attack')):1 &&  ram?!creep.pos.GetStructure('rampart'):1
+        return (attack?(creep.getActiveBodyparts('attack') || creep.getActiveBodyparts('ranged_attack')):1 )&&  (ram?!creep.pos.GetStructure('rampart'):1)
     }})
 }
 
@@ -163,7 +161,7 @@ export function RangeClosestCreep(pos:RoomPosition,creeps:Creep[],attack?:boolea
 export function RangeCreep(pos:RoomPosition,creeps:Creep[],range:number,attack?:boolean,ram?:boolean):Creep[]{
     if (!pos) return []
     return pos.findInRange(creeps,range,{filter:(creep)=>{
-        return attack?(creep.getActiveBodyparts('attack') || creep.getActiveBodyparts('ranged_attack')):1 &&  ram?!creep.pos.GetStructure('rampart'):1
+        return (attack?(creep.getActiveBodyparts('attack') || creep.getActiveBodyparts('ranged_attack')):1 )&&  (ram?!creep.pos.GetStructure('rampart'):1)
     }})
 }
 
@@ -176,7 +174,7 @@ export function pathClosestFlag(pos:RoomPosition,flags:Flag[],name:string,attack
         if(global.warData.enemy[pos.roomName].time != Game.time) return null
         let creeps = global.warData.enemy[pos.roomName].data
         return pos.findClosestByPath(flags,{filter:(flag)=>{
-            flag.name.indexOf(name) == 0 && RangeCreep(flag.pos,creeps,range?range:3,true).length <= 0
+            return flag.name.indexOf(name) == 0 && RangeCreep(flag.pos,creeps,range?range:3,true).length <= 0
         }})
     }
     return pos.findClosestByPath(flags,{filter:(flag)=>{
@@ -191,9 +189,9 @@ export function pathClosestStructure(pos:RoomPosition,wall?:boolean,ram?:boolean
     if (!attack)
     {
         let structures = Game.rooms[pos.roomName].find(FIND_STRUCTURES,{filter:(stru)=>{
-            !isInArray(["road","conatiner"],stru.structureType) && 
-            wall?stru.structureType != "constructedWall":1 && 
-            ram?(stru.structureType != "rampart" || !stru.pos.GetStructure('rampart')):1
+            return !isInArray(["road","container"],stru.structureType) && 
+            (!wall?stru.structureType != "constructedWall":true) && 
+            (!ram?(stru.structureType != "rampart" || !stru.pos.GetStructure('rampart')):true)
         }})
         return pos.findClosestByPath(structures)
     }
@@ -202,13 +200,12 @@ export function pathClosestStructure(pos:RoomPosition,wall?:boolean,ram?:boolean
         if(global.warData.enemy[pos.roomName].time != Game.time) return null
         let creeps = global.warData.enemy[pos.roomName].data
         let structures = Game.rooms[pos.roomName].find(FIND_STRUCTURES,{filter:(stru)=>{
-            !isInArray(["road","conatiner"],stru.structureType) && 
-            wall?stru.structureType != "constructedWall":1 && 
-            ram?(stru.structureType != "rampart" || !stru.pos.GetStructure('rampart')):1
+            return !isInArray(["road","container"],stru.structureType) && (!wall?stru.structureType != "constructedWall":true) && (!ram?(stru.structureType != "rampart" || !stru.pos.GetStructure('rampart')):true)
         }})
-        return pos.findClosestByPath(structures,{filter:(stru)=>{
-            RangeCreep(stru.pos,creeps,range?range:5,true).length <= 0
+        let result =  pos.findClosestByPath(structures,{filter:(stru)=>{
+            return RangeCreep(stru.pos,creeps,range?range:5,true).length <= 0
         }})
+        return result
     }
 }
 
@@ -233,13 +230,14 @@ export function canSustain(creeps:Creep[],mycreep:Creep,towerData?:number):boole
     // 计算敌方伤害 hurtData是总伤害
     for (var c of creeps)
     {
+        if (c.name == mycreep.name) continue
         let enData = bodypartData(c)
         let hurt = enData['attack']
         if (enData['ranged_attack'] > hurt) hurt = enData['ranged_attack']
         hurtData += hurt
     }
     if (towerData) hurtData += towerData
-    mycreep.say(`${hurtData}`)
+    // mycreep.say(`${hurtData}`)
     // 判断总伤害能否破防
     if (toughNum <= 0)
     {

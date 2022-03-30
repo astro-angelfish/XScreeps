@@ -530,8 +530,8 @@ export default class CreepMoveExtension extends Creep {
                 room.find(FIND_HOSTILE_CREEPS).forEach(creep=>{
                     if (parts(creep,'attack'))
                     {
-                        for (var i = creep.pos.x-2;i<creep.pos.x+2;i++)
-                        for (var j = creep.pos.y-2;j<creep.pos.y+2;j++)
+                        for (var i = creep.pos.x-3;i<creep.pos.x+4;i++)
+                        for (var j = creep.pos.y-3;j<creep.pos.y+4;j++)
                         if (i>0 && i< 49 && j>0 && j<49)
                         {
                             var nearpos = new RoomPosition(i,j,creep.room.name)
