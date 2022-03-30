@@ -674,8 +674,8 @@ export default {
         level(roomName:string):string{
             var myRoom = Game.rooms[roomName]
             if (!myRoom) return `[factory] 未找到房间${roomName},请确认房间!`
-            if (!Game.powerCreeps[`${this.room.name}/queen/${Game.shard.name}`]) return `[factory] ${this.room.name}此房间无pc请先孵化pc!`
-            this.room.enhance_factory();
+            if (!Game.powerCreeps[`${myRoom.name}/queen/${Game.shard.name}`]) return `[factory] ${myRoom.name}此房间无pc请先孵化pc!`
+            myRoom.enhance_factory();
             return `[factory] 房间${roomName}发布pc确定工厂等级任务成功!`
         },
         // 添加工厂基本物资合成清单

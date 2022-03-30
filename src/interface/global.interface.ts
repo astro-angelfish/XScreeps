@@ -18,6 +18,7 @@ declare module NodeJS {
         }
         intervalData:{[roomName:string]:{[creepRole:string]:number}}
         ResourceLimit:resourceLimitData
+        warData:any
     }
 }
 
@@ -28,4 +29,26 @@ interface globalStrcutureData{
 
 interface resourceLimitData{
     [roomName:string]:{[res in ResourceConstant]?:number}
+}
+
+
+interface warData{
+    tower:{[roomName:string]:{count:number,data:TowerRangeMapData}}      // 防御塔伤害数据
+    enemy:{[roomName:string]:{time:number,data:Creep[]}}        // 敌方房间爬虫数据
+    structure:{[roomName:string]:{time:number,data:StructureData}}    // 敌方房间建筑数据
+    flag:{[roomName:string]:{time:number,data:Flag[]}}  // 敌方房间旗帜数据
+}
+
+interface TowerRangeMapData{
+    [strpos:string]:ARH
+}
+
+interface ARH{
+    attack:number
+    repair:number
+    heal:number
+}
+
+interface StructureData{
+    [strutype:string]:Structure[]
 }

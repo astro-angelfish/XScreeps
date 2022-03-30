@@ -1,6 +1,8 @@
 import { ResourceMapData } from "@/constant/ResourceConstant"
 import { isInArray } from "@/utils"
 
+/* 杂物堆 */
+
 // 计算平均价格
 export function avePrice(res:ResourceConstant,day:number):number{
     if (day > 14) return 0  // 0
@@ -241,87 +243,6 @@ export function bodypartData(creep:Creep):{[bo:string]:number}{
     return result
 }
 
-/* 判断是否抵抗的住爬虫的攻击  敌方爬虫 活跃的tough数量 免伤数据 治疗数据 防御塔数据(敌方)  返回true代表不会破防*/
-export function canSustain(creeps:Creep[],mycreep:Creep,towerData?:number):boolean{
-    let bodyData = bodypartData(mycreep)
-    let toughNum = mycreep.getActiveBodyparts('tough')
-    let toughBoostType = null
-    if (creeps.length <=0) return true
-    for (var i of mycreep.body) // 确定boost类型
-    {
-        if (i.type == 'tough')
-        {
-            if (!i.boost) {toughBoostType = null;break}
-            else if (i.boost == 'GO')  {toughBoostType = 'GO';break}
-            else if (i.boost == 'GHO2')  {toughBoostType = 'GHO2';break}
-            else if (i.boost == 'XGHO2')  {toughBoostType = 'XGHO2';break}
-        }
-    }
-    let myhealData = bodyData['heal']
-    let hurtData = 0
-    // 计算敌方伤害 hurtData是总伤害
-    for (var c of creeps)
-    {
-        let enData = bodypartData(c)
-        let hurt = enData['attack']
-        if (enData['ranged_attack'] > hurt) hurt = enData['ranged_attack']
-        hurtData += hurt
-    }
-    if (towerData) hurtData += towerData
-    mycreep.say(`${hurtData}`)
-    // 判断总伤害能否破防
-    if (toughNum <= 0)
-    {
-        if(hurtData > myhealData) return false
-    }
-    else
-    {
-        if(!toughBoostType)
-        {
-            if(hurtData > myhealData) return false
-        }
-        else if (toughBoostType == 'GO')
-        {
-            let hurt = hurtData/2
-            if (hurt <= toughNum*100)
-            {
-                if(hurt > myhealData) return false
-            }
-            else
-            {
-                let superfluous = (hurt-toughNum)*2
-                if (hurt+superfluous > myhealData) return false
-            }
-        }
-        else if (toughBoostType == 'GHO2')
-        {
-            let hurt = hurtData/3
-            if (hurt <= toughNum*100)
-            {
-                if(hurt > myhealData) return false
-            }
-            else
-            {
-                let superfluous = (hurt-toughNum)*3
-                if (hurt+superfluous > myhealData) return false
-            }
-        }
-        else if (toughBoostType == 'XGHO2')
-        {
-            let hurt = hurtData/4
-            if (hurt <= toughNum*100)
-            {
-                if(hurt > myhealData) return false
-            }
-            else
-            {
-                let superfluous = (hurt-toughNum)*4
-                if (hurt+superfluous > myhealData) return false
-            }
-        }
-    }
-    return true
-}
 
 /* 寻找后一级的爬 */
 export function findNextData(creep:Creep):string {

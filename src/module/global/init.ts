@@ -18,4 +18,5 @@ export function MemoryInit():void {
     if (!Memory.ResourceDispatchData)Memory.ResourceDispatchData = []
     if (!global.ResourceLimit)global.ResourceLimit = {}
     if (!Memory.outMineData) Memory.outMineData = {}
+    if (!global.warData) global.warData = {tower:{},enemy:{},flag:{},structure:{}}
 }

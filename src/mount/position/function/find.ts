@@ -193,4 +193,30 @@ export default class PositionFunctionFindExtension extends RoomPosition {
         if (creep_.length > 0) return creep_
         return []
     }
+
+    /* 防御塔数据叠加 */
+    public AddTowerRangeData(target:StructureTower,tempData:ARH):void{
+        let xR = Math.abs(this.x - target.pos.x)
+        let yR = Math.abs(this.y - target.pos.y)
+        let distance = Math.max(xR,yR)
+        let attackNum:number;let repairNum:number;let healNum:number
+        if (distance <= 5)
+        {
+            attackNum = 600;repairNum = 800;healNum = 400
+        }
+        else if (distance >= 20)
+        {
+            attackNum = 150;repairNum = 200;healNum = 100
+        }
+        else
+        {
+            /* 根据距离计算 */
+            attackNum = 600 - (distance-5)*30
+            repairNum = 800 - (distance-5)*40
+            healNum = 400 - (distance-5)*20
+        }
+        tempData.attack += attackNum
+        tempData.heal += healNum
+        tempData.repair += repairNum
+    }
 }

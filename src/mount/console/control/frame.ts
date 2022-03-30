@@ -152,6 +152,18 @@ export default {
             }
             return `[spawn] 任务${id}的${role}数量信息修改失败`
         },
+        // 只对任务爬虫的定时孵化有效
+        restart(roomName:string,id:string):string{
+            let thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[spawn] 不存在房间${roomName}`
+            let misson = thisRoom.GainMission(id)
+            if (misson)
+            {
+                delete misson.Data.intervalTime
+                return `[spawn] 任务${misson.name}<id:${id}>孵化信息已经初始化!`
+            }
+            return `[spawn] 找不到id为${id}的任务!`
+        }
     },
     link:{
         comsume(roomName:string,id:string):string{

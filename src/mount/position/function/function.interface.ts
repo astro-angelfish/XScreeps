@@ -10,4 +10,5 @@ interface RoomPosition {
     GetRuin():Ruin
     FindPath(target:RoomPosition,range:number):RoomPosition[]
     FindRangeCreep(num:number):Creep[]
+    AddTowerRangeData(target:StructureTower,tempData:ARH):void
 }

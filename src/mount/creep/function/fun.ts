@@ -88,7 +88,6 @@ export default class CreepFunctionExtension extends Creep {
                     var tempID:string
                     var thisRoomMisson = Game.rooms[this.memory.belong].GainMission(this.memory.MissionData.id)
                     if (!thisRoomMisson) return false
-    
                     LoopB:
                     for (var j in thisRoomMisson.LabBind)
                     {
@@ -163,8 +162,8 @@ export default class CreepFunctionExtension extends Creep {
             {
                 if (!i.getActiveBodyparts('attack') && !i.getActiveBodyparts('ranged_attack')) continue
             }
-            let distance0 = Math.max.apply(Math.abs(this.pos.x-result.pos.x),Math.abs(this.pos.y-result.pos.y))
-            let distance1 = Math.max.apply(Math.abs(this.pos.x-i.pos.x),Math.abs(this.pos.y-i.pos.y))
+            let distance0 = Math.max(Math.abs(this.pos.x-result.pos.x),Math.abs(this.pos.y-result.pos.y))
+            let distance1 = Math.max(Math.abs(this.pos.x-i.pos.x),Math.abs(this.pos.y-i.pos.y))
             if (distance1 < distance0)
             result = i
         }

@@ -271,6 +271,15 @@ export default [
                                 functionName: 'spawn.Mnum'
                             },
                             {
+                                title: '定时孵化任务孵化配置一键还原:',
+                                describe: '修改定时信息,立刻重新孵化;例:spawn.restart("W1N1","C-85ednh1ib439985674")',
+                                params: [
+                                    { name: 'roomName', desc: '房间名' },
+                                    { name: 'id', desc: '任务id' },
+                                ],
+                                functionName: 'spawn.restart'
+                            },
+                            {
                                 title: '资源传送:',
                                 describe: '从房间A传资源到房间B(需要有终端和仓库) 例:terminal.send("W1N1","W1N2","GH2O",20000)',
                                 params: [
@@ -757,7 +766,7 @@ export default [
                                     { name: 'num', desc: '搬运爬数量' },
                                     { name: 'resourcenum', desc: '搬运的资源数量' },
                                 ],
-                                functionName: 'upgrade.quick'
+                                functionName: 'carry.special'
                             },
                             {
                                 title: '取消指定资源搬运:',
@@ -765,7 +774,7 @@ export default [
                                 params: [
                                     { name: 'roomName', desc: '房间名' },
                                 ],
-                                functionName: 'upgrade.Cquick'
+                                functionName: 'carry.Cspecial'
                             },
                             {
                                 title: '紧急援建:',

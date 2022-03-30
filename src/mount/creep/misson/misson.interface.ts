@@ -40,6 +40,7 @@ interface CreepMemory{
     controlledBySquardFrame?:boolean
     squad?:Squad
     arrived?:boolean
+    targetFlag?:string
 }
 
 

@@ -23,6 +23,9 @@ interface Creep{
     findPath_defend(target:RoomPosition,range:number):string|null
     // 逃离移动
     Flee(target:RoomPosition,range:number):void
+    // 战争相关移动
+    findPath_aio(target:RoomPosition,range:number):string|null
+    goTo_aio(target:RoomPosition,range:number):CreepMoveReturnCode | ERR_NO_PATH | ERR_NOT_IN_RANGE | ERR_INVALID_TARGET
 }
 
 /* 爬虫移动记忆 */
