@@ -81,7 +81,10 @@ export function harvest_(creep_:Creep):void{
         if (!data) return
         if (data.linkID || data.containerID)
         {
+            if (!["superbitch","ExtraDim"].includes(creep_.owner.username))
             creep_.say("😒",true)
+            else
+            creep_.say("⚒️",true)
         }
         else
         {
@@ -168,11 +171,11 @@ export function carry_(creep_:Creep):void{
         let container = Game.getObjectById(creep_.memory.containerID) as StructureContainer
         if (!container){
             /* 删除房间相关的记忆 */
-            for (var hdata in Game.rooms[this.memory.belong].memory.harvestData)
+            for (var hdata in Game.rooms[creep_.memory.belong].memory.harvestData)
             {
-                if(Game.rooms[this.memory.belong].memory.harvestData[hdata].containerID && Game.rooms[this.memory.belong].memory.harvestData[hdata].containerID == creep_.memory.containerID)
+                if(Game.rooms[creep_.memory.belong].memory.harvestData[hdata].containerID && Game.rooms[creep_.memory.belong].memory.harvestData[hdata].containerID == creep_.memory.containerID)
                 {
-                    delete Game.rooms[this.memory.belong].memory.harvestData[hdata].containerID
+                    delete Game.rooms[creep_.memory.belong].memory.harvestData[hdata].containerID
                 }
             }
             /* 删除爬虫相关记忆 */

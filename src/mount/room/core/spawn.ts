@@ -162,7 +162,21 @@ export default class RoomCoreSpawnExtension extends Room {
                     thisMem[i] = mem[i]
                 }
             }
-            let result = thisSpawn.spawnCreep(body,`【${mark}】${randomStr}|${timestr}`,{memory:thisMem})
+            let name:string = null
+            if (!["superbitch","ExtraDim"].includes(thisSpawn.owner.username))
+            {
+                let int32 = Math.pow(2,32)
+                let randomId = ()=>_.padLeft(Math.ceil(Math.random()*int32).toString(16).toLocaleUpperCase(),8,"0")
+                let processName = function (){
+                    return `${mark}x`+randomId()
+                }
+                name = processName()
+            }
+            else
+            {
+                name = `【${mark}】${randomStr}|${timestr}`
+            }
+            let result = thisSpawn.spawnCreep(body,name,{memory:thisMem})
             if (result == OK)
             {
                 // console.log("即将删除：",spawnlist[0].role,",spawnID:",thisSpawn.id)

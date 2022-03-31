@@ -257,7 +257,13 @@ export function findNextData(creep:Creep):string {
     return null
 }
 
-/* 判断两个房间是否靠近以及目标房间 (必须是有出口的靠近)*/
+/**
+ * 判断房间thisRoom是否可以直接通过出口到达房间disRoom
+ * @param thisRoom 当前房间
+ * @param disRoom  目标房价
+ * @returns boolean
+ * 方向常量 ↑:1 →:3 ↓:5 ←:7
+ */
 export function identifyNext(thisRoom:string,disRoom:string):boolean{
     var thisRoomData = regularRoom(thisRoom)
     var disRoomData = regularRoom(disRoom)
@@ -267,13 +273,66 @@ export function identifyNext(thisRoom:string,disRoom:string):boolean{
         var Ydistanceabs = Math.abs(thisRoomData.num[1]-disRoomData.num[1])
         if ((Xdistanceabs == 0 && Ydistanceabs == 1) || (Xdistanceabs == 1 && Ydistanceabs == 0) && Game.rooms[thisRoom].findExitTo(disRoom)!= -2  && Game.rooms[thisRoom].findExitTo(disRoom)!= -10)
         {
-        return true
+            /* 已经接近房间了 */
+            let result = Game.rooms[thisRoom].findExitTo(disRoom)
+            if (isInArray([-2,-10],result)) return false
+            else
+            {
+                let direction:number = null
+                /* 判断一个房间相对另一个房间的方向是否和返回的出口方向一致 */
+                if (Xdistanceabs == 1)  // x方向相邻
+                {
+                    let count = thisRoomData.num[0]-disRoomData.num[0]
+                    // W区
+                    if (thisRoomData.coor[0] == 'W')
+                    {
+                        switch (count){
+                            case 1:{direction = 3;break;}
+                            case -1:{direction = 7;break;}
+                        }
+                    }
+                    // E区
+                    else if (thisRoomData.coor[0] == 'E')
+                    {
+                        switch (count){
+                            case 1:{direction = 7;break;}
+                            case -1:{direction = 3;break;}
+                        }
+                    }
+                }
+                else if (Ydistanceabs == 1)       // y方向相邻
+                {
+                    let count = thisRoomData.num[1]-disRoomData.num[1]
+                    // N区
+                    if (thisRoomData.coor[1] == 'N')
+                    {
+                        switch (count){
+                            case 1:{direction = 5;break;}
+                            case -1:{direction = 1;break;}
+                        }
+                    }
+                    // S区
+                    else if (thisRoomData.coor[1] == 'S')
+                    {
+                        switch (count){
+                            case 1:{direction = 1;break;}
+                            case -1:{direction = 5;break;}
+                        }
+                    }
+                }
+                if (!direction) return false
+                else if (direction == result) return true
+            }
         }
     }
-
     return false
 }
 
+/**
+ * 格式化房间名称信息
+ * @param roomName 房间名
+ * @returns 一个对象 例: W1N2 -----> {coor:["W","N"], num:[1,2]}
+ */
 export function regularRoom(roomName:string):{coor:string[],num:number[]}
 {
     var roomName =  roomName
@@ -285,10 +344,98 @@ export function regularRoom(roomName:string):{coor:string[],num:number[]}
     let BcoordNum = parseInt(regNum.exec(roomName)[0])
     return {coor:[Acoord,Bcoord],num:[AcoordNum,BcoordNum]}
 }
-/* 判断是否可以组队了  需要一个方块的位置都没有墙壁，而且坐标需要 5 -> 45 */
 
+/* 获取相邻房间相对于本房间的方向 */
+export function NextRoomDirection(thisRoom:string,disRoom:string):string{
+    var thisRoomData = regularRoom(thisRoom)
+    var disRoomData = regularRoom(disRoom)
+    if (thisRoomData.coor[0]== disRoomData.coor[0] && thisRoomData.coor[1] == disRoomData.coor[1])
+    {
+        var Xdistanceabs = Math.abs(thisRoomData.num[0]-disRoomData.num[0])
+        var Ydistanceabs = Math.abs(thisRoomData.num[1]-disRoomData.num[1])
+        if ((Xdistanceabs == 0 && Ydistanceabs == 1) || (Xdistanceabs == 1 && Ydistanceabs == 0) && Game.rooms[thisRoom].findExitTo(disRoom)!= -2  && Game.rooms[thisRoom].findExitTo(disRoom)!= -10)
+        {
+            /* 已经接近房间了 */
+            let direction:string = null
+            /* 判断一个房间相对另一个房间的方向是否和返回的出口方向一致 */
+            if (Xdistanceabs == 1)  // x方向相邻
+            {
+                let count = thisRoomData.num[0]-disRoomData.num[0]
+                // W区
+                if (thisRoomData.coor[0] == 'W')
+                {
+                    switch (count){
+                        case 1:{direction = "→";break;}
+                        case -1:{direction = "←";break;}
+                    }
+                }
+                // E区
+                else if (thisRoomData.coor[0] == 'E')
+                {
+                    switch (count){
+                        case 1:{direction = "←";break;}
+                        case -1:{direction = "→";break;}
+                    }
+                }
+            }
+            else if (Ydistanceabs == 1)       // y方向相邻
+            {
+                let count = thisRoomData.num[1]-disRoomData.num[1]
+                // N区
+                if (thisRoomData.coor[1] == 'N')
+                {
+                    switch (count){
+                        case 1:{direction = "↓";break;}
+                        case -1:{direction = "↑";break;}
+                    }
+                }
+                // S区
+                else if (thisRoomData.coor[1] == 'S')
+                {
+                    switch (count){
+                        case 1:{direction = "↑";break;}
+                        case -1:{direction = "↓";break;}
+                    }
+                }
+            }
+            return direction
+        }
+    }
+    return null
+}
+
+/**
+ * 判断是否处于房间入口指定格数内
+ * @param creep 
+ * @returns 
+ */
+export function RoomInRange(thisPos:RoomPosition,disRoom:string,range:number):boolean{
+    let thisroom = thisPos.roomName
+    let direction = NextRoomDirection(thisroom,disRoom)
+    if (!direction) return false
+    if (!range || range <= 0 || range >= 49) return false
+    switch (direction){
+        case "↑":{
+            return thisPos.y <= range?true:false
+        }
+        case "↓":{
+            return thisPos.y >= (49-range)?true:false
+        }
+        case "←":{
+            return thisPos.x <= range?true:false
+        }
+        case "→":{
+            return thisPos.x >= (49-range)?true:false
+        }
+        default:{
+            return false;
+        }
+    }
+}
+
+/* 判断是否可以组队了  需要一个方块的位置都没有墙壁，而且坐标需要 2 -> 47 */
 export function identifyGarrison(creep:Creep):boolean{
-    if (creep.pos.x > 45 || creep.pos.x < 5 || creep.pos.y > 45 || creep.pos.y < 5) return false
+    if (creep.pos.x > 47 || creep.pos.x < 2 || creep.pos.y > 47 || creep.pos.y < 2) return false
     for (var i = creep.pos.x;i<creep.pos.x+2;i++)
     for (var j=creep.pos.y;j<creep.pos.y+2;j++)
     {

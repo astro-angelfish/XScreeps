@@ -1,4 +1,4 @@
-import { findFollowData, findNextData, identifyGarrison, identifyNext, parts } from "@/module/fun/funtion"
+import { findFollowData, findNextData, identifyGarrison, identifyNext, parts, RoomInRange } from "@/module/fun/funtion"
 import { canSustain, PathClosestCreep, pathClosestFlag, pathClosestStructure, RangeClosestCreep, RangeCreep, warDataInit } from "@/module/war/war"
 import { generateID, getDistance, isInArray } from "@/utils"
 
@@ -371,7 +371,7 @@ export default class CreepMissonWarExtension extends Creep {
         }
     }
 
-    // 攻防一体
+    // 攻防一体 已经做一定测试 目前未发现bug
     public handle_aio():void{
         let missionData = this.memory.MissionData
         let id = missionData.id
@@ -567,10 +567,11 @@ export default class CreepMissonWarExtension extends Creep {
 
     // 四人小队
     public handle_task_squard():void{
-        var misson = this.memory.MissionData.Data
-        var shard = misson.shard
-        var roomName = misson.disRoom
-        var squadID = misson.squadID
+        var data = this.memory.MissionData.Data
+        var shard = data.shard          // 目标shard
+        var roomName = data.disRoom     // 目标房间名
+        var squadID = data.squadID      // 四人小队id
+        /* controlledBySquadFrame为true代表不再受任务控制，改为战斗模块控制 */
         if (this.memory.controlledBySquardFrame)
         {
             /* 说明到达指定房间，并到达合适位置了 */
@@ -583,15 +584,14 @@ export default class CreepMissonWarExtension extends Creep {
                     creepData:this.memory.squad,
                     sourceRoom:this.memory.belong,
                     presentRoom:this.room.name,
-                    disRoom:misson.disRoom,
+                    disRoom:data.disRoom,
                     ready:false,
                     array:'free',
                     sourceShard:this.memory.shard,
                     disShard:this.memory.targetShard,
-                    squardType:misson.flag
+                    squardType:data.flag
                 }
             }
-            /* 赋予全局Memory记忆后，即可交由全局四人小队框架控制 */
             return
         }
         else
@@ -631,8 +631,8 @@ export default class CreepMissonWarExtension extends Creep {
                 if (!thisRoom.memory.squadData) Game.rooms[this.memory.belong].memory.squadData = {}
                 var MissonSquardData = thisRoom.memory.squadData[squadID]
                 if (!MissonSquardData) thisRoom.memory.squadData[squadID] = {}
-                if (!MissonSquardData) return
-                if (this.memory.creepType == 'heal')
+                /* 编队信息初始化 */
+                if (this.memory.creepType == 'heal' && !this.memory.squad)
                 {
                     if (this.memory.role == 'x-aio')
                     {
@@ -646,37 +646,44 @@ export default class CreepMissonWarExtension extends Creep {
                         if (Object.keys(MissonSquardData).length <= 0 ) MissonSquardData[this.name] = {position:'↙',index:1,role:this.memory.role,creepType:this.memory.creepType}
                         if (Object.keys(MissonSquardData).length == 2 && !isInArray(Object.keys(MissonSquardData),this.name) ) MissonSquardData[this.name] = {position:'↘',index:3,role:this.memory.role,creepType:this.memory.creepType}
                     }
-                    
                 }
-                else if (this.memory.creepType == 'attack')
+                else if (this.memory.creepType == 'attack' && !this.memory.squad)
                 {
                     if (Object.keys(MissonSquardData).length == 1 && !isInArray(Object.keys(MissonSquardData),this.name) ) MissonSquardData[this.name] = {position:'↖',index:0,role:this.memory.role,creepType:this.memory.creepType}
                     if (Object.keys(MissonSquardData).length == 3 && !isInArray(Object.keys(MissonSquardData),this.name) ) MissonSquardData[this.name] = {position:'↗',index:2,role:this.memory.role,creepType:this.memory.creepType}
                 }
                 if (Object.keys(thisRoom.memory.squadData[squadID]).length == 4 && !this.memory.squad)
                 {
-                    console.log(this.name, '添加squard记忆')
+                    console.log(`[squad] 房间${this.memory.belong}ID为:${squadID}的四人小队数量已经到位!将从房间分发组队数据!`)
                     this.memory.squad = thisRoom.memory.squadData[squadID]
                     return
                 }
-                /* 朝前面的爬移动 */
+                /* 检查是否所有爬虫都赋予记忆了 */
                 if (!this.memory.squad) return
-                 /* 检查是否所有爬虫都赋予记忆了 */
                 for (var mem in this.memory.squad)
                 {
                     if (!Game.creeps[mem]) return
                     if (!Game.creeps[mem].memory.squad)return
                 }
+                /* 爬虫都被赋予了组队数据了，就删除房间内的原始数据 */
+                if (thisRoom.memory.squadData[squadID]) delete thisRoom.memory.squadData[squadID]
             }
-            /* 到达任务房间前自卫 */
+            /* 在到达任务房间的隔壁房间前，默认攻击附近爬虫 */
             if (this.getActiveBodyparts('ranged_attack'))
             {
-                var enemy = this.pos.findInRange(FIND_HOSTILE_CREEPS,3,{filter:(creep)=>{
+                let enemy = this.pos.findInRange(FIND_HOSTILE_CREEPS,3,{filter:(creep)=>{
                     return !isInArray(Memory.whitesheet,creep.owner.username)
                 }})
-                if (enemy[0])
-                this.rangedAttack(enemy[0])
+                if (enemy.length > 0)
+                {
+                    for (let enemy_ of enemy)
+                    {
+                        if (enemy_.pos.isNearTo(this)) this.rangedMassAttack()
+                    }
+                    this.rangedAttack(enemy[0])
+                }
             }
+            /* 在到达任务房间的隔壁房间前，默认治疗附近爬虫 */
             if (this.getActiveBodyparts('heal'))
             {
                 var bol = true
@@ -690,11 +697,12 @@ export default class CreepMissonWarExtension extends Creep {
                 }
                 if(bol) this.heal(this)
             }
-            /* 线性队列行走规则设定 */
+            /* 线性队列行走规则: 有成员疲劳就停止行走 */
             for (var cc in this.memory.squad)
             {
                 if (Game.creeps[cc] && Game.creeps[cc].fatigue) return
             }
+            /* 编号为 0 1 2 的爬需要遵守的规则 */
             if (this.memory.squad[this.name].index != 3 && (!isInArray([0,49],this.pos.x) && !isInArray([0,49],this.pos.y)))
             {
                 var followCreepName = findNextData(this)
@@ -706,11 +714,11 @@ export default class CreepMissonWarExtension extends Creep {
                 if (!followCreep && portal) {return}
                 if (followCreep)
                 {
-                // 跟随爬不靠在一起就等一等
-                if (!this.pos.isNearTo(followCreep)) return
+                    // 跟随爬不靠在一起就等一等
+                    if (!this.pos.isNearTo(followCreep)) return
                 }
-                
             }
+            /* 编号为 1 2 3 的爬需要遵守的规则 */
             if (this.memory.squad[this.name].index != 0)
             {
                 var disCreepName = findFollowData(this)
@@ -722,46 +730,74 @@ export default class CreepMissonWarExtension extends Creep {
                 if (Game.shard.name == shard && !Game.creeps[disCreepName]) return
                 var disCreep = Game.creeps[disCreepName]
                 if (this.room.name == this.memory.belong)  this.goTo(disCreep.pos,0)
-                else this.moveTo(disCreep,{ignoreCreeps:true})
+                else this.moveTo(disCreep)
+                return
             }
-            /* 判断在不在目标房间入口房间 */
-            if (identifyNext(this.room.name,roomName) == false || Game.shard.name != misson.shard)
+            // 接下来在门口自动组队
+            if (this.memory.squad[this.name].index == 0)
             {
-                if (this.memory.squad[this.name].index == 0)
-                this.arriveTo(new RoomPosition(25,25,roomName),20,shard)
-            }
-            else
-            {
-                if (this.memory.squad[this.name].index == 0)
+                /* 判断在不在目标房间入口房间 */
+                if (Game.flags[`squad_unit_${this.memory.MissionData.id}`])
                 {
-                    this.say('🔪',true)
-                    if (!this.memory.arrived)
+                    // 有集结旗帜的情况下，优先前往目标房间
+                    if (this.room.name != Game.flags[`squad_unit_${this.memory.MissionData.id}`].pos.roomName || Game.shard.name != data.shard)
                     {
-                        var blueFlag = this.pos.findClosestByRange(FIND_FLAGS,{filter:(flag)=>{
-                            return flag.color == COLOR_BLUE
-                        }})
-                        if (blueFlag)
-                        this.arriveTo(blueFlag.pos,5,shard)
+                        if (this.memory.squad[this.name].index == 0)
+                        this.arriveTo(new RoomPosition(24,24,roomName),18,shard)
+                        return
+                    }
+                }
+                else
+                {
+                    // 没有集结旗帜的情况下，自动判断
+                    if (identifyNext(this.room.name,roomName) == false || Game.shard.name != data.shard)
+                    {
+                        this.say("🔪")
+                        if (this.memory.squad[this.name].index == 0)
+                        this.arriveTo(new RoomPosition(24,24,roomName),18,shard)
+                        return
+                    }
+                }
+                this.say('⚔️',true)
+                if (!this.memory.arrived)
+                {
+                    if (Game.flags[`squad_unit_${this.memory.MissionData.id}`])
+                    {
+                        // 有旗帜的情况下，如果到达旗帜附近，就判定arrived为true
+                        if (!this.pos.isEqualTo(Game.flags[`squad_unit_${this.memory.MissionData.id}`]))
+                        this.goTo(Game.flags[`squad_unit_${this.memory.MissionData.id}`].pos,0)
                         else
-                        this.arriveTo(new RoomPosition(25,25,this.room.name),10,shard)
-                        /* 寻找周围有没有空地 */
-                        if (identifyGarrison(this) && shard == Game.shard.name)
-                        {
-                            this.memory.arrived = true
-                            return
-                        }
+                        this.memory.arrived = true
                     }
                     else
                     {
-                        // 到达了的逻辑
-                        for (var crp in this.memory.squad)
+                        // 没有旗帜的情况下，到入口前5格组队
+                        if (RoomInRange(this.pos,roomName,5))
                         {
-                            if (Game.creeps[crp])
-                                Game.creeps[crp].memory.controlledBySquardFrame = true
+                            this.memory.arrived = true
+                        }
+                        else
+                        {
+                            this.arriveTo(new RoomPosition(24,24,roomName),24,shard)
                         }
                     }
                 }
+                else
+                {
+                    // 能组队就组队 否则就继续走
+                    if (identifyGarrison(this))
+                    for (var crp in this.memory.squad)
+                    {
+                        if (Game.creeps[crp])
+                        Game.creeps[crp].memory.controlledBySquardFrame = true
+                    }
+                    else
+                    {
+                        this.arriveTo(new RoomPosition(24,24,roomName),24,shard)
+                    }
+                }
             }
+            
         }
     }
 
