@@ -292,6 +292,7 @@ export default class RoomMissonPublish extends Room {
             },
             maxTime:3,
         }
+        
         thisTask.reserve = true
         if (sType == 'double')
         {
@@ -324,6 +325,7 @@ export default class RoomMissonPublish extends Room {
             },
             reserve:true
         }
+        if (!interval || interval < 100) return null
         if (cType == 'dismantle')
         {
             thisTask.CreepBind = {'double-dismantle':{num:CreepNum,bind:[],interval:interval},'double-heal':{num:CreepNum,bind:[],interval:interval}}
@@ -333,7 +335,7 @@ export default class RoomMissonPublish extends Room {
         }
         else
         {
-            thisTask.CreepBind = {'double-attack':{num:CreepNum,bind:[]},'double-heal':{num:CreepNum,bind:[]}}
+            thisTask.CreepBind = {'double-attack':{num:CreepNum,bind:[],interval:interval},'double-heal':{num:CreepNum,bind:[],interval:interval}}
             var labData = this.Bind_Lab(['XUH2O','XZHO2','XGHO2','XLHO2','XKHO2'])
             if (labData === null) return null
             thisTask.LabBind = labData
