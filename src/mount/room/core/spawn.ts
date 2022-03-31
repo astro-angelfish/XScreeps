@@ -128,17 +128,12 @@ export default class RoomCoreSpawnExtension extends Room {
             let adaption = false
             if (this.memory.SpawnConfig[roleName] && this.memory.SpawnConfig[roleName].adaption && allEnergy < CalculateEnergy(body))
             {
-                if (global.CreepNumData[this.name][roleName] <= 0)
+                if (!global.CreepNumData[this.name][roleName])
                 {
                     adaption_body(body,allEnergy)
                     adaption = true
                 }
-                else if (this.controller.level < 4 && roleName == 'harvest' && global.CreepNumData[this.name]['carry'] <= 0)
-                {
-                    /* 特殊情况，防止卡死 */
-                    adaption_body(body,allEnergy)
-                    adaption = true
-                }
+                
             }
             // 名称整理
             let mark = RoleData[roleName].mark?RoleData[roleName].mark:"#"
