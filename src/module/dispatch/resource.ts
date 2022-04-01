@@ -252,27 +252,15 @@ export function ResourceLimitUpdate(thisRoom:Room):void{
 
 }
 
-/* 判断是否能调度 + 其他房间是否有足够资源调度 可能比较消耗cpu */
-export function canDispatch(thisRoom:Room,resource_:ResourceConstant,num:number,disNum:number = 1):boolean{
+/* --------------隔离区---------------- */
 
-    if (DispatchNum(thisRoom.name) >= disNum) return false // 资源调度数量过多则不执行资源调度
-    if (checkDispatch(thisRoom.name,resource_)) return false  // 已经存在调用信息的情况
-    if (checkSend(thisRoom.name,resource_)) return false  // 已经存在其它房间的传送信息的情况
-    // 再判断其他房间是否有足够资源调度
-    for (var i in Memory.RoomControlData)
-    {
-        if (Game.rooms[i] && Game.rooms[i].controller && Game.rooms[i].controller.my)
-        {
-            let storage_ = global.Stru[i]['storage'] as StructureStorage
-            if (!storage_) continue
-            let limit = global.ResourceLimit[i][resource_]?global.ResourceLimit[i][resource_]:0
-            if (storage_.store.getUsedCapacity(resource_) - limit > 0) return true
-        }
-    }
-    return false
-}
-
-/* 判断是否能调度 */
+/**
+ * 判断某种类型化合物是否还需要调度
+ * 1. 如果有mtype，即有该资源的资源购买任务的，则不再需要进行调度
+ * 2. 如果有关该房间的资源调度信息过多，则不再需要进行调度
+ * 3. 如果已经存在该资源的调度信息了，则不再需要进行调度
+ * 4. 如果已经发现传往该房间的资源传送任务了，则不再需要进行调度
+*/
 export function identifyDispatch(thisRoom:Room,resource_:ResourceConstant,num:number,disNum:number = 1,mtype?:'deal'|'order'):boolean{
         // 先判断是否已经存在该房间的调度了
         if (mtype)
@@ -285,4 +273,27 @@ export function identifyDispatch(thisRoom:Room,resource_:ResourceConstant,num:nu
         if (checkDispatch(thisRoom.name,resource_)) return false  // 已经存在调用信息的情况
         if (checkSend(thisRoom.name,resource_)) return false  // 已经存在其它房间的传送信息的情况
         return true
+}
+
+/**
+ * 判断某种类型的函数是否可以调度
+ * 1. 如果发现有房间有指定数量的某类型资源，则返回 can 代表可调度
+ * 2. 如果没有发现其他房间有送往该房间资源的任务，则返回 running 代表已经有了调度任务了
+ * 3. 如果没有发现调度大厅存在该类型的调度任务，则返回 running 代表已经有了调度任务了
+ * 4. 以上情况都不符合，返回 no 代表不可调度
+*/
+export function ResourceCanDispatch(thisRoom:Room,resource_:ResourceConstant,num:number):"running"|"no"|"can"{
+    if (!checkDispatch(thisRoom.name,resource_)) return "running"// 没有调度信息
+    if (!checkSend(thisRoom.name,resource_)) return "running" // 没有传送信息
+    for (let i in Memory.RoomControlData)
+    {
+        if (Game.rooms[i] && Game.rooms[i].controller && Game.rooms[i].controller.my)
+        {
+            let storage_ = global.Stru[i]['storage'] as StructureStorage
+            if (!storage_) continue
+            let limit = global.ResourceLimit[i][resource_]?global.ResourceLimit[i][resource_]:0
+            if (storage_.store.getUsedCapacity(resource_) - limit > num) return "can"
+        }
+    }
+    return "no"    // 代表房间内没有可调度的资源
 }

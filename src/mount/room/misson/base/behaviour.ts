@@ -1,3 +1,4 @@
+import { ResourceCanDispatch } from "@/module/dispatch/resource"
 import { checkBuy, checkDispatch, checkSend, DispatchNum, resourceMap } from "@/module/fun/funtion"
 import { Colorful, isInArray } from "@/utils"
 
@@ -96,7 +97,7 @@ export default class RoomMissonBehaviourExtension extends Room {
         if (!this.memory.StructureIdData.labInspect || Object.keys(this.memory.StructureIdData.labInspect).length < 3) return
         let storage_ = global.Stru[this.name]['storage'] as StructureStorage
         let terminal_ = global.Stru[this.name]['terminal'] as StructureTerminal
-        if (misson.Data.num <= 0 || !storage_ || !terminal_)
+        if (misson.Data.num <= -50 || !storage_ || !terminal_)  // -50 为误差允许值
         {
             this.DeleteMission(misson.id)
             return
@@ -156,7 +157,7 @@ export default class RoomMissonBehaviourExtension extends Room {
             {
                 if (checkDispatch(this.name,resource_)) continue  // 已经存在调用信息的情况
                 if (checkSend(this.name,resource_)) continue  // 已经存在其它房间的传送信息的情况
-                console.log(Colorful(`[资源调度] 房间${this.name}没有足够的资源[${resource_}],将执行资源调度!`,'yellow'))
+                console.log(Colorful(`[资源调度]<lab com> 房间${this.name}没有足够的资源[${resource_}],将执行资源调度!`,'yellow'))
                 let dispatchTask:RDData = {
                     sourceRoom:this.name,
                     rType:resource_,
@@ -174,7 +175,7 @@ export default class RoomMissonBehaviourExtension extends Room {
             {
                 if (checkDispatch(this.name,resource_)) continue  // 已经存在调用信息的情况
                 if (checkSend(this.name,resource_)) continue  // 已经存在其它房间的传送信息的情况
-                console.log(Colorful(`[资源调度] 房间${this.name}没有足够的资源[${resource_}],将执行资源调度!`,'yellow'))
+                console.log(Colorful(`[资源调度]<lab com> 房间${this.name}没有足够的资源[${resource_}],将执行资源调度!`,'yellow'))
                 let dispatchTask:RDData = {
                     sourceRoom:this.name,
                     rType:resource_,
@@ -230,7 +231,7 @@ export default class RoomMissonBehaviourExtension extends Room {
             let dispatchNum = this.memory.ComDispatchData[disType].dispatch_num
             // 不是最终目标资源的情况下
             if (Object.keys(data)[Object.keys(data).length - 1] != disType)
-            if (storeNum < dispatchNum)
+            if (storeNum +50  < dispatchNum)    // +50 是误差容许
             {
                 let diff = dispatchNum - storeNum
                  /* 先判定一下是否已经覆盖，如果已经覆盖就不合成 例如：ZK 和 G的关系，只要G数量满足了就不考虑 */
@@ -243,6 +244,26 @@ export default class RoomMissonBehaviourExtension extends Room {
                             continue LoopA 
                     }
                 }
+                // 先判断能不能调度，如果能调度，就暂时 return
+                let identify = ResourceCanDispatch(this,disType as ResourceConstant,dispatchNum - storeNum)
+                if (identify == 'can')
+                {
+                    console.log(`[dispatch]<lab> 房间${this.name}将进行资源为${i}的资源调度!`)
+                    let dispatchTask:RDData = {
+                        sourceRoom:this.name,
+                        rType:i as ResourceConstant,
+                        num:dispatchNum - storeNum,
+                        delayTick:220,
+                        conditionTick:35,
+                        buy:false,
+                    }
+                    Memory.ResourceDispatchData.push(dispatchTask)
+                }
+                else if (identify == 'running') return
+                // 如果terminal存在该类型资源，就暂时return
+                if (terminal_.store.getUsedCapacity(disType as ResourceConstant) > (this.memory.TerminalData[disType]?this.memory.TerminalData[disType].num:0)) return
+                // 如果存在manage搬运任务 就 return
+                if (this.Check_Carry("manage",terminal_.pos,storage_.pos,disType as ResourceConstant)) return
                 // 下达合成命令
                 var thisTask = this.public_Compound(diff,disType as ResourceConstant,comLabs)
                 if (this.AddMission(thisTask))

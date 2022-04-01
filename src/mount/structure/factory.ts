@@ -1,7 +1,7 @@
 import { checkDispatch, checkSend, DispatchNum } from '@/module/fun/funtion';
 import { createHelp } from '../help/help'
 import { Colorful, isInArray, StatisticalResources } from '@/utils'
-import { canDispatch, identifyDispatch } from '@/module/dispatch/resource';
+import {identifyDispatch, ResourceCanDispatch } from '@/module/dispatch/resource';
 import { identity, object, zip } from 'lodash';
 export class factoryExtension extends StructureFactory {
     public ManageMission(): void {
@@ -71,8 +71,13 @@ export class factoryExtension extends StructureFactory {
                     }
                     else
                     {
-                        if (storage_.store.getUsedCapacity(i as ResourceConstant) < this.room.memory.productData.balanceData[i].num - num)
+                        if (storage_.store.getUsedCapacity(i as ResourceConstant) <= this.room.memory.productData.balanceData[i].num - num)
                         {
+                            if (storage_.store.getUsedCapacity(i as ResourceConstant) <= 0) continue
+                            // 搬运
+                            let thisTask = this.room.Public_Carry({ 'manage': { num: 1, bind: [] } }, 10, this.room.name, storage_.pos.x, storage_.pos.y, this.room.name, this.pos.x, this.pos.y, i as ResourceConstant,storage_.store.getUsedCapacity(i as ResourceConstant))
+                            this.room.AddMission(thisTask)
+                            continue
                         }
                         else
                         {
@@ -81,7 +86,6 @@ export class factoryExtension extends StructureFactory {
                             this.room.AddMission(thisTask)
                             continue
                         }
-                        if (!storage_.store[i]) continue
                     }
                 }
             }
@@ -135,28 +139,30 @@ export class factoryExtension extends StructureFactory {
                     if (COMMODITIES[disCom].level >= 4)
                     {
                         // 如果仓库内的底物少于规定量
-                        if (numList[i] < COMMODITIES[disCom].components[i])
+                        if (numList[i] < COMMODITIES[disCom].components[i] * 5)
                         {
                             // 判断一下能否调度 不能调度直接跳转到baseList相关合成判断
-                            if (canDispatch(this.room,i as ResourceConstant,COMMODITIES[disCom].components[i],1))
+                            let identify = ResourceCanDispatch(this.room,i as ResourceConstant,COMMODITIES[disCom].components[i] * 5)
+                            if (identify == "can")
                             {
-                                console.log(`[dispatch] 房间${this.room.name}将进行资源为${i}的资源调度!`)
+                                console.log(`[dispatch]<factory> 房间${this.room.name}将进行资源为${i}的资源调度!`)
                                 let dispatchTask:RDData = {
                                     sourceRoom:this.room.name,
                                     rType:i as ResourceConstant,
-                                    num:COMMODITIES[disCom].components[i],
+                                    num:COMMODITIES[disCom].components[i] * 5,
                                     delayTick:200,
                                     conditionTick:35,
                                     buy:false,
-                                    mtype:'deal'
                                 }
                                 Memory.ResourceDispatchData.push(dispatchTask)
                             }
+                            else if (identify == 'running') return
                             else break LoopA
                         }
                         else
                         {
                             // 转为流水线生产模式
+                            console.log(`[factory] 房间${this.room.name}转入flow生产模式,目标商品为${disCom}`)
                             this.room.memory.productData.state = 'flow'
                             this.room.memory.productData.producing = {com:disCom}
                             return
@@ -164,21 +170,23 @@ export class factoryExtension extends StructureFactory {
                     }
                     else
                     {
-                        if (numList[i] < COMMODITIES[disCom].components[i] * 4)
+                        if (numList[i] < COMMODITIES[disCom].components[i] * 10)
                         {
-                            if (canDispatch(this.room,i as ResourceConstant,COMMODITIES[disCom].components[i] * 4,1))
+                            let identify = ResourceCanDispatch(this.room,i as ResourceConstant,COMMODITIES[disCom].components[i] * 10)
+                            if (identify == "can")
                             {
+                                console.log(`[dispatch]<factory> 房间${this.room.name}将进行资源为${i}的资源调度!`)
                                 let dispatchTask:RDData = {
                                     sourceRoom:this.room.name,
                                     rType:i as ResourceConstant,
-                                    num:COMMODITIES[disCom].components[i] * 4,
+                                    num:COMMODITIES[disCom].components[i] * 10,
                                     delayTick:200,
                                     conditionTick:35,
                                     buy:false,
-                                    mtype:'deal'
                                 }
                                 Memory.ResourceDispatchData.push(dispatchTask)
                             }
+                            else if (identify == 'running') return
                             else break LoopA
                         }
                         else
@@ -270,13 +278,35 @@ export class factoryExtension extends StructureFactory {
                 }
                 else
                 {
-                    // console.log(COMMODITIES[disCom].components[i] * 10)
+                    // 其他资源的话，看看能不能调度
                     this.room.memory.productData.balanceData[i] = {num:COMMODITIES[disCom].components[i] * 10,fill:true}
                     if (this.room.RoleMissionNum('manage','物流运输') <= 0)
-                    if (this.store.getUsedCapacity(i as ResourceConstant) + storage_.store.getUsedCapacity(i as ResourceConstant) < COMMODITIES[disCom].components[i].num)
+                    if (this.store.getUsedCapacity(i as ResourceConstant) + storage_.store.getUsedCapacity(i as ResourceConstant) < COMMODITIES[disCom].components[i])
                     {
-                        this.room.memory.productData.state = 'sleep'
-                        return
+                        let a = Game.cpu.getUsed()
+                        let identify = ResourceCanDispatch(this.room,i as ResourceConstant,COMMODITIES[disCom].components[i] * 100)
+                        if (identify == 'can')
+                        {
+                            console.log(`[dispatch]<factory> 房间${this.room.name}将进行资源为${i}的资源调度!`)
+                            let dispatchTask:RDData = {
+                                sourceRoom:this.room.name,
+                                rType:i as ResourceConstant,
+                                num:COMMODITIES[disCom].components[i] * 100,
+                                delayTick:200,
+                                conditionTick:35,
+                                buy:false,
+                            }
+                            Memory.ResourceDispatchData.push(dispatchTask)
+                        }
+                        else if (identify == 'running') break
+                        else
+                        {
+                            console.log(`资源${i}调度不到资源`)
+                            this.room.memory.productData.state = 'sleep'
+                            return
+                        }
+                        let b = Game.cpu.getUsed()
+                        if (this.owner.username == 'ExtraDim') console.log(b-a)
                     }
                 }
             }
