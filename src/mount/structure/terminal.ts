@@ -138,7 +138,7 @@ export default class terminalExtension extends StructureTerminal {
         if (storage_.store.getFreeCapacity() < 50000)
         {
             /* 如果仓库饱和(小于200k空间)，而且仓库能量超过400K,就卖能量 */
-            if (storage_.store.getFreeCapacity() < 200000 && storage_.store.getUsedCapacity('energy') > 350000)
+            if (storage_.store.getUsedCapacity('energy') > 350000)
             {
                 if (!this.room.memory.market) this.room.memory.market = {}
                 if (!this.room.memory.market['deal']) this.room.memory.market['deal'] = []
@@ -180,9 +180,9 @@ export default class terminalExtension extends StructureTerminal {
                     }
                     if (this.cooldown) continue LoopA   // 冷却模式下进行不了其他deal了
                     let a = 100,b=50000;
-                    COMMODITIES[i.rType] && COMMODITIES[i.rType].level?a=0:a
+                    (COMMODITIES[i.rType] && COMMODITIES[i.rType].level)?a=0:a
                     let price = 0.05
-                    if (COMMODITIES[i.rType]) price = 10000
+                    if (COMMODITIES[i.rType] && COMMODITIES[i.rType].level) price = 10000
                     if (i.price) price = i.price
                     var orders = Game.market.getAllOrders(order => order.resourceType == i.rType &&
                         price <= order.price && order.type == ORDER_BUY && order.amount > a && order.amount <= b)
