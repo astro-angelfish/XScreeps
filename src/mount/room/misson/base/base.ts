@@ -379,7 +379,7 @@ export default class RoomMissonFrameExtension extends Room {
                 {
                     let memData = {}
                     if (RoleData[role].mem) memData = RoleData[role].mem
-                    /* 间隔型 未测试 */
+                    /* 间隔型 */
                     if (misson.CreepBind[role].interval)
                     {
                         if (misson.CreepBind[role].num <= 0) continue
@@ -397,6 +397,10 @@ export default class RoomMissonFrameExtension extends Room {
                             }
                             if (n > 10) continue
                             memData["taskRB"] = misson.id
+                            if (misson.CreepBind[role].MSB)
+                            {
+                                memData["msb"] = true
+                            }
                             for (let i=0;i<misson.CreepBind[role].num;i++)
                             {
                                 this.SingleSpawn(role,RoleData[role].level?RoleData[role].level:10,memData)
@@ -414,6 +418,11 @@ export default class RoomMissonFrameExtension extends Room {
                         let relateCreeps = _.filter(Game.creeps,(creep) => creep.memory.belong == this.name && creep.memory.role == role && (!creep.memory.MissionData || !creep.memory.MissionData.id)).length
                         if (relateSpawnList+relateCreeps < spawnNum)
                         {
+                            if (misson.CreepBind[role].MSB)
+                            {
+                                memData["msb"] = true
+                                memData["taskRB"] = misson.id
+                            }
                             this.SingleSpawn(role,RoleData[role].level?RoleData[role].level:10,memData)
                         }
                     }

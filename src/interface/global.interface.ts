@@ -19,6 +19,12 @@ declare module NodeJS {
         intervalData:{[roomName:string]:{[creepRole:string]:number}}
         ResourceLimit:resourceLimitData
         warData:any
+        MSB:MissonSpecialBody   // 任务特殊体型
+        /* 脚本运行总cpu */
+        UsedCpu?:number
+        /* 100Tick内的平均CPU */
+        CpuData?:number[]
+        AveCpu?:number
     }
 }
 
@@ -51,4 +57,9 @@ interface ARH{
 
 interface StructureData{
     [strutype:string]:Structure[]
+}
+
+/* 任务爬虫特殊体型 */
+interface MissonSpecialBody{
+    [missionID:string]:{[role:string]:BodyPartConstant[]}
 }

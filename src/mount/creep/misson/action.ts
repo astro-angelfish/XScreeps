@@ -351,65 +351,6 @@ export default class CreepMissonActionExtension extends Creep {
         }
     }
 
-    public handle_dismantle():void{
-        let missionData = this.memory.MissionData
-        let id = missionData.id
-        let mission = missionData.Data
-        if (mission.boost)
-        {
-            /* boost检查 暂缺 */
-            if (!this.BoostCheck(['move','worl'])) return
-        }
-        if (this.room.name != mission.disRoom || mission.shard != Game.shard.name){this.goTo(new RoomPosition(25,25,mission.disRoom),20);return}
-        /* dismantle_0 */
-        let disFlag = this.pos.findClosestByPath(FIND_FLAGS,{filter:(flag)=>{
-            return  flag.name.indexOf('dismantle') == 0
-        }})
-        if (!disFlag)
-        {
-            var clostStructure = this.pos.findClosestByRange(FIND_HOSTILE_STRUCTURES,{filter:(struc)=>{
-                return !isInArray([STRUCTURE_CONTROLLER,STRUCTURE_WALL],struc.structureType)
-            }})
-            if (clostStructure)
-            {
-                clostStructure.pos.createFlag(`${generateID()}`,COLOR_WHITE)
-                return
-            }
-            else
-                return
-        }
-        let stru = disFlag.pos.lookFor(LOOK_STRUCTURES)[0]
-        if (stru )
-        {
-            if (this.dismantle(stru) == ERR_NOT_IN_RANGE)
-            {
-                this.goTo(stru.pos,1)
-                return
-            }
-        }
-        else {disFlag.remove()}
-    }
-
-    public handle_control():void{
-        let missionData = this.memory.MissionData
-        let id = missionData.id
-        let data = missionData.Data
-        if (this.room.name != data.disRoom || Game.shard.name != data.shard)
-        {
-            this.arriveTo(new RoomPosition(24,24,data.disRoom),23,data.shard)
-            
-        }
-        else
-        {
-            let control = this.room.controller
-            if (!this.pos.isNearTo(control)) this.goTo(control.pos,1)
-            else
-            {
-                if (control.owner)this.attackController(control)
-                else this.reserveController(control)
-            }
-        }
-    }
     // 急速冲级
     public handle_quickRush():void{
         let missionData = this.memory.MissionData

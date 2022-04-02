@@ -413,9 +413,9 @@ export default {
         switch(roomName:string):string{
             var myRoom = Game.rooms[roomName]
             if (!myRoom) return `[power] 未找到房间${roomName},请确认房间!`
-            if (!myRoom.memory.switch.StopPower) myRoom.memory.switch.StopPower = true
-            else myRoom.memory.switch.StopPower = false
-            return `[power] 房间${roomName}的power升级已经设置为${myRoom.memory.switch.StopPower}`
+            if (!myRoom.memory.switch.StartPower) myRoom.memory.switch.StartPower = true
+            else myRoom.memory.switch.StartPower = false
+            return `[power] 房间${roomName}的power升级已经设置为${myRoom.memory.switch.StartPower}`
         },
         // 节省能量和Power的模式
         save(roomName:string):string{

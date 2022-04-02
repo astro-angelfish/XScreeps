@@ -83,8 +83,8 @@ interface MissionModel{
 
 /* 任务角色绑定数据 */
 interface BindData{
-    [role:string]:{num:number,bind:string[],interval?:number}
-}
+    [role:string]:{num:number,bind:string[],interval?:number,MSB?:boolean}
+}   // MSB指的是任务用特殊体型 为true则代表需要特殊体型
 
 /* 任务实验室绑定数据  任务对象里的 */ 
 interface MissonLabBind{

@@ -168,11 +168,11 @@ export default class RoomMissonPublish extends Room {
             thisTask.Data.boost = true
             thisTask.LabBind = this.Bind_Lab(['XZHO2','XZH2O'])
         }
-        thisTask.CreepBind = {'dismantle':{num:0,interval:interval?interval:1200,bind:[]}}
+        thisTask.CreepBind = {'dismantle':{num:0,interval:interval?interval:1200,bind:[],MSB:(boost?true:false)}}
         return thisTask
     }
 
-    public Public_aio(disRoom:string,disShard:shardName,num:number,interval:number,boost:boolean){
+    public Public_aio(disRoom:string,disShard:shardName,num:number,interval:number,boost:boolean,bodylevel?: "T0" | "T1" | "T2"){
         var thisTask:MissionModel = {
             name:'攻防一体',
             range:'Creep',
@@ -183,14 +183,16 @@ export default class RoomMissonPublish extends Room {
                 num:num,
                 shard:disShard,
             },
+            maxTime:5
         }
         if (boost)
         {
             thisTask.Data.boost = true
             thisTask.LabBind = this.Bind_Lab(['XZHO2','XGHO2','XLHO2','XKHO2'])
+            if (bodylevel) thisTask.Data.bodylevel = bodylevel  // 一体机体型
         }
         else thisTask.Data.boost = false
-        thisTask.CreepBind = {'aio':{num:0,interval:interval,bind:[]}}
+        thisTask.CreepBind = {'aio':{num:0,interval:interval,bind:[],MSB:(boost?true:false)}}
         thisTask.reserve = true
         return thisTask
     }

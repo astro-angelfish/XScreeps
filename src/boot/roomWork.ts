@@ -1,4 +1,5 @@
 import { ResourceDispatch } from "@/module/dispatch/resource"
+import { RoomDataVisual } from "@/module/visual/visual"
 
 /* [通用]房间运行主程序 */
 export default ()=>{
@@ -23,6 +24,8 @@ export default ()=>{
         thisRoom.StructureMission() // terminal link factory 工作
         
         ResourceDispatch(thisRoom)      // 资源调度
+
+        RoomDataVisual(thisRoom)        // 房间可视化
 
         thisRoom.LevelMessageUpdate()        // 房间等级Memory信息更新
 

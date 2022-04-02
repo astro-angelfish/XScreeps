@@ -8,7 +8,7 @@ export default class NormalWarExtension extends Room {
         if (mission.Data.boost)
         {
             // 体型
-            global.SpecialBodyData[this.name]['dismantle'] = GenerateAbility(40,0,10,0,0,0,0,0)
+            global.MSB[mission.id] ={'dismantle':GenerateAbility(40,0,10,0,0,0,0,0)}
             // boost lab填充检查
             if(!this.Check_Lab(mission,'transport','complex')) return
         }
@@ -22,7 +22,19 @@ export default class NormalWarExtension extends Room {
         if (mission.Data.boost)
         {
             // 体型
-            global.SpecialBodyData[this.name]['aio'] = GenerateAbility(0,0,10,0,6,23,0,11)
+            let bodylevel = mission.Data.bodylevel
+            if (bodylevel == 'T2')      // 不可以防御6塔的体型，适合清理七级以内新手房
+            {
+                global.MSB[mission.id] ={'aio':GenerateAbility(0,0,10,0,15,20,0,5)}
+            }
+            else if (bodylevel == 'T1') // 可以防御距离适中的六塔，适合骑墙
+            {
+                global.MSB[mission.id] ={'aio':GenerateAbility(0,0,10,0,11,20,0,9)}
+            }
+            else          // 最高防御单位
+            {
+                global.MSB[mission.id] ={'aio':GenerateAbility(0,0,10,0,6,23,0,11)}
+            }
             if ((Game.time - global.Gtime[this.name]) % 10) return
             // boost lab填充检查
             if(!this.Check_Lab(mission,'transport','complex')) return

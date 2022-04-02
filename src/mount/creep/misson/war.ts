@@ -1,8 +1,71 @@
 import { findFollowData, findNextData, identifyGarrison, identifyNext, parts, RoomInRange } from "@/module/fun/funtion"
-import { canSustain, PathClosestCreep, pathClosestFlag, pathClosestStructure, RangeClosestCreep, RangeCreep, warDataInit } from "@/module/war/war"
+import { canSustain, pathClosestFlag, pathClosestStructure, RangeClosestCreep, RangeCreep, warDataInit } from "@/module/war/war"
 import { generateID, getDistance, isInArray } from "@/utils"
 
 export default class CreepMissonWarExtension extends Creep {
+
+    // 黄球拆迁
+    public handle_dismantle():void{
+        let missionData = this.memory.MissionData
+        let id = missionData.id
+        let mission = missionData.Data
+        if (mission.boost)
+        {
+            /* boost检查 暂缺 */
+            if (!this.BoostCheck(['move','worl'])) return
+        }
+        if (this.room.name != mission.disRoom || mission.shard != Game.shard.name){this.goTo(new RoomPosition(25,25,mission.disRoom),20);return}
+        /* dismantle_0 */
+        let disFlag = this.pos.findClosestByPath(FIND_FLAGS,{filter:(flag)=>{
+            return  flag.name.indexOf('dismantle') == 0
+        }})
+        if (!disFlag)
+        {
+            var clostStructure = this.pos.findClosestByRange(FIND_HOSTILE_STRUCTURES,{filter:(struc)=>{
+                return !isInArray([STRUCTURE_CONTROLLER,STRUCTURE_WALL],struc.structureType)
+            }})
+            if (clostStructure)
+            {
+                clostStructure.pos.createFlag(`${generateID()}`,COLOR_WHITE)
+                return
+            }
+            else
+                return
+        }
+        let stru = disFlag.pos.lookFor(LOOK_STRUCTURES)[0]
+        if (stru )
+        {
+            if (this.dismantle(stru) == ERR_NOT_IN_RANGE)
+            {
+                this.goTo(stru.pos,1)
+                return
+            }
+        }
+        else {disFlag.remove()}
+    }
+
+    // 控制攻击
+    public handle_control():void{
+        let missionData = this.memory.MissionData
+        let id = missionData.id
+        let data = missionData.Data
+        if (this.room.name != data.disRoom || Game.shard.name != data.shard)
+        {
+            this.arriveTo(new RoomPosition(24,24,data.disRoom),23,data.shard)
+            
+        }
+        else
+        {
+            let control = this.room.controller
+            if (!this.pos.isNearTo(control)) this.goTo(control.pos,1)
+            else
+            {
+                if (control.owner)this.attackController(control)
+                else this.reserveController(control)
+            }
+        }
+    }
+
     // 红球防御
     public handle_defend_attack():void{
         if (!this.BoostCheck(['move','attack'])) return
@@ -480,6 +543,7 @@ export default class CreepMissonWarExtension extends Creep {
                         let ranged3Attack = RangeCreep(this.pos,creeps,3,true)  // 三格内的攻击性爬虫
                         if (ranged3Attack.length > 0)
                         {
+                            this.say("no")
                             // 防御塔伤害数据
                             let towerData = global.warData.tower[this.room.name].data
                             let posStr = `${this.pos.x}/${this.pos.y}`
@@ -565,7 +629,7 @@ export default class CreepMissonWarExtension extends Creep {
         }
     }
 
-    // 四人小队
+    // 四人小队 已经修改进入目标房前的集结动作s
     public handle_task_squard():void{
         var data = this.memory.MissionData.Data
         var shard = data.shard          // 目标shard

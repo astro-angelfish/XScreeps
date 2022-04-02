@@ -56,7 +56,7 @@ export default class RoomCoreSpawnExtension extends Room {
         }
     }
 
-    /* 爬虫孵化管理器 */
+    /* 常驻爬虫孵化管理器 (任务爬虫是另外一个孵化函数) */
     public SpawnManager():void{
         LoopA:
         for (let role in this.memory.SpawnConfig)
@@ -115,10 +115,15 @@ export default class RoomCoreSpawnExtension extends Room {
             let mem = spawnlist[0].memory
             let bd = spawnlist[0].body
             let body = GenerateAbility(bd[0],bd[1],bd[2],bd[3],bd[4],bd[5],bd[6],bd[7])
-            // 如果global有该爬虫的部件信息，优先用global的数据
+            // 如果global有该爬虫的部件信息，优先用global的数据 global.SpecialBodyData  次优先级
             if (global.SpecialBodyData[this.name][roleName])
             {
                 body = global.SpecialBodyData[this.name][roleName]
+            }
+            if (mem && mem.msb && mem.taskRB)       // 任务爬虫特殊体型处于最高优先级
+            {
+                if (global.MSB[mem.taskRB] && global.MSB[mem.taskRB][roleName])
+                body = global.MSB[mem.taskRB][roleName]
             }
             /* 对爬虫数据进行自适应 */
             let allEnergyCapacity = this.energyCapacityAvailable

@@ -145,7 +145,9 @@ export function warDataInit(room:Room):void{
 export function PathClosestCreep(pos:RoomPosition,creeps:Creep[],attack?:boolean,ram?:boolean):Creep | null{
     if (!pos) return null
     return pos.findClosestByPath(creeps,{filter:(creep)=>{
-        return (attack?(creep.getActiveBodyparts('attack') || creep.getActiveBodyparts('ranged_attack')):1) &&  (ram?!creep.pos.GetStructure('rampart'):1)
+        return (attack?(creep.getActiveBodyparts('attack') || creep.getActiveBodyparts('ranged_attack')):true) &&
+        (ram?!creep.pos.GetStructure('rampart'):true) &&
+        creep.pos != pos
     }})
 }
 
@@ -153,7 +155,9 @@ export function PathClosestCreep(pos:RoomPosition,creeps:Creep[],attack?:boolean
 export function RangeClosestCreep(pos:RoomPosition,creeps:Creep[],attack?:boolean,ram?:boolean):Creep | null{
     if (!pos) return null
     return pos.findClosestByRange(creeps,{filter:(creep)=>{
-        return (attack?(creep.getActiveBodyparts('attack') || creep.getActiveBodyparts('ranged_attack')):1 )&&  (ram?!creep.pos.GetStructure('rampart'):1)
+        return (attack?(creep.getActiveBodyparts('attack') || creep.getActiveBodyparts('ranged_attack')):1 )&& 
+        (ram?!creep.pos.GetStructure('rampart'):1) &&
+        creep.pos != pos
     }})
 }
 
@@ -161,7 +165,8 @@ export function RangeClosestCreep(pos:RoomPosition,creeps:Creep[],attack?:boolea
 export function RangeCreep(pos:RoomPosition,creeps:Creep[],range:number,attack?:boolean,ram?:boolean):Creep[]{
     if (!pos) return []
     return pos.findInRange(creeps,range,{filter:(creep)=>{
-        return (attack?(creep.getActiveBodyparts('attack') || creep.getActiveBodyparts('ranged_attack')):1 )&&  (ram?!creep.pos.GetStructure('rampart'):1)
+        return (attack?(creep.getActiveBodyparts('attack') > 0 || creep.getActiveBodyparts('ranged_attack') > 0):true )&& 
+        (ram?!creep.pos.GetStructure('rampart'):true) && creep.pos != pos
     }})
 }
 
@@ -200,10 +205,12 @@ export function pathClosestStructure(pos:RoomPosition,wall?:boolean,ram?:boolean
         if(global.warData.enemy[pos.roomName].time != Game.time) return null
         let creeps = global.warData.enemy[pos.roomName].data
         let structures = Game.rooms[pos.roomName].find(FIND_STRUCTURES,{filter:(stru)=>{
-            return !isInArray(["road","container"],stru.structureType) && (!wall?stru.structureType != "constructedWall":true) && (!ram?(stru.structureType != "rampart" || !stru.pos.GetStructure('rampart')):true)
+            return !isInArray(["road","container"],stru.structureType) && 
+            (!wall?stru.structureType != "constructedWall":true) && 
+            (!ram?(stru.structureType != "rampart" || !stru.pos.GetStructure('rampart')):true)
         }})
         let result =  pos.findClosestByPath(structures,{filter:(stru)=>{
-            return RangeCreep(stru.pos,creeps,range?range:5,true).length <= 0
+            return RangeCreep(stru.pos,creeps,range?range:5,false).length <= 0
         }})
         return result
     }

@@ -290,6 +290,7 @@ export function ResourceCanDispatch(thisRoom:Room,resource_:ResourceConstant,num
         if (i == thisRoom.name) continue
         if (Game.rooms[i] && Game.rooms[i].controller && Game.rooms[i].controller.my)
         {
+            if (!global.Stru[i]) continue
             let storage_ = global.Stru[i]['storage'] as StructureStorage
             if (!storage_) continue
             let limit = global.ResourceLimit[i][resource_]?global.ResourceLimit[i][resource_]:0

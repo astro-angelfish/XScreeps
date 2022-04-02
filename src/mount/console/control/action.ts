@@ -190,7 +190,7 @@ export default {
             }
             return Colorful(`[war] 房间${roomName}控制攻击任务失败`,'red')
         },
-        aio(roomName:string,disRoom:string,shard:shardName,CreepNum:number,time:number = 1000,boost:boolean = true):string{
+        aio(roomName:string,disRoom:string,shard:shardName,CreepNum:number,time:number = 1000,boost:boolean = true,bodylevel:"T0" | "T0" | "T2" = "T0"):string{
             var myRoom = Game.rooms[roomName]
             if (!myRoom) return `[war] 未找到房间${roomName},请确认房间!`
             for (var oi of myRoom.memory.Misson['Creep'])
@@ -198,9 +198,9 @@ export default {
             {
                 return `[war] 房间${roomName}已经存在去往${disRoom}(${shard})的该类型任务了!`
             }
-            var thisTask = myRoom.Public_aio(disRoom,shard,CreepNum,time,boost)
+            var thisTask = myRoom.Public_aio(disRoom,shard,CreepNum,time,boost,bodylevel)
             if (myRoom.AddMission(thisTask))
-            return `[war] 攻防一体任务挂载成功! ${Game.shard.name}/${roomName} -> ${shard}/${disRoom}`
+            return `[war] 攻防一体任务挂载成功! ${Game.shard.name}/${roomName} -> ${shard}/${disRoom} 体型等级:${bodylevel}`
             return `[war] 攻防一体挂载失败!`
         },
         Caio(roomName:string,disRoom:string,shard:shardName):string{
@@ -295,7 +295,6 @@ export default {
             }
             return `[war] 双人小队 ${roomName} -(${shard})-> ${disRoom} 的 ${mType}任务删除失败！`
         },
-
     },
     /* 升级 */
     upgrade:{

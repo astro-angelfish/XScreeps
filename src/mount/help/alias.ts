@@ -806,14 +806,15 @@ export default [
                         api: [
                             {
                                 title: '一体机:',
-                                describe: '例: war.aio("W1N1","W1N12","shard3",1,1000,true)',
+                                describe: '例: war.aio("W1N1","W1N12","shard3",1,1000,true,"T1")',
                                 params: [
-                                    { name: 'roomName', desc: '目标房间' },
+                                    { name: 'roomName', desc: '所在房间' },
                                     { name: 'disRoom', desc: '目标房间' },
                                     { name: 'shard', desc: '目标房间所在shard' },
                                     { name: 'num', desc: '爬虫数量' },
                                     { name: 'interval', desc: '出爬时间间隔' },
                                     { name: 'boost', desc: '是否boost' },
+                                    { name: 'bodyLevel', desc: 'T0 | T1 | T2 越高防御力越弱,攻击力越强' },
                                 ],
                                 functionName: 'war.aio'
                             },

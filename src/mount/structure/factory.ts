@@ -303,10 +303,10 @@ export class factoryExtension extends StructureFactory {
                         {
                             console.log(`资源${i}调度不到资源`)
                             this.room.memory.productData.state = 'sleep'
+                            let b = Game.cpu.getUsed()
+                            if (this.owner.username == 'ExtraDim') console.log(b-a)
                             return
                         }
-                        let b = Game.cpu.getUsed()
-                        if (this.owner.username == 'ExtraDim') console.log(b-a)
                     }
                 }
             }

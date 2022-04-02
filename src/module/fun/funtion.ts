@@ -461,3 +461,34 @@ export function findFollowData(creep:Creep):string {
     }
     return null
 }
+
+/* 没有房间名的字符串解压 例如 14/23 */
+export function unzipXandY(str:string):number[] | undefined{
+    var info = str.split('/')
+    return info.length == 2? [Number(info[0]),Number(info[1])]:undefined
+}
+
+/* 平均cpu统计相关 */
+export function statCPU():void{
+    var mainEndCpu = Game.cpu.getUsed()
+    if (!global.CpuData) global.CpuData = []
+    global.UsedCpu = mainEndCpu
+    if (global.CpuData.length < 100) global.CpuData.push(global.UsedCpu)    // 小于一百就直接push
+    else
+    {
+        /* 计算平均值 */
+        let AllCpu = 0
+        for (var cData of global.CpuData)
+        {
+            AllCpu += cData
+        }
+        global.CpuData = [AllCpu/100]
+    }
+    /* 计算平均cpu */
+    var AllCpu = 0
+    for (var cData of global.CpuData)
+    {
+        AllCpu += cData
+    }
+    global.AveCpu = AllCpu/global.CpuData.length
+}

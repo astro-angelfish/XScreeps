@@ -193,7 +193,7 @@ export default class RoomMissonBehaviourExtension extends Room {
 
     // 合成规划     (中层)    目标化合物 --> 安排一系列合成
     public Task_CompoundDispatch():void{
-        if ((Game.time - global.Gtime[this.name]) % 5) return
+        if ((Game.time - global.Gtime[this.name]) % 50) return
         if (this.memory.switch.AutoDefend) return
         if (this.RoleMissionNum('transport','物流运输') > 0) return
         if (Object.keys(this.memory.ComDispatchData).length <=0) return //  没有合成规划情况
@@ -288,7 +288,7 @@ export default class RoomMissonBehaviourExtension extends Room {
     public Task_montitorPower():void{
         if (Game.time % 7) return
         if (this.controller.level < 8) return
-        if (!this.memory.switch.StopPower) return
+        if (!this.memory.switch.StartPower) return
         // 有任务了就不发布烧帕瓦的任务
         if (this.MissionNum('Room','power升级') > 0) return
         let storage_ = global.Stru[this.name]['storage'] as StructureStorage
