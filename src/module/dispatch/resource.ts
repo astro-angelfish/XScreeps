@@ -283,10 +283,11 @@ export function identifyDispatch(thisRoom:Room,resource_:ResourceConstant,num:nu
  * 4. 以上情况都不符合，返回 no 代表不可调度
 */
 export function ResourceCanDispatch(thisRoom:Room,resource_:ResourceConstant,num:number):"running"|"no"|"can"{
-    if (!checkDispatch(thisRoom.name,resource_)) return "running"// 没有调度信息
-    if (!checkSend(thisRoom.name,resource_)) return "running" // 没有传送信息
+    if (checkDispatch(thisRoom.name,resource_)) return "running"// 没有调度信息
+    if (checkSend(thisRoom.name,resource_)) return "running" // 没有传送信息
     for (let i in Memory.RoomControlData)
     {
+        if (i == thisRoom.name) continue
         if (Game.rooms[i] && Game.rooms[i].controller && Game.rooms[i].controller.my)
         {
             let storage_ = global.Stru[i]['storage'] as StructureStorage
