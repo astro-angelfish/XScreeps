@@ -460,9 +460,9 @@ export default class CreepMissonWarExtension extends Creep {
                 }
                 return
             }
-            warDataInit(this.room)
-            let creeps = global.warData.enemy[this.room.name].data
-            let flags = global.warData.flag[this.room.name].data
+            warDataInit(Game.rooms[data.disRoom])
+            let creeps = global.warData.enemy[data.disRoom].data
+            let flags = global.warData.flag[data.disRoom].data
             if (!this.memory.targetFlag)    // 没有目标旗帜Memory的情况下，先查找有没有最近的周围没有攻击爬的旗帜
             {
                 this.heal(this)
@@ -519,8 +519,13 @@ export default class CreepMissonWarExtension extends Creep {
                 else
                 {
                     let pos_ = Game.flags[this.memory.targetFlag].pos
+                    if (pos_.roomName != this.room.name)
+                    {
+                        delete this.memory.targetFlag
+                        return
+                    }
                     let stru = pos_.lookFor(LOOK_STRUCTURES)
-                    if (stru.length <= 0 || (stru[0].structureType == 'road' || stru[0].structureType == 'container')&& stru.length>=2)
+                    if (stru.length <= 0 || (stru[0].structureType == 'road' || stru[0].structureType == 'container')&& stru.length == 1)
                     {
                         this.heal(this)
                         Game.flags[this.memory.targetFlag].remove()
@@ -528,6 +533,7 @@ export default class CreepMissonWarExtension extends Creep {
                         // 尝试看一下有没有建筑 对墙就不做尝试了
                         let safeStructure = pathClosestStructure(this.pos,true,true,true,4)
                         if (safeStructure) {
+                            console.log("11:",safeStructure)
                             let randomStr = Math.random().toString(36).substr(3)
                             if (!Game.flags[`aio_${randomStr}`])
                             {
