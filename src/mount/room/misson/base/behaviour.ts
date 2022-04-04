@@ -104,11 +104,21 @@ export default class RoomMissonBehaviourExtension extends Room {
         }
         let raw1 = Game.getObjectById(this.memory.StructureIdData.labInspect.raw1) as StructureLab
         let raw2 = Game.getObjectById(this.memory.StructureIdData.labInspect.raw2) as StructureLab
+        if (!raw1 || !raw2)
+        {
+            this.DeleteMission(misson.id)
+            return
+        }
         let re = false
         for (let i of misson.Data.comData)
         {
             var thisLab = Game.getObjectById(i) as StructureLab
-            if (!thisLab) continue
+            if (!thisLab) {
+                delete this.memory.RoomLabBind[i]
+                let index = this.memory.StructureIdData.labs.indexOf(i)
+                this.memory.StructureIdData.labs.splice(index,1)
+                continue
+            }
             if (thisLab.cooldown) continue
             let comNum = 5
             if (thisLab.effects && thisLab.effects.length > 0)

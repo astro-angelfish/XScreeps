@@ -1,3 +1,4 @@
+import { CompoundColor } from "@/constant/ResourceConstant"
 import { unzipXandY } from "../fun/funtion"
 
 /* 可视化模块 */
@@ -63,6 +64,22 @@ export function RoomDataVisual(room:Room):void{
         if (Object.keys(room.memory.ComDispatchData).length > 0)
         {
             room.visual.text(`合成规划:${Object.keys(room.memory.ComDispatchData)[Object.keys(room.memory.ComDispatchData).length-1]}`,0,row+=1,{color: 'black' , font:0.7,align:'left'})
+        }
+    }
+    /* lab资源可视化 */
+    if (Object.keys(room.memory.RoomLabBind).length > 0)
+    {
+        for (let i in room.memory.RoomLabBind)
+        {
+            let lab_ = Game.getObjectById(i) as StructureLab
+            if (!lab_)
+            {
+                delete room.memory.RoomLabBind[i]
+                let index = room.memory.StructureIdData.labs.indexOf(i)
+                room.memory.StructureIdData.labs.splice(index,1)
+                continue
+            }
+            room.visual.text(`${room.memory.RoomLabBind[i].rType}`,lab_.pos.x,lab_.pos.y,{color:CompoundColor[room.memory.RoomLabBind[i].rType],font:0.3,align:'center',strokeWidth:0.2})
         }
     }
 }

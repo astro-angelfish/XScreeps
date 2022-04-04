@@ -121,7 +121,7 @@ export class factoryExtension extends StructureFactory {
         if (state == 'sleep')
         {
             this.room.memory.productData.balanceData = {}
-            if ((Game.time - global.Gtime[this.room.name]) % 30) return
+            if ((Game.time - global.Gtime[this.room.name]) % 45) return
             delete this.room.memory.productData.producing
             let disCom = this.room.memory.productData.flowCom
             if (disCom)   // 检测是否可以直接生产商品 是否可以资源调度
@@ -223,10 +223,26 @@ export class factoryExtension extends StructureFactory {
                 }
             }
             // 检测低级商品是否满足
+            LoopJ:
             for (let l of low)
             {
                 if (storage_.store.getUsedCapacity(l) < this.room.memory.productData.baseList[l].num - 300)
                 {
+                    if (this.owner.username == 'ExtraDim')
+                    {
+                        /* 测试用 */
+                        let minList = ['energy','L','O','H','U','K','Z','X','G']
+                        // 判断一下是否有足够子资源
+                        for (var i in COMMODITIES[l].components)
+                        {
+                            if (!isInArray(minList,i) &&
+                            storage_.store.getUsedCapacity(i as ResourceConstant) < COMMODITIES[l].components[i] &&
+                            ResourceCanDispatch(this.room,i as ResourceConstant,COMMODITIES[l].components[i] * 100) == 'no')
+                            {
+                                continue LoopJ
+                            }
+                        }
+                    }
                     console.log(`[factory] 房间${this.room.name}转入base生产模式,目标商品为${l}`)
                     this.room.memory.productData.state = 'base'
                     this.room.memory.productData.producing = {com:l,num:this.room.memory.productData.baseList[l].num}
@@ -283,7 +299,6 @@ export class factoryExtension extends StructureFactory {
                     if (this.room.RoleMissionNum('manage','物流运输') <= 0)
                     if (this.store.getUsedCapacity(i as ResourceConstant) + storage_.store.getUsedCapacity(i as ResourceConstant) < COMMODITIES[disCom].components[i])
                     {
-                        let a = Game.cpu.getUsed()
                         let identify = ResourceCanDispatch(this.room,i as ResourceConstant,COMMODITIES[disCom].components[i] * 100)
                         if (identify == 'can')
                         {
@@ -301,10 +316,8 @@ export class factoryExtension extends StructureFactory {
                         else if (identify == 'running') break
                         else
                         {
-                            console.log(`资源${i}调度不到资源`)
+                            console.log(`[资源调度]<factory> 商品${i}无法调度,工厂状态切换为sleep!`)
                             this.room.memory.productData.state = 'sleep'
-                            let b = Game.cpu.getUsed()
-                            if (this.owner.username == 'ExtraDim') console.log(b-a)
                             return
                         }
                     }

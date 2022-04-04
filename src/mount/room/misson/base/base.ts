@@ -448,13 +448,6 @@ export default class RoomMissonFrameExtension extends Room {
         }
         var tank_ = Game.getObjectById(id) as StructureStorage | StructureTerminal
         if (!tank_ && id) return false
-        // for (var i in misson.LabBind)
-        // {
-        //     if (!this.memory.ResourceLimit[misson.LabBind[i]])
-        //     this.memory.ResourceLimit[misson.LabBind[i]] = 8000
-        //     if (this.memory.ResourceLimit[misson.LabBind[i]] < 8000)
-        //     this.memory.ResourceLimit[misson.LabBind[i]] = 8000
-        // }
         /* 负责lab的填充 */
         for (var i in misson.LabBind)
         {
@@ -498,7 +491,12 @@ export default class RoomMissonFrameExtension extends Room {
                 return
             }
             var disLab = Game.getObjectById(i)  as StructureLab
-            if (!disLab) return false
+            if (!disLab) // 说明找不到lab了
+            {
+                let index = this.memory.StructureIdData.labs.indexOf(i)
+                this.memory.StructureIdData.labs.splice(index,1)
+                return false
+            }
             if (disLab.store.getUsedCapacity(misson.LabBind[i] as ResourceConstant) < 1000 && this.Check_Carry('transport',tank_.pos,disLab.pos,misson.LabBind[i] as ResourceConstant))
             {
                 if (All_i_Num < 1500)

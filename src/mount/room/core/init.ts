@@ -235,6 +235,19 @@ export default class RoomCoreInitExtension extends Room {
                     }
                 }
             }
+            /* 删除无用lab */
+            if (this.memory.StructureIdData.labs)
+            {
+                for (let labID of this.memory.StructureIdData.labs)
+                {
+                    let theLab = Game.getObjectById(labID) as StructureLab
+                    if (!theLab)
+                    {
+                        let index = this.memory.StructureIdData.labs.indexOf(labID)
+                        this.memory.StructureIdData.labs.splice(index,1)
+                    }
+                }
+            }
             /* 实验室合成数据 需要手动挂载，如果没有实验室合成数据，无法执行合成任务 */
             /* 里面包含自动合成相关的原料lab和产出lab数据 */
             if (!this.memory.StructureIdData.labInspect)
