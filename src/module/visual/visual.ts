@@ -1,34 +1,128 @@
 import { CompoundColor } from "@/constant/ResourceConstant"
 import { unzipXandY } from "../fun/funtion"
+import { getTowerData } from "../war/war"
 
 /* 可视化模块 */
 /**
  * 防御塔数据可视化
- * @returns 
+ * TowerVisualAttack 防御塔攻击数据
+ * TowerVisualHeal   防御塔治疗数据
+ * TowerVisualRepair 防御塔维修数据
+ * 较消耗cpu，仅做短暂统计用，请及时截图及销毁旗帜
+ * @returns void
  */
 export function showTowerData():void{
-    if (!Game.flags['TowerVisual']) return
-    let roomName = Game.flags['TowerVisual'].pos.roomName
-    if (!Game.rooms[roomName]) return
-    if (!global.warData || !global.warData.tower || !global.warData.tower[roomName]) return
-    if (!global.warData.tower[roomName].data) return
-    // 展示可视化数据
-    /* 有数据就进行可视化 */
-    LoopV:
-    for (var posData in global.warData.tower[roomName].data)
+    if (Game.flags['TowerVisualAttack'])
     {
-        /* 数据 */
-        let posXY = unzipXandY(posData)
-        let tx = posXY[0]
-        let ty = posXY[1]
-        var Data = global.warData.tower[roomName].data[posData]
-        Game.rooms[roomName].visual.text(`${Data.attack}`,tx,ty,{color: 'red', font:0.4,align:'center'})
+        let roomName = Game.flags['TowerVisualAttack'].pos.roomName
+        if (!global.warData) global.warData = {}
+        if (!global.warData.tower) global.warData.tower = {}
+        if (!global.warData.tower[roomName]) global.warData.tower[roomName] = {count:0}
+        if (global.warData.tower[roomName].data)
+        {
+            for (var posData in global.warData.tower[roomName].data)
+            {
+                /* 数据 */
+                let posXY = unzipXandY(posData)
+                let tx = posXY[0]
+                let ty = posXY[1]
+                var Data = global.warData.tower[roomName].data[posData]
+                new RoomVisual(roomName).text(`${Data.attack}`,tx,ty,{color: 'red', font:0.4,align:'center'})
+            }
+            return
+        }
+        if (!Game.rooms[roomName]) {
+            /* 如果没有房间视野，采用observe观察 */
+            for (let i in Memory.RoomControlData)
+            {
+                if (Game.rooms[i] && Game.rooms[i].controller.level >= 8)
+                {
+                    let observer_ = Game.getObjectById(Game.rooms[i].memory.StructureIdData.ObserverID) as StructureObserver
+                    if (observer_ && observer_.observeRoom(roomName) == OK)
+                    break
+                }
+            }
+            return
+        }
+        if (!global.warData.tower[roomName].data)
+            global.warData.tower[roomName].data = getTowerData(Game.rooms[roomName])
+    }
+    if (Game.flags['TowerVisualHeal'])
+    {
+        let roomName = Game.flags['TowerVisualHeal'].pos.roomName
+        if (!global.warData) global.warData = {}
+        if (!global.warData.tower) global.warData.tower = {}
+        if (!global.warData.tower[roomName]) global.warData.tower[roomName] = {count:0}
+        if (global.warData.tower[roomName].data)
+        {
+            for (var posData in global.warData.tower[roomName].data)
+            {
+                /* 数据 */
+                let posXY = unzipXandY(posData)
+                let tx = posXY[0]
+                let ty = posXY[1]
+                var Data = global.warData.tower[roomName].data[posData]
+                new RoomVisual(roomName).text(`${Data.heal}`,tx,ty,{color: 'green', font:0.4,align:'center'})
+            }
+            return
+        }
+        if (!Game.rooms[roomName]) {
+            /* 如果没有房间视野，采用observe观察 */
+            for (let i in Memory.RoomControlData)
+            {
+                if (Game.rooms[i] && Game.rooms[i].controller.level >= 8)
+                {
+                    let observer_ = Game.getObjectById(Game.rooms[i].memory.StructureIdData.ObserverID) as StructureObserver
+                    if (observer_ && observer_.observeRoom(roomName) == OK)
+                    break
+                }
+            }
+            return
+        }
+        if (!global.warData.tower[roomName].data)
+            global.warData.tower[roomName].data = getTowerData(Game.rooms[roomName])
+    }
+    if (Game.flags['TowerVisualRepair'])
+    {
+        let roomName = Game.flags['TowerVisualRepair'].pos.roomName
+        if (!global.warData) global.warData = {}
+        if (!global.warData.tower) global.warData.tower = {}
+        if (!global.warData.tower[roomName]) global.warData.tower[roomName] = {count:0}
+        if (global.warData.tower[roomName].data)
+        {
+            for (var posData in global.warData.tower[roomName].data)
+            {
+                /* 数据 */
+                let posXY = unzipXandY(posData)
+                let tx = posXY[0]
+                let ty = posXY[1]
+                var Data = global.warData.tower[roomName].data[posData]
+                new RoomVisual(roomName).text(`${Data.repair}`,tx,ty,{color: 'yellow', font:0.4,align:'center'})
+            }
+            return
+        }
+        if (!Game.rooms[roomName]) {
+            /* 如果没有房间视野，采用observe观察 */
+            for (let i in Memory.RoomControlData)
+            {
+                if (Game.rooms[i] && Game.rooms[i].controller.level >= 8)
+                {
+                    let observer_ = Game.getObjectById(Game.rooms[i].memory.StructureIdData.ObserverID) as StructureObserver
+                    if (observer_ && observer_.observeRoom(roomName) == OK)
+                    break
+                }
+            }
+            return
+        }
+        if (!global.warData.tower[roomName].data)
+            global.warData.tower[roomName].data = getTowerData(Game.rooms[roomName])
     }
 }
 
 
 /**
  * 房间日常数据可视化
+ * 瞬时cpu 平均cpu 房间状态 任务数 bucket等
  */
 export function RoomDataVisual(room:Room):void{
     room.visual.rect(0,0,7,10,{opacity:0.1,stroke: '#696969',strokeWidth:0.2})

@@ -21,7 +21,7 @@ export default()=>{
       if (thisCreep.spawning)
       {
         /* 爬虫出生角色可视化 */
-        thisCreep.room.visual.text(`${thisCreep.memory.role}`,thisCreep.pos.x,thisCreep.pos.y,{color: '#000000', font:0.4,align:'center',backgroundColor:'#696969',opacity:0.3})
+        thisCreep.room.visual.text(`${thisCreep.memory.role}`,thisCreep.pos.x,thisCreep.pos.y,{color: '#ffffff', font:0.4,align:'center',backgroundColor:'#696969',opacity:0.3})
       }
       /* 跨shard找回记忆 */
       if (!thisCreep.memory.role)

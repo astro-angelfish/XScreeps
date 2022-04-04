@@ -45,7 +45,7 @@ export function classifyStructure(stru:Structure[]):StructureData{
 }
 
 // 获取房间内的防御塔数据
-export function geyTowerData(room:Room):TowerRangeMapData{
+export function getTowerData(room:Room):TowerRangeMapData{
     if (!room) return {}
     let towers = room.find(FIND_STRUCTURES,{filter:(stru)=>{
         return stru.structureType == 'tower'
@@ -122,7 +122,7 @@ export function warUpdateTowerData(room:Room):void{
     if (length != global.warData.tower[room.name].count)
     {
         global.warData.tower[room.name].count = length
-        global.warData.tower[room.name].data = geyTowerData(room)
+        global.warData.tower[room.name].data = getTowerData(room)
     }
     return
 }
