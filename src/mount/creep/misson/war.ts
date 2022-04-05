@@ -1111,9 +1111,15 @@ export default class CreepMissonWarExtension extends Creep {
                 /* 由heal来进行组队 */
                 if (Game.time % 7 == 0)
                 {
+                    if (data.teamType == 'attack')
                     var disCreep = this.pos.findClosestByRange(FIND_MY_CREEPS,{filter:(creep)=>{
                         return creep.memory.role == 'double-attack' && !creep.memory.double
                     }})
+                    else if (data.teamType == 'dismantle')
+                    var disCreep = this.pos.findClosestByRange(FIND_MY_CREEPS,{filter:(creep)=>{
+                        return creep.memory.role == 'double-dismantle' && !creep.memory.double
+                    }})
+                    else return
                     if (disCreep)
                     {
                         this.memory.double = disCreep.name
