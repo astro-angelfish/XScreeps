@@ -253,30 +253,118 @@ export default class CreepMoveExtension extends Creep {
     }
 
     // 跨shard移动
-    public arriveTo(target:RoomPosition,range:number,shard:shardName = Game.shard.name as shardName):void{
+    public arriveTo(target:RoomPosition,range:number,shard:shardName = Game.shard.name as shardName,shardData?:shardRoomData[]):void{
         if (!this.memory.targetShard) this.memory.targetShard = shard
-        if (shard == Game.shard.name)
+        if (!shardData || shardData == [])
         {
-            this.goTo(target,range)
-        }
-        else
-        {
-            if (!this.memory.protalRoom)
-            // 寻找最近的十字路口房间
+            if (shard == Game.shard.name)
             {
-                if (Game.flags[`${this.memory.belong}/portal`])
+                this.goTo(target,range)
+            }
+            else
+            {
+                if (!this.memory.protalRoom)
+                // 寻找最近的十字路口房间
                 {
-                    this.memory.protalRoom = Game.flags[`${this.memory.belong}/portal`].room.name
+                    if (Game.flags[`${this.memory.belong}/portal`])
+                    {
+                        this.memory.protalRoom = Game.flags[`${this.memory.belong}/portal`].room.name
+                    }
+                    else
+                    {
+                        this.memory.protalRoom = closestPotalRoom(this.memory.belong,target.roomName)
+                    }
+                }
+                if (!this.memory.protalRoom || this.memory.protalRoom == null) return
+                if (this.room.name != this.memory.protalRoom)
+                {
+                    this.goTo(new RoomPosition(25,25,this.memory.protalRoom),20)
                 }
                 else
                 {
-                    this.memory.protalRoom = closestPotalRoom(this.memory.belong,target.roomName)
+                    /* 寻找星门 */
+                    var portal = this.room.find(FIND_STRUCTURES,{filter:(structure)=>{
+                        return structure.structureType == STRUCTURE_PORTAL 
+                    }}) as StructurePortal[]
+                    if (portal.length <= 0) return
+                    var thisportal:StructurePortal
+                    for (var i of portal)
+                    {
+                        var porType = i.destination as {shard:string, room:string}
+                        if (porType.shard == shard )
+                        thisportal = i
+                    }
+                    if (!thisportal) return
+                    if (!this.pos.isNearTo(thisportal)) this.goTo(thisportal.pos,1)
+                    else
+                    {
+                        /* moveData里的shardmemory */
+                        /* 靠近后等待信息传送 */
+                        var RequestData = {
+                            relateShard:shard,
+                            sourceShard:Game.shard.name as shardName,
+                            type:1,
+                            data:{id:this.name,MemoryData:this.memory}
+                        }
+                        if(RequestShard(RequestData))
+                        {
+                            this.moveTo(thisportal)
+                        }
+                    }
                 }
             }
-            if (!this.memory.protalRoom || this.memory.protalRoom == null) return
-            if (this.room.name != this.memory.protalRoom)
+        }
+        else
+        {
+            /* 存在shardData则说明爬虫可能需要跨越多个shard */
+            if (!this.memory.shardAffirm)
             {
-                this.goTo(new RoomPosition(25,25,this.memory.protalRoom),20)
+                let data =  []
+                for (let data_ of shardData)
+                {
+                    data.push({shardName:data_.shardName,roomName:data_.roomName,disRoomName:data_.disRoomName,affirm:false})
+                }
+                this.memory.shardAffirm = data
+            }
+            if (this.memory.shardAffirm == [])
+            {
+                this.say("shardAffirm赋予错误!")
+                return
+            }
+            // 更新目的shardRoom
+            for (var sr of this.memory.shardAffirm)
+            {
+                if (sr.disRoomName == this.pos.roomName && sr.shardName == Game.shard.name)
+                {
+                    sr.affirm = true
+                    break
+                }
+            }
+            // 确定下一个目的shardRoom
+            let nextShardRoom:shardRoomData = null
+            for (var nr of this.memory.shardAffirm)
+            {
+                if (!nr.affirm)
+                {
+                    nextShardRoom = {shardName:nr.shardName,roomName:nr.roomName,disRoomName:nr.disRoomName}
+                    break
+                }
+            }
+            // 到达目标shard
+            if (!nextShardRoom && Game.shard.name == this.memory.targetShard)
+            {
+                this.goTo(target,range)
+                return
+            }
+            // 没到达
+            if (!nextShardRoom)
+            {
+                this.say('找不到nextShardRoom')
+                return
+            }
+            if (this.room.name != nextShardRoom.roomName)
+            {
+                this.goTo(new RoomPosition(25,25,nextShardRoom.roomName),20)
             }
             else
             {
@@ -289,17 +377,20 @@ export default class CreepMoveExtension extends Creep {
                 for (var i of portal)
                 {
                     var porType = i.destination as {shard:string, room:string}
-                    if (porType.shard == shard )
-                    thisportal = i
+                    if (porType.shard == nextShardRoom.shardName && porType.room == nextShardRoom.disRoomName)
+                    {
+                        thisportal = i
+                        break
+                    }
                 }
-                if (!thisportal) return
+                if (!thisportal) {console.log("找不到thisportal");return}
                 if (!this.pos.isNearTo(thisportal)) this.goTo(thisportal.pos,1)
                 else
                 {
                     /* moveData里的shardmemory */
                     /* 靠近后等待信息传送 */
                     var RequestData = {
-                        relateShard:shard,
+                        relateShard:nextShardRoom.shardName,
                         sourceShard:Game.shard.name as shardName,
                         type:1,
                         data:{id:this.name,MemoryData:this.memory}
@@ -311,7 +402,6 @@ export default class CreepMoveExtension extends Creep {
                 }
             }
         }
-        return
     }
 
     // 主动防御寻路

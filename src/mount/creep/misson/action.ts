@@ -466,7 +466,7 @@ export default class CreepMissonActionExtension extends Creep {
         if (!missionData) return
         if (this.room.name != data.disRoom || Game.shard.name != data.shard)
         {
-            this.arriveTo(new RoomPosition(24,24,data.disRoom),23,data.shard)
+            this.arriveTo(new RoomPosition(24,24,data.disRoom),23,data.shard,data.shardData?data.shardData:null)
             
         }
         else

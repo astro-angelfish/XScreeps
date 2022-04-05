@@ -41,7 +41,7 @@
 
 /* ShardMemory数据初始化 */
 export function InitShardMemory():void{
-    if (Game.time % 10) return
+    if (Game.time % 5) return
     var Data = JSON.parse(InterShardMemory.getLocal()) || {}
     if (Object.keys(Data).length < 3 || !Data['creep'] || !Data['misson'])
     {
@@ -55,11 +55,9 @@ export function InitShardMemory():void{
         Data['creep'][cData].delay -= 10
         if (Data['creep'][cData].delay <= 0)
             delete  Data['creep'][cData]
+        
         if (Game.creeps[cData] && Game.creeps[cData].memory.role)
             delete Data['creep'][cData]
-        /* 如果记忆已经成功赋予了就删除 */
-        // if (Game.creeps[cData] && Game.creeps[cData].memory.role)
-        //     delete  Data['creep'][cData]
     }
     /* 任务shard记忆超时计算 */
     for (var mData in Data['misson'])
@@ -157,7 +155,6 @@ export function DeleteShard():boolean{
     if (Game.shard.name == thisData.communication['relateShard'])
     {
         var Data = JSON.parse(InterShardMemory.getRemote(thisData.communication['sourceShard'])) || {}
-        console.log(Data['communication'].state)
         if (Data['communication'].state == 3)
         {
             delete thisData.communication
@@ -203,8 +200,6 @@ export function InterShardRun():void{
     {
         if (Data.communication.state == 1)
         {
-            // if(ConfirmShard()) return
-            // else console.log(`${Game.shard.name} ConfirmShard遇到问题`)
             ConfirmShard()
         }
         else if (Data.communication.state == 2)

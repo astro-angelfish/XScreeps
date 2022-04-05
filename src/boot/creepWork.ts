@@ -30,6 +30,7 @@ export default()=>{
         if (InshardMemory.creep && InshardMemory.creep[c])
         {
             Game.creeps[c].memory = InshardMemory.creep[c].MemoryData
+            InshardMemory.creep[c].state = 1
         }
         continue
       }

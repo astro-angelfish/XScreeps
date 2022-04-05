@@ -17,7 +17,7 @@ interface Creep{
     // 单位移动
     go(direction: DirectionConstant): CreepMoveReturnCode | ERR_INVALID_TARGET
     // 跨shard移动
-    arriveTo(target:RoomPosition,range:number,shard:shardName):void
+    arriveTo(target:RoomPosition,range:number,shard:shardName,shardData?:shardRoomData[]):void
     serializeFarPath(positions:RoomPosition[]):string
     goTo_defend(target:RoomPosition,range:number):CreepMoveReturnCode | ERR_NO_PATH | ERR_NOT_IN_RANGE | ERR_INVALID_TARGET
     findPath_defend(target:RoomPosition,range:number):string|null
@@ -57,6 +57,21 @@ interface CreepMemory{
     prePos?:string
     // 禁用自己对穿
     disableCross?:boolean
+    // 跨多个shard数据
+    shardAffirm:shardAffirmData[]
 }
 
 type shardName = "shard0" | "shard1" | "shard2" | "shard3"
+
+interface shardRoomData{
+    shardName:shardName,    // 星门通向的shard
+    roomName:string,        // 星门所处的房间
+    disRoomName:string,     // 星门通向的房间
+}
+
+interface shardAffirmData{
+    shardName:shardName,    // 星门通向的shard
+    roomName:string,        // 星门所处的房间
+    disRoomName:string,     // 星门通向的房间
+    affirm:boolean
+}

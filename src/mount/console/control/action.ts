@@ -402,10 +402,14 @@ export default {
     },
     /* 斥候 签名 侦察 */
     scout:{
-        sign(roomName:string,disRoom:string,shard:shardName,str:string):string{
+        sign(roomName:string,disRoom:string,shard:shardName,str:string,shardData?:shardRoomData[]):string{
             var thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[scout] 不存在房间${roomName}`
             let task = thisRoom.Public_Sign(disRoom,shard,str)
+            if (shardData)
+            {
+                task.Data.shardData = shardData
+            }
             if (!task) return '[scout] 任务对象生成失败'
             if (thisRoom.AddMission(task))
             return Colorful(`[scout] 房间${roomName}挂载房间签名任务成功 -> ${disRoom}`,'green')
