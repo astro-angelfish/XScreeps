@@ -9,7 +9,7 @@ interface Room {
     Public_expand(disRoom:string,shard:shardName,num:number,cnum?:number):MissionModel
     Public_support(disRoom:string,sType:'double' | 'aio',shard:shardName,num:number,boost:boolean):MissionModel
     Public_control(disRoom:string,shard:shardName,interval:number):MissionModel
-    Public_helpBuild(disRoom:string,num:number,shard?:string,time?:number):MissionModel
+    Public_helpBuild(disRoom:string,num:number,shard?:string,time?:number,defend?:boolean):MissionModel
     Public_Sign(disRoom:string,shard:string,str:string):MissionModel
     Public_Send(disRoom:string,rType:ResourceConstant,num:number):MissionModel
     Public_Buy(res:ResourceConstant,num:number,range:number,max?:number):MissionModel

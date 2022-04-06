@@ -789,6 +789,7 @@ export default [
                                     { name: 'shard', desc: '目标房间所在shard' },
                                     { name: 'num', desc: '爬虫数量' },
                                     { name: 'interval', desc: '出爬时间间隔' },
+                                    { name: 'defend', desc: '(boolean) 是否需要一定防御能力 默认 false' },
                                     { name: 'shardData(可选)', desc: '多次跨shard参数' },
                                 ],
                                 functionName: 'support.build'

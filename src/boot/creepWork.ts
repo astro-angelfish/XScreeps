@@ -11,7 +11,6 @@ export default()=>{
           Game.powerCreeps[pc].ManageMisson()
       }
     }
-
     /* creep */
     let adaption = true  // 每tick执行一次adaption检查
     for (var c in Game.creeps)
@@ -50,7 +49,6 @@ export default()=>{
         /* adaption爬虫执行自S */
       }
       /* 非任务类型爬虫 */
-      let a = Game.cpu.getUsed()
       if (RoleData[thisCreep.memory.role].fun)
       {
         RoleData[thisCreep.memory.role].fun(thisCreep)

@@ -59,9 +59,9 @@ export default class CreepMoveExtension extends Creep {
                     routeCallback(roomName) {
                         // 在全局绕过房间列表的房间 false
                         if (Memory.bypassRooms && Memory.bypassRooms.includes(roomName)) return Infinity
-                        let parsed = Number((/^[WE]([0-9]+)[NS]([0-9]+)$/.exec(roomName)));
-                        let isHighway = (parsed[1] % 10 === 0) ||
-                            (parsed[2] % 10 === 0);
+                        let parsed = (/^[WE]([0-9]+)[NS]([0-9]+)$/.exec(roomName));
+                        let isHighway = (Number(parsed[1]) % 10 === 0) ||
+                            (Number(parsed[2]) % 10 === 0);
                         let isMyRoom = Game.rooms[roomName] &&
                             Game.rooms[roomName].controller &&
                             Game.rooms[roomName].controller.my;

@@ -117,21 +117,41 @@ export default class terminalExtension extends StructureTerminal {
         let storage_ = global.Stru[this.room.name]['storage'] as StructureStorage
         if (!storage_) {console.log(`找不到global.Stru['${this.room.name}']['storage]!`);return}
         // 能量购买函数
-        if (storage_.store.getUsedCapacity('energy') + this.store.getUsedCapacity('energy') < 250000)
+        let storeNum = storage_.store.getUsedCapacity('energy') + this.store.getUsedCapacity('energy')
+        // 能量一般少的情况下，下平均价格订单购买能量
+        if (storeNum < 250000 && storeNum  >= 100000 )
         {
-            let ave = avePrice('energy',2)
-            let highest = highestPrice('energy','buy',ave+6)
-            if (!haveOrder(this.room.name,'energy','buy',highest,-0.2))
+            let ave = avePrice('energy',1)
+            let thisprice_ = ave * 1.1
+            if (!haveOrder(this.room.name,'energy','buy',thisprice_,-0.2))
             {
                 let result = Game.market.createOrder({
                     type: ORDER_BUY,
                     resourceType: 'energy',
-                    price: highest + 0.01,
+                    price: thisprice_ + 0.001,
                     totalAmount: 100000,
                     roomName: this.room.name   
                 });
                 if (result != OK){console.log("创建能量订单出错,房间",this.room.name)}
-                console.log(Colorful(`房间${this.room.name}创建energy订单,价格:${highest + 0.01};数量:100000`,'green',true))
+                console.log(Colorful(`[普通]房间${this.room.name}创建energy订单,价格:${thisprice_ + 0.001};数量:100000`,'green',true))
+            }
+        }
+        // 能量极少的情况下，下市场合理范围内最高价格订单
+        else if (storeNum < 100000)
+        {
+            let ave = avePrice('energy',2)
+            let highest = highestPrice('energy','buy',ave+6)
+            if (!haveOrder(this.room.name,'energy','buy',highest,-0.1))
+            {
+                let result = Game.market.createOrder({
+                    type: ORDER_BUY,
+                    resourceType: 'energy',
+                    price: highest + 0.001,
+                    totalAmount: 200000,
+                    roomName: this.room.name   
+                });
+                if (result != OK){console.log("创建能量订单出错,房间",this.room.name)}
+                console.log(Colorful(`[紧急]房间${this.room.name}创建energy订单,价格:${highest + 0.01};数量:100000`,'green',true))
             }
         }
         /* 仓库资源过于饱和就卖掉能量 */
@@ -366,7 +386,7 @@ export default class terminalExtension extends StructureTerminal {
      */
     public ResourceDeal(task:MissionModel):void{
         if((Game.time - global.Gtime[this.room.name] )% 10) return
-        if (this.cooldown || this.store.getUsedCapacity('energy') < 50000) return
+        if (this.cooldown || this.store.getUsedCapacity('energy') < 45000) return
         if (!task.Data){this.room.DeleteMission(task.id);return}
         let money = Game.market.credits
         if (money <= 0 || task.Data.num > 50000){this.room.DeleteMission(task.id);return}

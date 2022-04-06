@@ -332,11 +332,14 @@ export default class CreepMissonMineExtension extends Creep {
                         {
                             if (Game.time % 10 == 0)
                             {
-                                var enemy_creep = powerbank_.pos.findInRange(FIND_HOSTILE_CREEPS,3)
                                 var powerbank_ = missonPostion.GetStructure('powerBank')
-                                if (enemy_creep.length > 0 && powerbank_ && powerbank_.hits < 600000)
+                                if (powerbank_)
                                 {
-                                    globalMisson.Data.state = 2
+                                    var enemy_creep = powerbank_.pos.findInRange(FIND_HOSTILE_CREEPS,3)
+                                    if (enemy_creep.length > 0 && powerbank_ && powerbank_.hits < 600000)
+                                    {
+                                        globalMisson.Data.state = 2
+                                    }
                                 }
                             }
                         }
@@ -435,7 +438,7 @@ export default class CreepMissonMineExtension extends Creep {
                 {
                     this.memory.standed = false
                     if (this.room.name == this.memory.belong) 
-                    this.goTo(Game.creeps[this.memory.double].pos,0)
+                    this.moveTo(Game.creeps[this.memory.double].pos)
                     else
                     this.moveTo(Game.creeps[this.memory.double].pos)
                 }

@@ -1,6 +1,5 @@
 import { LabMap } from "@/constant/ResourceConstant"
 import { isInArray, zipPosition } from "@/utils"
-import { times } from "lodash"
 
 /* 房间原型拓展   --任务  --任务发布便捷函数 */
 export default class RoomMissonPublish extends Room {

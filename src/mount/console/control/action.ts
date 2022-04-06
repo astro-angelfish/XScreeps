@@ -380,10 +380,10 @@ export default {
     /* 支援 */
     support:{
         // 紧急援建
-        build(roomName:string,disRoom:string,shard:shardName = Game.shard.name as shardName,num:number,interval:number,shardData?:shardRoomData[]):string{
+        build(roomName:string,disRoom:string,shard:shardName = Game.shard.name as shardName,num:number,interval:number,defend:boolean = false,shardData?:shardRoomData[]):string{
             var thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[support] 不存在房间${roomName}`
-            let task = thisRoom.Public_helpBuild(disRoom,num,shard,interval)
+            let task = thisRoom.Public_helpBuild(disRoom,num,shard,interval,defend)
             if (task)
             {
                 if (shardData) task.Data.shardData = shardData

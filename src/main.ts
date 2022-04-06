@@ -18,18 +18,23 @@ import { statCPU } from './module/fun/funtion'
  * 主运行函数
  */
 export const loop = ErrorMapper.wrapLoop(() =>{
+    let a = Game.cpu.getUsed()
 
     /* Memory初始化 */
-    MemoryInit()            // Memory room creep flag 
-
+    MemoryInit()
+    let a1 = Game.cpu.getUsed()
     /* 跨shard初始化 */
     InitShardMemory()
 
     /* 跨shard记忆运行 */
     InterShardRun()
 
+    let b = Game.cpu.getUsed()
+
     /* 原型拓展挂载 */
     Mount()
+
+    let c = Game.cpu.getUsed()
 
     /* 爬虫数量统计及死亡Memory回收 */
     CreepNumStatistic()
@@ -37,9 +42,13 @@ export const loop = ErrorMapper.wrapLoop(() =>{
     /* 房间框架运行 */
     RoomWork()
 
+    let d = Game.cpu.getUsed()
+
     /* 爬虫运行 */
     CreepWork()
 
+    let e = Game.cpu.getUsed()
+    
     /* 四人小队模块 */
     SquadManager()
 
@@ -54,9 +63,25 @@ export const loop = ErrorMapper.wrapLoop(() =>{
 
     /* 防御塔数据展示 更新 */
     showTowerData()
+
     /* 状态统计 screepsplus */
     stateScanner()
+
     /* CPU计算 */
     statCPU()
+
+    let f = Game.cpu.getUsed()
+    
+    // if (Game.shard.name == 'shard3')
+    // {
+    //     /* 分析cpu */
+    //     console.log("-----------------------------cpu消耗分析----------------------------------------")
+    //     console.log("Memory初始化:",a1-a)
+    //     console.log("shard初始化:",b-a1)
+    //     console.log("原型挂载:",c-b)
+    //     console.log("房间框架:",d-c)
+    //     console.log("爬虫:",e-d)
+    //     console.log("其他杂项:",f-e)
+    // }
 
 })
