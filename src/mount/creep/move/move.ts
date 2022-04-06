@@ -404,6 +404,19 @@ export default class CreepMoveExtension extends Creep {
         }
     }
 
+    // 多次跨shard affirm更新模块
+    public updateShardAffirm():void{
+        if (this.memory.shardAffirm)
+        for (var sr of this.memory.shardAffirm)
+        {
+            if (sr.disRoomName == this.pos.roomName && sr.shardName == Game.shard.name)
+            {
+                sr.affirm = true
+                return
+            }
+        }
+    }
+
     // 主动防御寻路
     public findPath_defend(target:RoomPosition,range:number):string|null{
         /* 全局路线存储 */

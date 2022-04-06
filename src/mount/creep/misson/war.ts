@@ -8,13 +8,25 @@ export default class CreepMissonWarExtension extends Creep {
     public handle_dismantle():void{
         let missionData = this.memory.MissionData
         let id = missionData.id
-        let mission = missionData.Data
-        if (mission.boost)
+        let data = missionData.Data
+        if (data.boost)
         {
-            /* boost检查 暂缺 */
-            if (!this.BoostCheck(['move','worl'])) return
+            if (!this.BoostCheck(['move','work'])) return
         }
-        if (this.room.name != mission.disRoom || mission.shard != Game.shard.name){this.goTo(new RoomPosition(25,25,mission.disRoom),20);return}
+        if (this.room.name != data.disRoom || data.shard != Game.shard.name)
+        {
+            this.arriveTo(new RoomPosition(25,25,data.disRoom),20,data.shard,data.shardData?data.shardData:null)
+            return
+        }
+        // 对方开安全模式情况下 删除任务
+        if (this.room.controller && this.room.controller.safeMode)
+        {
+            if (Game.shard.name == this.memory.shard)
+            {
+            Game.rooms[this.memory.belong].DeleteMission(id)
+            }
+            return
+        }
         /* dismantle_0 */
         let disFlag = this.pos.findClosestByPath(FIND_FLAGS,{filter:(flag)=>{
             return  flag.name.indexOf('dismantle') == 0
@@ -51,11 +63,20 @@ export default class CreepMissonWarExtension extends Creep {
         let data = missionData.Data
         if (this.room.name != data.disRoom || Game.shard.name != data.shard)
         {
-            this.arriveTo(new RoomPosition(24,24,data.disRoom),23,data.shard)
+            this.arriveTo(new RoomPosition(24,24,data.disRoom),23,data.shard,data.shardData?data.shardData:null)
             
         }
         else
         {
+            // 对方开安全模式情况下 删除任务
+            if (this.room.controller && this.room.controller.safeMode)
+            {
+                if (Game.shard.name == this.memory.shard)
+                {
+                Game.rooms[this.memory.belong].DeleteMission(id)
+                }
+                return
+            }
             let control = this.room.controller
             if (!this.pos.isNearTo(control)) this.goTo(control.pos,1)
             else
@@ -447,7 +468,7 @@ export default class CreepMissonWarExtension extends Creep {
         if ((this.room.name != data.disRoom || Game.shard.name != data.shard))
         {
             this.heal(this)
-            this.arriveTo(new RoomPosition(24,24,data.disRoom),23,data.shard)
+            this.arriveTo(new RoomPosition(24,24,data.disRoom),23,data.shard,data.shardData?data.shardData:null)
         }
         else
         {
@@ -635,7 +656,7 @@ export default class CreepMissonWarExtension extends Creep {
         }
     }
 
-    // 四人小队 已经修改进入目标房前的集结动作s
+    // 四人小队 已经测试 多次跨shard未测试
     public handle_task_squard():void{
         var data = this.memory.MissionData.Data
         var shard = data.shard          // 目标shard
@@ -795,8 +816,13 @@ export default class CreepMissonWarExtension extends Creep {
                 var portal = this.pos.findClosestByRange(FIND_STRUCTURES,{filter:(stru)=>{
                     return stru.structureType == 'portal'
                 }})
+                // 跨shard信息更新 可以防止一些可能出现的bug
+                if (portal && data.shardData)
+                {
+                    this.updateShardAffirm()
+                }
                 if (disCreepName == null || (!Game.creeps[disCreepName] && !portal)) return
-                if (!Game.creeps[disCreepName] && portal){this.arriveTo(new RoomPosition(24,24,roomName),20,shard);return}
+                if (!Game.creeps[disCreepName] && portal){this.arriveTo(new RoomPosition(24,24,roomName),20,shard,data.shardData?data.shardData:null);return}
                 if (Game.shard.name == shard && !Game.creeps[disCreepName]) return
                 var disCreep = Game.creeps[disCreepName]
                 if (this.room.name == this.memory.belong)  this.goTo(disCreep.pos,0)
@@ -813,7 +839,7 @@ export default class CreepMissonWarExtension extends Creep {
                     if (this.room.name != Game.flags[`squad_unit_${this.memory.MissionData.id}`].pos.roomName || Game.shard.name != data.shard)
                     {
                         if (this.memory.squad[this.name].index == 0)
-                        this.arriveTo(new RoomPosition(24,24,roomName),18,shard)
+                        this.arriveTo(new RoomPosition(24,24,roomName),18,shard,data.shardData?data.shardData:null)
                         return
                     }
                 }
@@ -824,7 +850,7 @@ export default class CreepMissonWarExtension extends Creep {
                     {
                         this.say("🔪")
                         if (this.memory.squad[this.name].index == 0)
-                        this.arriveTo(new RoomPosition(24,24,roomName),18,shard)
+                        this.arriveTo(new RoomPosition(24,24,roomName),18,shard,data.shardData?data.shardData:null)
                         return
                     }
                 }
@@ -848,7 +874,7 @@ export default class CreepMissonWarExtension extends Creep {
                         }
                         else
                         {
-                            this.arriveTo(new RoomPosition(24,24,roomName),24,shard)
+                            this.arriveTo(new RoomPosition(24,24,roomName),24,shard,data.shardData?data.shardData:null)
                         }
                     }
                 }
@@ -863,7 +889,7 @@ export default class CreepMissonWarExtension extends Creep {
                     }
                     else
                     {
-                        this.arriveTo(new RoomPosition(24,24,roomName),24,shard)
+                        this.arriveTo(new RoomPosition(24,24,roomName),24,shard,data.shardData?data.shardData:null)
                     }
                 }
             }
@@ -923,7 +949,7 @@ export default class CreepMissonWarExtension extends Creep {
             /* 去目标房间 */
             if (this.room.name != roomName || Game.shard.name != data.shard)
             {
-                this.arriveTo(new RoomPosition(24,24,roomName),23,data.shard)
+                this.arriveTo(new RoomPosition(24,24,roomName),23,data.shard,data.shardData?data.shardData:null)
             }
             else
             {
@@ -971,7 +997,12 @@ export default class CreepMissonWarExtension extends Creep {
             var portal = this.pos.findClosestByRange(FIND_STRUCTURES,{filter:(stru)=>{
                 return stru.structureType == 'portal'
             }})
-            if (!Game.creeps[disCreepName] && portal){this.arriveTo(new RoomPosition(25,25,roomName),20,data.shard);return}
+            // 跨shard信息更新 可以防止一些可能出现的bug
+            if (portal && data.shardData)
+            {
+                this.updateShardAffirm()
+            }
+            if (!Game.creeps[disCreepName] && portal){this.arriveTo(new RoomPosition(25,25,roomName),20,data.shard,data.shardData?data.shardData:null);return}
             if (Game.creeps[this.memory.double])this.moveTo(Game.creeps[this.memory.double])
             // 寻找敌人 远程攻击
             let enemy = this.pos.findInRange(FIND_HOSTILE_CREEPS,3,{filter:(creep)=>{
@@ -1015,7 +1046,7 @@ export default class CreepMissonWarExtension extends Creep {
             if (this.room.name != roomName || Game.shard.name != data.shard)
             {
                 this.heal(this)
-                this.arriveTo(new RoomPosition(24,24,roomName),23,data.shard)
+                this.arriveTo(new RoomPosition(24,24,roomName),23,data.shard,data.shardData?data.shardData:null)
             }
             else
             {
@@ -1082,7 +1113,7 @@ export default class CreepMissonWarExtension extends Creep {
         }
     }
 
-    // 双人小队
+    // 双人小队 已测试 目前没有挂载战争信息模块和智能躲避
     public handle_double():void{
         let missionData = this.memory.MissionData
         let id = missionData.id
@@ -1139,7 +1170,7 @@ export default class CreepMissonWarExtension extends Creep {
             return
             if (this.room.name != roomName || Game.shard.name != data.shard)
             {
-                this.arriveTo(new RoomPosition(24,24,roomName),23,data.shard)
+                this.arriveTo(new RoomPosition(24,24,roomName),23,data.shard,data.shardData?data.shardData:null)
             }
             else
             {
@@ -1222,7 +1253,7 @@ export default class CreepMissonWarExtension extends Creep {
             return
             if (this.room.name != roomName || Game.shard.name != data.shard)
             {
-                this.arriveTo(new RoomPosition(24,24,roomName),23,data.shard)
+                this.arriveTo(new RoomPosition(24,24,roomName),23,data.shard,data.shardData?data.shardData:null)
             }
             else
             {
@@ -1293,7 +1324,12 @@ export default class CreepMissonWarExtension extends Creep {
             var portal = this.pos.findClosestByRange(FIND_STRUCTURES,{filter:(stru)=>{
                 return stru.structureType == 'portal'
             }})
-            if (!Game.creeps[disCreepName] && portal){this.arriveTo(new RoomPosition(25,25,roomName),20,data.shard);return}
+            // 跨shard信息更新 可以防止一些可能出现的bug
+            if (portal && data.shardData)
+            {
+                this.updateShardAffirm()
+            }
+            if (!Game.creeps[disCreepName] && portal){this.arriveTo(new RoomPosition(25,25,roomName),20,data.shard,data.shardData?data.shardData:null);return}
             if (Game.creeps[this.memory.double])this.moveTo(Game.creeps[this.memory.double])
             // 寻找敌人 远程攻击
             let enemy = this.pos.findInRange(FIND_HOSTILE_CREEPS,3,{filter:(creep)=>{

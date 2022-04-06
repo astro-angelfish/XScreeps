@@ -14,13 +14,15 @@ export default [
         alias: 'help',
         exec: function (): string {
             return [
-                ...projectTitle.map(line => colorful(line, 'blue', true)),
+                ...projectTitle.map(line => colorful(line, 'green', true)),
                 '\n',
                 '使用前请详细阅读如下规则:',
                 '1.使用frame.add时,如果布局为man,房间的中心点需要两格内有1个link和1个tower(如果刚开局，以后有就行了).',
                 '2.如果布局为dev,中心点在你第一个spawn往上两格.',
                 '3.能力越大责任越大，不要使用该框架欺负萌新!',
-                '4.不保证该代码没有Bug,遇到bug欢迎QQ群里找Mikebraton交流报告.',
+                '4.急速冲级代码不了解使用方法不要使用,否则有宕机风险!',
+                '5.本框架攻击模块具备各类型攻击代码及多次跨shard打击能力(超时空军团),除非自保,否则不要滥用!',
+                '6.不保证该代码没有Bug,遇到bug欢迎QQ群里找Mikebraton交流报告.',
                 '\n',
                 Colorful('如果同意请控制台输入  manual','yellow',true),
             ].join('\n')
@@ -702,6 +704,7 @@ export default [
                                     { name: 'shard', desc: '目标房间所在shard' },
                                     { name: 'num', desc: '援建/升级爬数量' },
                                     { name: 'Cnum', desc: 'claim爬数量 默认1' },
+                                    { name: 'shardData(可选)', desc: '多次跨shard参数' },
                                 ],
                                 functionName: 'expand.set'
                             },
@@ -741,6 +744,7 @@ export default [
                                     { name: 'disRoom', desc: '目标房间' },
                                     { name: 'shard', desc: '目标房间所在shard' },
                                     { name: 'word', desc: '签名内容' },
+                                    { name: 'shardData(可选)', desc: '多次跨shard参数' },
                                 ],
                                 functionName: 'scout.sign'
                             },
@@ -785,6 +789,7 @@ export default [
                                     { name: 'shard', desc: '目标房间所在shard' },
                                     { name: 'num', desc: '爬虫数量' },
                                     { name: 'interval', desc: '出爬时间间隔' },
+                                    { name: 'shardData(可选)', desc: '多次跨shard参数' },
                                 ],
                                 functionName: 'support.build'
                             },
@@ -815,6 +820,7 @@ export default [
                                     { name: 'interval', desc: '出爬时间间隔' },
                                     { name: 'boost', desc: '是否boost' },
                                     { name: 'bodyLevel', desc: 'T0 | T1 | T2 越高防御力越弱,攻击力越强' },
+                                    { name: 'shardData(可选)', desc: '多次跨shard参数' },
                                 ],
                                 functionName: 'war.aio'
                             },
@@ -838,6 +844,7 @@ export default [
                                     { name: 'type', desc: '双人小队类型: attack:红球 |dismantle:黄球' },
                                     { name: 'num', desc: '爬虫数量' },
                                     { name: 'interval', desc: '出爬时间间隔' },
+                                    { name: 'shardData(可选)', desc: '多次跨shard参数' },
                                 ],
                                 functionName: 'war.double'
                             },
@@ -861,6 +868,7 @@ export default [
                                     { name: 'shard', desc: '目标房间所在shard' },
                                     { name: 'type', desc: '四人小队类型: D:黄|A:红|R:蓝|DR|DA|RA|Aio:一体机' },
                                     { name: 'interval', desc: '出爬时间间隔' },
+                                    { name: 'shardData(可选)', desc: '多次跨shard参数' },
                                 ],
                                 functionName: 'war.squad'
                             },
@@ -885,6 +893,7 @@ export default [
                                     { name: 'num', desc: '爬虫数量' },
                                     { name: 'interval', desc: '出爬时间间隔' },
                                     { name: 'boost', desc: '是否boost' },
+                                    { name: 'shardData(可选)', desc: '多次跨shard参数' },
                                 ],
                                 functionName: 'war.dismantle'
                             },
@@ -906,6 +915,7 @@ export default [
                                     { name: 'disRoom', desc: '目标房间' },
                                     { name: 'shard', desc: '目标房间所在shard' },
                                     { name: 'interval', desc: '出爬时间间隔' },
+                                    { name: 'shardData(可选)', desc: '多次跨shard参数' },
                                 ],
                                 functionName: 'war.control'
                             },
@@ -930,6 +940,7 @@ export default [
                                     { name: 'num', desc: '爬虫数量' },
                                     { name: 'interval', desc: '出爬时间间隔' },
                                     { name: 'boost', desc: '是否boost(只会aio有效)' },
+                                    { name: 'shardData(可选)', desc: '多次跨shard参数' },
                                 ],
                                 functionName: 'war.support'
                             },
@@ -1001,7 +1012,11 @@ export default [
                 '旗帜名: support_double_xx 紧急支援双人小队拆迁指定旗帜下建筑',
                 '旗帜名: reapair_xx special维修爬维修指定旗帜下墙体',
                 '旗帜名: withdraw_xx紧急援助爬从该旗帜下的建筑提取能量',
-                '旗帜名: [紧急援助爬所属房间]/HB/harvest 紧急援助爬从该旗帜下的房间的矿点采集能量'
+                '旗帜名: [紧急援助爬所属房间]/HB/harvest 紧急援助爬从该旗帜下的房间的矿点采集能量',
+                '旗帜名: LayoutVisual 插在任意房间可以显示dev自动布局',
+                '旗帜名: TowerVisualAttack 插在距离自己8级房最近房间或有视野房间 显示该房间防御塔伤害信息',
+                '旗帜名: TowerVisualHeal 插在距离自己8级房最近房间或有视野房间 显示该房间防御塔治疗信息',
+                '旗帜名: TowerVisualRepair 插在距离自己8级房最近房间或有视野房间 显示该房间防御塔维修信息',
             ].join('\n')
         }
     },

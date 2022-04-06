@@ -1,5 +1,5 @@
 import { avePrice, haveOrder, highestPrice } from "@/module/fun/funtion";
-import { Colorful } from "@/utils";
+import { Colorful, GenerateAbility } from "@/utils";
 
 /* 房间原型拓展   --行为  --维护任务 */
 export default class RoomMissonVindicateExtension extends Room {
@@ -57,6 +57,10 @@ export default class RoomMissonVindicateExtension extends Room {
 
     /* 紧急援建 */
     public Task_HelpBuild(mission:MissionModel):void{
+        if (!mission.Data.defend)
+        {
+            global.MSB[mission.id] ={'architect':GenerateAbility(15,24,10,0,0,1,0,0)}
+        }
         if ((Game.time - global.Gtime[this.name]) % 9) return
         if (mission.LabBind)
         {

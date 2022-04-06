@@ -84,12 +84,16 @@ export default {
     },
     /* 扩张 */
     expand:{
-        set(roomName:string,disRoom:string,shard:shardName,num:number,Cnum:number = 1):string{
+        set(roomName:string,disRoom:string,shard:shardName,num:number,Cnum:number = 1,shardData?:shardRoomData[]):string{
             var thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[expand] 不存在房间${roomName}`
             let task = thisRoom.Public_expand(disRoom,shard,num,Cnum)
-            if (thisRoom.AddMission(task))
-            return Colorful(`[expand] 房间${roomName}挂载扩张援建计划成功 -(${shard})-> ${disRoom}`,'green')
+            if (task)
+            {
+                if (shardData) task.Data.shardData = shardData
+                if (thisRoom.AddMission(task))
+                return Colorful(`[expand] 房间${roomName}挂载扩张援建计划成功 -(${shard})-> ${disRoom}`,'green')
+            }
             return Colorful(`[expand] 房间${roomName}挂载扩张援建计划失败 -(${shard})-> ${disRoom}`,'red')
         },
         remove(roomName:string,disRoom:string,shard:shardName):string{
@@ -106,7 +110,7 @@ export default {
     },
     /* 战争 */
     war:{
-        dismantle(roomName:string,disRoom:string,shard:shardName,num:number,interval?:number,boost?:boolean,):string{
+        dismantle(roomName:string,disRoom:string,shard:shardName,num:number,interval?:number,boost?:boolean,shardData?:shardRoomData[]):string{
             var thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[war] 不存在房间${roomName}`
             for (var i of thisRoom.memory.Misson['Creep'])
@@ -116,8 +120,12 @@ export default {
             }
             let interval_ = interval?interval:1000
             let task = thisRoom.Public_dismantle(disRoom,shard,num,interval_,boost)
-            if (thisRoom.AddMission(task))
-            return Colorful(`[war] 房间${roomName}挂载拆迁任务成功 -> ${disRoom}`,'green')
+            if (task)
+            {
+                if (shardData) task.Data.shardData = shardData
+                if (thisRoom.AddMission(task))
+                return Colorful(`[war] 房间${roomName}挂载拆迁任务成功 -> ${disRoom}`,'green')
+            }
             return Colorful(`[war] 房间${roomName}挂载拆迁任务失败 -> ${disRoom}`,'red')
         },
         Cdismantle(roomName:string,disRoom:string,shard:shardName = Game.shard.name as shardName):string{
@@ -133,7 +141,7 @@ export default {
             }
             return Colorful(`[war] 房间${roomName}删除拆迁任务失败`,'red')
         },
-        support(roomName:string,disRoom:string,shard:shardName,sType:'double'|'aio',num:number,interval:number = 1000,boost:boolean = true):string{
+        support(roomName:string,disRoom:string,shard:shardName,sType:'double'|'aio',num:number,interval:number = 1000,boost:boolean = true,shardData?:shardRoomData[]):string{
             var thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[war] 不存在房间${roomName}`
             for (var oi of thisRoom.memory.Misson['Creep'])
@@ -144,6 +152,7 @@ export default {
             let task = thisRoom.Public_support(disRoom,sType,shard,num,boost)
             if (task)
             {
+                if (shardData) task.Data.shardData = shardData
                 for (var i in task.CreepBind)
                     task.CreepBind[i].interval = interval
             }
@@ -164,7 +173,7 @@ export default {
             }
             return Colorful(`[war] 房间${roomName}-(${shard})->${disRoom}|[${rType}]紧急支援任务删除失败`,'red')
         },
-        control(roomName:string,disRoom:string,shard:shardName = Game.shard.name as shardName,interval:number):string{
+        control(roomName:string,disRoom:string,shard:shardName = Game.shard.name as shardName,interval:number,shardData?:shardRoomData[]):string{
             var thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[war] 不存在房间${roomName}`
             for (var oi of thisRoom.memory.Misson['Creep'])
@@ -173,8 +182,12 @@ export default {
                 return `[war] 房间${roomName}已经存在去往${disRoom}(${shard})的该类型任务了!`
             }
             let task = thisRoom.Public_control(disRoom,shard,interval)
-            if (thisRoom.AddMission(task))
-            return Colorful(`[war] 房间${roomName}挂载控制攻击任务成功 -> ${disRoom}`,'green')
+            if (task)
+            {
+                if (shardData) task.Data.shardData = shardData
+                if (thisRoom.AddMission(task))
+                return Colorful(`[war] 房间${roomName}挂载控制攻击任务成功 -> ${disRoom}`,'green')
+            }
             return Colorful(`[war] 房间${roomName}挂载控制攻击任务失败 -> ${disRoom}`,'red')
         },
         Ccontrol(roomName:string,disRoom:string,shard:shardName = Game.shard.name as shardName):string{
@@ -190,7 +203,7 @@ export default {
             }
             return Colorful(`[war] 房间${roomName}控制攻击任务失败`,'red')
         },
-        aio(roomName:string,disRoom:string,shard:shardName,CreepNum:number,time:number = 1000,boost:boolean = true,bodylevel:"T0" | "T0" | "T2" = "T0"):string{
+        aio(roomName:string,disRoom:string,shard:shardName,CreepNum:number,time:number = 1000,boost:boolean = true,bodylevel:"T0" | "T0" | "T2" = "T0",shardData?:shardRoomData[]):string{
             var myRoom = Game.rooms[roomName]
             if (!myRoom) return `[war] 未找到房间${roomName},请确认房间!`
             for (var oi of myRoom.memory.Misson['Creep'])
@@ -199,8 +212,12 @@ export default {
                 return `[war] 房间${roomName}已经存在去往${disRoom}(${shard})的该类型任务了!`
             }
             var thisTask = myRoom.Public_aio(disRoom,shard,CreepNum,time,boost,bodylevel)
-            if (myRoom.AddMission(thisTask))
-            return `[war] 攻防一体任务挂载成功! ${Game.shard.name}/${roomName} -> ${shard}/${disRoom} 体型等级:${bodylevel}`
+            if (thisTask)
+            {
+                if (shardData) thisTask.Data.shardData = shardData
+                if (myRoom.AddMission(thisTask))
+                return `[war] 攻防一体任务挂载成功! ${Game.shard.name}/${roomName} -> ${shard}/${disRoom} 体型等级:${bodylevel}`
+            }
             return `[war] 攻防一体挂载失败!`
         },
         Caio(roomName:string,disRoom:string,shard:shardName):string{
@@ -216,7 +233,7 @@ export default {
             }
             return `[war] 删除去往${shard}/${disRoom}的攻防一体任务失败!`
         },
-        squad(roomName:string,disRoom:string,shard:shardName,mtype:'R'|'A'|'D'|'Aio'|'RA'|'DA'|'DR',time:number= 1000):string{
+        squad(roomName:string,disRoom:string,shard:shardName,mtype:'R'|'A'|'D'|'Aio'|'RA'|'DA'|'DR',time:number= 1000,shardData?:shardRoomData[]):string{
             var myRoom = Game.rooms[roomName]
             if (!myRoom) return `[war] 未找到房间${roomName},请确认房间!`
             for (var oi of myRoom.memory.Misson['Creep'])
@@ -253,8 +270,12 @@ export default {
             {
                 thisTask = myRoom.public_squad(disRoom,shard,time,1,0,1,2,0,mtype)
             }
-            if (myRoom.AddMission(thisTask))
-            return `[war] 四人小队任务挂载成功! ${Game.shard.name}/${roomName} -> ${shard}/${disRoom}`
+            if (thisTask)
+            {
+                if (shardData) thisTask.Data.shardData = shardData
+                if (myRoom.AddMission(thisTask))
+                return `[war] 四人小队任务挂载成功! ${Game.shard.name}/${roomName} -> ${shard}/${disRoom}`
+            }
             return `[war] 四人小队挂载失败!`
         },
         Csquad(roomName:string,disRoom:string,shard:shardName,mtype:'R'|'A'|'D'|'Aio'|'RA'|'DA'|'DR'):string{
@@ -270,7 +291,7 @@ export default {
             }
             return `[war] 删除去往${shard}/${disRoom}的四人小队任务失败!`
         },
-        double(roomName:string,disRoom:string,shard:shardName = Game.shard.name as shardName,mType:'dismantle' | 'attack',num:number,interval:number):string{
+        double(roomName:string,disRoom:string,shard:shardName = Game.shard.name as shardName,mType:'dismantle' | 'attack',num:number,interval:number,shardData?:shardRoomData[]):string{
             var thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[war] 不存在房间${roomName}`
             for (var oi of thisRoom.memory.Misson['Creep'])
@@ -279,8 +300,12 @@ export default {
                 return `[war] 房间${roomName}已经存在去往${disRoom}(${shard})的该类型任务了!`
             }
             var thisTask = thisRoom.Public_Double(disRoom,shard,num,mType,interval)
-            thisTask.maxTime = 2
-            if(thisRoom.AddMission(thisTask)) return `[war] 双人小队 ${roomName} -> ${disRoom} 的 ${mType}任务挂载成功！`
+            if (thisTask)
+            {
+                if (shardData) thisTask.Data.shardData = shardData
+                thisTask.maxTime = 2
+                if(thisRoom.AddMission(thisTask)) return `[war] 双人小队 ${roomName} -> ${disRoom} 的 ${mType}任务挂载成功！`
+            }
             return `[war] 双人小队 ${roomName} -(${shard})-> ${disRoom} 的 ${mType}任务挂载失败！`
         },
         Cdouble(roomName:string,disRoom:string,shard:shardName,mType:'dismantle'|'attack'):string{
@@ -355,12 +380,16 @@ export default {
     /* 支援 */
     support:{
         // 紧急援建
-        build(roomName:string,disRoom:string,shard:shardName = Game.shard.name as shardName,num:number,interval:number,):string{
+        build(roomName:string,disRoom:string,shard:shardName = Game.shard.name as shardName,num:number,interval:number,shardData?:shardRoomData[]):string{
             var thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[support] 不存在房间${roomName}`
             let task = thisRoom.Public_helpBuild(disRoom,num,shard,interval)
-            if (thisRoom.AddMission(task))
-            return Colorful(`[support] 房间${roomName}挂载紧急援建任务成功 -> ${disRoom}`,'green')
+            if (task)
+            {
+                if (shardData) task.Data.shardData = shardData
+                if (thisRoom.AddMission(task))
+                return Colorful(`[support] 房间${roomName}挂载紧急援建任务成功 -> ${disRoom}`,'green')
+            }
             return Colorful(`[support] 房间${roomName}挂载紧急援建任务失败 -> ${disRoom}`,'red')
         },
         Cbuild(roomName:string,disRoom:string,shard:shardName = Game.shard.name as shardName):string{
@@ -406,10 +435,7 @@ export default {
             var thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[scout] 不存在房间${roomName}`
             let task = thisRoom.Public_Sign(disRoom,shard,str)
-            if (shardData)
-            {
-                task.Data.shardData = shardData
-            }
+            if (shardData) task.Data.shardData = shardData
             if (!task) return '[scout] 任务对象生成失败'
             if (thisRoom.AddMission(task))
             return Colorful(`[scout] 房间${roomName}挂载房间签名任务成功 -> ${disRoom}`,'green')

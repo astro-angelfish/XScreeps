@@ -18,6 +18,7 @@ interface Creep{
     go(direction: DirectionConstant): CreepMoveReturnCode | ERR_INVALID_TARGET
     // 跨shard移动
     arriveTo(target:RoomPosition,range:number,shard:shardName,shardData?:shardRoomData[]):void
+    updateShardAffirm():void
     serializeFarPath(positions:RoomPosition[]):string
     goTo_defend(target:RoomPosition,range:number):CreepMoveReturnCode | ERR_NO_PATH | ERR_NOT_IN_RANGE | ERR_INVALID_TARGET
     findPath_defend(target:RoomPosition,range:number):string|null

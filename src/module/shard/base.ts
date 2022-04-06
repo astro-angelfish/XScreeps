@@ -41,7 +41,7 @@
 
 /* ShardMemory数据初始化 */
 export function InitShardMemory():void{
-    if (Game.time % 5) return
+    if (Game.time % 10) return
     var Data = JSON.parse(InterShardMemory.getLocal()) || {}
     if (Object.keys(Data).length < 3 || !Data['creep'] || !Data['misson'])
     {

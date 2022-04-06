@@ -471,7 +471,7 @@ export default class RoomMissonFrameExtension extends Room {
             }
             if (!tank_) return false
             All_i_Num = tank_.store.getUsedCapacity(misson.LabBind[i] as ResourceConstant)
-            if (All_i_Num < 4000)
+            if (All_i_Num < 2100)
             {
                 /* 资源调度 */
                 if (DispatchNum(this.name) <= 0 && this.MissionNum('Structure','资源购买') <= 0 && !checkSend(this.name,misson.LabBind[i] as ResourceConstant))

@@ -270,7 +270,7 @@ export default class CreepMissonActionExtension extends Creep {
         let id = missionData.id
         if (this.room.name != missionData.Data.disRoom || Game.shard.name != missionData.Data.shard)
         {
-            this.arriveTo(new RoomPosition(24,24,missionData.Data.disRoom),20,missionData.Data.shard)
+            this.arriveTo(new RoomPosition(24,24,missionData.Data.disRoom),20,missionData.Data.shard,missionData.Data.shardData?missionData.Data.shardData:null)
             return
         }
         this.workstate('energy')
@@ -397,7 +397,7 @@ export default class CreepMissonActionExtension extends Creep {
         if ((this.room.name != data.disRoom || Game.shard.name != data.shard) && !this.memory.swith)
         {
             this.heal(this)
-            this.arriveTo(new RoomPosition(24,24,data.disRoom),23,data.shard)
+            this.arriveTo(new RoomPosition(24,24,data.disRoom),23,data.shard,data.shardData?data.shardData:null)
         }
         else
         {

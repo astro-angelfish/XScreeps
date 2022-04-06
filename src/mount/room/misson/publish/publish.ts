@@ -256,7 +256,7 @@ export default class RoomMissonPublish extends Room {
         return thisTask
     }
 
-    public Public_helpBuild(disRoom:string,num:number,shard?:string,time?:number):MissionModel{
+    public Public_helpBuild(disRoom:string,num:number,shard?:string,time?:number,defend?:boolean):MissionModel{
         var thisTask:MissionModel = {
             name:'紧急援建',
             range:'Creep',
@@ -265,7 +265,8 @@ export default class RoomMissonPublish extends Room {
             Data:{
                 disRoom:disRoom,
                 num:num,
-                shard:shard?shard:Game.shard.name
+                shard:shard?shard:Game.shard.name,
+                defend:defend,
             },
             maxTime:2,
             reserve:true
@@ -275,7 +276,10 @@ export default class RoomMissonPublish extends Room {
         thisTask.CreepBind = {
             'architect':{num:num,bind:[],interval:time?time:1000},
         }
+        if (defend) // 有防备的
         thisTask.LabBind = this.Bind_Lab(['XZHO2','XLH2O','XLHO2','XGHO2','XKH2O'])
+        else
+        thisTask.LabBind = this.Bind_Lab(['XZHO2','XLH2O','XKH2O'])
         if (thisTask.LabBind)
         return thisTask
         return null
