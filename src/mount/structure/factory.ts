@@ -128,14 +128,11 @@ export class factoryExtension extends StructureFactory {
             {
                 // 初始化numList数据
                 let numList = {}
-                for (var i in COMMODITIES[disCom].components)
-                {
-                    numList[i] = storage_.store.getUsedCapacity(i as ResourceConstant)
-                }
                 // 判断合成资源是否足够
                 LoopA:
                 for (var i in COMMODITIES[disCom].components)
                 {
+                    numList[i] = storage_.store.getUsedCapacity(i as ResourceConstant)
                     if (COMMODITIES[disCom].level >= 4)
                     {
                         // 如果仓库内的底物少于规定量
@@ -173,6 +170,7 @@ export class factoryExtension extends StructureFactory {
                         if (numList[i] < COMMODITIES[disCom].components[i] * 10)
                         {
                             let identify = ResourceCanDispatch(this.room,i as ResourceConstant,COMMODITIES[disCom].components[i] * 10)
+                            console.log(identify,'--',i)
                             if (identify == "can")
                             {
                                 console.log(`[dispatch]<factory> 房间${this.room.name}将进行资源为${i}的资源调度!`)
