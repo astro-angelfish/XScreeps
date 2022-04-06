@@ -128,6 +128,7 @@ export class factoryExtension extends StructureFactory {
             {
                 // 初始化numList数据
                 let numList = {}
+                let flow = true
                 // 判断合成资源是否足够
                 LoopA:
                 for (var i in COMMODITIES[disCom].components)
@@ -138,6 +139,7 @@ export class factoryExtension extends StructureFactory {
                         // 如果仓库内的底物少于规定量
                         if (numList[i] < COMMODITIES[disCom].components[i] * 5)
                         {
+                            flow = false
                             // 判断一下能否调度 不能调度直接跳转到baseList相关合成判断
                             let identify = ResourceCanDispatch(this.room,i as ResourceConstant,COMMODITIES[disCom].components[i] * 5)
                             if (identify == "can")
@@ -158,19 +160,15 @@ export class factoryExtension extends StructureFactory {
                         }
                         else
                         {
-                            // 转为流水线生产模式
-                            console.log(`[factory] 房间${this.room.name}转入flow生产模式,目标商品为${disCom}`)
-                            this.room.memory.productData.state = 'flow'
-                            this.room.memory.productData.producing = {com:disCom}
-                            return
+                            continue
                         }
                     }
                     else
                     {
                         if (numList[i] < COMMODITIES[disCom].components[i] * 10)
                         {
+                            flow = false
                             let identify = ResourceCanDispatch(this.room,i as ResourceConstant,COMMODITIES[disCom].components[i] * 10)
-                            console.log(identify,'--',i)
                             if (identify == "can")
                             {
                                 console.log(`[dispatch]<factory> 房间${this.room.name}将进行资源为${i}的资源调度!`)
@@ -189,12 +187,16 @@ export class factoryExtension extends StructureFactory {
                         }
                         else
                         {
-                            console.log(`[factory] 房间${this.room.name}转入flow生产模式,目标商品为${disCom}`)
-                            this.room.memory.productData.state = 'flow'
-                            this.room.memory.productData.producing = {com:disCom}
-                            return
+                            continue
                         }
                     }
+                }
+                if (flow)
+                {
+                    console.log(`[factory] 房间${this.room.name}转入flow生产模式,目标商品为${disCom}`)
+                    this.room.memory.productData.state = 'flow'
+                    this.room.memory.productData.producing = {com:disCom}
+                    return
                 }
             }
             // 如果没有流水线商品或者商品不够生产流水线商品 就生产基本商品
