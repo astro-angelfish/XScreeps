@@ -5,7 +5,7 @@ import { Colorful, compare, isInArray, unzipPosition, zipPosition } from "@/util
 export default {
     /* 修墙 */
     repair:{
-        set(roomName:string,rtype:'global'|'special',num:number,boost:null|ResourceConstant):string{
+        set(roomName:string,rtype:'global'|'special',num:number,boost:null|ResourceConstant,level?:'T0' | 'T1' | 'T2'):string{
             let thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[repair] 不存在房间${roomName}`
             for (var i of thisRoom.memory.Misson['Creep'])
@@ -13,7 +13,7 @@ export default {
             {
                 return `[repair] 房间${roomName}已经存在类型为${rtype}的刷墙任务了`
             }
-            var thisTask = thisRoom.public_repair(rtype,num,boost,false)
+            var thisTask = thisRoom.public_repair(rtype,num,boost,level?level:'T0')
             if (thisRoom.AddMission(thisTask))
             return `[repair] 房间${roomName}挂载类型为${rtype}刷墙任务成功`
             return `[repair] 房间${roomName}挂载类型为${rtype}刷墙任务失败`

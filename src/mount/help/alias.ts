@@ -153,6 +153,10 @@ export default [
                                 ],
                                 functionName: 'MissionVisual.remove'
                             },
+                            {
+                                title: '开启/关闭自动搓像素(默认开启):',
+                                functionName: 'pixel'
+                            },
                         ]
                     },
                     {
@@ -499,6 +503,23 @@ export default [
                                 ],
                                 functionName: 'power.show'
                             },
+                            {
+                                title: '创建pc:',
+                                describe: ' 例:power.create("W1N1","queen")',
+                                params: [
+                                    { name: 'roomName', desc: '房间名' },
+                                    { name: 'role', desc: 'pc角色名' },
+                                ],
+                                functionName: 'power.create'
+                            },
+                            {
+                                title: '删除pc:',
+                                describe: ' 例:power.del("W1N1/queen/shard3")',
+                                params: [
+                                    { name: 'name', desc: 'pc名' },
+                                ],
+                                functionName: 'power.del'
+                            },
                             // factory
                             {
                                 title: '工厂等级初始化:',
@@ -677,12 +698,13 @@ export default [
                         api: [
                             {
                                 title: '刷墙:',
-                                describe: '例: repair.set("W1N1","global",1,"LH")',
+                                describe: '例: repair.set("W1N1","global",1,"LH","T0")',
                                 params: [
                                     { name: 'roomName', desc: '房间名' },
                                     { name: 'type', desc: '刷墙类型 global(全局刷墙) | special(只刷旗子下的墙)' },
                                     { name: 'num', desc: '刷墙爬数量' },
                                     { name: 'boost', desc: 'boost类型 null | LH | LH2O | XLH2O' },
+                                    { name: 'level', desc: '体型 T0 | T1 | T2 越高体型越小' },
                                 ],
                                 functionName: 'repair.set'
                             },

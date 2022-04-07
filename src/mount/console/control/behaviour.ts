@@ -469,6 +469,29 @@ export default {
                 else result += Colorful(`${i}:false\n`,'green',true)
             }
             return result
+        },
+        // 创建pc
+        create(roomName:string,pcType:'queen'):string{
+            var myRoom = Game.rooms[roomName]
+            if (!myRoom) return `[power] 未找到房间${roomName},请确认房间!`
+            if (!['queen'].includes(pcType)) return `[power] 不存在该类型pc!`
+            if (Game.powerCreeps[`${roomName}/${pcType}/${Game.shard.name}`])
+            return `[power] 已经存在名为${roomName}/${pcType}/${Game.shard.name}的pc了! `
+            let result
+            if (pcType == 'queen')
+                result = PowerCreep.create(`${roomName}/${pcType}/${Game.shard.name}`, POWER_CLASS.OPERATOR);
+            if (result == 0)
+            {
+                return `[power] 房间${roomName}成功创建${pcType}类型pc!`
+            }
+            else return `[power] 创建失败,错误码:${result}`
+        },
+        // 删除pc
+        del(name:string,pass?:boolean):string{
+            if (!Game.powerCreeps[name]) return `[power] 不存在名称为${name}的pc!`
+            if (!pass) return `[power] 未确认,验证不通过!`
+            Game.powerCreeps[name].delete()
+            return `[power] 名称为${name}的pc已经删除! 如非测试模式,可能未立即删除!请等候24小时!`
         }
     },
 
@@ -712,5 +735,8 @@ export default {
         },
     },
 
-
+    pixel():string{
+        Memory.StopPixel = !Memory.StopPixel
+        return `[pixel] 自动搓像素改为${!Memory.StopPixel}`
+    }
 }

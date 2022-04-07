@@ -344,9 +344,11 @@ export default class RoomMissonBehaviourExtension extends Room {
         }
         else if (misson.state == 2)
         {
-            powerspawn_.processPower()
-            if (powerspawn_.store.getUsedCapacity('energy') == 0 || powerspawn_.store.getUsedCapacity('power') == 0)
+            let result = powerspawn_.processPower()
+            if (result != OK)
+            {
                 this.DeleteMission(misson.id)
+            }
         }
     }
 

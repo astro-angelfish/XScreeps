@@ -1,6 +1,6 @@
 interface Room {
     Public_Carry(creepData:BindData,delayTick:number,sR:string,sX:number,sY:number,tR:string,tX:number,tY:number,rType?:ResourceConstant,num?:number):MissionModel
-    public_repair(Rtype:'global' | 'special' | 'nuker',num:number,boostType:ResourceConstant,vindicate:boolean):MissionModel
+    public_repair(Rtype:'global' | 'special' | 'nuker',num:number,boostType:ResourceConstant,level?:'T0' | 'T1' | 'T2'):MissionModel
     public_planC(disRoom:string,Cnum:number,upNum:number,shard?:shardName,):MissionModel
     Public_link(structure:string[],disStructure:string,level:number,delayTick?:number):MissionModel
     Public_dismantle(disRoom:string,shard:shardName,num:number,interval?:number,boost?:boolean):MissionModel

@@ -4,21 +4,25 @@ import { Colorful, GenerateAbility } from "@/utils";
 /* 房间原型拓展   --行为  --维护任务 */
 export default class RoomMissonVindicateExtension extends Room {
     public Task_Repair(mission:MissionModel):void{
+        /* 根据level决定任务爬虫体型 */
+        let level = mission.Data.level
+        if (!level) mission.Data.level = 'T0'
+        if (level == 'T2')
+        {
+            global.MSB[mission.id] ={'repair':GenerateAbility(6,4,10,0,0,0,0,0)}
+        }
+        else if (level == 'T1')
+        {
+            global.MSB[mission.id] ={'repair':GenerateAbility(10,10,10,0,0,0,0,0)}
+        }
+        else if (level == 'T0')
+        {
+            // 默认配置
+        }
+        if ((Game.time - global.Gtime[this.name]) % 8) return
         if (mission.LabBind)
         {
             if (!this.Check_Lab(mission,'transport','complex')) return
-        }
-        if (mission.Data.RepairType == 'global')
-        {
-
-        }
-        else if (mission.Data.RepairType == 'special')
-        {
-
-        }
-        else if (mission.Data.RepairType == 'nuker')
-        {
-
         }
     }
 

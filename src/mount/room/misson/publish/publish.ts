@@ -45,10 +45,10 @@ export default class RoomMissonPublish extends Room {
      * @param Rtype     维修范围： global->全局维修 special->黄黑旗下建筑维修 nuker->核弹防御
      * @param num       任务相关维修爬数量
      * @param boostType boost类型 null->无boost LH/LH2O/XLH2O是boost类型
-     * @param vindicate 是否减少爬虫部件(一般用于正常维护，而非战时)
+     * @param level     身体部件 分为 T0 T1 T2
      * @returns         任务对象
      */
-    public public_repair(Rtype:'global' | 'special' | 'nuker',num:number,boostType:ResourceConstant,vindicate:boolean):MissionModel
+    public public_repair(Rtype:'global' | 'special' | 'nuker',num:number,boostType:ResourceConstant,level?:'T0' | 'T1' | 'T2'):MissionModel
     {
         var thisTask:MissionModel = {
             name:'墙体维护',
@@ -59,11 +59,11 @@ export default class RoomMissonPublish extends Room {
                 RepairType:Rtype,
                 num:num,
                 boostType:boostType,
-                vindicate:vindicate
+                level:level
             },
             maxTime:3
         }
-        thisTask.CreepBind = {'repair':{num:num,bind:[]}}
+        thisTask.CreepBind = {'repair':{num:num,bind:[],MSB:(level?true:false)}}
         if (boostType == 'LH')
         {
             var labData = this.Bind_Lab(['LH'])
@@ -273,7 +273,7 @@ export default class RoomMissonPublish extends Room {
         }
         thisTask.reserve = true
         thisTask.CreepBind = {
-            'architect':{num:num,bind:[],interval:time?time:1000},
+            'architect':{num:num,bind:[],interval:time?time:1000,MSB:(defend?false:true)},
         }
         if (defend) // 有防备的
         thisTask.LabBind = this.Bind_Lab(['XZHO2','XLH2O','XLHO2','XGHO2','XKH2O'])

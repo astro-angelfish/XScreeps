@@ -154,8 +154,8 @@ export default class terminalExtension extends StructureTerminal {
                 console.log(Colorful(`[紧急]房间${this.room.name}创建energy订单,价格:${highest + 0.01};数量:100000`,'green',true))
             }
         }
-        /* 仓库资源过于饱和就卖掉能量 */
-        if (storage_.store.getFreeCapacity() < 50000)
+        /* 仓库资源过于饱和就卖掉能量 超出则不卖(考虑到pc技能间隔) */
+        if (storage_.store.getFreeCapacity() < 50000 && storage_.store.getCapacity() >= storage_.store.getUsedCapacity())
         {
             /* 如果仓库饱和(小于200k空间)，而且仓库能量超过400K,就卖能量 */
             if (storage_.store.getUsedCapacity('energy') > 350000)

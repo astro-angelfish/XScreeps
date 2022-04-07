@@ -98,7 +98,7 @@ export class factoryExtension extends StructureFactory {
         var factoryData = this.room.memory.productData.balanceData
         /* factory自身等级管理 */
         if (this.level) { if (this.level != this.room.memory.productData.level) this.room.memory.productData.level = this.level }
-        else this.room.memory.Factory.level = 0
+        else this.room.memory.productData.level = 0
         for (var i in factoryData) {
             /* 数量小于0就删除数据，节省memory */
             if (factoryData[i].num <= 0) 
@@ -420,72 +420,11 @@ export class factoryExtension extends StructureFactory {
     }
 
     /**
-     * 改变工厂等级
+     * 更新工厂等级
      */
     public enhance_factory(): string {
         if (!Game.powerCreeps[`${this.room.name}/queen/${Game.shard.name}`]) return `${this.room.name}此房间无pc请先孵化pc`
         this.room.enhance_factory();
         return `发布pc确定工厂等级任务成功`
-    }
-}
-
-
-export class factoryConsole extends factoryExtension {
-    /*
-     * 用户操作 - 帮助
-     */
-    public help(): string {
-        return createHelp({
-            name: 'Factory 控制台',
-            describe: 'Factory 默认关闭，新增资源平衡和合成就会开启。',
-            api: [
-                {
-                    title: '添加工厂合成',
-                    params: [
-                        { name: 'type', desc: '合成资源类型' }
-                    ],
-                    functionName: 'add'
-                },
-                {
-                    title: '删除工厂合成',
-                    params: [
-                        { name: 'type', desc: '删除资源类型' }
-                    ],
-                    functionName: 'remove'
-                },
-                {
-                    title: '添加单个物品固定数量工厂合成',
-                    params: [
-                        { name: 'type', desc: '合成资源类型' },
-                        { name: 'num', desc: '合成资源数量' }
-                    ],
-                    functionName: 'addDataProduce'
-                },
-                {
-                    title: '删除单个物品固定数量工厂合成',
-                    params: [
-                        { name: 'type', desc: '删除资源类型' }
-                    ],
-                    functionName: 'removeDataProduce'
-                },
-                {
-                    title: '创建资源平衡',
-                    params: [
-                        { name: 'type', desc: '资源类型' },
-                        { name: 'num', desc: '平衡数量 (多拿少补 默认5000)' },
-                        { name: 'fill', desc: '是否少补 (默认ture)' }
-                    ],
-                    functionName: 'CreatingResourceBalance'
-                },
-                {
-                    title: '查看合成',
-                    functionName: 'stats'
-                },
-                {
-                    title: '确定工厂等级',
-                    functionName: 'enhance_factory'
-                }
-            ]
-        })
     }
 }

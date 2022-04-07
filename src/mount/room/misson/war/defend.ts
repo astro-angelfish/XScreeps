@@ -105,7 +105,7 @@ export default class DefendWarExtension extends Room {
             /* 激活维修防核任务 */
             else
             {
-                var thisTask:MissionModel = this.public_repair('nuker',num,boostType,false)
+                var thisTask:MissionModel = this.public_repair('nuker',num,boostType,'T0')
                 if (thisTask && allDamageNum > 0)
                 this.AddMission(thisTask)
             }

@@ -20,4 +20,5 @@ export function MemoryInit():void {
     if (!Memory.outMineData) Memory.outMineData = {}
     if (!global.warData) global.warData = {tower:{},enemy:{},flag:{},structure:{}}
     if (!global.MSB) global.MSB = {}
+    if (!Memory.StopPixel) Memory.StopPixel = false
 }
