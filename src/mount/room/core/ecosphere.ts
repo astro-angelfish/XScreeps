@@ -42,13 +42,16 @@ export default class RoomCoreEcosphereExtension extends Room {
                     }
                 }
             }
-            else if (level == 6)        // 6级出控制器Link 便于冲级
+            else if (level == 6)        // 6级出source的Link
             {
-                let controller = this.controller
-                let points = controller.pos.getSourceLinkVoid()
+                
+                let sourceIDs = this.memory.StructureIdData.source
+                if (sourceIDs.length <= 1) return
+                let source = Game.getObjectById(sourceIDs[1]) as Source
+                let points = source.pos.getSourceLinkVoid()
                 if (points.length <= 0) return
                 LoopA:
-                for (let i of points)
+                for (var i of points)
                 {
                     if(i.lookFor(LOOK_CONSTRUCTION_SITES).length <= 0 && i.lookFor(LOOK_STRUCTURES).length <= 0)
                     {
@@ -57,15 +60,13 @@ export default class RoomCoreEcosphereExtension extends Room {
                     }
                 }
             }
-            else if (level == 7)        // 7级出source的Link
+            else if (level == 7)        // 7级出控制器Link
             {
-                let sourceIDs = this.memory.StructureIdData.source
-                if (sourceIDs.length <= 1) return
-                let source = Game.getObjectById(sourceIDs[1]) as Source
-                let points = source.pos.getSourceLinkVoid()
+                let controller = this.controller
+                let points = controller.pos.getSourceLinkVoid()
                 if (points.length <= 0) return
                 LoopA:
-                for (var i of points)
+                for (let i of points)
                 {
                     if(i.lookFor(LOOK_CONSTRUCTION_SITES).length <= 0 && i.lookFor(LOOK_STRUCTURES).length <= 0)
                     {
