@@ -46,6 +46,7 @@ export default class CreepMissonTransportExtension extends Creep {
         }
         else
         {
+            // 优先提取storage里的能量 不够提取terminal里的
             if (storage_.store['energy'] >= this.store.getCapacity())
             this.withdraw_(storage_,'energy')
             else

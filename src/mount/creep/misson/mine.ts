@@ -64,11 +64,29 @@ export default class CreepMissonMineExtension extends Creep {
                 }
                 else
                 {
-                    if (this.room.controller && (!this.room.controller.sign || (Game.time-this.room.controller.sign.time) > 50000))
+                    if (this.room.controller && (!this.room.controller.sign || (Game.time-this.room.controller.sign.time) > 100000))
                     {
-                        this.signController(this.room.controller,`${this.owner.username}'s 🌾🌾🌾 room!  Auto clean, Please keep distance!`)
+                        if (!["superbitch","ExtraDim"].includes(this.owner.username))
+                        {
+                            this.signController(this.room.controller,`${this.owner.username}'s 🌾 room!  Auto clean, Please keep distance!`)
+                        }
+                        else
+                        {
+                            this.signController(this.room.controller,`躬耕陇亩`)
+                        }
                     }
-                    this.reserveController(this.room.controller)
+                    /* somygame 改 */
+                    let _reserve_state = 0;
+                    if (this.room.controller.reservation) {
+                        if (this.room.controller.reservation.username == "Invader" && this.room.controller.reservation.ticksToEnd > 0) {
+                            this.attackController(this.room.controller)
+                            _reserve_state = 1
+                        }
+                    }
+                    if (_reserve_state < 1) {
+                        this.reserveController(this.room.controller)
+                    }
+                    /* 终 */
                     if (Game.time % 91 == 0)
                     {
                         if (Memory.outMineData && Memory.outMineData[this.room.name])

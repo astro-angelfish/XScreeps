@@ -117,7 +117,7 @@ export default class RoomMissonFrameExtension extends Room {
         var coolTick = mis.cooldownTick?mis.cooldownTick:10
         if (!this.memory.CoolDownDic[mis.name])
         this.memory.CoolDownDic[mis.name] = coolTick
-        mis.level?mis.level:10  // 任务等级默认为10
+        mis.level = mis.level?mis.level:10  // 任务等级默认为10
         // 挂载任务
         this.memory.Misson[mis.range].push(mis)
         this.memory.Misson[mis.range].sort(compare('level'))      // 每次提交任务都根据优先级排列一下

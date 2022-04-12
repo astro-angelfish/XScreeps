@@ -3,7 +3,8 @@
 import { generateID, isInArray } from "@/utils"
 import { squadMove, squadNear } from "./move/move"
 import { initSquad, Squadaction, SquadAttackOrient, SquadColorFlagRange, SquadNameFlagPath, SquadSteady } from "./work/action"
-import { getStandCreep, getStandPos, SquadArrivedRoom, SquadAttackDirection, SquadPosDirection, SquadReady } from "./work/state"
+import { getStandCreep, SquadArrivedRoom, SquadAttackDirection, SquadPosDirection, SquadReady } from "./work/state"
+
 
 // 主程序执行
 export function SquadManager():void{

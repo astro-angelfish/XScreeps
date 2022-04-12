@@ -326,6 +326,7 @@ export default class CreepMissonActionExtension extends Creep {
                     this.transfer_(store,'energy')
                     return
                 }
+                this.upgrade_()
 
             }
             else
