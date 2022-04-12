@@ -10,6 +10,7 @@ export default class RoomCoreInitExtension extends Room {
         this.RoomStructureInit()
         this.RoomSpawnListInit()
         this.RoomGlobalStructure()
+        this.RoomGlobalDynamicconfig()
     }
 
     /**
@@ -36,6 +37,9 @@ export default class RoomCoreInitExtension extends Room {
         if (!this.memory.switch) this.memory.switch = {}
         if (!this.memory.enemy) this.memory.enemy = {}
         if (!this.memory.productData) this.memory.productData = { level: 0, state: 'sleep', baseList: {}, balanceData: {} }
+        if (!this.memory.DynamicConfig) this.memory.DynamicConfig = {}
+        if (!this.memory.DynamicConfig.Dynamicupgrade) this.memory.DynamicConfig.Dynamicupgrade = false
+
     }
 
     /**
@@ -161,8 +165,7 @@ export default class RoomCoreInitExtension extends Room {
         }
         /* 仓库记忆更新 */
         if (level >= 4 && !this.memory.StructureIdData.storageID) {
-            var new_storage = this.find(FIND_MY_STRUCTURES, { filter: { structureType: STRUCTURE_STORAGE } })
-            if (new_storage.length == 1) this.memory.StructureIdData.storageID = new_storage[0].id
+            if (this.storage) this.memory.StructureIdData.storageID = this.storage.id
         }
         /* 防御塔记忆更新 */
         if (Game.time % tickratio * 25 == 0 && this.controller.level >= 3) {
@@ -179,8 +182,7 @@ export default class RoomCoreInitExtension extends Room {
         }
         /* 终端识别 */
         if (!this.memory.StructureIdData.terminalID && level >= 6) {
-            var Terminal = this.getStructure(STRUCTURE_TERMINAL)
-            if (Terminal.length == 1) this.memory.StructureIdData.terminalID = Terminal[0].id
+            if (this.terminal) this.memory.StructureIdData.terminalID = this.terminal.id
         }
         /* 提取器识别 */
         if (!this.memory.StructureIdData.extractID && this.controller.level >= 5) {
@@ -328,6 +330,26 @@ export default class RoomCoreInitExtension extends Room {
                 }
                 otlist.push(ot)
             }
+        }
+    }
+
+    /**
+     * 房间自适应动态配置
+     */
+    public RoomGlobalDynamicconfig(): void {
+        if (Game.time % 8 != 0) { return }
+        let level = this.controller.level
+        if (this.memory.DynamicConfig.Dynamicupgrade && level < 8) {
+            let room_energy = 0;
+            if (!this.storage) { return }
+            room_energy = this.storage.store.getUsedCapacity(RESOURCE_ENERGY)
+            if (this.terminal) {
+                room_energy += this.terminal.store.getUsedCapacity(RESOURCE_ENERGY)
+            }
+            let creep_num = Math.floor(room_energy / 100000) + 1;
+            creep_num = creep_num > 5 ? 5 : creep_num
+            this.memory.SpawnConfig.upgrade.num = creep_num;
+            console.log(this.name, 'upgrade动态调整', creep_num);
         }
     }
 }

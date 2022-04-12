@@ -353,6 +353,15 @@ export default {
             }
             return `[upgrade] 房间${roomName}修改急速冲级任务数量失败!`
         },
+        Dynamicquick(roomName:string,boolean:boolean):string{
+            var thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[repair] 不存在房间${roomName}`
+            thisRoom.memory.DynamicConfig.Dynamicupgrade = boolean
+            if(boolean){
+                return `[upgrade] 房间${roomName}启用动态升级!`
+            }
+            return `[upgrade] 房间${roomName}关闭动态升级!`
+        }
     },
     /* 搬运 */
     carry:{
