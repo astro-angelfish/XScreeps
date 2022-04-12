@@ -44,6 +44,8 @@ export default class RoomCoreInitExtension extends Room {
     public RoomStructureInit(): void {
         let level = this.controller.level
         let StructureData = this.memory.StructureIdData
+        let tickratio = 6;
+        if (Game.time % tickratio != 0) { return }
         /* Spawn建筑记忆更新 */
         if (!StructureData.spawn) StructureData.spawn = []
         if (level <= 6 && StructureData.spawn.length < 1) {
@@ -53,7 +55,7 @@ export default class RoomCoreInitExtension extends Room {
             }
         }
         else if ((level == 7 && StructureData.spawn.length < 2) || (level >= 8 && StructureData.spawn.length < 3)) {
-            if (Game.time % 10 == 0) {
+            if (Game.time % tickratio * 2 == 0) {
                 let ASpawn = this.getStructure('spawn') as StructureSpawn[]
                 for (let sp of ASpawn) {
                     if (!isInArray(StructureData.spawn, sp.id))
@@ -95,7 +97,7 @@ export default class RoomCoreInitExtension extends Room {
         /* 升级Link记忆更新 */
         if (!StructureData.source_links) StructureData.source_links = []
         if (level >= 6 && !StructureData.upgrade_link) {
-            if (Game.time % 20 == 0) {
+            if (Game.time % tickratio * 4 == 0) {
                 let upgrade_link = this.controller.pos.getRangedStructure([STRUCTURE_LINK], 4, 0) as StructureLink[]
                 if (upgrade_link.length >= 1)
                     for (let ul of upgrade_link) {
@@ -163,7 +165,7 @@ export default class RoomCoreInitExtension extends Room {
             if (new_storage.length == 1) this.memory.StructureIdData.storageID = new_storage[0].id
         }
         /* 防御塔记忆更新 */
-        if (Game.time % 150 == 0 && this.controller.level >= 3) {
+        if (Game.time % tickratio * 25 == 0 && this.controller.level >= 3) {
             if (!this.memory.StructureIdData.AtowerID) this.memory.StructureIdData.AtowerID = []
             this.memory.StructureIdData.AtowerID as string[]
             var ATowers = this.getStructure(STRUCTURE_TOWER) as StructureTower[]
@@ -186,7 +188,7 @@ export default class RoomCoreInitExtension extends Room {
             if (extract.length == 1) this.memory.StructureIdData.extractID = extract[0].id
         }
         /* 实验室识别 */
-        if (Game.time % 200 == 0) {
+        if (Game.time % tickratio * 34 == 0) {
             var ALabs = this.getStructure(STRUCTURE_LAB) as StructureLab[]
             if (ALabs.length >= 1) {
                 if (!this.memory.StructureIdData.labs) this.memory.StructureIdData.labs = []
@@ -249,7 +251,7 @@ export default class RoomCoreInitExtension extends Room {
             }
         }
         let carry_num = 0;
-        if (Game.time % 17 == 0) {
+        if (Game.time % tickratio * 3 == 0) {
             for (let id in this.memory.harvestData) {
                 if (!this.memory.harvestData[id].containerID) {
                     let source = Game.getObjectById(id) as Source
@@ -283,6 +285,7 @@ export default class RoomCoreInitExtension extends Room {
      * 房间全局建筑初始化
      */
     public RoomGlobalStructure(): void {
+        if (Game.time % 7 != 0) { return }
         // 目前只支持 storage terminal factory powerspawn
         if (this.memory.StructureIdData.storageID) {
             global.Stru[this.name]['storage'] = Game.getObjectById(this.memory.StructureIdData.storageID) as StructureStorage
