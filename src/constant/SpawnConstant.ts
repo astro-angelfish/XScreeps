@@ -92,7 +92,7 @@ export const RoleLevelData = {
         3:{bodypart:[3,3,6,0,0,0,0,0],num:3},
         4:{bodypart:[4,4,8,0,0,0,0,0],num:2},
         5:{bodypart:[4,4,8,0,0,0,0,0],num:2},
-        6:{bodypart:[5,2,5,0,0,0,0,0],num:2},
+        6:{bodypart:[5,5,10,0,0,0,0,0],num:2},
         7:{bodypart:[10,2,10,0,0,0,0,0],num:2},
         8:{bodypart:[15,3,15,0,0,0,0,0],num:1},
     },    
