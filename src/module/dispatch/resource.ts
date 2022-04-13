@@ -55,22 +55,22 @@ export function ResourceDispatch(thisRoom:Room):void{
                     // 在一定范围内寻找最便宜的订单deal 例如平均价格20 范围 10 最高价格31 便只能接受30以下的价格 （根据资源不同选择不同参数）
                     console.log(Colorful(`[资源调度] 房间${thisRoom.name}需求资源[${i.rType}]无法调度,将进行购买! 购买方式为${i.mtype},购买数量:${i.num}`,'yellow'))
                     // 能量 ops
-                    if (isInArray(['ops','energy'],i.rType)){let task = thisRoom.Public_Buy(i.rType,i.num,5,10);
+                    if (isInArray(['ops','energy'],i.rType)){let task = thisRoom.public_Buy(i.rType,i.num,5,10);
                         if (task) {thisRoom.AddMission(task);i.delayTick = 0};continue}
                     // 原矿 中间化合物
-                    else if (isInArray(['X','L','H','O','Z','K','U','G','OH','ZK','UL'],i.rType)){let task = thisRoom.Public_Buy(i.rType,i.num,10,30);
+                    else if (isInArray(['X','L','H','O','Z','K','U','G','OH','ZK','UL'],i.rType)){let task = thisRoom.public_Buy(i.rType,i.num,10,30);
                         if (task) {thisRoom.AddMission(task);i.delayTick = 0};continue}
                     // t3
-                    else if (isInArray(t3,i.rType)){let task = thisRoom.Public_Buy(i.rType,i.num,50,150);
+                    else if (isInArray(t3,i.rType)){let task = thisRoom.public_Buy(i.rType,i.num,50,150);
                         if (task) {thisRoom.AddMission(task);i.delayTick = 0};continue}
                     // power
-                    else if (i.rType == 'power') {let task = thisRoom.Public_Buy(i.rType,i.num,20,70);
+                    else if (i.rType == 'power') {let task = thisRoom.public_Buy(i.rType,i.num,20,70);
                         if (task) {thisRoom.AddMission(task);i.delayTick = 0};continue}
                     // t1 t2
-                    else if (isInArray(t2,i.rType) || isInArray(t1,i.rType)){let task = thisRoom.Public_Buy(i.rType,i.num,20,65);
+                    else if (isInArray(t2,i.rType) || isInArray(t1,i.rType)){let task = thisRoom.public_Buy(i.rType,i.num,20,65);
                         if (task) {thisRoom.AddMission(task);i.delayTick = 0};continue}
                     // 其他商品类资源 bar类资源
-                    else{let task = thisRoom.Public_Buy(i.rType,i.num,50,200);
+                    else{let task = thisRoom.public_Buy(i.rType,i.num,50,200);
                         if (task) {thisRoom.AddMission(task);i.delayTick = 0};continue}
                 }
                 else
@@ -93,7 +93,7 @@ export function ResourceDispatch(thisRoom:Room):void{
             if ((storage_.store.getUsedCapacity(i.rType) - limitNum) >= i.num)
             {
                 var SendNum = i.num > 50000?50000:i.num
-                let task = thisRoom.Public_Send(i.sourceRoom,i.rType,SendNum)
+                let task = thisRoom.public_Send(i.sourceRoom,i.rType,SendNum)
                 if (task && thisRoom.AddMission(task))
                 {
                     if (i.num <= 50000) i.dealRoom = thisRoom.name // 如果调度数量大于50k 则只减少num数量
@@ -106,7 +106,7 @@ export function ResourceDispatch(thisRoom:Room):void{
             if ((storage_.store.getUsedCapacity(i.rType)-limitNum) > 0 && storage_.store.getUsedCapacity(i.rType)-limitNum < i.num)
             {
                 let SendNum = storage_.store.getUsedCapacity(i.rType)-limitNum
-                let task = thisRoom.Public_Send(i.sourceRoom,i.rType,SendNum)
+                let task = thisRoom.public_Send(i.sourceRoom,i.rType,SendNum)
                 if (task && thisRoom.AddMission(task))
                 {
                     console.log(`房间${thisRoom.name}接取房间${i.sourceRoom}的资源调度申请,资源:${i.rType},数量:${SendNum}`)

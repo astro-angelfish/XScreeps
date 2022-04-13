@@ -1,6 +1,7 @@
 import { resourceComDispatch } from "@/constant/ResourceConstant"
 import { avePrice, haveOrder, highestPrice, RecognizeLab } from "@/module/fun/funtion"
 import { Colorful, compare, isInArray, unzipPosition, zipPosition } from "@/utils"
+import { result } from "lodash"
 export default {
     /* 终端行为 */
     terminal:{
@@ -8,7 +9,7 @@ export default {
         send(roomName:string,disRoom:string,rType:ResourceConstant,num:number):string{
             var thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[terminal] 不存在房间${roomName}`
-            var thisTask = thisRoom.Public_Send(disRoom,rType,num)
+            var thisTask = thisRoom.public_Send(disRoom,rType,num)
             /* 查看资源是否足够 */
             var terminal_ = Game.getObjectById(thisRoom.memory.StructureIdData.terminalID) as StructureTerminal
             var storage_ = Game.getObjectById(thisRoom.memory.StructureIdData.storageID) as StructureStorage
@@ -120,6 +121,45 @@ export default {
         }
     },
 
+    /* 物流 */
+    logistic:{
+        send(roomName:string,disRoom:string,rType?:ResourceConstant,num?:number):string{
+            var thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[logistic] 不存在房间${roomName}`
+            let thisTask = thisRoom.public_resource_transfer(disRoom,rType?rType:null,num?num:null)
+            if (thisTask && thisRoom.AddMission(thisTask))
+                return Colorful(`[logistic] 房间${roomName} --> ${disRoom}资源转移任务已经下达，资源类型:${rType?rType:"所有资源"} | 数量:${num?num:"所有"}`,'green')
+            return Colorful(`[logistic] 房间${roomName} --> ${disRoom}资源转移任务已经下达失败!`,'red')
+        },
+        Csend(roomName:string,disRoom:string):string{
+            var thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[logistic] 不存在房间${roomName}`
+            for (var i of thisRoom.memory.Misson['Room'])
+            {
+                if (i.name == '资源转移' && thisRoom.DeleteMission(i.id))
+                return Colorful(`[logistic] 房间${roomName} --(${i.Data.rType})--> ${disRoom}资源转移任务删除成功!`,'green')
+            }
+            return Colorful(`[logistic] 房间${roomName} --> ${disRoom}资源转移任务删除失败!`,'red')
+        },
+        // 查询所有房间的资源转移相关的物流信息
+        show():string{
+            let result = `[logisitic] 资源转移物流信息:\n`
+            for (var i in Memory.RoomControlData)
+            {
+                if (Game.rooms[i] && Game.rooms[i].controller && Game.rooms[i].controller.my)
+                {
+                    let room_ = Game.rooms[i]
+                    let task = room_.MissionName('Room','资源转移')
+                    if (task)
+                    {
+                        result += `${room_.name}->${task.Data.disRoom}: 资源类型:${task.Data.rType?task.Data.rType:"所有资源"},数量:${task.Data.num?task.Data.num:'所有'}\n`
+                    }
+                }
+            }
+            if (result ==  `[logisitic] 资源转移物流信息:\n`) return `[logisitic] 未发现资源转移物流信息`
+            return result
+        },
+    },
     /* 外矿 */
     mine:{
         // 采集外矿

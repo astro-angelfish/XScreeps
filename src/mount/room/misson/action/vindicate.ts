@@ -1,5 +1,5 @@
 import { avePrice, haveOrder, highestPrice } from "@/module/fun/funtion";
-import { Colorful, GenerateAbility } from "@/utils";
+import { Colorful, GenerateAbility, isInArray } from "@/utils";
 
 /* 房间原型拓展   --行为  --维护任务 */
 export default class RoomMissonVindicateExtension extends Room {
@@ -71,6 +71,53 @@ export default class RoomMissonVindicateExtension extends Room {
             if(!this.Check_Lab(mission,'transport','complex')) return // 如果目标lab的t3少于 1000 发布搬运任务
         }
         
+    }
+
+    /* 资源转移任务 */
+    public Task_Resource_transfer(mission:MissionModel):void{
+        if ((Game.time-global.Gtime[this.name]) % 50) return
+        let storage_ = global.Stru[this.name]['storage'] as StructureStorage
+        let terminal_ = global.Stru[this.name]['terminal'] as StructureTerminal
+        if (!storage_ || !terminal_)
+        {
+            this.DeleteMission(mission.id)
+            return
+        }
+        if (this.MissionNum('Structure','资源传送') > 0) return //有传送任务就先不执行
+        if (storage_.store.getUsedCapacity('energy') < 200000) return   // 仓库资源太少不执行
+        // 不限定资源代表除了能量和ops之外所有资源都要转移
+        if (!mission.Data.rType)
+        {
+            for (var i in storage_.store)
+            {
+                if (isInArray(['energy','ops'],i)) continue
+                let missNum = (storage_.store[i] >= 50000)?50000:storage_.store[i]
+                let sendTask = this.public_Send(mission.Data.disRoom,i as ResourceConstant,missNum)
+                if (this.AddMission(sendTask))
+                return
+                
+            }
+            // 代表已经没有资源了
+            this.DeleteMission(mission.id)
+            return
+        }
+        else
+        {
+            let rType = mission.Data.rType as ResourceConstant
+            let num = mission.Data.num as number
+            if (num <= 0 || storage_.store.getUsedCapacity(rType) <= 0)   // 数量或存量小于0 就删除任务
+            {
+                this.DeleteMission(mission.id)
+                return
+            }
+            let missNum = (num >= 50000)?50000:num
+            if (missNum > storage_.store.getUsedCapacity(rType)) missNum = storage_.store.getUsedCapacity(rType)
+            let sendTask = this.public_Send(mission.Data.disRoom,rType,missNum)
+            if (sendTask && this.AddMission(sendTask))
+            {
+                mission.Data.num -= missNum
+            }
+        }
     }
 
 }

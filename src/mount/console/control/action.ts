@@ -1,3 +1,4 @@
+import { randomSign } from "@/constant/rockyou"
 import { avePrice, haveOrder, highestPrice } from "@/module/fun/funtion"
 import room from "@/mount/room"
 import { Colorful, compare, isInArray, unzipPosition, zipPosition } from "@/utils"
@@ -57,7 +58,7 @@ export default {
         Z(roomName:string,disRoom:string,num:number):string{
             var thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[plan] 不存在房间${roomName}`
-            var thisTask = thisRoom.Public_Send(disRoom,'Z',num)
+            var thisTask = thisRoom.public_Send(disRoom,'Z',num)
             /* 查看资源是否足够 */
             var terminal_ = Game.getObjectById(thisRoom.memory.StructureIdData.terminalID) as StructureTerminal
             var storage_ = Game.getObjectById(thisRoom.memory.StructureIdData.storageID) as StructureStorage
@@ -87,7 +88,7 @@ export default {
         set(roomName:string,disRoom:string,shard:shardName,num:number,Cnum:number = 1,shardData?:shardRoomData[]):string{
             var thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[expand] 不存在房间${roomName}`
-            let task = thisRoom.Public_expand(disRoom,shard,num,Cnum)
+            let task = thisRoom.public_expand(disRoom,shard,num,Cnum)
             if (task)
             {
                 if (shardData) task.Data.shardData = shardData
@@ -119,7 +120,7 @@ export default {
                 return `[war] 房间${roomName}已经存在去往${disRoom}(${shard})的该类型任务了!`
             }
             let interval_ = interval?interval:1000
-            let task = thisRoom.Public_dismantle(disRoom,shard,num,interval_,boost)
+            let task = thisRoom.public_dismantle(disRoom,shard,num,interval_,boost)
             if (task)
             {
                 if (shardData) task.Data.shardData = shardData
@@ -149,7 +150,7 @@ export default {
             {
                 return `[war] 房间${roomName}已经存在去往${disRoom}(${shard})的该类型任务了!`
             }
-            let task = thisRoom.Public_support(disRoom,sType,shard,num,boost)
+            let task = thisRoom.public_support(disRoom,sType,shard,num,boost)
             if (task)
             {
                 if (shardData) task.Data.shardData = shardData
@@ -181,7 +182,7 @@ export default {
             {
                 return `[war] 房间${roomName}已经存在去往${disRoom}(${shard})的该类型任务了!`
             }
-            let task = thisRoom.Public_control(disRoom,shard,interval)
+            let task = thisRoom.public_control(disRoom,shard,interval)
             if (task)
             {
                 if (shardData) task.Data.shardData = shardData
@@ -211,7 +212,7 @@ export default {
             {
                 return `[war] 房间${roomName}已经存在去往${disRoom}(${shard})的该类型任务了!`
             }
-            var thisTask = myRoom.Public_aio(disRoom,shard,CreepNum,time,boost,bodylevel)
+            var thisTask = myRoom.public_aio(disRoom,shard,CreepNum,time,boost,bodylevel)
             if (thisTask)
             {
                 if (shardData) thisTask.Data.shardData = shardData
@@ -299,7 +300,7 @@ export default {
             {
                 return `[war] 房间${roomName}已经存在去往${disRoom}(${shard})的该类型任务了!`
             }
-            var thisTask = thisRoom.Public_Double(disRoom,shard,num,mType,interval)
+            var thisTask = thisRoom.public_Double(disRoom,shard,num,mType,interval)
             if (thisTask)
             {
                 if (shardData) thisTask.Data.shardData = shardData
@@ -326,7 +327,7 @@ export default {
         quick(roomName:string,num:number,boostType:null| ResourceConstant):string{
             let thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[upgrade] 不存在房间${roomName}`
-            var thisTask = thisRoom.Public_quick(num,boostType)
+            var thisTask = thisRoom.public_quick(num,boostType)
             if (thisTask && thisRoom.AddMission(thisTask))
             return `[upgrade] 房间${roomName}挂载急速冲级任务成功`
             return `[upgrade] 房间${roomName}挂载急速冲级任务失败`
@@ -361,7 +362,7 @@ export default {
             if (!thisRoom) return `[carry] 不存在房间${roomName}`
             let time = 99999
             if (!ResNum) time = 30000
-            var thisTask = thisRoom.Public_Carry({'truck':{num:CreepNum?CreepNum:1,bind:[]}},time,sP.roomName,sP.x,sP.y,dP.roomName,dP.x,dP.y,res,ResNum?ResNum:undefined)
+            var thisTask = thisRoom.public_Carry({'truck':{num:CreepNum?CreepNum:1,bind:[]}},time,sP.roomName,sP.x,sP.y,dP.roomName,dP.x,dP.y,res,ResNum?ResNum:undefined)
             if (thisRoom.AddMission(thisTask)) return `[carry] 房间${roomName}挂载special搬运任务成功`
             return `[carry] 房间${roomName}挂载special搬运任务失败`
         },
@@ -383,7 +384,7 @@ export default {
         build(roomName:string,disRoom:string,shard:shardName = Game.shard.name as shardName,num:number,interval:number,defend:boolean = false,shardData?:shardRoomData[]):string{
             var thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[support] 不存在房间${roomName}`
-            let task = thisRoom.Public_helpBuild(disRoom,num,shard,interval,defend)
+            let task = thisRoom.public_helpBuild(disRoom,num,shard,interval,defend)
             if (task)
             {
                 if (shardData) task.Data.shardData = shardData
@@ -434,7 +435,7 @@ export default {
         sign(roomName:string,disRoom:string,shard:shardName,str:string,shardData?:shardRoomData[]):string{
             var thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[scout] 不存在房间${roomName}`
-            let task = thisRoom.Public_Sign(disRoom,shard,str)
+            let task = thisRoom.public_Sign(disRoom,shard,str)
             if (shardData) task.Data.shardData = shardData
             if (!task) return '[scout] 任务对象生成失败'
             if (thisRoom.AddMission(task))
@@ -453,6 +454,17 @@ export default {
                 }
             }
             return Colorful(`[scout] 房间${roomName}房间签名任务失败`,'red')
+        },
+        // 随机签名 手册不收录
+        Rsign(roomName:string,disRoom:string,shard:shardName,shardData?:shardRoomData[]):string{
+            var thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[scout] 不存在房间${roomName}`
+            let task = thisRoom.public_Sign(disRoom,shard,randomSign())
+            if (shardData) task.Data.shardData = shardData
+            if (!task) return '[scout] 任务对象生成失败'
+            if (thisRoom.AddMission(task))
+            return Colorful(`[scout] 房间${roomName}挂载房间签名任务成功 -> ${disRoom}`,'green')
+            return Colorful(`[scout] 房间${roomName}挂载房间签名任务失败 -> ${disRoom}`,'red')
         },
     },
 

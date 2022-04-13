@@ -28,7 +28,7 @@ export class factoryExtension extends StructureFactory {
             if (!this.room.memory.productData.balanceData[i] || !this.room.memory.productData.balanceData[i].num)
             {
                 if (storage_.store.getFreeCapacity() < 10000) continue
-                let thisTask = this.room.Public_Carry({ 'manage': { num: 1, bind: [] } }, 10, this.room.name, this.pos.x, this.pos.y, this.room.name, storage_.pos.x, storage_.pos.y, i as ResourceConstant, num)
+                let thisTask = this.room.public_Carry({ 'manage': { num: 1, bind: [] } }, 10, this.room.name, this.pos.x, this.pos.y, this.room.name, storage_.pos.x, storage_.pos.y, i as ResourceConstant, num)
                 this.room.AddMission(thisTask)
                 continue
             }
@@ -37,7 +37,7 @@ export class factoryExtension extends StructureFactory {
                 if (num > this.room.memory.productData.balanceData[i].num)
                 {
                     if (storage_.store.getFreeCapacity() < 10000) continue
-                    let thisTask = this.room.Public_Carry({ 'manage': { num: 1, bind: [] } }, 10, this.room.name, this.pos.x, this.pos.y, this.room.name, storage_.pos.x, storage_.pos.y, i as ResourceConstant, num-this.room.memory.productData.balanceData[i])
+                    let thisTask = this.room.public_Carry({ 'manage': { num: 1, bind: [] } }, 10, this.room.name, this.pos.x, this.pos.y, this.room.name, storage_.pos.x, storage_.pos.y, i as ResourceConstant, num-this.room.memory.productData.balanceData[i])
                     this.room.AddMission(thisTask)
                 }
                 // 少了就搬进
@@ -50,7 +50,7 @@ export class factoryExtension extends StructureFactory {
                         if (storage_.store.getUsedCapacity('energy') <= 20000) continue
                         else
                         {
-                            let thisTask = this.room.Public_Carry({ 'manage': { num: 1, bind: [] } }, 10, this.room.name, storage_.pos.x, storage_.pos.y, this.room.name, this.pos.x, this.pos.y, i as ResourceConstant, Math.abs(this.room.memory.productData.balanceData[i].num - num))
+                            let thisTask = this.room.public_Carry({ 'manage': { num: 1, bind: [] } }, 10, this.room.name, storage_.pos.x, storage_.pos.y, this.room.name, this.pos.x, this.pos.y, i as ResourceConstant, Math.abs(this.room.memory.productData.balanceData[i].num - num))
                             this.room.AddMission(thisTask)
                             continue
                         }
@@ -62,7 +62,7 @@ export class factoryExtension extends StructureFactory {
                         }
                         else
                         {
-                            let thisTask = this.room.Public_Carry({ 'manage': { num: 1, bind: [] } }, 10, this.room.name, storage_.pos.x, storage_.pos.y, this.room.name, this.pos.x, this.pos.y, i as ResourceConstant, Math.abs(this.room.memory.productData.balanceData[i].num - num))
+                            let thisTask = this.room.public_Carry({ 'manage': { num: 1, bind: [] } }, 10, this.room.name, storage_.pos.x, storage_.pos.y, this.room.name, this.pos.x, this.pos.y, i as ResourceConstant, Math.abs(this.room.memory.productData.balanceData[i].num - num))
                             this.room.AddMission(thisTask)
                             continue
                         }
@@ -75,14 +75,14 @@ export class factoryExtension extends StructureFactory {
                         {
                             if (storage_.store.getUsedCapacity(i as ResourceConstant) <= 0) continue
                             // 搬运
-                            let thisTask = this.room.Public_Carry({ 'manage': { num: 1, bind: [] } }, 10, this.room.name, storage_.pos.x, storage_.pos.y, this.room.name, this.pos.x, this.pos.y, i as ResourceConstant,storage_.store.getUsedCapacity(i as ResourceConstant))
+                            let thisTask = this.room.public_Carry({ 'manage': { num: 1, bind: [] } }, 10, this.room.name, storage_.pos.x, storage_.pos.y, this.room.name, this.pos.x, this.pos.y, i as ResourceConstant,storage_.store.getUsedCapacity(i as ResourceConstant))
                             this.room.AddMission(thisTask)
                             continue
                         }
                         else
                         {
                             // 搬运
-                            let thisTask = this.room.Public_Carry({ 'manage': { num: 1, bind: [] } }, 10, this.room.name, storage_.pos.x, storage_.pos.y, this.room.name, this.pos.x, this.pos.y, i as ResourceConstant, Math.abs(this.room.memory.productData.balanceData[i].num - num))
+                            let thisTask = this.room.public_Carry({ 'manage': { num: 1, bind: [] } }, 10, this.room.name, storage_.pos.x, storage_.pos.y, this.room.name, this.pos.x, this.pos.y, i as ResourceConstant, Math.abs(this.room.memory.productData.balanceData[i].num - num))
                             this.room.AddMission(thisTask)
                             continue
                         }

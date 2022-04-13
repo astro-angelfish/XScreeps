@@ -18,7 +18,7 @@ export default class RoomMissonManageExtension extends Room {
         }
         if (center_link.store.getUsedCapacity('energy') >= 400 && this.Check_Carry('manage',center_link.pos,storage_.pos,'energy'))
         {
-            var thisTask = this.Public_Carry({'manage':{num:1,bind:[]}},20,this.name,center_link.pos.x,center_link.pos.y,this.name,storage_.pos.x,storage_.pos.y,'energy')
+            var thisTask = this.public_Carry({'manage':{num:1,bind:[]}},20,this.name,center_link.pos.x,center_link.pos.y,this.name,storage_.pos.x,storage_.pos.y,'energy')
             this.AddMission(thisTask)   
         }
     }

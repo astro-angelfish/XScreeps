@@ -44,6 +44,7 @@ interface Room {
     Task_Double_Defend(mission:MissionModel):void
     Task_squad(mission:MissionModel):void
     Task_double(mission:MissionModel):void
+    Task_Resource_transfer(mission:MissionModel):void
 }
 
 interface RoomMemory {
