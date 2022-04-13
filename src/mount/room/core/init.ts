@@ -337,7 +337,7 @@ export default class RoomCoreInitExtension extends Room {
      * 房间自适应动态配置
      */
     public RoomGlobalDynamicconfig(): void {
-        if (Game.time % 8 != 0) { return }
+        if (Game.time % 50 != 0) { return }
         let level = this.controller.level
         if (this.memory.DynamicConfig.Dynamicupgrade && level < 8) {
             let room_energy = 0;
@@ -348,8 +348,8 @@ export default class RoomCoreInitExtension extends Room {
             }
             let creep_num = Math.floor(room_energy / 100000) + 1;
             creep_num = creep_num > 5 ? 5 : creep_num
+            if(this.memory.SpawnConfig.upgrade.num != creep_num){console.log(this.name, 'upgrade动态调整', creep_num);}
             this.memory.SpawnConfig.upgrade.num = creep_num;
-            console.log(this.name, 'upgrade动态调整', creep_num);
         }
     }
 }

@@ -111,6 +111,9 @@ export default class RoomCoreSpawnExtension extends Room {
             
             var spawnlist = this.memory.SpawnList
             if (spawnlist.length <= 0) return
+            /*基于当前能量确定最小孵化值-不低于300以免出现体型过小的单位*/
+            let allEnergy = this.energyAvailable
+            if(allEnergy<300){return}
             let roleName = spawnlist[0].role
             let mem = spawnlist[0].memory
             let bd = spawnlist[0].body
@@ -129,7 +132,7 @@ export default class RoomCoreSpawnExtension extends Room {
             let allEnergyCapacity = this.energyCapacityAvailable
             if(allEnergyCapacity < CalculateEnergy(body)) adaption_body(body,allEnergyCapacity)
             /* 对具备自适应属性的爬虫进行自适应 */
-            let allEnergy = this.energyAvailable
+           
             let adaption = false
             if (this.memory.SpawnConfig[roleName] && this.memory.SpawnConfig[roleName].adaption && allEnergy < CalculateEnergy(body))
             {
