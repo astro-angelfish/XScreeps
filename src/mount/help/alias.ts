@@ -286,19 +286,46 @@ export default [
                                 functionName: 'spawn.restart'
                             },
                             {
-                                title: '资源传送:',
+                                title: '资源转移:【推荐】',
+                                describe: '从房间A传资源(或所有)到房间B(需要有终端和仓库) 例:logistic.send("W1N1","W1N2","GH2O",20000)',
+                                params: [
+                                    { name: 'roomName', desc: '源房间' },
+                                    { name: 'disRoom', desc: '目标房间' },
+                                    { name: 'rType(可选)', desc: '资源类型【不选表示除energy和ops外所有资源】' },
+                                    { name: 'num(可选)', desc: '资源数量【不限制数量】，不选表示全部数量' },
+                                ],
+                                functionName: 'logistic.send'
+                            },
+                            {
+                                title: '取消资源转移:',
+                                describe: '取消从房间A传资源到房间B(需要有终端和仓库) 例:logistic.Csend("W1N1","W1N2")',
+                                params: [
+                                    { name: 'roomName', desc: '源房间' },
+                                    { name: 'disRoom', desc: '目标房间' },
+                                ],
+                                functionName: 'logistic.Csend'
+                            },
+                            {
+                                title: '资源转移信息查询:',
+                                describe: '例:logistic.show()',
+                                params: [
+                                ],
+                                functionName: 'logistic.show'
+                            },
+                            {
+                                title: '资源传送:【不推荐】',
                                 describe: '从房间A传资源到房间B(需要有终端和仓库) 例:terminal.send("W1N1","W1N2","GH2O",20000)',
                                 params: [
                                     { name: 'roomName', desc: '源房间' },
                                     { name: 'disRoom', desc: '目标房间' },
                                     { name: 'rType', desc: '资源类型' },
-                                    { name: 'num', desc: '资源数量' },
+                                    { name: 'num', desc: '资源数量【不能高于150000】' },
                                 ],
                                 functionName: 'terminal.send'
                             },
                             {
                                 title: '取消资源传送:',
-                                describe: '从房间A传资源到房间B(需要有终端和仓库) 例:terminal.Csend("W1N1","W1N2","GH2O")',
+                                describe: '取消从房间A传资源到房间B(需要有终端和仓库) 例:terminal.Csend("W1N1","W1N2","GH2O")',
                                 params: [
                                     { name: 'roomName', desc: '源房间' },
                                     { name: 'disRoom', desc: '目标房间' },

@@ -21,10 +21,10 @@ export function harvest_(creep_: Creep): void {
                 creep_.build(cons[0])
             } else {
                 let containers = creep_.pos.findInRange(FIND_STRUCTURES, 1, { filter: (stru) => { return stru.structureType == 'container' } })
-                if (containers.length < 1) { 
+                if (containers.length < 1) {
                     creep_.pos.createConstructionSite('container')
                     return;
-                 }
+                }
             }
             return
         }
@@ -305,7 +305,12 @@ export function build_(creep: Creep): void {
                 else {
                     creep.withdraw(container, 'energy')
                 }
-
+            } else {
+                /*进行资源采集*/
+                const target = creep.pos.findClosestByPath(FIND_SOURCES);
+                if(creep.harvest(target) == ERR_NOT_IN_RANGE) {
+                    creep.moveTo(target);
+                }
             }
         }
     }
