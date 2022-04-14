@@ -626,6 +626,14 @@ export default [
                                 functionName: 'cross.add'
                             },
                             {
+                                title: '开启/关闭过道:',
+                                describe: '例: cross.switch("W1N1")',
+                                params: [
+                                    { name: 'roomName', desc: '房间名' },
+                                ],
+                                functionName: 'cross.switch'
+                            },
+                            {
                                 title: '删除过道房间:',
                                 describe: '例: cross.remove("W1N1","W4N0")',
                                 params: [

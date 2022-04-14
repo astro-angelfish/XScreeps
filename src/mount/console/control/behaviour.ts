@@ -556,6 +556,14 @@ export default {
             if (thisRoom.AddMission(thisTask)) return `[cross] 房间${roomName}初始化过道采集任务成功！ 房间：${relateRoom}`
             else return `[cross] 房间${roomName}初始化过道采集任务失败！请检查房间内是否已经存在该任务！`
         },
+        switch(roomName):string{
+            var thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[cross] 不存在房间${roomName}`
+            thisRoom.memory.switch.StopCross = !thisRoom.memory.switch.StopCross
+            if (thisRoom.memory.switch.StopCross)
+            return `[cross] 房间${roomName}关闭过道!`
+            return `[cross] 房间${roomName}开启过道!`
+        },
         // active power
         power(roomName:string):string{
             var thisRoom = Game.rooms[roomName]
