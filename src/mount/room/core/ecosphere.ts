@@ -24,7 +24,23 @@ export default class RoomCoreEcosphereExtension extends Room {
             }
 
             /* link */
-            if (level == 5)                 // 5级1个source的Link
+
+            if (level == 3) {
+                /*绘制到矿点的路径*/
+                let sourceIDs = this.memory.StructureIdData.source
+                if (sourceIDs.length <= 0) return
+                let center: any = Memory.RoomControlData[this.name].center;
+                for (var sourcei of sourceIDs) {
+                    let source = Game.getObjectById(sourceIDs[sourcei]) as Source
+                    let _path: any = this.findPath(this.getPositionAt(center.x, center.y), source.pos, { maxOps: 500, ignoreCreeps: true, plainCost: 1, swampCost: 1, maxRooms: 1 });
+                    for (let _id_path in _path) {
+                        let _data = _path[_id_path]
+                        if (_path.length - 1 > Number(_id_path)) {
+                            this.createConstructionSite(_data.x, _data.y, STRUCTURE_ROAD);
+                        }
+                    }
+                }
+            } else if (level == 5)                 // 5级1个source的Link
             {
                 let sourceIDs = this.memory.StructureIdData.source
                 if (sourceIDs.length <= 0) return

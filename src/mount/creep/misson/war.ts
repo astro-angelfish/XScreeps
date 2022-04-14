@@ -358,13 +358,13 @@ export default class CreepMissonWarExtension extends Creep {
         }
         if (!this.memory.double)
         {
-            if (this.memory.role == 'double-heal')
+            if (this.memory.role == 'double-douHeal')
             {
                 /* 由heal来进行组队 */
                 if (Game.time % 7 == 0)
                 {
                     var disCreep = this.pos.findClosestByRange(FIND_MY_CREEPS,{filter:(creep)=>{
-                        return creep.memory.role == 'double-attack' && !creep.memory.double
+                        return creep.memory.role == 'double-douAttack' && !creep.memory.double
                     }})
                     if (disCreep)
                     {
