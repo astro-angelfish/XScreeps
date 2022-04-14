@@ -634,4 +634,24 @@ export default class RoomMissonPublish extends Room {
         thisTask.LabBind = labData
         return thisTask
     }
+
+    
+    /* 资源转移任务发布函数 */
+    public public_resource_transfer(disRoom:string,resource?:ResourceConstant,num?:number):MissionModel{
+        var thisTask:MissionModel = {
+            name:'资源转移',
+            range:'Room',
+            delayTick:40000,
+            level:10,
+            Data:{
+                disRoom:disRoom,
+                rType:resource?resource:null,
+                num:num?num:8000000,
+            },
+            maxTime:1,
+        }
+        return thisTask
+    }
+
+    /* 资源链任务发布函数 */
 }

@@ -192,7 +192,7 @@ export default {
         ResourceBuy(roomName:string,rType:ResourceConstant,num:number,range:number,max:number = 35):string{
             let thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[link] 不存在房间${roomName}`
-            let task = thisRoom.Public_Buy(rType,num,range,max)
+            let task = thisRoom.public_Buy(rType,num,range,max)
             if (task && thisRoom.AddMission(task))
             return Colorful(`[debug] 资源购买任务发布,房间${roomName},资源类型${rType},数量${num},价格范围${range},最高价格${max}`,'blue')
             return Colorful(`[debug] 房间${roomName}资源购买任务发布失败!`,'yellow')

@@ -47,7 +47,7 @@ export default class RoomMissonBehaviourExtension extends Room {
             }
             if (source_link.store.getUsedCapacity('energy') >= 600 && this.Check_Link(source_link.pos,center_link.pos))
             {
-                var thisTask = this.Public_link([source_link.id],center_link.id,10)
+                var thisTask = this.public_link([source_link.id],center_link.id,10)
                 this.AddMission(thisTask)
                 return
             }
@@ -66,7 +66,7 @@ export default class RoomMissonBehaviourExtension extends Room {
             if (!upgrade_link){delete this.memory.StructureIdData.upgrade_link;return}
             if (upgrade_link.store.getUsedCapacity('energy') < 400)
             {
-                var thisTask = this.Public_link([center_link.id],upgrade_link.id,25)
+                var thisTask = this.public_link([center_link.id],upgrade_link.id,25)
                 this.AddMission(thisTask)
                 return
             }
@@ -82,7 +82,7 @@ export default class RoomMissonBehaviourExtension extends Room {
                     }
                     if (l.store.getUsedCapacity('energy') < 500)
                     {
-                        var thisTask = this.Public_link([center_link.id],l.id,35)
+                        var thisTask = this.public_link([center_link.id],l.id,35)
                         this.AddMission(thisTask)
                         return
                     }
@@ -137,7 +137,7 @@ export default class RoomMissonBehaviourExtension extends Room {
             {
                 /* 资源快满了就要搬运 */
                 re = true
-                var thisTask = this.Public_Carry({'transport':{num:1,bind:[]}},30,this.name,thisLab.pos.x,thisLab.pos.y,this.name,storage_.pos.x,storage_.pos.y,thisLab.mineralType,thisLab.store.getUsedCapacity(thisLab.mineralType))
+                var thisTask = this.public_Carry({'transport':{num:1,bind:[]}},30,this.name,thisLab.pos.x,thisLab.pos.y,this.name,storage_.pos.x,storage_.pos.y,thisLab.mineralType,thisLab.store.getUsedCapacity(thisLab.mineralType))
                 this.AddMission(thisTask)
                 continue
             }
@@ -147,13 +147,13 @@ export default class RoomMissonBehaviourExtension extends Room {
         if (storage_.store.getUsedCapacity(misson.Data.raw1) > 0)
         if (raw1.store.getUsedCapacity(misson.Data.raw1) < 500 && this.RoleMissionNum('transport','物流运输') < 2 && this.Check_Carry('transport',storage_.pos,raw1.pos,misson.Data.raw1))
         {
-            var thisTask = this.Public_Carry({'transport':{num:1,bind:[]}},30,this.name,storage_.pos.x,storage_.pos.y,this.name,raw1.pos.x,raw1.pos.y,misson.Data.raw1,storage_.store.getUsedCapacity(misson.Data.raw1)>=1000?1000:storage_.store.getUsedCapacity(misson.Data.raw1))
+            var thisTask = this.public_Carry({'transport':{num:1,bind:[]}},30,this.name,storage_.pos.x,storage_.pos.y,this.name,raw1.pos.x,raw1.pos.y,misson.Data.raw1,storage_.store.getUsedCapacity(misson.Data.raw1)>=1000?1000:storage_.store.getUsedCapacity(misson.Data.raw1))
             this.AddMission(thisTask)
         }
         if (storage_.store.getUsedCapacity(misson.Data.raw2) > 0)
         if (raw2.store.getUsedCapacity(misson.Data.raw2) < 500 && this.RoleMissionNum('transport','物流运输') < 2 && this.Check_Carry('transport',storage_.pos,raw2.pos,misson.Data.raw2))
         {
-            var thisTask = this.Public_Carry({'transport':{num:1,bind:[]}},30,this.name,storage_.pos.x,storage_.pos.y,this.name,raw2.pos.x,raw2.pos.y,misson.Data.raw2,storage_.store.getUsedCapacity(misson.Data.raw2)>=1000?1000:storage_.store.getUsedCapacity(misson.Data.raw2))
+            var thisTask = this.public_Carry({'transport':{num:1,bind:[]}},30,this.name,storage_.pos.x,storage_.pos.y,this.name,raw2.pos.x,raw2.pos.y,misson.Data.raw2,storage_.store.getUsedCapacity(misson.Data.raw2)>=1000?1000:storage_.store.getUsedCapacity(misson.Data.raw2))
             this.AddMission(thisTask)
         }
         /* 资源调度 */
@@ -329,13 +329,13 @@ export default class RoomMissonBehaviourExtension extends Room {
             if (this.RoleMissionNum('manage','物流运输')>0)return
             if (powerspawn_.store.getFreeCapacity('energy') > 0)
             {
-                var carryTask = this.Public_Carry({'manage':{num:1,bind:[]}},10,this.name,storage_.pos.x,storage_.pos.y,this.name,powerspawn_.pos.x,powerspawn_.pos.y,'energy',powerspawn_.store.getFreeCapacity('energy'))
+                var carryTask = this.public_Carry({'manage':{num:1,bind:[]}},10,this.name,storage_.pos.x,storage_.pos.y,this.name,powerspawn_.pos.x,powerspawn_.pos.y,'energy',powerspawn_.store.getFreeCapacity('energy'))
                 this.AddMission(carryTask)
                 return
             }
             if (powerspawn_.store.getFreeCapacity('power') > 0)
             {
-                var carryTask = this.Public_Carry({'manage':{num:1,bind:[]}},10,this.name,storage_.pos.x,storage_.pos.y,this.name,powerspawn_.pos.x,powerspawn_.pos.y,'power',powerspawn_.store.getFreeCapacity('power'))
+                var carryTask = this.public_Carry({'manage':{num:1,bind:[]}},10,this.name,storage_.pos.x,storage_.pos.y,this.name,powerspawn_.pos.x,powerspawn_.pos.y,'power',powerspawn_.store.getFreeCapacity('power'))
                 this.AddMission(carryTask)
                 return
             }

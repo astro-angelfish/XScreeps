@@ -47,13 +47,13 @@ export default class terminalExtension extends StructureTerminal {
             if (!this.room.memory.TerminalData[i] || !this.room.memory.TerminalData[i].num)  // terminalData里没有该数据
             {
                 if (storage_.store.getFreeCapacity() < 40000) continue
-                let thisTask = this.room.Public_Carry({ 'manage': { num: 1, bind: [] } }, 20, this.room.name, this.pos.x, this.pos.y, this.room.name, storage_.pos.x, storage_.pos.y, i as ResourceConstant, num)
+                let thisTask = this.room.public_Carry({ 'manage': { num: 1, bind: [] } }, 20, this.room.name, this.pos.x, this.pos.y, this.room.name, storage_.pos.x, storage_.pos.y, i as ResourceConstant, num)
                 this.room.AddMission(thisTask)
             }
             else {
                 if (num > this.room.memory.TerminalData[i].num) {
                     if (storage_.store.getFreeCapacity() < 40000) continue
-                    let thisTask = this.room.Public_Carry({ 'manage': { num: 1, bind: [] } }, 20, this.room.name, this.pos.x, this.pos.y, this.room.name, storage_.pos.x, storage_.pos.y, i as ResourceConstant, num - this.room.memory.TerminalData[i].num)
+                    let thisTask = this.room.public_Carry({ 'manage': { num: 1, bind: [] } }, 20, this.room.name, this.pos.x, this.pos.y, this.room.name, storage_.pos.x, storage_.pos.y, i as ResourceConstant, num - this.room.memory.TerminalData[i].num)
                     this.room.AddMission(thisTask)
                 }
             }
@@ -70,7 +70,7 @@ export default class terminalExtension extends StructureTerminal {
                 else {
                     if (storage_.store.getUsedCapacity(i as ResourceConstant) <= 0 && storage_.store.getUsedCapacity(i as ResourceConstant) + num < this.room.memory.TerminalData[i].num) continue
                 }
-                let thisTask = this.room.Public_Carry({ 'manage': { num: 1, bind: [] } }, 20, this.room.name, storage_.pos.x, storage_.pos.y, this.room.name, this.pos.x, this.pos.y, i as ResourceConstant, this.room.memory.TerminalData[i].num - num > 0 ? this.room.memory.TerminalData[i].num - num : 100)
+                let thisTask = this.room.public_Carry({ 'manage': { num: 1, bind: [] } }, 20, this.room.name, storage_.pos.x, storage_.pos.y, this.room.name, this.pos.x, this.pos.y, i as ResourceConstant, this.room.memory.TerminalData[i].num - num > 0 ? this.room.memory.TerminalData[i].num - num : 100)
                 this.room.AddMission(thisTask)
             }
         }
@@ -303,7 +303,7 @@ export default class terminalExtension extends StructureTerminal {
                 /* 只有在能量富裕的情况下才会允许进入下一阶段 */
                 if (storage_ && (storage_.store.getUsedCapacity('energy') + this.store.getUsedCapacity('energy') - 5000) > wastage && remain > (wastage - this.store.getUsedCapacity('energy'))) {
                     /* 下布搬运任务 */
-                    var thisTask = this.room.Public_Carry({ 'manage': { num: 1, bind: [] } }, 40, this.room.name, storage_.pos.x, storage_.pos.y, this.room.name, this.pos.x, this.pos.y, 'energy', wastage - this.store.getUsedCapacity('energy'))
+                    var thisTask = this.room.public_Carry({ 'manage': { num: 1, bind: [] } }, 40, this.room.name, storage_.pos.x, storage_.pos.y, this.room.name, this.pos.x, this.pos.y, 'energy', wastage - this.store.getUsedCapacity('energy'))
                     this.room.AddMission(thisTask)
                     return
                 }
@@ -319,7 +319,7 @@ export default class terminalExtension extends StructureTerminal {
             if (task.Data.num > cargoNum) {
                 if (storage_ && (storage_.store.getUsedCapacity(task.Data.rType) + this.store.getUsedCapacity(task.Data.rType)) >= (task.Data.num - 1600) && remain > task.Data.num - cargoNum) {
                     /* 下布搬运任务 */
-                    var thisTask = this.room.Public_Carry({ 'manage': { num: 1, bind: [] } }, 40, this.room.name, storage_.pos.x, storage_.pos.y, this.room.name, this.pos.x, this.pos.y, task.Data.rType, task.Data.num - cargoNum)
+                    var thisTask = this.room.public_Carry({ 'manage': { num: 1, bind: [] } }, 40, this.room.name, storage_.pos.x, storage_.pos.y, this.room.name, this.pos.x, this.pos.y, task.Data.rType, task.Data.num - cargoNum)
                     this.room.AddMission(thisTask)
                     return
                 }

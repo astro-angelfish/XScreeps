@@ -54,7 +54,7 @@ export default class RoomMissonTransportExtension extends Room {
                 if (!storage_) return
                 if (this.RoleMissionNum('transport','物流运输') > 3 ||!this.Check_Carry('transport',storage_.pos,tower.pos,'energy')) continue
                 if (storage_.store.getUsedCapacity('energy') < 1000)return
-                let thisTask = this.Public_Carry({'transport':{num:2,bind:[]}},35,this.name,storage_.pos.x,storage_.pos.y,this.name,tower.pos.x,tower.pos.y,'energy',1000 - tower.store.getUsedCapacity('energy'))
+                let thisTask = this.public_Carry({'transport':{num:2,bind:[]}},35,this.name,storage_.pos.x,storage_.pos.y,this.name,tower.pos.x,tower.pos.y,'energy',1000 - tower.store.getUsedCapacity('energy'))
                 this.AddMission(thisTask)
                 return
             }
@@ -84,7 +84,7 @@ export default class RoomMissonTransportExtension extends Room {
                 if (!storage_) return
                 if (storage_.store.getUsedCapacity('energy') < 2000 || !this.Check_Carry('transport',storage_.pos,thisLab.pos,'energy'))
                 {continue}
-                var thisTask = this.Public_Carry({'transport':{num:1,bind:[]}},25,this.name,storage_.pos.x,storage_.pos.y,this.name,thisLab.pos.x,thisLab.pos.y,'energy',2000 - thisLab.store.getUsedCapacity('energy'))
+                var thisTask = this.public_Carry({'transport':{num:1,bind:[]}},25,this.name,storage_.pos.x,storage_.pos.y,this.name,thisLab.pos.x,thisLab.pos.y,'energy',2000 - thisLab.store.getUsedCapacity('energy'))
                 this.AddMission(thisTask)
                 return
             }
@@ -93,7 +93,7 @@ export default class RoomMissonTransportExtension extends Room {
             {
                 var storage_ = Game.getObjectById(this.memory.StructureIdData.storageID) as StructureStorage
                 if (!storage_) return
-                var thisTask = this.Public_Carry({'transport':{num:1,bind:[]}},25,this.name,thisLab.pos.x,thisLab.pos.y,this.name,storage_.pos.x,storage_.pos.y,thisLab.mineralType,thisLab.store.getUsedCapacity(thisLab.mineralType))
+                var thisTask = this.public_Carry({'transport':{num:1,bind:[]}},25,this.name,thisLab.pos.x,thisLab.pos.y,this.name,storage_.pos.x,storage_.pos.y,thisLab.mineralType,thisLab.store.getUsedCapacity(thisLab.mineralType))
                 this.AddMission(thisTask)
                 return
             }
@@ -112,13 +112,13 @@ export default class RoomMissonTransportExtension extends Room {
         if (!storage_){delete this.memory.StructureIdData.storageID;return}
         if (nuker.store.getUsedCapacity('G') < 5000 && storage_.store.getUsedCapacity('G') >= 5000)
         {
-            var thisTask = this.Public_Carry({'transport':{num:1,bind:[]}},40,this.name,storage_.pos.x,storage_.pos.y,this.name,nuker.pos.x,nuker.pos.y,'G',5000 - nuker.store.getUsedCapacity('G'))
+            var thisTask = this.public_Carry({'transport':{num:1,bind:[]}},40,this.name,storage_.pos.x,storage_.pos.y,this.name,nuker.pos.x,nuker.pos.y,'G',5000 - nuker.store.getUsedCapacity('G'))
             this.AddMission(thisTask)
             return
         }
         if (nuker.store.getUsedCapacity('energy') < 300000 && storage_.store.getUsedCapacity('energy') > 130000)
         {
-            var thisTask = this.Public_Carry({'transport':{num:1,bind:[]}},40,this.name,storage_.pos.x,storage_.pos.y,this.name,nuker.pos.x,nuker.pos.y,'energy',300000 - nuker.store.getUsedCapacity('energy'))
+            var thisTask = this.public_Carry({'transport':{num:1,bind:[]}},40,this.name,storage_.pos.x,storage_.pos.y,this.name,nuker.pos.x,nuker.pos.y,'energy',300000 - nuker.store.getUsedCapacity('energy'))
             this.AddMission(thisTask)
             return
         }

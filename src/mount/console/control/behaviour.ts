@@ -1,6 +1,7 @@
 import { resourceComDispatch } from "@/constant/ResourceConstant"
 import { avePrice, haveOrder, highestPrice, RecognizeLab } from "@/module/fun/funtion"
 import { Colorful, compare, isInArray, unzipPosition, zipPosition } from "@/utils"
+import { result } from "lodash"
 export default {
     /* 终端行为 */
     terminal:{
@@ -8,7 +9,7 @@ export default {
         send(roomName:string,disRoom:string,rType:ResourceConstant,num:number):string{
             var thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[terminal] 不存在房间${roomName}`
-            var thisTask = thisRoom.Public_Send(disRoom,rType,num)
+            var thisTask = thisRoom.public_Send(disRoom,rType,num)
             /* 查看资源是否足够 */
             var terminal_ = Game.getObjectById(thisRoom.memory.StructureIdData.terminalID) as StructureTerminal
             var storage_ = Game.getObjectById(thisRoom.memory.StructureIdData.storageID) as StructureStorage
