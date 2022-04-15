@@ -131,7 +131,7 @@ export default class PowerCreepMissonBase extends PowerCreep {
                 if (room_.MissionNum('Structure','资源购买') <= 0)
                 if (DispatchNum(room_.name) < 2 && !checkSend(room_.name,'ops') && !checkDispatch(room_.name,'ops'))   // 已经存在其它房间的传送信息的情况
                 {
-                    console.log(Colorful(`[资源调度] 房间${this.name}没有足够的资源[${'ops'}],将执行资源调度!`,'yellow'))
+                    console.log(Colorful(`[资源调度] 房间${this.memory.belong}没有足够的资源[${'ops'}],将执行资源调度!`,'yellow'))
                     let dispatchTask:RDData = {
                         sourceRoom:room_.name,
                         rType:'ops',

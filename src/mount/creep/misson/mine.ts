@@ -551,7 +551,7 @@ export default class CreepMissonMineExtension extends Creep {
         if (this.hits < this.hitsMax/2)
         {
             let hcreep = this.pos.findClosestByRange(FIND_HOSTILE_CREEPS)
-            Game.notify(`来自${this.memory.belong}的商品爬虫遭受攻击,攻击者疑似为${hcreep?hcreep.owner.username:"不明生物"}`)
+            Game.notify(`来自${this.memory.belong}的商品爬虫在房间${this.room.name}遭受攻击,攻击者疑似为${hcreep?hcreep.owner.username:"不明生物"}`)
         }
         this.workstate(creepMisson.rType)
         if (this.memory.working)

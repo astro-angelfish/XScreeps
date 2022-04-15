@@ -313,8 +313,8 @@ export default {
                     bR = false
                 }
                 if (bR){
-                    thisRoom.memory.market['order'].push({rType:rType,num:num,unit:unit})
-                    return `[market] 房间${roomName}成功下达order的资源卖出指令,type:sell,rType:${rType},num:${num},unit:${unit}`
+                    thisRoom.memory.market['order'].push({rType:rType,num:num,unit:unit,price:price})
+                    return `[market] 房间${roomName}成功下达order的资源卖出指令,type:sell,rType:${rType},num:${num},unit:${unit},price:${price}`
                 }
                 else return `[market] 房间${roomName}已经存在${rType}的sell订单了`
             }

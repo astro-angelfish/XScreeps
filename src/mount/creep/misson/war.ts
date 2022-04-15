@@ -484,27 +484,6 @@ export default class CreepMissonWarExtension extends Creep {
             warDataInit(Game.rooms[data.disRoom])
             let creeps = global.warData.enemy[data.disRoom].data
             let flags = global.warData.flag[data.disRoom].data
-            // 优先规避
-            let ranged3Attack = RangeCreep(this.pos,creeps,3,true)  // 三格内的攻击性爬虫
-            if (ranged3Attack.length > 0)
-            {
-                this.say("危")
-                // 防御塔伤害数据
-                let towerData = global.warData.tower[this.room.name].data
-                let posStr = `${this.pos.x}/${this.pos.y}`
-                let towerHurt = towerData[posStr]?towerData[posStr]['attack']:0
-                if (!canSustain(ranged3Attack,this,towerHurt))
-                {
-                    this.heal(this)
-                    let closestHurtCreep =  RangeClosestCreep(this.pos,ranged3Attack,true)
-                    if (closestHurtCreep)
-                    {
-                        this.heal(this)
-                        this.Flee(closestHurtCreep.pos,3)
-                        return
-                    }
-                }
-            }
             if (!this.memory.targetFlag)    // 没有目标旗帜Memory的情况下，先查找有没有最近的周围没有攻击爬的旗帜
             {
                 this.heal(this)
@@ -551,6 +530,24 @@ export default class CreepMissonWarExtension extends Creep {
                         }
                     }
                 }
+                // 遇到不能承受的爬就规避
+                let ranged3Attack = RangeCreep(this.pos,creeps,3,true)  // 三格内的攻击性爬虫
+                if (ranged3Attack.length > 0)
+                {
+                    this.say("危")
+                    // 防御塔伤害数据
+                    let towerData = global.warData.tower[this.room.name].data
+                    let posStr = `${this.pos.x}/${this.pos.y}`
+                    let towerHurt = towerData[posStr]?towerData[posStr]['attack']:0
+                    if (!canSustain(ranged3Attack,this,towerHurt))
+                    {
+                        let closestHurtCreep =  RangeClosestCreep(this.pos,ranged3Attack,true)
+                        if (closestHurtCreep)
+                        {
+                            this.Flee(closestHurtCreep.pos,3)
+                        }
+                    }
+                }
             }
             else
             {
@@ -590,7 +587,7 @@ export default class CreepMissonWarExtension extends Creep {
                         let ranged3Attack = RangeCreep(this.pos,creeps,3,true)  // 三格内的攻击性爬虫
                         if (ranged3Attack.length > 0)
                         {
-                            this.say("危险")
+                            this.say("危")
                             // 防御塔伤害数据
                             let towerData = global.warData.tower[this.room.name].data
                             let posStr = `${this.pos.x}/${this.pos.y}`
