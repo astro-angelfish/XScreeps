@@ -258,13 +258,21 @@ export default class RoomCoreInitExtension extends Room {
                 if (!this.memory.harvestData[id].containerID) {
                     let source = Game.getObjectById(id) as Source
                     let containers = source.pos.findInRange(FIND_STRUCTURES, 1, { filter: (stru) => { return stru.structureType == 'container' } })
-                    if (containers.length > 0) this.memory.harvestData[id].containerID = containers[0].id
+                    if (containers.length > 0) {
+                        this.memory.harvestData[id].containerID = containers[0].id
+                        carry_num++;
+                    }
+                } else {
                     carry_num++;
                 }
                 if (level >= 5 && !this.memory.harvestData[id].linkID) {
                     let source = Game.getObjectById(id) as Source
                     let links = source.pos.findInRange(FIND_STRUCTURES, 2, { filter: (stru) => { return stru.structureType == 'link' } })
-                    if (links.length > 0) this.memory.harvestData[id].linkID = links[0].id
+                    if (links.length > 0) {
+                        this.memory.harvestData[id].linkID = links[0].id
+                        carry_num--;
+                    }
+                } else if (this.memory.harvestData[id].linkID) {
                     carry_num--;
                 }
             }
@@ -348,7 +356,7 @@ export default class RoomCoreInitExtension extends Room {
             }
             let creep_num = Math.floor(room_energy / 100000) + 1;
             creep_num = creep_num > 5 ? 5 : creep_num
-            if(this.memory.SpawnConfig.upgrade.num != creep_num){console.log(this.name, 'upgrade动态调整', creep_num);}
+            if (this.memory.SpawnConfig.upgrade.num != creep_num) { console.log(this.name, 'upgrade动态调整', creep_num); }
             this.memory.SpawnConfig.upgrade.num = creep_num;
         }
     }

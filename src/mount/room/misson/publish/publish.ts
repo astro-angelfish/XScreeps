@@ -529,11 +529,12 @@ export default class RoomMissonPublish extends Room {
                 state:1,
                 rType:rType
             },
+            maxTime:2
         }
         thisTask.CreepBind = {'deposit':{num:1,bind:[]}}
-        var MissonNum = this.MissionNum('Creep','deposit采集')
-        if (MissonNum > 2) return null
-        thisTask.maxTime = MissonNum
+        // var MissonNum = this.MissionNum('Creep','deposit采集')
+        // if (MissonNum > 2) return null
+        // thisTask.maxTime = MissonNum
         return thisTask
     }
 

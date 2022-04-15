@@ -171,13 +171,9 @@ export default class DefendWarExtension extends Room {
         }
         /* 分析敌对爬虫的数量,应用不同的主防任务应对 */
         let defend_plan = {}
-        if (enemys.length == 1)     // 1
+        if (enemys.length <= 2)      // 1
         {
             defend_plan = {'attack':1}
-        }
-        else if (enemys.length == 2)    // 2
-        {
-            defend_plan = {'attack':1,'range':1}
         }
         else if (enemys.length  > 2 && enemys.length < 5)       // 3-4
         {
@@ -189,7 +185,7 @@ export default class DefendWarExtension extends Room {
         }
         else if (enemys.length >= 8)        // >8     一般这种情况下各个类型的防御任务爬虫的数量都要调高
         {
-            defend_plan = {'attack':2,'double':2}
+            defend_plan = {'attack':2,'double':2,'range':2}
         }
         for (var plan in defend_plan)
         {

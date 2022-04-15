@@ -1,4 +1,3 @@
-import { loop } from "@/main"
 import { avePrice, haveOrder, highestPrice } from "@/module/fun/funtion"
 import { Colorful, compare, isInArray } from "@/utils"
 

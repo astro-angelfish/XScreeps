@@ -530,6 +530,24 @@ export default class CreepMissonWarExtension extends Creep {
                         }
                     }
                 }
+                // 遇到不能承受的爬就规避
+                let ranged3Attack = RangeCreep(this.pos,creeps,3,true)  // 三格内的攻击性爬虫
+                if (ranged3Attack.length > 0)
+                {
+                    this.say("危")
+                    // 防御塔伤害数据
+                    let towerData = global.warData.tower[this.room.name].data
+                    let posStr = `${this.pos.x}/${this.pos.y}`
+                    let towerHurt = towerData[posStr]?towerData[posStr]['attack']:0
+                    if (!canSustain(ranged3Attack,this,towerHurt))
+                    {
+                        let closestHurtCreep =  RangeClosestCreep(this.pos,ranged3Attack,true)
+                        if (closestHurtCreep)
+                        {
+                            this.Flee(closestHurtCreep.pos,3)
+                        }
+                    }
+                }
             }
             else
             {
@@ -554,7 +572,6 @@ export default class CreepMissonWarExtension extends Creep {
                         // 尝试看一下有没有建筑 对墙就不做尝试了
                         let safeStructure = pathClosestStructure(this.pos,true,true,true,4)
                         if (safeStructure) {
-                            console.log("11:",safeStructure)
                             let randomStr = Math.random().toString(36).substr(3)
                             if (!Game.flags[`aio_${randomStr}`])
                             {
@@ -570,7 +587,7 @@ export default class CreepMissonWarExtension extends Creep {
                         let ranged3Attack = RangeCreep(this.pos,creeps,3,true)  // 三格内的攻击性爬虫
                         if (ranged3Attack.length > 0)
                         {
-                            this.say("no")
+                            this.say("凉")
                             // 防御塔伤害数据
                             let towerData = global.warData.tower[this.room.name].data
                             let posStr = `${this.pos.x}/${this.pos.y}`

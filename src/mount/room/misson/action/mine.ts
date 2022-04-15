@@ -209,6 +209,7 @@ export default class RoomMissonMineExtension extends Room {
     /* 过道采集监控发布任务 */
     public Task_Cross(misson:MissionModel):void{
         if (this.controller.level < 8 || !this.memory.StructureIdData.ObserverID) return
+        if (this.memory.switch.StopCross) return
         var observer_ = Game.getObjectById(this.memory.StructureIdData.ObserverID) as StructureObserver
         if (!observer_) {delete this.memory.StructureIdData.ObserverID;return}
         if (!misson.Data.relateRooms) misson.Data.relateRooms = []
@@ -276,9 +277,15 @@ export default class RoomMissonMineExtension extends Room {
                         }
                         if (BR)
                         {
+                             /* 查询一下是不是已经有了该房间的采集任务了 */
+                             let have = false
+                             for (var dm of this.memory.Misson['Creep'])
+                             {
+                                 if (dm.name == 'deposit采集' && dm.Data.room == beforRoom) have = true
+                             }
                             /* 下达采集任务 */
                             var thisTask = this.public_DepositHarvest(beforRoom,deposit[0].pos.x,deposit[0].pos.y,deposit[0].depositType)
-                            if (thisTask != null)
+                            if (thisTask != null && !have)
                             {
                                 this.AddMission(thisTask)
                             }

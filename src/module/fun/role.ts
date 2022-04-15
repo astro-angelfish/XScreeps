@@ -44,8 +44,8 @@ export function harvest_(creep_: Creep): void {
             if (!container) delete data.containerID
             else {
                 if (container.hits < container.hitsMax) { creep_.repair(container); return }
-                if (creep_.pos.isNearTo(container)) creep_.transfer(container, 'energy')
-                else creep_.goTo(container.pos, 1)
+                if (creep_.pos.isEqualTo(container)) creep_.transfer(container, 'energy')
+                else creep_.goTo(container.pos, 0)
             }
             return
         }
@@ -308,7 +308,7 @@ export function build_(creep: Creep): void {
             } else {
                 /*进行资源采集*/
                 const target = creep.pos.findClosestByPath(FIND_SOURCES);
-                if(creep.harvest(target) == ERR_NOT_IN_RANGE) {
+                if (creep.harvest(target) == ERR_NOT_IN_RANGE) {
                     creep.moveTo(target);
                 }
             }
