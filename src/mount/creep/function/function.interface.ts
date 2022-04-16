@@ -2,7 +2,7 @@
  * 功能相关声明
  */
 interface Creep{
-    workstate(rType:ResourceConstant):void
+    workstate(rType:ResourceConstant,ratio?:number):void
     harvest_(source_:Source):void
     transfer_(distination:Structure,rType:ResourceConstant) : void
     upgrade_():void

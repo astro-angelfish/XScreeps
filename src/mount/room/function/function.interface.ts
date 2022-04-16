@@ -9,6 +9,7 @@ interface Room {
     LevelMessageUpdate():void
     // tower
     TowerWork():void
+    TowerRepair():void
 }
 
 interface RoomMemory {

@@ -7,7 +7,8 @@ interface Memory {
     ResourceDispatchData:RDData[]
     outMineData:{[roomName:string]:OutMineData}
     stats :any
-    StopPixel :boolean
+    StopPixel :boolean,
+    creepscpu?:{[creeps:string]:string}
 }
 
 interface RDData{

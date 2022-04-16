@@ -129,6 +129,7 @@ export function RoomDataVisual(room:Room):void{
     let row = 0
     room.visual.text(`全局实时CPU:${(global.UsedCpu?global.UsedCpu:0).toFixed(2)}`,0,row+=1,{color: 'black', font:0.7,align:'left'})
     room.visual.text(`全局平均CPU:${(global.AveCpu?global.AveCpu:0).toFixed(2)}`,0,row+=1,{color: 'black', font:0.7,align:'left'})
+    room.visual.text(`测量基数:${(global.CpuData?global.CpuData.length:0)}`,0,row+=1,{color: 'black', font:0.7,align:'left'})
     room.visual.text(`房间状态:${(room.memory.state=="peace"?"和平":"战争")}`,0,row+=1,{color: room.memory.state == 'peace'?'#006400':'red', font:0.7,align:'left'})
     room.visual.text(`cpu池:${Game.cpu.bucket}`,0,row+=1,{color: Game.cpu.bucket < 2000?'red':'black', font:0.7,align:'left'})
     /* 控制器进度 */

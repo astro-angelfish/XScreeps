@@ -88,7 +88,7 @@ export default class RoomCoreEcosphereExtension extends Room {
                 }
             }
 
-            if (level >= 5) {// 控制器修路
+            if (level == 5) {// 控制器修路
                 /*绘制到控制器的路径*/
                 let storageID = this.memory.StructureIdData.storageID
                 let storageData = Game.getObjectById(storageID) as Storage

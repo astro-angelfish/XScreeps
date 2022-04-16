@@ -27,6 +27,15 @@ export function harvest_(creep_: Creep): void {
                 }
             }
             return
+        } else {
+            /*维修操作检查*/
+            let container = Game.getObjectById(data.containerID) as StructureContainer
+            if (container) {
+                if (container.hits < container.hitsMax) {
+                    creep_.repair(container)
+                    return
+                 }
+            }
         }
         if (data.linkID) {
             let link = Game.getObjectById(data.linkID) as StructureLink
@@ -189,7 +198,7 @@ export function carry_(creep_: Creep): void {
 // 升级工
 export function upgrade_(creep_: Creep): void {
     if (!Game.rooms[creep_.memory.belong]) return
-    creep_.workstate('energy')
+    creep_.workstate('energy', 0.5)
     if (creep_.memory.working) {
         creep_.upgrade_()
         delete creep_.memory.targetID

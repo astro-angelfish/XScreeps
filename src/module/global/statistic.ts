@@ -22,6 +22,7 @@ export function CreepNumStatistic():void {
         if (!creep_)
         {
             delete Memory.creeps[c]
+            if(Memory.creepscpu[c]){delete Memory.creepscpu[c]}
             //console.log(`爬虫${c}的记忆已被清除！`)
             continue
         }
