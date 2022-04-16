@@ -148,7 +148,7 @@ export default class RoomMissonPublish extends Room {
      * @param boost     是否boost
      * @returns         任务对象
      */
-    public Public_dismantle(disRoom:string,shard:shardName,num:number,interval?:number,boost?:boolean):MissionModel{
+    public public_dismantle(disRoom:string,shard:shardName,num:number,interval?:number,boost?:boolean):MissionModel{
         var thisTask:MissionModel = {
             name:'黄球拆迁',
             range:'Creep',
@@ -171,7 +171,7 @@ export default class RoomMissonPublish extends Room {
         return thisTask
     }
 
-    public Public_aio(disRoom:string,disShard:shardName,num:number,interval:number,boost:boolean,bodylevel?: "T0" | "T1" | "T2"){
+    public public_aio(disRoom:string,disShard:shardName,num:number,interval:number,boost:boolean,bodylevel?: "T0" | "T1" | "T2"){
         var thisTask:MissionModel = {
             name:'攻防一体',
             range:'Creep',
@@ -196,7 +196,7 @@ export default class RoomMissonPublish extends Room {
         return thisTask
     }
 
-    public Public_control(disRoom:string,shard:shardName,interval:number):MissionModel
+    public public_control(disRoom:string,shard:shardName,interval:number):MissionModel
     {
         var thisTask:MissionModel = {
             name:'控制攻击',
@@ -218,7 +218,7 @@ export default class RoomMissonPublish extends Room {
      * @param boostType boost类型
      * @returns         任务对象
      */
-    public Public_quick(num:number,boostType:ResourceConstant | null):MissionModel{
+    public public_quick(num:number,boostType:ResourceConstant | null):MissionModel{
         var thisTask:MissionModel = {
             name:'急速冲级',
             range:'Creep',
@@ -235,7 +235,7 @@ export default class RoomMissonPublish extends Room {
         return thisTask
     }
 
-    public Public_expand(disRoom:string,shard:shardName,num:number,cnum?:number):MissionModel{
+    public public_expand(disRoom:string,shard:shardName,num:number,cnum?:number):MissionModel{
         var thisTask:MissionModel = {
             name:'扩张援建',
             range:'Creep',
@@ -255,7 +255,7 @@ export default class RoomMissonPublish extends Room {
         return thisTask
     }
 
-    public Public_helpBuild(disRoom:string,num:number,shard?:string,time?:number,defend?:boolean):MissionModel{
+    public public_helpBuild(disRoom:string,num:number,shard?:string,time?:number,defend?:boolean):MissionModel{
         var thisTask:MissionModel = {
             name:'紧急援建',
             range:'Creep',
@@ -284,7 +284,7 @@ export default class RoomMissonPublish extends Room {
         return null
     }
 
-    public Public_support(disRoom:string,sType:'double' | 'aio',shard:shardName,num:number = 1,boost:boolean):MissionModel{
+    public public_support(disRoom:string,sType:'double' | 'aio',shard:shardName,num:number = 1,boost:boolean):MissionModel{
         var thisTask:MissionModel = {
             name:'紧急支援',
             range:'Creep',
@@ -316,7 +316,7 @@ export default class RoomMissonPublish extends Room {
     }
 
     /* 双人小队发布函数 */
-    public Public_Double(disRoom:string,shard:shardName,CreepNum:number,cType:'dismantle' | 'attack',interval:number):MissionModel{
+    public public_Double(disRoom:string,shard:shardName,CreepNum:number,cType:'dismantle' | 'attack',interval:number):MissionModel{
         var thisTask:MissionModel = {
             name:'双人小队',
             range:'Creep',
@@ -348,7 +348,7 @@ export default class RoomMissonPublish extends Room {
         return thisTask
     }
 
-    public Public_Sign(disRoom:string,shard:string,str:string):MissionModel{
+    public public_Sign(disRoom:string,shard:string,str:string):MissionModel{
         var thisTask:MissionModel = {
             name:'房间签名',
             range:'Creep',
@@ -366,7 +366,7 @@ export default class RoomMissonPublish extends Room {
     }
 
     /* 资源传送任务发布函数 */
-    public Public_Send(disRoom:string,rType:ResourceConstant,num:number):MissionModel{
+    public public_Send(disRoom:string,rType:ResourceConstant,num:number):MissionModel{
         if (!this.memory.StructureIdData.terminalID) return null
         var terminal = Game.getObjectById(this.memory.StructureIdData.terminalID) as StructureTerminal
         if (!terminal)
@@ -398,7 +398,7 @@ export default class RoomMissonPublish extends Room {
      * @param max   最高接受的价格
      * @returns     任务对象
      */
-    public Public_Buy(res:ResourceConstant,num:number,range:number,max?:number):MissionModel{
+    public public_Buy(res:ResourceConstant,num:number,range:number,max?:number):MissionModel{
         if (!this.memory.StructureIdData.terminalID) return null
         var terminal = Game.getObjectById(this.memory.StructureIdData.terminalID) as StructureTerminal
         if (!terminal)
