@@ -180,4 +180,25 @@ export default class PowerCreepMissonAction extends PowerCreep {
         }
         else this.usePower(PWR_OPERATE_POWER,powerspawn_)
     }
+
+    /*操作source*/
+    public handle_pwr_source(): void {
+        let Data = this.memory.MissionData.Data
+        var source_ = Game.getObjectById(Data.source_id) as Source;
+        if (!source_) return;
+        if (source_.effects) {
+            if (source_.effects.length > 0) {
+                Game.rooms[this.memory.belong].DeleteMission(this.memory.MissionData.id)
+                this.memory.MissionData = {}
+            }
+        }
+        if (!this.OpsPrepare()) return
+        if (!this.pos.inRangeTo(source_, 2)) {
+            this.goTo(source_.pos, 2)
+            return
+        }
+        else {
+            this.usePower(PWR_REGEN_SOURCE, source_)
+        }
+    }
 }

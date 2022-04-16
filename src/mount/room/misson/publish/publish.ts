@@ -248,9 +248,9 @@ export default class RoomMissonPublish extends Room {
         }
         thisTask.reserve = true
         thisTask.CreepBind = {
-            'claim':{num:cnum,bind:[]},
-            'Ebuild':{num:num,bind:[]},
-            'Eupgrade':{num:num,bind:[]}
+            'claim':{num:cnum,bind:[],interval:1000},
+            'Ebuild':{num:num,bind:[],interval:1000},
+            'Eupgrade':{num:num,bind:[],interval:1000}
         }
         return thisTask
     }

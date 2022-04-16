@@ -102,6 +102,7 @@ export default class PowerCreepMissonBase extends PowerCreep {
             case '虫卵强化':{this.handle_pwr_spawn();break;}
             case '工厂强化':{this.handle_pwr_factory();break;}
             case 'power强化':{this.handle_pwr_powerspawn();break;}
+            case 'source强化':{this.handle_pwr_source();break;}
             }
         }
     }

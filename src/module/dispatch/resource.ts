@@ -249,6 +249,22 @@ export function ResourceLimitUpdate(thisRoom:Room):void{
             }
         }
     }
+    // 检测传送任务
+    if (thisRoom.MissionNum('Structure','资源传送') > 0)
+    {
+        for (var sobj of thisRoom.memory.Misson['Structure'])
+        {
+            if (sobj.name == '资源传送')
+            {
+                let sobj_rType = sobj.Data.rType
+                let sobj_num = sobj.Data.num
+                if (!global.ResourceLimit[thisRoom.name][sobj_rType]) global.ResourceLimit[thisRoom.name][sobj_rType] = sobj_num
+                else{
+                    global.ResourceLimit[thisRoom.name][sobj_rType] = global.ResourceLimit[thisRoom.name][sobj_rType] > sobj_num?global.ResourceLimit[thisRoom.name][sobj_rType]:sobj_num
+                }
+            }
+        }
+    }
 
 }
 

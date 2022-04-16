@@ -27,6 +27,7 @@ export default class PowerCreepMisson extends Room {
         this.enhance_tower()
         // this.enhance_factory()
         this.enhance_powerspawn()
+        this.enhance_source()
     }
     /* 挂载增强storage的任务 适用于queen类型pc */
     public enhance_storage():void{
@@ -169,7 +170,7 @@ export default class PowerCreepMisson extends Room {
         if (!storage_) return
         let pc = Game.powerCreeps[`${this.name}/queen/${Game.shard.name}`]
         if (!pc || !pc.powers[PWR_OPERATE_FACTORY] || pc.powers[PWR_OPERATE_FACTORY].cooldown) return
-        if (this.MissionNum("Room",'工厂合成') > 0) return
+        if (this.MissionNum("PowerCreep",'工厂合成') > 0) return
         var thisTask:MissionModel = {
             name:"工厂强化",
             delayTick:50,
@@ -188,7 +189,7 @@ export default class PowerCreepMisson extends Room {
         if (!storage_) return
         let pc = Game.powerCreeps[`${this.name}/queen/${Game.shard.name}`]
         if (!pc || !pc.powers[PWR_OPERATE_POWER] || pc.powers[PWR_OPERATE_POWER].cooldown) return
-        if (this.MissionNum("Room",'power升级') > 0) return
+        if (this.MissionNum("PowerCreep",'power升级') > 0) return
         var thisTask:MissionModel = {
             name:"power强化",
             delayTick:50,
@@ -198,5 +199,35 @@ export default class PowerCreepMisson extends Room {
         }
         thisTask.CreepBind = {'queen':{num:1,bind:[]}}
         this.AddMission(thisTask)
+    }
+
+    /*挂载source再生任务 适用于queen类型pc */
+    public enhance_source(): void {
+        if ((Game.time - global.Gtime[this.name]) % 6) return
+        if (this.memory.switch.StopEnhanceSource) return
+        if (!this.memory.StructureIdData.source) return;
+        let pc = Game.powerCreeps[`${this.name}/queen/${Game.shard.name}`]
+        if (!pc || !pc.powers[PWR_REGEN_SOURCE] || pc.powers[PWR_REGEN_SOURCE].cooldown) return
+        if (this.MissionNum("PowerCreep", 'source强化') > 0) return
+        for (let i in this.memory.StructureIdData.source) {
+            let _source_data = Game.getObjectById(this.memory.StructureIdData.source[i]) as Source
+            if(!_source_data){continue}
+            if (_source_data.effects) {
+                if (_source_data.effects.length > 0) {
+                    continue;
+                }
+            }
+            var thisTask: MissionModel = {
+                name: "source强化",
+                delayTick: 50,
+                range: 'PowerCreep',
+                Data: {
+                    source_id:_source_data.id
+                },
+                maxTime:2
+            }
+            thisTask.CreepBind = { 'queen': { num: 1, bind: [] } }
+            this.AddMission(thisTask)
+        }
     }
 }

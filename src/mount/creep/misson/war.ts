@@ -534,13 +534,13 @@ export default class CreepMissonWarExtension extends Creep {
                 let ranged3Attack = RangeCreep(this.pos,creeps,3,true)  // 三格内的攻击性爬虫
                 if (ranged3Attack.length > 0)
                 {
-                    this.say("危")
                     // 防御塔伤害数据
                     let towerData = global.warData.tower[this.room.name].data
                     let posStr = `${this.pos.x}/${this.pos.y}`
                     let towerHurt = towerData[posStr]?towerData[posStr]['attack']:0
                     if (!canSustain(ranged3Attack,this,towerHurt))
                     {
+                        this.say("危")
                         let closestHurtCreep =  RangeClosestCreep(this.pos,ranged3Attack,true)
                         if (closestHurtCreep)
                         {
@@ -587,13 +587,13 @@ export default class CreepMissonWarExtension extends Creep {
                         let ranged3Attack = RangeCreep(this.pos,creeps,3,true)  // 三格内的攻击性爬虫
                         if (ranged3Attack.length > 0)
                         {
-                            this.say("危")
                             // 防御塔伤害数据
                             let towerData = global.warData.tower[this.room.name].data
                             let posStr = `${this.pos.x}/${this.pos.y}`
                             let towerHurt = towerData[posStr]?towerData[posStr]['attack']:0
                             if (!canSustain(ranged3Attack,this,towerHurt))
                             {
+                                this.say("危")
                                 /* 删除记忆 */
                                 if (!this.pos.isNearTo(Game.flags[this.memory.targetFlag]))
                                 {
@@ -603,7 +603,7 @@ export default class CreepMissonWarExtension extends Creep {
                                 let closestHurtCreep =  RangeClosestCreep(this.pos,ranged3Attack,true)
                                 if (closestHurtCreep)
                                 {
-                                    this.Flee(closestHurtCreep.pos,3)
+                                    this.Flee(closestHurtCreep.pos,4)
                                 }
                             }
                             else

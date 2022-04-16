@@ -74,14 +74,14 @@ export const loop = ErrorMapper.wrapLoop(() =>{
     
     // if (Game.shard.name == 'shard3')
     // {
-    //     /* 分析cpu */
-    //     console.log("-----------------------------cpu消耗分析----------------------------------------")
-    //     console.log("Memory初始化:",a1-a)
-    //     console.log("shard初始化:",b-a1)
-    //     console.log("原型挂载:",c-b)
-    //     console.log("房间框架:",d-c)
-    //     console.log("爬虫:",e-d)
-    //     console.log("其他杂项:",f-e)
+        /* 分析cpu */
+        // console.log("-----------------------------cpu消耗分析----------------------------------------")
+        // console.log("Memory初始化:",a1-a)
+        // console.log("shard初始化:",b-a1)
+        // console.log("原型挂载:",c-b)
+        // console.log("房间框架:",d-c)
+        // console.log("爬虫:",e-d)
+        // console.log("其他杂项:",f-e)
     // }
 
 })

@@ -21,4 +21,5 @@ export function MemoryInit():void {
     if (!global.warData) global.warData = {tower:{},enemy:{},flag:{},structure:{}}
     if (!global.MSB) global.MSB = {}
     if (!Memory.StopPixel) Memory.StopPixel = false
+    if(!global.Repairlist)global.Repairlist={}
 }

@@ -27,7 +27,7 @@ export default class terminalExtension extends StructureTerminal {
             if (!thisTask) return
         }
         if (thisTask.delayTick < 99995)
-            thisTask.delayTick--
+            thisTask.processing = true
         switch (thisTask.name){
             case "资源传送":{this.ResourceSend(thisTask);break}
             case "资源购买":{this.ResourceDeal(thisTask);break}

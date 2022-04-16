@@ -469,26 +469,19 @@ export function unzipXandY(str:string):number[] | undefined{
 }
 
 /* 平均cpu统计相关 */
-export function statCPU():void{
+export function statCPU(): void {
     var mainEndCpu = Game.cpu.getUsed()
     if (!global.CpuData) global.CpuData = []
     global.UsedCpu = mainEndCpu
-    if (global.CpuData.length < 100) global.CpuData.push(global.UsedCpu)    // 小于一百就直接push
-    else
-    {
-        /* 计算平均值 */
-        let AllCpu = 0
-        for (var cData of global.CpuData)
-        {
-            AllCpu += cData
-        }
-        global.CpuData = [AllCpu/100]
-    }
+    let length_i = 200;
+    if (global.CpuData.length > length_i) {
+        global.CpuData = global.CpuData.slice(1);
+    }    
+    global.CpuData.push(global.UsedCpu)
     /* 计算平均cpu */
     var AllCpu = 0
-    for (var cData of global.CpuData)
-    {
+    for (var cData of global.CpuData) {
         AllCpu += cData
     }
-    global.AveCpu = AllCpu/global.CpuData.length
+    global.AveCpu = AllCpu / global.CpuData.length
 }
