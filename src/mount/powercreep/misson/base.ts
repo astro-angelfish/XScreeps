@@ -98,6 +98,7 @@ export default class PowerCreepMissonBase extends PowerCreep {
                 this.memory.MissionData = {}
                 return
             }
+            
             switch (this.memory.MissionData.name) 
             {
             case "仓库扩容":{this.handle_pwr_storage(); break;}
@@ -107,6 +108,7 @@ export default class PowerCreepMissonBase extends PowerCreep {
             case '虫卵强化':{this.handle_pwr_spawn();break;}
             case '工厂强化':{this.handle_pwr_factory();break;}
             case 'power强化':{this.handle_pwr_powerspawn();break;}
+            case 'source强化':{this.handle_pwr_source(this.memory.MissionData.Data);break;}
             }
         }
     }

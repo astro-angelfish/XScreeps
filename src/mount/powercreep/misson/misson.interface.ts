@@ -19,6 +19,7 @@ interface PowerCreep{
     handle_pwr_spawn():void
     handle_pwr_factory():void
     handle_pwr_powerspawn():void
+    handle_pwr_source(Data:any):void
 
     withdraw_(distination:Structure,rType:ResourceConstant) : void
     transfer_(distination:Structure,rType:ResourceConstant) : void
