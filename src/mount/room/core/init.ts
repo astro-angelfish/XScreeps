@@ -39,7 +39,6 @@ export default class RoomCoreInitExtension extends Room {
         if (!this.memory.productData) this.memory.productData = { level: 0, state: 'sleep', baseList: {}, balanceData: {} }
         if (!this.memory.DynamicConfig) this.memory.DynamicConfig = {}
         if (!this.memory.DynamicConfig.Dynamicupgrade) this.memory.DynamicConfig.Dynamicupgrade = false
-
     }
 
     /**
@@ -70,13 +69,6 @@ export default class RoomCoreInitExtension extends Room {
         /* 中心点依赖建筑*/
         if (Memory.RoomControlData[this.name].center.length == 2) {
             let centerlist = Memory.RoomControlData[this.name].center
-            /* 中央link建筑记忆更新 */
-            if (level >= 5 && !StructureData.center_link) {
-                let position = new RoomPosition(centerlist[0], centerlist[1], this.name)
-                let center_links = position.getRangedStructure(['link'], 3, 0) as StructureLink[]
-                if (center_links.length >= 1) StructureData.center_link = center_links[0].id
-
-            }
             /* 近塔记忆更新 (用于维护道路和container的塔) */
             if (!this.memory.StructureIdData.NtowerID && this.controller.level >= 3) {
                 let position = new RoomPosition(centerlist[0], centerlist[1], this.name)
@@ -102,7 +94,7 @@ export default class RoomCoreInitExtension extends Room {
         if (!StructureData.source_links) StructureData.source_links = []
         if (level >= 6 && !StructureData.upgrade_link) {
             if (Game.time % tickratio * 4 == 0) {
-                let upgrade_link = this.controller.pos.getRangedStructure([STRUCTURE_LINK], 4, 0) as StructureLink[]
+                let upgrade_link = this.controller.pos.getRangedStructure([STRUCTURE_LINK], 3, 0) as StructureLink[]
                 if (upgrade_link.length >= 1)
                     for (let ul of upgrade_link) {
                         if (!isInArray(StructureData.source_links, ul.id)) {
@@ -166,6 +158,13 @@ export default class RoomCoreInitExtension extends Room {
         /* 仓库记忆更新 */
         if (level >= 4 && !this.memory.StructureIdData.storageID) {
             if (this.storage) this.memory.StructureIdData.storageID = this.storage.id
+        }
+
+        /* 通过仓库抓取中央link */
+        if (level >= 5 && !StructureData.center_link && this.memory.StructureIdData.storageID) {
+            let storage_ = Game.getObjectById(this.memory.StructureIdData.storageID) as Storage
+            let center_links = storage_.pos.getRangedStructure(['link'], 2, 0) as StructureLink[]
+            if (center_links.length >= 1) StructureData.center_link = center_links[0].id
         }
         /* 防御塔记忆更新 */
         if (Game.time % tickratio * 25 == 0 && this.controller.level >= 3) {

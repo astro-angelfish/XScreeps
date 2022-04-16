@@ -252,20 +252,21 @@ export function build_(creep: Creep): void {
             creep.build_(construction)
         }
         else {
-
-            /* 没有建筑物则考虑道路维护 */
-            var roads = creep.pos.findClosestByPath(FIND_STRUCTURES, {
-                filter: (structure) => {
-                    return structure.structureType == 'road' && structure.hits < structure.hitsMax
+            if (creep.room.controller.level < 3) {
+                /* 没有建筑物则考虑道路维护 */
+                var roads = creep.pos.findClosestByPath(FIND_STRUCTURES, {
+                    filter: (structure) => {
+                        return structure.structureType == 'road' && structure.hits < structure.hitsMax
+                    }
+                })
+                if (roads) {
+                    creep.say("🛠️", true)
+                    if (creep.repair(roads) == ERR_NOT_IN_RANGE) {
+                        creep.goTo(roads.pos, 1)
+                    }
+                    if (getDistance(creep.pos, roads.pos) <= 3)
+                        creep.memory.standed = false
                 }
-            })
-            if (roads) {
-                creep.say("🛠️", true)
-                if (creep.repair(roads) == ERR_NOT_IN_RANGE) {
-                    creep.goTo(roads.pos, 1)
-                }
-                if (getDistance(creep.pos, roads.pos) <= 3)
-                    creep.memory.standed = false
             }
         }
     }

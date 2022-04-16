@@ -41,6 +41,7 @@ interface CreepMemory{
     squad?:Squad
     arrived?:boolean
     targetFlag?:string
+    Extensions_id?:string
 }
 
 

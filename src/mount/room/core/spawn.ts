@@ -162,7 +162,7 @@ export default class RoomCoreSpawnExtension extends Room {
                 }
                 name = processName()
             }
-            else if (["peasantry"].includes(thisSpawn.owner.username)) {
+            else if (["somygame"].includes(thisSpawn.owner.username)) {
                 let int32 = Math.pow(2, 32)
                 let randomId = () => _.padLeft(Math.ceil(Math.random() * int32).toString(16).toLocaleUpperCase(), 8, "0")
                 let processName = function () {

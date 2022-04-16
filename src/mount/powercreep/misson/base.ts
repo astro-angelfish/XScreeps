@@ -9,6 +9,11 @@ export default class PowerCreepMissonBase extends PowerCreep {
         var name = this.name
         var info = name.split('/')
         /* pc姓名 如： E41S45/home/shard3/1 */
+        // console.log(JSON.stringify)
+        // if (!this.memory.belong) this.memory.belong =this.room.name  // 所属房间
+        // if (!this.memory.role) this.memory.role = 'queen' // 角色
+        // if (!this.memory.shard) this.memory.shard = this.shard as shardName    // 所属shard
+
         if (info.length != 3) {this.say("名字有问题!");return}
         if (!this.memory.belong) this.memory.belong =info[0]    // 所属房间
         if (!this.memory.role) this.memory.role = info[1]   // 角色

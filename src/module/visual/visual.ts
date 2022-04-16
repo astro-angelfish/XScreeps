@@ -132,7 +132,7 @@ export function RoomDataVisual(room:Room):void{
     room.visual.text(`房间状态:${(room.memory.state=="peace"?"和平":"战争")}`,0,row+=1,{color: room.memory.state == 'peace'?'#006400':'red', font:0.7,align:'left'})
     room.visual.text(`cpu池:${Game.cpu.bucket}`,0,row+=1,{color: Game.cpu.bucket < 2000?'red':'black', font:0.7,align:'left'})
     /* 控制器进度 */
-    let processController = room.controller.level >= 8?100:((room.controller.progress/room.controller.progressTotal)*100).toFixed(4)
+    let processController = room.controller.level >= 8?100:((room.controller.progress/room.controller.progressTotal)*100).toFixed(2)
     room.visual.text(`控制器进度:${processController}%`,0,row+=1,{color: 'black', font:0.7,align:'left'})
     /* 目前存在任务数 */
     var MissonNum = 0

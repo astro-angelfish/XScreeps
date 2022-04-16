@@ -17,7 +17,7 @@ export default class RoomMissonPublish extends Room {
      * @param num       要搬运的数量[可选]
      * @returns         任务对象
      */
-    public Public_Carry(creepData:BindData,delayTick:number,sR:string,sX:number,sY:number,tR:string,tX:number,tY:number,rType?:ResourceConstant,num?:number):MissionModel{
+    public public_Carry(creepData:BindData,delayTick:number,sR:string,sX:number,sY:number,tR:string,tX:number,tY:number,rType?:ResourceConstant,num?:number):MissionModel{
         var thisTask:MissionModel = 
             {
                 name :'物流运输',
@@ -125,7 +125,7 @@ export default class RoomMissonPublish extends Room {
      * @param delayTick 过期时间
      * @returns         任务对象
      */
-    public Public_link(structure:string[],dislink:string,level:number,delayTick?:number):MissionModel{
+    public public_link(structure:string[],dislink:string,level:number,delayTick?:number):MissionModel{
         var thisTask:MissionModel = {
             name:'链传送能',
             range:'Structure',

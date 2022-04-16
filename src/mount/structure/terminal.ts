@@ -113,12 +113,12 @@ export default class terminalExtension extends StructureTerminal {
                 let result = Game.market.createOrder({
                     type: ORDER_BUY,
                     resourceType: 'energy',
-                    price: thisprice_ + 0.001,
-                    totalAmount: 100000,
+                    price: thisprice_ - 0.1,
+                    totalAmount: 50000,
                     roomName: this.room.name
                 });
                 if (result != OK) { console.log("创建能量订单出错,房间", this.room.name) }
-                console.log(Colorful(`[普通]房间${this.room.name}创建energy订单,价格:${thisprice_ + 0.001};数量:100000`, 'green', true))
+                console.log(Colorful(`[普通]房间${this.room.name}创建energy订单,价格:${thisprice_ - 0.1};数量:50000`, 'green', true))
             }
         }
         // 能量极少的情况下，下市场合理范围内最高价格订单

@@ -25,7 +25,7 @@ export default class RoomCoreEcosphereExtension extends Room {
 
             /* link */
 
-            if (level >= 3) {
+            if (level == 3) {
                 /*绘制到矿点的路径*/
                 let sourceIDs = this.memory.StructureIdData.source
                 if (sourceIDs.length <= 0) return
