@@ -429,7 +429,7 @@ export function statCPU(): void {
     var mainEndCpu = Game.cpu.getUsed()
     if (!global.CpuData) global.CpuData = []
     global.UsedCpu = mainEndCpu
-    let length_i = 1500;
+    let length_i = 300;
     if (global.CpuData.length > length_i) {
         global.CpuData = global.CpuData.slice(1);
     }    

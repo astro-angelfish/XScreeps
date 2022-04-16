@@ -162,7 +162,7 @@ export default class PowerCreepMisson extends Room {
         if (!storage_) return
         let pc = Game.powerCreeps[`${this.name}/queen/${Game.shard.name}`]
         if (!pc || !pc.powers[PWR_OPERATE_FACTORY] || pc.powers[PWR_OPERATE_FACTORY].cooldown) return
-        if (this.MissionNum("Room", '工厂合成') > 0) return
+        if (this.MissionNum("PowerCreep", '工厂合成') > 0) return
         var thisTask: MissionModel = {
             name: "工厂强化",
             delayTick: 50,
@@ -181,7 +181,7 @@ export default class PowerCreepMisson extends Room {
         if (!storage_) return
         let pc = Game.powerCreeps[`${this.name}/queen/${Game.shard.name}`]
         if (!pc || !pc.powers[PWR_OPERATE_POWER] || pc.powers[PWR_OPERATE_POWER].cooldown) return
-        if (this.MissionNum("Room", 'power升级') > 0) return
+        if (this.MissionNum("PowerCreep", 'power升级') > 0) return
         var thisTask: MissionModel = {
             name: "power强化",
             delayTick: 50,
@@ -199,7 +199,7 @@ export default class PowerCreepMisson extends Room {
         if (!this.memory.StructureIdData.source) return;
         let pc = Game.powerCreeps[`${this.name}/queen/${Game.shard.name}`]
         if (!pc || !pc.powers[PWR_REGEN_SOURCE] || pc.powers[PWR_REGEN_SOURCE].cooldown) return
-        if (this.MissionNum("Room", 'source强化') > 0) return
+        if (this.MissionNum("PowerCreep", 'source强化') > 0) return
         for (let i in this.memory.StructureIdData.source) {
             let _source_data = Game.getObjectById(this.memory.StructureIdData.source[i]) as Source
             if(!_source_data){continue}

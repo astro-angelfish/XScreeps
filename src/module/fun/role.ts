@@ -47,6 +47,7 @@ export function harvest_(creep_: Creep): void {
             }
             return
         }
+ 
         // 其次寻找container
         if (data.containerID) {
             let container = Game.getObjectById(data.containerID) as StructureLink
@@ -93,7 +94,7 @@ export function harvest_(creep_: Creep): void {
                 creep_.say("🌱", true)
         }
         else {
-            creep_.say("🤪", true)
+            // creep_.say("🤪", true)
         }
         if (Game.time % 5 == 0) {
             var is = creep_.pos.findInRange(FIND_DROPPED_RESOURCES, 1)

@@ -340,7 +340,7 @@ export default class CreepMissonActionExtension extends Creep {
         {
             if (this.memory.working)
             {
-                this.say("upgrade")
+                // this.say("upgrade")
                 this.upgrade_()
             }
             else
