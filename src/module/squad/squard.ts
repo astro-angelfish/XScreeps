@@ -104,8 +104,8 @@ export function squardFrameWork(squardID:string):void{
         var retreatFlag = SquadNameFlagPath(squadData,'retreat')
         if (retreatFlag)
         {
-            squadMove(squadData,blueFlag.pos,0)
-            if(squadNear(squadData,blueFlag.pos))
+            squadMove(squadData,retreatFlag.pos,0)
+            if(squadNear(squadData,retreatFlag.pos))
             {
                 retreatFlag.remove()
             }
