@@ -384,37 +384,37 @@ export default class CreepMissonWarExtension extends Creep {
             if (this.fatigue || Game.creeps[this.memory.double].fatigue) return
             if (Game.creeps[this.memory.double] && !this.pos.isNearTo(Game.creeps[this.memory.double]) && (!isInArray([0,49],this.pos.x) && !isInArray([0,49],this.pos.y)))
             return
-        /* 去目标房间 */
-        if (this.room.name != this.memory.belong)
-        {
-            this.goTo(new RoomPosition(24,24,this.memory.belong),23)
-        }
-        else
-        {
-            let flag = this.pos.findClosestByPath(FIND_FLAGS,{filter:(flag)=>{
-                    return flag.name.indexOf('defend_double') == 0
-            }})
-            if (flag)
+            /* 确保在自己房间 */
+            if (this.room.name != this.memory.belong)
             {
-                let creeps = this.pos.findInRange(FIND_HOSTILE_CREEPS,1,{filter:(creep)=>{
+                this.goTo(new RoomPosition(24,24,this.memory.belong),23)
+            }
+            else
+            {
+                let flag = this.pos.findClosestByPath(FIND_FLAGS,{filter:(flag)=>{
+                        return flag.name.indexOf('defend_double') == 0
+                }})
+                if (flag)
+                {
+                    let creeps = this.pos.findInRange(FIND_HOSTILE_CREEPS,1,{filter:(creep)=>{
+                        return !isInArray(Memory.whitesheet,creep.owner.username )
+                    }})
+                    if (creeps[0])this.attack(creeps[0])
+                    this.goTo(flag.pos,0)
+                    return
+                }
+                let creeps = this.pos.findClosestByRange(FIND_HOSTILE_CREEPS,{filter:(creep)=>{
                     return !isInArray(Memory.whitesheet,creep.owner.username )
                 }})
-                if (creeps[0])this.attack(creeps[0])
-                this.goTo(flag.pos,0)
-                return
+                if (creeps && !isInArray([0,49],creeps.pos.x) && !isInArray([0,49],creeps.pos.y))
+                {
+                    if (this.attack(creeps) == ERR_NOT_IN_RANGE) this.goTo(creeps.pos,1)
+                }
+                if (this.pos.x >= 48 || this.pos.x <= 1 || this.pos.y >= 48 || this.pos.y <= 1)
+                {
+                    this.moveTo(new RoomPosition(Memory.RoomControlData[this.memory.belong].center[0],Memory.RoomControlData[this.memory.belong].center[1],this.memory.belong))
+                }
             }
-            let creeps = this.pos.findClosestByRange(FIND_HOSTILE_CREEPS,{filter:(creep)=>{
-                return !isInArray(Memory.whitesheet,creep.owner.username )
-            }})
-            if (creeps && !isInArray([0,49],creeps.pos.x) && !isInArray([0,49],creeps.pos.y))
-            {
-                if (this.attack(creeps) == ERR_NOT_IN_RANGE) this.goTo(creeps.pos,1)
-            }
-            if (this.pos.x >= 48 || this.pos.x <= 1 || this.pos.y >= 48 || this.pos.y <= 1)
-            {
-                this.moveTo(new RoomPosition(Memory.RoomControlData[this.memory.belong].center[0],Memory.RoomControlData[this.memory.belong].center[1],this.memory.belong))
-            }
-        }
         }
         else
         {
@@ -1200,14 +1200,14 @@ export default class CreepMissonWarExtension extends Creep {
                     }
                     return
                 }
-                // 展开攻击
-                var enemys = this.pos.findInRange(FIND_HOSTILE_CREEPS,4,{filter:(creep)=>{
+                /* 攻击离四格内离自己最近的爬 */
+                var enemy = this.pos.findClosestByPath(FIND_HOSTILE_CREEPS,{filter:(creep)=>{
                     return !isInArray(Memory.whitesheet,creep.owner.username) && !creep.pos.GetStructure('rampart')
                 }})
-                if (enemys.length > 0)
+                if (enemy && Math.max(Math.abs(this.pos.x - enemy.pos.x),Math.abs(this.pos.y - enemy.pos.y)) <= 4)
                 {
-                    this.goTo(enemys[0].pos,1)
-                    this.attack(enemys[0])
+                    this.goTo(enemy.pos,1)
+                    this.attack(enemy)
                     return
                 }
                 // 没有发现敌人就攻击建筑物
