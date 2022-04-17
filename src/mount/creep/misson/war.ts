@@ -737,13 +737,14 @@ export default class CreepMissonWarExtension extends Creep {
                 if(!squadID) return
                 if (!this.memory.MissionData.id) return
                 if (!thisRoom.memory.squadData) Game.rooms[this.memory.belong].memory.squadData = {}
-                var MissonSquardData = thisRoom.memory.squadData[squadID]
+                let MissonSquardData = thisRoom.memory.squadData[squadID]
                 if (!MissonSquardData) thisRoom.memory.squadData[squadID] = {}
                 /* 编队信息初始化 */
                 if (this.memory.creepType == 'heal' && !this.memory.squad)
                 {
                     if (this.memory.role == 'x-aio')
                     {
+                        if (MissonSquardData == null || MissonSquardData == undefined) MissonSquardData = {}
                         if (Object.keys(MissonSquardData).length <= 0 ) MissonSquardData[this.name] = {position:'↙',index:1,role:this.memory.role,creepType:this.memory.creepType}
                         if (Object.keys(MissonSquardData).length == 1 && !isInArray(Object.keys(MissonSquardData),this.name) ) MissonSquardData[this.name] = {position:'↖',index:0,role:this.memory.role,creepType:this.memory.creepType}
                         if (Object.keys(MissonSquardData).length == 2 && !isInArray(Object.keys(MissonSquardData),this.name) ) MissonSquardData[this.name] = {position:'↘',index:3,role:this.memory.role,creepType:this.memory.creepType}
@@ -751,12 +752,14 @@ export default class CreepMissonWarExtension extends Creep {
                     }
                     else
                     {
+                        if (MissonSquardData == null || MissonSquardData == undefined) MissonSquardData = {}
                         if (Object.keys(MissonSquardData).length <= 0 ) MissonSquardData[this.name] = {position:'↙',index:1,role:this.memory.role,creepType:this.memory.creepType}
                         if (Object.keys(MissonSquardData).length == 2 && !isInArray(Object.keys(MissonSquardData),this.name) ) MissonSquardData[this.name] = {position:'↘',index:3,role:this.memory.role,creepType:this.memory.creepType}
                     }
                 }
                 else if (this.memory.creepType == 'attack' && !this.memory.squad)
                 {
+                    if (MissonSquardData == null || MissonSquardData == undefined) MissonSquardData = {}
                     if (Object.keys(MissonSquardData).length == 1 && !isInArray(Object.keys(MissonSquardData),this.name) ) MissonSquardData[this.name] = {position:'↖',index:0,role:this.memory.role,creepType:this.memory.creepType}
                     if (Object.keys(MissonSquardData).length == 3 && !isInArray(Object.keys(MissonSquardData),this.name) ) MissonSquardData[this.name] = {position:'↗',index:2,role:this.memory.role,creepType:this.memory.creepType}
                 }

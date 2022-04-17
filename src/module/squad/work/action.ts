@@ -184,9 +184,9 @@ export function SquadNameFlagPath(SquadData:Squad,name:string):Flag{
     if (!pos_) return null
     let flag_ = null
     let distance_ = null
-    for (let i = pos_.x;i < (pos_.x+2 < 50?pos_.x+1:50);i++)
+    for (let i = pos_.x;i < (pos_.x+2 < 50?pos_.x+2:50);i++)
     LoopB:
-    for (let j = pos_.y;j < (pos_.y+2 < 50?pos_.y+1:50);j++)
+    for (let j = pos_.y;j < (pos_.y+2 < 50?pos_.y+2:50);j++)
     {
         let thisPos = new RoomPosition(i,j,pos_.roomName)
         let disFlag = thisPos.findClosestByPath(FIND_FLAGS,{filter:(flag)=>{
