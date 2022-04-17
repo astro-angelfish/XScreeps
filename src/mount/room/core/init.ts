@@ -146,7 +146,7 @@ export default class RoomCoreInitExtension extends Room {
                     StructureData.source_links = temp_link_list
                 }
             }
-            if (level == 6 && !StructureData.upgrade_link)
+            if (level == 6)
             {
                 if (StructureData.source_links.length < StructureData.source.length)
                 {
