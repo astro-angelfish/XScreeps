@@ -5,6 +5,9 @@ import { squadMove, squadNear } from "./move/move"
 import { initSquad, Squadaction, SquadAttackOrient, SquadColorFlagRange, SquadNameFlagPath, SquadSteady } from "./work/action"
 import { getStandCreep, SquadArrivedRoom, SquadAttackDirection, SquadPosDirection, SquadReady } from "./work/state"
 
+/**
+ * 只是壳子 由于比较懒，无限期延迟开发，不保证没有bug
+ */
 
 // 主程序执行
 export function SquadManager():void{
@@ -74,7 +77,7 @@ export function squardFrameWork(squardID:string):void{
     /* 如果小队还没有到目标房间 */
     if (!SquadArrivedRoom(squadData,Data.disRoom))
     {
-        /* 如果有蓝色旗帜，优先去蓝色旗帜那里集结  [集结] */
+        /* 如果有蓝色旗帜，优先去蓝色旗帜那里集结  [临时] */
         var blueFlag = SquadColorFlagRange(squadData,COLOR_BLUE)
         if (!Data.gather && blueFlag)
         {
@@ -97,6 +100,17 @@ export function squardFrameWork(squardID:string):void{
     }
         /* 小队行为 攻击周围的敌人和建筑*/
         Squadaction(squadData)
+        /* retreat_xx 是紧急撤退标志 */
+        var retreatFlag = SquadNameFlagPath(squadData,'retreat')
+        if (retreatFlag)
+        {
+            squadMove(squadData,blueFlag.pos,0)
+            if(squadNear(squadData,blueFlag.pos))
+            {
+                retreatFlag.remove()
+            }
+            return
+        }
         let attack_flag = SquadNameFlagPath(squadData,'squad_attack')
         if (attack_flag)
         {
@@ -126,23 +140,12 @@ export function squardFrameWork(squardID:string):void{
             }})
             if (clostStructure)
             {
-                clostStructure.pos.createFlag(`squad_attack_${generateID()}`,COLOR_WHITE)
+                clostStructure.pos.createFlag(`squad_attack_${Math.random().toString(36).substr(3)}`,COLOR_WHITE)
                 return
             }
             else
             {return}
         }
         if (!attack_flag) return
-    /* retreat_xx 是紧急撤退标志 */
-    var retreatFlag = SquadNameFlagPath(squadData,'retreat')
-    if (retreatFlag)
-    {
-        squadMove(squadData,blueFlag.pos,0)
-        if(squadNear(squadData,blueFlag.pos))
-        {
-            retreatFlag.remove()
-        }
-        return
-    }
 
 }
