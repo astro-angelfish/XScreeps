@@ -125,6 +125,7 @@ export function showTowerData():void{
  * 瞬时cpu 平均cpu 房间状态 任务数 bucket等
  */
 export function RoomDataVisual(room:Room):void{
+    room.visual.rect(0,0,7,10,{opacity:0.1,stroke: '#696969',strokeWidth:0.2})
     let row = 0
     room.visual.text(`全局实时CPU:${(global.UsedCpu?global.UsedCpu:0).toFixed(2)}`,0,row+=1,{color: 'black', font:0.7,align:'left'})
     room.visual.text(`全局平均CPU:${(global.AveCpu?global.AveCpu:0).toFixed(2)}`,0,row+=1,{color: 'black', font:0.7,align:'left'})
@@ -176,5 +177,4 @@ export function RoomDataVisual(room:Room):void{
             room.visual.text(`${room.memory.RoomLabBind[i].rType}`,lab_.pos.x,lab_.pos.y,{color:CompoundColor[room.memory.RoomLabBind[i].rType],font:0.3,align:'center',strokeWidth:0.2})
         }
     }
-    room.visual.rect(0,0,7,row+1,{opacity:0.1,stroke: '#696969',strokeWidth:0.2})
 }
