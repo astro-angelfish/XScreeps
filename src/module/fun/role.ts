@@ -34,7 +34,7 @@ export function harvest_(creep_: Creep): void {
                 if (container.hits < container.hitsMax) {
                     creep_.repair(container)
                     return
-                 }
+                }
             }
         }
         if (data.linkID) {
@@ -47,7 +47,7 @@ export function harvest_(creep_: Creep): void {
             }
             return
         }
- 
+
         // 其次寻找container
         if (data.containerID) {
             let container = Game.getObjectById(data.containerID) as StructureLink
@@ -276,6 +276,21 @@ export function build_(creep: Creep): void {
                     }
                     if (getDistance(creep.pos, roads.pos) <= 3)
                         creep.memory.standed = false
+                }
+            } else {
+                if (global.Repairlist[thisRoom.name].length > 0) {
+                    let Repairdata = Game.getObjectById(global.Repairlist[thisRoom.name][0]) as StructureTower
+                    if (!Repairdata) {
+                        global.Repairlist[thisRoom.name].shift()
+                        return
+                    }
+                    if (Repairdata.hits >= Repairdata.hitsMax) {
+                        global.Repairlist[thisRoom.name].shift()
+                        return
+                    }
+                    if (creep.repair(Repairdata) == ERR_NOT_IN_RANGE) {
+                        creep.goTo(Repairdata.pos, 2)
+                    }
                 }
             }
         }

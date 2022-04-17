@@ -344,12 +344,12 @@ export default class CreepMissonWarExtension extends Creep {
             if (!this.BoostCheck(['move', 'heal', 'tough'])) return
         }
         if (!this.memory.double) {
-            if (this.memory.role == 'double-douHeal') {
+            if (this.memory.role == 'defend-douHeal') {
                 /* 由heal来进行组队 */
                 if (Game.time % 7 == 0) {
                     var disCreep = this.pos.findClosestByRange(FIND_MY_CREEPS, {
                         filter: (creep) => {
-                            return creep.memory.role == 'double-douAttack' && !creep.memory.double
+                            return creep.memory.role == 'defend-douAttack' && !creep.memory.double
                         }
                     })
                     if (disCreep) {
@@ -368,7 +368,7 @@ export default class CreepMissonWarExtension extends Creep {
             if (this.fatigue || Game.creeps[this.memory.double].fatigue) return
             if (Game.creeps[this.memory.double] && !this.pos.isNearTo(Game.creeps[this.memory.double]) && (!isInArray([0, 49], this.pos.x) && !isInArray([0, 49], this.pos.y)))
                 return
-            /* 去目标房间 */
+            /* 确保在自己房间 */
             if (this.room.name != this.memory.belong) {
                 this.goTo(new RoomPosition(24, 24, this.memory.belong), 23)
             }
@@ -499,12 +499,12 @@ export default class CreepMissonWarExtension extends Creep {
                 // 遇到不能承受的爬就规避
                 let ranged3Attack = RangeCreep(this.pos, creeps, 3, true)  // 三格内的攻击性爬虫
                 if (ranged3Attack.length > 0) {
-                    this.say("危")
                     // 防御塔伤害数据
                     let towerData = global.warData.tower[this.room.name].data
                     let posStr = `${this.pos.x}/${this.pos.y}`
                     let towerHurt = towerData[posStr] ? towerData[posStr]['attack'] : 0
                     if (!canSustain(ranged3Attack, this, towerHurt)) {
+                        this.say("危")
                         let closestHurtCreep = RangeClosestCreep(this.pos, ranged3Attack, true)
                         if (closestHurtCreep) {
                             this.Flee(closestHurtCreep.pos, 3)
@@ -542,12 +542,12 @@ export default class CreepMissonWarExtension extends Creep {
                         // 自动规避
                         let ranged3Attack = RangeCreep(this.pos, creeps, 3, true)  // 三格内的攻击性爬虫
                         if (ranged3Attack.length > 0) {
-                            this.say("凉")
                             // 防御塔伤害数据
                             let towerData = global.warData.tower[this.room.name].data
                             let posStr = `${this.pos.x}/${this.pos.y}`
                             let towerHurt = towerData[posStr] ? towerData[posStr]['attack'] : 0
                             if (!canSustain(ranged3Attack, this, towerHurt)) {
+                                this.say("危")
                                 /* 删除记忆 */
                                 if (!this.pos.isNearTo(Game.flags[this.memory.targetFlag])) {
                                     delete this.memory.targetFlag
@@ -555,7 +555,7 @@ export default class CreepMissonWarExtension extends Creep {
                                 this.heal(this)
                                 let closestHurtCreep = RangeClosestCreep(this.pos, ranged3Attack, true)
                                 if (closestHurtCreep) {
-                                    this.Flee(closestHurtCreep.pos, 3)
+                                    this.Flee(closestHurtCreep.pos, 4)
                                 }
                             }
                             else {
@@ -668,22 +668,25 @@ export default class CreepMissonWarExtension extends Creep {
                 if (!squadID) return
                 if (!this.memory.MissionData.id) return
                 if (!thisRoom.memory.squadData) Game.rooms[this.memory.belong].memory.squadData = {}
-                var MissonSquardData = thisRoom.memory.squadData[squadID]
+                let MissonSquardData = thisRoom.memory.squadData[squadID]
                 if (!MissonSquardData) thisRoom.memory.squadData[squadID] = {}
                 /* 编队信息初始化 */
                 if (this.memory.creepType == 'heal' && !this.memory.squad) {
                     if (this.memory.role == 'x-aio') {
+                        if (MissonSquardData == null || MissonSquardData == undefined) MissonSquardData = {}
                         if (Object.keys(MissonSquardData).length <= 0) MissonSquardData[this.name] = { position: '↙', index: 1, role: this.memory.role, creepType: this.memory.creepType }
                         if (Object.keys(MissonSquardData).length == 1 && !isInArray(Object.keys(MissonSquardData), this.name)) MissonSquardData[this.name] = { position: '↖', index: 0, role: this.memory.role, creepType: this.memory.creepType }
                         if (Object.keys(MissonSquardData).length == 2 && !isInArray(Object.keys(MissonSquardData), this.name)) MissonSquardData[this.name] = { position: '↘', index: 3, role: this.memory.role, creepType: this.memory.creepType }
                         if (Object.keys(MissonSquardData).length == 3 && !isInArray(Object.keys(MissonSquardData), this.name)) MissonSquardData[this.name] = { position: '↗', index: 2, role: this.memory.role, creepType: this.memory.creepType }
                     }
                     else {
+                        if (MissonSquardData == null || MissonSquardData == undefined) MissonSquardData = {}
                         if (Object.keys(MissonSquardData).length <= 0) MissonSquardData[this.name] = { position: '↙', index: 1, role: this.memory.role, creepType: this.memory.creepType }
                         if (Object.keys(MissonSquardData).length == 2 && !isInArray(Object.keys(MissonSquardData), this.name)) MissonSquardData[this.name] = { position: '↘', index: 3, role: this.memory.role, creepType: this.memory.creepType }
                     }
                 }
                 else if (this.memory.creepType == 'attack' && !this.memory.squad) {
+                    if (MissonSquardData == null || MissonSquardData == undefined) MissonSquardData = {}
                     if (Object.keys(MissonSquardData).length == 1 && !isInArray(Object.keys(MissonSquardData), this.name)) MissonSquardData[this.name] = { position: '↖', index: 0, role: this.memory.role, creepType: this.memory.creepType }
                     if (Object.keys(MissonSquardData).length == 3 && !isInArray(Object.keys(MissonSquardData), this.name)) MissonSquardData[this.name] = { position: '↗', index: 2, role: this.memory.role, creepType: this.memory.creepType }
                 }
@@ -1091,24 +1094,15 @@ export default class CreepMissonWarExtension extends Creep {
                     }
                     return
                 }
-                // 展开攻击
-                var enemys = this.pos.findInRange(FIND_HOSTILE_CREEPS, 1, {
+                /* 攻击离四格内离自己最近的爬 */
+                var enemy = this.pos.findClosestByPath(FIND_HOSTILE_CREEPS, {
                     filter: (creep) => {
                         return !isInArray(Memory.whitesheet, creep.owner.username) && !creep.pos.GetStructure('rampart')
                     }
                 })
-                // console.log(JSON.stringify(enemys))
-                if (enemys.length < 1) {
-                    var enemys = this.pos.findInRange(FIND_HOSTILE_CREEPS, 3, {
-                        filter: (creep) => {
-                            return !isInArray(Memory.whitesheet, creep.owner.username) && !creep.pos.GetStructure('rampart')
-                        }
-                    })
-                }
-
-                if (enemys.length > 0) {
-                    this.goTo(enemys[0].pos, 1)
-                    this.attack(enemys[0])
+                if (enemy && Math.max(Math.abs(this.pos.x - enemy.pos.x), Math.abs(this.pos.y - enemy.pos.y)) <= 4) {
+                    this.goTo(enemy.pos, 1)
+                    this.attack(enemy)
                     return
                 }
                 // 没有发现敌人就攻击建筑物
