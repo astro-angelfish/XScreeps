@@ -109,7 +109,7 @@ export default class terminalExtension extends StructureTerminal {
         if (storeNum < 250000 && storeNum >= 100000) {
             let ave = avePrice('energy', 1)
             let thisprice_ = ave * 1.1
-            if (!haveOrder(this.room.name, 'energy', 'buy', thisprice_, -0.2)) {
+            if (!haveOrder(this.room.name, 'energy', 'buy', thisprice_, -0.6)) {
                 let result = Game.market.createOrder({
                     type: ORDER_BUY,
                     resourceType: 'energy',
@@ -130,7 +130,7 @@ export default class terminalExtension extends StructureTerminal {
                     type: ORDER_BUY,
                     resourceType: 'energy',
                     price: highest - 0.1,
-                    totalAmount: 200000,
+                    totalAmount: 100000,
                     roomName: this.room.name
                 });
                 if (result != OK) { console.log("创建能量订单出错,房间", this.room.name) }

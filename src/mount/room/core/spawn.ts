@@ -166,7 +166,7 @@ export default class RoomCoreSpawnExtension extends Room {
                 let int32 = Math.pow(2, 32)
                 let randomId = () => _.padLeft(Math.ceil(Math.random() * int32).toString(16).toLocaleUpperCase(), 8, "0")
                 let processName = function () {
-                    return `0x` + randomId() + `【${mark}】`
+                    return randomId()
                 }
                 name = processName()
             }
