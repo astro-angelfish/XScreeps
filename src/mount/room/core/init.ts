@@ -308,7 +308,7 @@ export default class RoomCoreInitExtension extends Room {
                     if (containers.length > 0) this.memory.harvestData[id].containerID = containers[0].id
                 }
             }
-            else if (level >= 5)
+            else
             {
                 let source = Game.getObjectById(id) as Source
                 if (!this.memory.harvestData[id].linkID)
@@ -333,15 +333,6 @@ export default class RoomCoreInitExtension extends Room {
                         }
                         delete this.memory.harvestData[id].containerID
                     }
-                }
-            }
-            else
-            {
-                if (!this.memory.harvestData[id].linkID)
-                {
-                    let source = Game.getObjectById(id) as Source
-                    let links = source.pos.findInRange(FIND_STRUCTURES,2,{filter:(stru)=>{return stru.structureType == 'container'}})
-                    if (links.length > 0) this.memory.harvestData[id].linkID = links[0].id
                 }
             }
         }
