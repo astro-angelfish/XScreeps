@@ -44,6 +44,7 @@ interface Room {
     Task_Double_Defend(mission: MissionModel): void
     Task_squad(mission: MissionModel): void
     Task_double(mission: MissionModel): void
+    Task_Resource_transfer(mission: MissionModel): void
 }
 
 interface RoomMemory {
@@ -56,6 +57,7 @@ interface RoomMemory {
     mineralType: ResourceConstant
     enemy?: enemyAllotData,
     DynamicConfig: { Dynamicupgrade?: boolean }/*动态配置*/
+    MarketPrice: { Dynamicprice?: boolean, order_list: any, buy: { low: number, high: number }, sell: { low: number, high: number } }/*智能价格调度*/
 }
 
 interface NukeData {

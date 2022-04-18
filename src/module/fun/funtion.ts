@@ -15,12 +15,22 @@ export function avePrice(res: ResourceConstant, day: number): number {
 }
 
 // 判断是否已经有相应order了s
+export function gethaveOrder(roomName: string, res: ResourceConstant, mtype: 'sell' | 'buy', nowPrice: number, range?: number): any {
+    for (let i in Game.market.orders) {
+        let order = Game.market.getOrderById(i);
+        if (order.roomName == roomName && order.resourceType == res && order.type == mtype && order.price >= (Number(nowPrice) + Number(range)))
+            return order;
+    }
+    return false
+}
+
+// 判断是否已经有相应order了s
 export function haveOrder(roomName: string, res: ResourceConstant, mtype: 'sell' | 'buy', nowPrice?: number, range?: number): boolean {
     if (!nowPrice)  //  不考虑价格
     {
         for (let i in Game.market.orders) {
             let order = Game.market.getOrderById(i);
-            if (order.remainingAmount <= 0) { Game.market.cancelOrder(i); continue; }
+            // if (order.remainingAmount <= 0) { Game.market.cancelOrder(i); continue; }
             if (order.roomName == roomName && order.resourceType == res && order.type == mtype)
                 return true
         }
@@ -30,7 +40,7 @@ export function haveOrder(roomName: string, res: ResourceConstant, mtype: 'sell'
     {
         for (let i in Game.market.orders) {
             let order = Game.market.getOrderById(i);
-            if (order.remainingAmount <= 0) { Game.market.cancelOrder(i); continue; }
+            // if (order.remainingAmount <= 0) { Game.market.cancelOrder(i); continue; }
             if (order.roomName == roomName && order.resourceType == res && order.type == mtype && order.price >= (nowPrice + range))
                 return true
         }
@@ -432,7 +442,7 @@ export function statCPU(): void {
     let length_i = 300;
     if (global.CpuData.length > length_i) {
         global.CpuData = global.CpuData.slice(1);
-    }    
+    }
     global.CpuData.push(global.UsedCpu)
     /* 计算平均cpu */
     var AllCpu = 0

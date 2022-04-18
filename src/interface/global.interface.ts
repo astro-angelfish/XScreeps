@@ -25,7 +25,8 @@ declare module NodeJS {
         /* 100Tick内的平均CPU */
         CpuData?:number[]
         AveCpu?:number
-        Repairlist?:{[roomName:string]:string[]}
+        Repairlist?:{[roomName:string]:string[]},
+        Marketorder?:{[roomName:string]:string[]?},
     }
 }
 

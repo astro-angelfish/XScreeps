@@ -87,15 +87,15 @@ export function harvest_(creep_: Creep): void {
         if (!creep_.pos.isNearTo(source)) { creep_.goTo(source.pos, 1); return }
         let data = Game.rooms[creep_.memory.belong].memory.harvestData[creep_.memory.targetID]
         if (!data) return
-        if (data.linkID || data.containerID) {
-            if (!["superbitch", "ExtraDim"].includes(creep_.owner.username))
-                creep_.say("😒", true)
-            else
-                creep_.say("🌱", true)
-        }
-        else {
-            // creep_.say("🤪", true)
-        }
+        // if (data.linkID || data.containerID) {
+        //     if (!["superbitch", "ExtraDim"].includes(creep_.owner.username))
+        //         creep_.say("😒", true)
+        //     else
+        //         creep_.say("🌱", true)
+        // }
+        // else {
+        //     creep_.say("🤪", true)
+        // }
         if (Game.time % 5 == 0) {
             var is = creep_.pos.findInRange(FIND_DROPPED_RESOURCES, 1)
             if (is.length > 0 && is[0].amount > 20 && is[0].resourceType == 'energy') { creep_.pickup(is[0]); return }
@@ -238,7 +238,7 @@ export function upgrade_(creep_: Creep): void {
                     }
                 })
             }
-            if (!target) { creep_.say("😑", true); return }
+            if (!target) { return }
             else { creep_.memory.targetID = target.id }
         }
         else {
@@ -270,7 +270,7 @@ export function build_(creep: Creep): void {
                     }
                 })
                 if (roads) {
-                    creep.say("🛠️", true)
+                    // creep.say("🛠️", true)
                     if (creep.repair(roads) == ERR_NOT_IN_RANGE) {
                         creep.goTo(roads.pos, 1)
                     }

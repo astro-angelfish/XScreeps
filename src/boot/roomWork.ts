@@ -5,6 +5,7 @@ import { RoomDataVisual } from "@/module/visual/visual"
 export default () => {
 
     if (!Memory.RoomControlData) Memory.RoomControlData = {}
+    global.Marketorder = {};/*tick重置已有的订单列表信息*/
     // console.log(Game.time, "-----------------------------cpu消耗分析----------------------------------------")
     for (var roomName in Memory.RoomControlData) {
         let thisRoom = Game.rooms[roomName]

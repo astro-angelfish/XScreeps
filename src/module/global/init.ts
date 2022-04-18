@@ -23,4 +23,5 @@ export function MemoryInit():void {
     if (!Memory.StopPixel) Memory.StopPixel = false
     if(!global.Repairlist)global.Repairlist={}
     if (!Memory.creepscpu) { Memory.creepscpu = {} }
+    if(!global.Marketorder)global.Marketorder={}
 }
