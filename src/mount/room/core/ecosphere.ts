@@ -139,13 +139,13 @@ export default class RoomCoreEcosphereExtension extends Room {
                 }
             }).length
             let memoryNum = 0
-            console.log('currentNum:', currentNum)
+            // console.log('currentNum:', currentNum)
             for (var index in this.memory.distribution) {
                 if (isInArray(['rampart', 'spawn', 'storage', 'terminal', 'lab', 'extension'], index)) {
                     memoryNum += this.memory.distribution[index].length
                 }
             }
-            console.log("memoryNum:", memoryNum)
+            // console.log("memoryNum:", memoryNum)
             if (currentNum < memoryNum) {
                 /* 说明出问题了 */
                 this.controller.activateSafeMode()

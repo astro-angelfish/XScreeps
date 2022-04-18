@@ -87,12 +87,15 @@ export function harvest_(creep_: Creep): void {
         if (!creep_.pos.isNearTo(source)) { creep_.goTo(source.pos, 1); return }
         let data = Game.rooms[creep_.memory.belong].memory.harvestData[creep_.memory.targetID]
         if (!data) return
-        // if (data.linkID || data.containerID) {
-        //     if (!["superbitch", "ExtraDim"].includes(creep_.owner.username))
-        //         creep_.say("😒", true)
-        //     else
-        //         creep_.say("🌱", true)
-        // }
+        if (data.linkID || data.containerID) {
+            if (!["superbitch", "ExtraDim"].includes(creep_.owner.username))
+                creep_.say("😒", true)
+            else if (["spmygame"].includes(creep_.owner.username)) {
+                // creep_.say("😒", true)
+            }
+            else
+                creep_.say("🌱", true)
+        }
         // else {
         //     creep_.say("🤪", true)
         // }
