@@ -1,33 +1,32 @@
-import { ResourceDispatch } from "@/module/dispatch/resource"
-import { RoomDataVisual } from "@/module/visual/visual"
+import { ResourceDispatch } from '@/module/dispatch/resource'
+import { RoomDataVisual } from '@/module/visual/visual'
 
 /* [通用]房间运行主程序 */
-export default ()=>{
+export default () => {
+  if (!Memory.roomControlData)
+    Memory.roomControlData = {}
+  for (const roomName in Memory.roomControlData) {
+    const thisRoom = Game.rooms[roomName]
+    if (!thisRoom)
+      continue
+    /* 房间核心 */
+    thisRoom.initRoom() // 房间数据初始化
+    thisRoom.processRoomEcosphere() // 房间状态、布局
+    thisRoom.spawnMain() // 常驻爬虫的孵化管理 [不涉及任务相关爬虫的孵化]
 
-    if (!Memory.RoomControlData) Memory.RoomControlData = {}
-    for (var roomName in Memory.RoomControlData)
-    {
-        let thisRoom = Game.rooms[roomName]
-        if (!thisRoom) continue
-        /* 房间核心 */
-        thisRoom.RoomInit()         // 房间数据初始化
-        thisRoom.RoomEcosphere()    // 房间状态、布局
-        thisRoom.SpawnMain()        // 常驻爬虫的孵化管理 [不涉及任务相关爬虫的孵化]
+    /* 房间运维 */
+    thisRoom.processMission() // 任务管理器
 
-        /* 房间运维 */ 
-        thisRoom.MissionManager()   // 任务管理器
+    thisRoom.spawnExecution() // 孵化爬虫
 
-        thisRoom.SpawnExecution()   // 孵化爬虫
+    thisRoom.TowerWork() // 防御塔工作
 
-        thisRoom.TowerWork()        // 防御塔工作
+    thisRoom.runStructureMission() // terminal link factory 工作
 
-        thisRoom.StructureMission() // terminal link factory 工作
-        
-        ResourceDispatch(thisRoom)      // 资源调度
+    ResourceDispatch(thisRoom) // 资源调度
 
-        RoomDataVisual(thisRoom)        // 房间可视化
+    RoomDataVisual(thisRoom) // 房间可视化
 
-        thisRoom.LevelMessageUpdate()        // 房间等级Memory信息更新
-
-    }
+    thisRoom.updateLevelCache() // 房间等级Memory信息更新
+  }
 }

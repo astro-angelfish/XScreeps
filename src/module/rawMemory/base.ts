@@ -3,9 +3,9 @@
  */
 
 interface Segment {
-    roomName: string,
-    service: 'connect' | 'resource' | 'defend',       // 服务类型
-    data?: any
+  roomName: string
+  service: 'connect' | 'resource' | 'defend', // 服务类型
+  data?: any
 }
 
 /**
@@ -14,7 +14,7 @@ interface Segment {
  * @param data 数据
  */
 export function setSegment(id: number, data: Segment) {
-    RawMemory.segments[id] = JSON.stringify(data)
+  RawMemory.segments[id] = JSON.stringify(data)
 }
 
 /**
@@ -22,35 +22,29 @@ export function setSegment(id: number, data: Segment) {
  * @returns 数据
  */
 export function getForeignSegment(): null | Segment {
-    if (RawMemory.foreignSegment && RawMemory.foreignSegment.data) 
-    {
-        return JSON.parse(RawMemory.foreignSegment.data) as Segment
-    }
-    else return null
+  if (RawMemory.foreignSegment && RawMemory.foreignSegment.data)
+    return JSON.parse(RawMemory.foreignSegment.data) as Segment
+
+  else return null
 }
 
 /**
  * 使得记忆段公开
  * @param index id
  */
-export function setSegmentPublic(index: number):void {
-    if (RawMemory.segments[index]?.length) 
-    {
-        RawMemory.setPublicSegments([index]);
-    }
+export function setSegmentPublic(index: number): void {
+  if (RawMemory.segments[index]?.length)
+    RawMemory.setPublicSegments([index])
 }
 
 /**
  * 初始化记忆片段
  */
-export function initSegment(index:number[]) : void{
-    RawMemory.setActiveSegments(index);
+export function initSegment(index: number[]): void {
+  RawMemory.setActiveSegments(index)
 }
 
 /* 指定为某玩家Mempry片段 */
-export function setPlayerSegment(name:string,index:number):void{
-    RawMemory.setActiveForeignSegment(name, index);
+export function setPlayerSegment(name: string, index: number): void {
+  RawMemory.setActiveForeignSegment(name, index)
 }
-
-
-

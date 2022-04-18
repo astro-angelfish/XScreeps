@@ -1,87 +1,91 @@
-/* error map */
-import { ErrorMapper } from './_errorMap/errorMapper'
-import { MemoryInit } from './module/global/init'
-/* 原型挂载 */
-import Mount from '@/mount'
-import RoomWork from '@/boot/roomWork'
+import { ErrorMapper } from '@/_errorMap/errorMapper'
+import { initMemory } from '@/module/global/init'
+import { CreepNumStatistic } from '@/module/global/statistic'
+import { pixel } from '@/module/fun/pixel'
+import { initShardMemory, processShardMemory } from '@/module/shard/base'
+import { ResourceDispatchTick } from '@/module/dispatch/resource'
+import layoutVisual from '@/module/layoutVisual'
+import { SquadManager } from '@/module/squad/base'
+import { stateScanner } from '@/module/stat/stat'
+import { showTowerData } from '@/module/visual/visual'
+import { statCPU } from '@/module/fun/funtion'
+import { profiler } from '@/utils'
+import mountPrototype from '@/mount'
 import CreepWork from '@/boot/creepWork'
-import { CreepNumStatistic } from './module/global/statistic'
-import { pixel } from './module/fun/pixel'
-import { InitShardMemory, InterShardRun } from './module/shard/base'
-import { ResourceDispatchTick } from './module/dispatch/resource'
-import layoutVisual from './module/layoutVisual'
-import { SquadManager } from './module/squad/squard'
-import { stateScanner } from './module/stat/stat'
-import { showTowerData } from './module/visual/visual'
-import { statCPU } from './module/fun/funtion'
+import RoomWork from '@/boot/roomWork'
+
 /**
  * 主运行函数
  */
-export const loop = ErrorMapper.wrapLoop(() =>{
-    let a = Game.cpu.getUsed()
+export const loop = ErrorMapper.wrapLoop(() => {
+  profiler.reset(false)
+  // profiler.reset(Game.shard.name === 'shard3')
 
-    /* Memory初始化 */
-    MemoryInit()
-    let a1 = Game.cpu.getUsed()
-    /* 跨shard初始化 */
-    InitShardMemory()
+  profiler.enter('Memory 初始化')
 
-    /* 跨shard记忆运行 */
-    InterShardRun()
+  // Memory 初始化
+  initMemory()
 
-    let b = Game.cpu.getUsed()
+  profiler.exit()
 
-    /* 原型拓展挂载 */
-    Mount()
+  profiler.enter('跨 Shard 通讯')
 
-    let c = Game.cpu.getUsed()
+  // 跨 shard 初始化
+  initShardMemory()
 
-    /* 爬虫数量统计及死亡Memory回收 */
-    CreepNumStatistic()
+  // 跨 shard 记忆运行
+  processShardMemory()
 
-    /* 房间框架运行 */
-    RoomWork()
+  profiler.exit()
 
-    let d = Game.cpu.getUsed()
+  profiler.enter('原型拓展挂载')
 
-    /* 爬虫运行 */
-    CreepWork()
+  // 原型拓展挂载
+  mountPrototype()
 
-    let e = Game.cpu.getUsed()
-    
-    /* 四人小队模块 */
-    SquadManager()
+  profiler.exit()
 
-    /* 资源调度超时管理 */
-    ResourceDispatchTick()
+  profiler.enter('房间框架')
 
-    /* 像素 */
-    pixel()
-    
-    /* 布局可视化 */
-    layoutVisual()
+  // 爬虫数量统计及死亡 Memory 回收
+  CreepNumStatistic()
 
-    /* 防御塔数据展示 更新 */
-    showTowerData()
+  // 房间框架运行
+  RoomWork()
 
-    /* 状态统计 screepsplus */
-    stateScanner()
+  profiler.exit()
 
-    /* CPU计算 */
-    statCPU()
+  profiler.enter('爬虫')
 
-    let f = Game.cpu.getUsed()
-    
-    // if (Game.shard.name == 'shard3')
-    // {
-    //     /* 分析cpu */
-    //     console.log("-----------------------------cpu消耗分析----------------------------------------")
-    //     console.log("Memory初始化:",a1-a)
-    //     console.log("shard初始化:",b-a1)
-    //     console.log("原型挂载:",c-b)
-    //     console.log("房间框架:",d-c)
-    //     console.log("爬虫:",e-d)
-    //     console.log("其他杂项:",f-e)
-    // }
+  /* 爬虫运行 */
+  CreepWork()
 
+  profiler.exit()
+
+  profiler.enter('杂项')
+
+  /* 四人小队模块 */
+  SquadManager()
+
+  /* 资源调度超时管理 */
+  ResourceDispatchTick()
+
+  /* 像素 */
+  pixel()
+
+  /* 布局可视化 */
+  layoutVisual()
+
+  /* 防御塔数据展示 更新 */
+  showTowerData()
+
+  /* 状态统计 screepsplus */
+  stateScanner()
+
+  /* CPU计算 */
+  statCPU()
+
+  profiler.exit()
+
+  profiler.log()
 })

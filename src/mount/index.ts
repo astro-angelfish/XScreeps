@@ -5,16 +5,20 @@ import mountConsole from './console'
 import mountStructure from './structure'
 import mountPowerCreep from './powercreep'
 import mountHelp from './help'
-export default function():void {
-    if (!global.Mounted)
-    {
-    mountConsole()
-    mountPosition()
-    mountRoom()
-    mountStructure()
-    mountCreep()
-    mountPowerCreep()
-    mountHelp()
-    global.Mounted = true
-    }
+
+let mounted = false
+
+export default function() {
+  if (mounted)
+    return
+
+  mountConsole()
+  mountPosition()
+  mountRoom()
+  mountStructure()
+  mountCreep()
+  mountPowerCreep()
+  mountHelp()
+
+  mounted = true
 }

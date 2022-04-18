@@ -1,41 +1,42 @@
-import { assignPrototype } from "../base"
+import { assignPrototype } from '../base'
 import RoomCoreInitExtension from './core/init'
-import RoomCoreSpawnExtension from "./core/spawn"
-import RoomFunctionFindExtension from "./function/fun"
-import RoomCoreEcosphereExtension from "./core/ecosphere"
-import RoomMissonFrameExtension from "./misson/base/base"
-import RoomMissonPublish from "./misson/publish/publish"
-import RoomMissonBehaviourExtension from "./misson/base/behaviour"
-import RoomMissonTransportExtension from "./misson/base/transport"
-import RoomMissonVindicateExtension from "./misson/action/vindicate"
-import RoomFunctionTowerExtension from "./function/tower"
-import NormalWarExtension from "./misson/war/normal"
-import RoomMissonManageExtension from "./misson/base/manage"
-import RoomMissonDefendExtension from "./misson/action/defend"
-import RoomMissonMineExtension from "./misson/action/mine"
-import DefendWarExtension from "./misson/war/defend"
-import PowerCreepMisson from "./misson/powerCreep/base"
+import RoomCoreSpawnExtension from './core/spawn'
+import RoomFunctionFindExtension from './function/fun'
+import RoomCoreEcosphereExtension from './core/ecosphere'
+import RoomMissionFrameExtension from './mission/base/base'
+import RoomMissionGenerate from './mission/generate/base'
+import RoomMissionBehaviourExtension from './mission/base/behaviour'
+import RoomMissionTransportExtension from './mission/base/transport'
+import RoomMissionVindicateExtension from './mission/action/vindicate'
+import RoomFunctionTowerExtension from './function/tower'
+import NormalWarExtension from './mission/war/normal'
+import RoomMissionManageExtension from './mission/base/manage'
+import RoomMissionDefendExtension from './mission/action/defend'
+import RoomMissionMineExtension from './mission/action/mine'
+import DefendWarExtension from './mission/war/defend'
+import PowerCreepMission from './mission/powerCreep/base'
+
 // 定义好挂载顺序
 const plugins = [
-    RoomCoreInitExtension,
-    RoomFunctionFindExtension,
-    RoomCoreSpawnExtension,
-    RoomCoreEcosphereExtension,
-    RoomMissonFrameExtension,
-    RoomMissonPublish,
-    RoomFunctionTowerExtension,
-    RoomMissonBehaviourExtension,
-    RoomMissonTransportExtension,
-    RoomMissonVindicateExtension,
-    NormalWarExtension,
-    RoomMissonManageExtension,
-    RoomMissonDefendExtension,
-    RoomMissonMineExtension,
-    DefendWarExtension,
-    PowerCreepMisson,
-    ]
+  RoomCoreInitExtension,
+  RoomFunctionFindExtension,
+  RoomCoreSpawnExtension,
+  RoomCoreEcosphereExtension,
+  RoomMissionFrameExtension,
+  RoomMissionGenerate,
+  RoomFunctionTowerExtension,
+  RoomMissionBehaviourExtension,
+  RoomMissionTransportExtension,
+  RoomMissionVindicateExtension,
+  NormalWarExtension,
+  RoomMissionManageExtension,
+  RoomMissionDefendExtension,
+  RoomMissionMineExtension,
+  DefendWarExtension,
+  PowerCreepMission,
+]
 
 /**
-* 依次挂载所有的拓展
-*/
+ * 依次挂载所有的拓展
+ */
 export default () => plugins.forEach(plugin => assignPrototype(Room, plugin))
