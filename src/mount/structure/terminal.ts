@@ -39,8 +39,8 @@ export default class terminalExtension extends StructureTerminal {
         this.RsourceMemory()
         // terminal资源平衡
         if ((Game.time - global.Gtime[this.room.name]) % 7) return
-        let storage_ = global.Stru[this.room.name]['storage'] as StructureStorage
-        if (!storage_) { console.log(`找不到global.Stru['${this.room.name}']['storage]!`); return }
+        let storage_ = this.room.storage as StructureStorage
+        if (!this.room.storage) { console.log(`找不到global.Stru['${this.room.name}']['storage]!`); return }
         for (var i in this.store) {
             if (this.room.RoleMissionNum('manage', '物流运输') >= 1) return
             let num = this.store[i]     // 数量
@@ -229,6 +229,7 @@ export default class terminalExtension extends StructureTerminal {
                 if (Gatorder.remainingAmount <= 0) {
                     // console.log(this.room.name, '订单已完结', order_time, drop_tick)
                     /*检查订单是否已经完结，如果完结进行降价检测操作*/
+                    let over_price = order_data.price;
                     if (order_time < drop_tick) {
                         // console.log(this.room.name, '订单触发调价')
                         if (!order_data.ignore) {
@@ -249,7 +250,7 @@ export default class terminalExtension extends StructureTerminal {
                             }
                         }
                     }
-                    console.log(Colorful(`[订单完结]房间${this.room.name}订单已完结,价格:${order_data.price},耗时${order_time}`, 'green', true))
+                    console.log(Colorful(`[订单完结]房间${this.room.name}订单已完结,价格:${over_price},耗时${order_time}`, 'green', true))
                     /*执行降价操作，同时当前订单完结以及关闭*/
                     Game.market.cancelOrder(order_data.order_id);
                     delete this.room.memory.MarketPrice.order_list[j];
@@ -271,7 +272,7 @@ export default class terminalExtension extends StructureTerminal {
                         /*超时额定的间隔-进行涨价处理*/
                         order_data.price = (Number(order_data.price) + 0.1).toFixed(3);
                         Game.market.changeOrderPrice(order_data.order_id, order_data.price)/*订单进行价格更新*/
-                        this.room.memory.MarketPrice.order_list[j]._time = Game.time - drop_tick /*涨价后价格重新赋值-这个价格被采纳将不会触发降价*/
+                        this.room.memory.MarketPrice.order_list[j]._time = Game.time - (up_tick - drop_tick / 2)/*涨价后价格重新赋值-这个价格被采纳将不会触发降价*/
                         this.room.memory.MarketPrice.order_list[j].price = order_data.price /*价格赋值*/
                         console.log(Colorful(`[调价上涨]房间${this.room.name}调整energy,订单${order_data.order_id},价格:${order_data.price};`, 'yellow', true))
                         switch (order_data.Demandlevel) {
