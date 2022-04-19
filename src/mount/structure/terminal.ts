@@ -20,8 +20,8 @@ export default class terminalExtension extends StructureTerminal {
         if (!thisTask || !isInArray(['资源传送'], thisTask.name)) {
             /* terminal默认操作*/
             this.ResourceBalance()  // 资源平衡
-            this.ResourceMarket()   // 资源买卖
             this.ModifypriceMarket();/*价格调整工具*/
+            this.ResourceMarket()   // 资源买卖
             if (!thisTask) return
         }
         if (thisTask.delayTick < 99995)
@@ -126,7 +126,7 @@ export default class terminalExtension extends StructureTerminal {
             // console.log(this.room.name, JSON.stringify(order_), price_, price_ - 0.5)
             // return;
             if (!order_) {
-                console.log(this.room.name, '发起动态报价')
+                // console.log(this.room.name, '发起动态报价')
                 let result = Game.market.createOrder({
                     type: ORDER_BUY,
                     resourceType: 'energy',
@@ -138,6 +138,7 @@ export default class terminalExtension extends StructureTerminal {
                     console.log("创建能量订单出错,房间", this.room.name)
                     return
                 }
+                if (this.room.memory.MarketPrice.order_list.length < 1) { this.room.memory.MarketPrice.order_list = [] }
                 this.room.memory.MarketPrice.order_list.push({
                     _time: Game.time,/*后续用于基准校准操作*/
                     Demandlevel: Demandlevel,
@@ -165,7 +166,7 @@ export default class terminalExtension extends StructureTerminal {
         }
     }
     public ModifypriceMarket(): void {
-        if ((Game.time - global.Gtime[this.room.name]) % 3) return
+        if ((Game.time - global.Gtime[this.room.name]) % 5) return
         /** 
          * 存在订单进行订单检查
          * [普通] 300 tick 减少报价  600 tick 自动涨价
@@ -220,6 +221,7 @@ export default class terminalExtension extends StructureTerminal {
                 let Gatorder = global.Marketorder[this.room.name][order_data.order_id] as any;
                 if (!Gatorder) {
                     /*错误的订单信息，移除当前信息*/
+                    console.log(Colorful(`[订单异常]房间${this.room.name}订单异常,异常完结`, 'red', true))
                     delete this.room.memory.MarketPrice.order_list[j];
                     continue;/*当前订单解除*/
                 }
@@ -235,7 +237,9 @@ export default class terminalExtension extends StructureTerminal {
                         if (!order_data.ignore) {
                             /*非忽略订单。执行价格更新*/
                             let reduceprice = 0.05;
-                            if (order_time <= drop_tick / 2) {
+                            if (order_time <= drop_tick / 3) {
+                                reduceprice = 0.1
+                            } else if (order_time <= drop_tick / 2) {
                                 reduceprice = 0.075
                             }
                             order_data.price = (Number(order_data.price) - reduceprice).toFixed(3).toString();
@@ -254,7 +258,8 @@ export default class terminalExtension extends StructureTerminal {
                             }
                         }
                     }
-                    console.log(Colorful(`[订单完结]房间${this.room.name}订单已完结,价格:${over_price},耗时${order_time}`, 'green', true))
+                    let end_time = Game.time - Gatorder.created
+                    console.log(Colorful(`[订单完结]房间${this.room.name}订单已完结,价格:${over_price},耗时${end_time}`, 'green', true))
                     /*执行降价操作，同时当前订单完结以及关闭*/
                     Game.market.cancelOrder(order_data.order_id);
                     delete this.room.memory.MarketPrice.order_list[j];
