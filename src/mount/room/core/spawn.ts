@@ -37,8 +37,16 @@ export default class RoomCoreSpawnExtension extends Room {
     public SpawnConfigModify(): void {
         /* 身体部件信息二次加工 */
         for (let role in RoleLevelData) {
-            if (RoleLevelData[role][this.controller.level])
+            if (RoleLevelData[role][this.controller.level]) {
                 global.CreepBodyData[this.name][role] = RoleLevelData[role][this.controller.level].bodypart
+                let up_spawnConfig = this.memory.UpgradespawnConfig[role];
+                if (up_spawnConfig) {
+                    /*调整体型加工工具*/
+                    if (RoleLevelData[role][this.controller.level].upbodypart && up_spawnConfig > 1) {
+                        global.CreepBodyData[this.name][role] = RoleLevelData[role][this.controller.level].upbodypart
+                    }
+                }
+            }
         }
         /* 数量信息二次加工 */
         if (this.controller.level != this.memory.originLevel)

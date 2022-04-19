@@ -40,6 +40,7 @@ interface RoomMemory {
     structureNum:number     // 房间内建筑的总数量
     distribution:StructureMemory        // 自动布局
     switch:{[key:string]:any}   // 开关 存放不同任务的一些选项
+    UpgradespawnConfig:{[key:string]:any}   //针对需要体型升级的额外配置
 }
 
 interface harvestData{

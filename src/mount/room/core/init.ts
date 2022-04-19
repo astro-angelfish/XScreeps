@@ -20,6 +20,7 @@ export default class RoomCoreInitExtension extends Room {
         if (!this.memory.StructureIdData) this.memory.StructureIdData = {}
         if (!this.memory.RoomLabBind) this.memory.RoomLabBind = {}
         if (!this.memory.SpawnConfig) this.memory.SpawnConfig = {}
+        if (!this.memory.UpgradespawnConfig) this.memory.UpgradespawnConfig = {}
         if (!this.memory.originLevel) this.memory.originLevel = 0
         if (!this.memory.SpawnList) this.memory.SpawnList = []
         if (!this.memory.state) this.memory.state = 'peace'
