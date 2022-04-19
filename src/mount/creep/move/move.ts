@@ -395,7 +395,7 @@ export default class CreepMoveExtension extends Creep {
                         type:1,
                         data:{id:this.name,MemoryData:this.memory}
                     }
-                    if(RequestShard(RequestData))
+                    if(RequestShard(RequestData) || RequestData.relateShard == RequestData.sourceShard)
                     {
                         this.moveTo(thisportal)
                     }

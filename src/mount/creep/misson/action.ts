@@ -421,8 +421,37 @@ export default class CreepMissonActionExtension extends Creep {
                     this.heal(this)
                 }
                 if (this.room.name != data.disRoom){this.goTo(new RoomPosition(24,24,data.disRoom),23);return}
+                if (Game.flags[`${this.memory.belong}/first_build`])
+                {
+                    let fcon = Game.flags[`${this.memory.belong}/first_build`].pos.lookFor(LOOK_CONSTRUCTION_SITES)
+                    if (fcon.length > 0)
+                    {
+                        this.build_(fcon[0])
+                    }
+                    else
+                    {
+                        Game.flags[`${this.memory.belong}/first_build`].remove()
+                    }
+                    return
+                }
                 let cons = this.pos.findClosestByRange(FIND_CONSTRUCTION_SITES)
-                if (cons) this.build_(cons)
+                if (cons) {this.build_(cons);return}
+                let store = this.pos.findClosestByPath(FIND_STRUCTURES,{filter:(stru)=>{
+                    return (stru.structureType == 'extension' || stru.structureType == 'spawn') && stru.store.getFreeCapacity('energy') > 0
+                }})
+                if (store)
+                {
+                    this.transfer_(store,'energy')
+                    return
+                }
+                let tower = this.pos.findClosestByPath(FIND_STRUCTURES,{filter:(stru)=>{
+                    return stru.structureType == 'tower' && stru.store.getFreeCapacity('energy') > 0
+                }})
+                if (tower)
+                {
+                    this.transfer_(tower,'energy')
+                    return
+                }
             }
             else
             {
@@ -451,6 +480,15 @@ export default class CreepMissonActionExtension extends Creep {
                         let source = this.pos.findClosestByRange(FIND_SOURCES_ACTIVE)
                         if (source) {this.harvest_(source)}
                     }
+                    return
+                }
+                let resources = this.pos.findClosestByPath(FIND_DROPPED_RESOURCES,{filter:(res)=>{
+                    return res.amount > 200 && res.resourceType == 'energy'
+                }})
+                if (resources)
+                {
+                    if (!this.pos.isNearTo(resources)) this.goTo(resources.pos,1)
+                    else this.pickup(resources)
                     return
                 }
                 let source = this.pos.findClosestByPath(FIND_SOURCES_ACTIVE)

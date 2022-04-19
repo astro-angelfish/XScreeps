@@ -19,7 +19,7 @@ export default class linkExtension extends StructureLink {
         /* 处理任务 */
         let thisTask = allmyTask[0]
         if (thisTask.delayTick < 99995)
-            thisTask.delayTick--
+            thisTask.processing = true
         switch (thisTask.name){
             case "链传送能":{this.Handle_Link(thisTask);break}
         }
