@@ -1,11 +1,11 @@
 import { identity, object, zip } from 'lodash'
 import { createHelp } from '../help/base'
-import { checkDispatch, checkSend, getRoomDispatchNum } from '@/module/fun/funtion'
+import { checkDispatch, checkSendMission, getRoomDispatchNum } from '@/module/fun/funtion'
 import { StatisticalResources, colorfyLog, isInArray } from '@/utils'
 import { ResourceCanDispatch, identifyDispatch } from '@/module/dispatch/resource'
 export class factoryExtension extends StructureFactory {
   public manageMission(): void {
-    if (this.room.memory.toggle.StopFactory)
+    if (this.room.memory.toggles.StopFactory)
       return
     this.ResourceMemory()
     this.ResourceBalance()

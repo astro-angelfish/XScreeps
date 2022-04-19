@@ -20,7 +20,7 @@
     "@types/lodash": "^3.10.1",
     "@types/node": "^10.17.60",
     "@types/prettier": "^2.6.0",
-    "@types/screeps": "^3.2.4",
+    "@types/screeps": "^3.3.0",
     "eslint": "^8.13.0",
     "prettier": "^2.6.2",
     "rollup": "^2.70.2",

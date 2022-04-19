@@ -1,4 +1,4 @@
-import { avePrice, haveOrder, highestPrice } from '@/module/fun/funtion'
+import { getAveragePrice, getHighestPrice, haveMarketOrder } from '@/module/fun/funtion'
 import { colorfyLog, isInArray, sortByKey } from '@/utils'
 
 // terminal 扩展
@@ -120,9 +120,9 @@ export default class terminalExtension extends StructureTerminal {
     const storeNum = storage_.store.getUsedCapacity('energy') + this.store.getUsedCapacity('energy')
     // 能量一般少的情况下，下平均价格订单购买能量
     if (storeNum < 250000 && storeNum >= 100000) {
-      const ave = avePrice('energy', 1)
+      const ave = getAveragePrice('energy', 1)
       const thisprice_ = ave * 1.1
-      if (!haveOrder(this.room.name, 'energy', 'buy', thisprice_, -0.2)) {
+      if (!haveMarketOrder(this.room.name, 'energy', 'buy', thisprice_, -0.2)) {
         const result = Game.market.createOrder({
           type: ORDER_BUY,
           resourceType: 'energy',
@@ -137,9 +137,9 @@ export default class terminalExtension extends StructureTerminal {
     }
     // 能量极少的情况下，下市场合理范围内最高价格订单
     else if (storeNum < 100000) {
-      const ave = avePrice('energy', 2)
-      const highest = highestPrice('energy', 'buy', ave + 6)
-      if (!haveOrder(this.room.name, 'energy', 'buy', highest, -0.1)) {
+      const ave = getAveragePrice('energy', 2)
+      const highest = getHighestPrice('energy', 'buy', ave + 6)
+      if (!haveMarketOrder(this.room.name, 'energy', 'buy', highest, -0.1)) {
         const result = Game.market.createOrder({
           type: ORDER_BUY,
           resourceType: 'energy',
@@ -238,7 +238,7 @@ export default class terminalExtension extends StructureTerminal {
 
           // 查询有无订单
           if (!l.id) {
-            const myOrder = haveOrder(this.room.name, l.rType, 'sell')
+            const myOrder = haveMarketOrder(this.room.name, l.rType, 'sell')
             if (!myOrder) {
               console.log(colorfyLog(`[market] 房间${this.room.name}-rType:${l.rType}创建订单!`, 'yellow'))
               // 没有就创建订单

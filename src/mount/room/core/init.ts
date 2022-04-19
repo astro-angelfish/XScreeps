@@ -48,8 +48,8 @@ export default class RoomCoreInitExtension extends Room {
       global.resourceLimit[this.name] = {}
     if (!this.memory.comDispatchData)
       this.memory.comDispatchData = {}
-    if (!this.memory.toggle)
-      this.memory.toggle = {}
+    if (!this.memory.toggles)
+      this.memory.toggles = {}
     if (!this.memory.enemy)
       this.memory.enemy = {}
     if (!this.memory.productData)

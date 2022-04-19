@@ -1,5 +1,5 @@
 import { roleData } from '@/constant/spawnConstant'
-import { checkSend, getRoomDispatchNum } from '@/module/fun/funtion'
+import { checkSendMission, getRoomDispatchNum } from '@/module/fun/funtion'
 import { colorfyLog, generateID, sortByKey } from '@/utils'
 
 /* 房间原型拓展   --任务  --任务框架 */
@@ -21,15 +21,15 @@ export default class RoomMissionFrameExtension extends Room {
 
     /* [全自动] 任务挂载区域 需要按照任务重要程度进行排序 */
     this.missionSpawnFeed() // 虫卵填充任务
-    this.missionCenterLink() // 能量采集
-    this.Task_consumeLink() // 消费、冲级link
-    this.Constru_Build() // 建筑任务
+    this.checkSourceLinks() // 能量采集
+    this.checkConsumeLinks() // 消费、冲级link
+    this.checkBuilder() // 建筑任务
     this.Task_Clink() // 链接送仓任务
     this.missionTowerFeed() // 防御塔填充任务
     this.missionLabFeed() // 实验室填充\回收任务
     this.missionNukerFeed() // 核弹填充任务
     this.Nuke_Defend() // 核弹防御
-    this.Task_CompoundDispatch() // 合成规划 （中级）
+    this.checkCompoundDispatch() // 合成规划 （中级）
     this.Task_monitorMineral() // 挖矿
     this.Task_montitorPower() // 烧power任务监控
     this.Task_Auto_Defend() // 主动防御任务发布
@@ -38,13 +38,13 @@ export default class RoomMissionFrameExtension extends Room {
     for (const index in this.memory.mission) {
       for (const mission of this.memory.mission[index]) {
         switch (mission.name) {
-          case '物流运输': { this.Task_Carry(mission); break }
+          case '物流运输': { this.checkCarryMission(mission); break }
           case '墙体维护': { this.Task_Repair(mission); break }
           case '黄球拆迁': { this.Task_dismantle(mission); break }
           case '急速冲级': { this.Task_Quick_upgrade(mission); break }
           case '紧急援建': { this.Task_HelpBuild(mission); break }
           case '紧急支援': { this.Task_HelpDefend(mission); break }
-          case '资源合成': { this.Task_Compound(mission); break }
+          case '资源合成': { this.checkCompoundMission(mission); break }
           case '攻防一体': { this.Task_aio(mission); break }
           case '外矿开采': { this.Task_OutMine(mission); break }
           case 'power升级': { this.Task_ProcessPower(mission); break }
@@ -502,7 +502,7 @@ export default class RoomMissionFrameExtension extends Room {
         // 资源调度
         if (getRoomDispatchNum(this.name) <= 0
          && this.countMissionByName('Structure', '资源购买') <= 0
-         && !checkSend(this.name, rType)) {
+         && !checkSendMission(this.name, rType)) {
           console.log(colorfyLog(`[资源调度] 房间 ${this.name} 没有足够的资源 [${rType}]，将执行资源调度!`, 'yellow'))
           const dispatchTask: RDData = {
             sourceRoom: this.name,

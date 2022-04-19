@@ -473,9 +473,9 @@ export default {
       if (!myRoom)
         return `[nuke] 房间错误，请确认房间 ${roomName}！`
 
-      myRoom.memory.toggle.StopFillNuker = !myRoom.memory.toggle.StopFillNuker
+      myRoom.memory.toggles.StopFillNuker = !myRoom.memory.toggles.StopFillNuker
 
-      if (myRoom.memory.toggle.StopFillNuker)
+      if (myRoom.memory.toggles.StopFillNuker)
         return `[nuke] 房间 ${roomName} 停止自动核弹填充!`
       return `[nuke] 房间 ${roomName} 开启自动核弹填充!`
     },

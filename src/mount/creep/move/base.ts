@@ -1,5 +1,5 @@
 // import { RequestShard } from "@/shard/base"
-import { hurts, parts } from '@/module/fun/funtion'
+import { calcCreepAttackDamage, havePart } from '@/module/fun/funtion'
 import { shardCommRequest } from '@/module/shard/base'
 import { canSustain } from '@/module/war/war'
 import { closestPotalRoom, getOppositeDirection, isInArray } from '@/utils'
@@ -461,7 +461,7 @@ export default class CreepMoveExtension extends Creep {
             costs.set(cons.pos.x, cons.pos.y, 255)
         })
         room.find(FIND_HOSTILE_CREEPS).forEach((creep) => {
-          if (parts(creep, 'ranged_attack') && hurts(creep).ranged_attack > 1000) {
+          if (havePart(creep, 'ranged_attack') && calcCreepAttackDamage(creep).ranged_attack > 1000) {
             for (let i = creep.pos.x - 3; i < creep.pos.x + 4; i++) {
               for (let j = creep.pos.y - 3; j < creep.pos.y + 4; j++) {
                 if (i > 0 && i < 49 && j > 0 && j < 49) {
@@ -622,7 +622,7 @@ export default class CreepMoveExtension extends Creep {
             costs.set(cons.pos.x, cons.pos.y, 255)
         })
         room.find(FIND_HOSTILE_CREEPS).forEach((creep) => {
-          if (parts(creep, 'attack')) {
+          if (havePart(creep, 'attack')) {
             for (var i = creep.pos.x - 3; i < creep.pos.x + 4; i++) {
               for (var j = creep.pos.y - 3; j < creep.pos.y + 4; j++) {
                 if (i > 0 && i < 49 && j > 0 && j < 49) {
@@ -632,7 +632,7 @@ export default class CreepMoveExtension extends Creep {
               }
             }
           }
-          else if (parts(creep, 'ranged_attack')) {
+          else if (havePart(creep, 'ranged_attack')) {
             for (var i = creep.pos.x - 3; i < creep.pos.x + 4; i++) {
               for (var j = creep.pos.y - 3; j < creep.pos.y + 4; j++) {
                 if (i > 0 && i < 49 && j > 0 && j < 49) {

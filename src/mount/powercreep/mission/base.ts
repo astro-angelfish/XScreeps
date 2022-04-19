@@ -1,5 +1,5 @@
 import { OptCost } from './constant'
-import { checkDispatch, checkSend, getRoomDispatchNum } from '@/module/fun/funtion'
+import { checkDispatch, checkSendMission, getRoomDispatchNum } from '@/module/fun/funtion'
 import { colorfyLog, isInArray, sortByKey } from '@/utils'
 
 export default class PowerCreepMissionBase extends PowerCreep {
@@ -122,7 +122,7 @@ export default class PowerCreepMissionBase extends PowerCreep {
         // 资源调度
         const room_ = Game.rooms[this.memory.belong]
         if (room_.MissionNum('Structure', '资源购买') <= 0) {
-          if (getRoomDispatchNum(room_.name) < 2 && !checkSend(room_.name, 'ops') && !checkDispatch(room_.name, 'ops')) // 已经存在其它房间的传送信息的情况
+          if (getRoomDispatchNum(room_.name) < 2 && !checkSendMission(room_.name, 'ops') && !checkDispatch(room_.name, 'ops')) // 已经存在其它房间的传送信息的情况
           {
             console.log(colorfyLog(`[资源调度] 房间${this.memory.belong}没有足够的资源[${'ops'}],将执行资源调度!`, 'yellow'))
             const dispatchTask: RDData = {

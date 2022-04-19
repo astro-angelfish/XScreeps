@@ -1,6 +1,6 @@
 /* 资源调度模块 */
 
-import { avePrice, checkDispatch, checkLabBindResource, checkSend, getRoomDispatchNum, haveOrder, highestPrice } from '../fun/funtion'
+import { checkDispatch, checkLabBindResource, checkSendMission, getAveragePrice, getHighestPrice, getRoomDispatchNum, haveMarketOrder } from '../fun/funtion'
 import { t1Compounds, t2Compounds, t3Compounds } from '@/constant/ResourceConstant'
 import { colorfyLog, isInArray } from '@/utils'
 
@@ -30,9 +30,9 @@ export function ResourceDispatch(thisRoom: Room): void {
                      *       3.发布订单的价格比最高的订单的价格多0.01
                     */
           console.log(colorfyLog(`[资源调度] 房间${thisRoom.name}需求资源[${i.rType}]无法调度,将进行购买! 购买方式为${i.mtype},购买数量${i.num}`, 'yellow'))
-          const ave = avePrice(i.rType, 2)
-          if (!haveOrder(thisRoom.name, i.rType, 'buy', ave)) {
-            const highest = highestPrice(i.rType, 'buy', ave + 10)
+          const ave = getAveragePrice(i.rType, 2)
+          if (!haveMarketOrder(thisRoom.name, i.rType, 'buy', ave)) {
+            const highest = getHighestPrice(i.rType, 'buy', ave + 10)
             const result = Game.market.createOrder({
               type: ORDER_BUY,
               resourceType: i.rType,
@@ -257,14 +257,14 @@ export function identifyDispatch(thisRoom: Room, resource_: ResourceConstant, nu
       return false
     if (mtype == 'deal' && thisRoom.countMissionByName('Structure', '资源购买') > 0)
       return false // 存在资源购买任务的情况下，不执行资源调度
-    if (mtype == 'order' && haveOrder(thisRoom.name, resource_, 'buy'))
+    if (mtype == 'order' && haveMarketOrder(thisRoom.name, resource_, 'buy'))
       return false // 如果是下单类型 已经有单就不进行资源调度
   }
   if (getRoomDispatchNum(thisRoom.name) >= disNum)
     return false // 资源调度数量过多则不执行资源调度
   if (checkDispatch(thisRoom.name, resource_))
     return false // 已经存在调用信息的情况
-  if (checkSend(thisRoom.name, resource_))
+  if (checkSendMission(thisRoom.name, resource_))
     return false // 已经存在其它房间的传送信息的情况
   return true
 }
@@ -279,7 +279,7 @@ export function identifyDispatch(thisRoom: Room, resource_: ResourceConstant, nu
 export function ResourceCanDispatch(thisRoom: Room, resource_: ResourceConstant, num: number): 'running'|'no'|'can' {
   if (checkDispatch(thisRoom.name, resource_))
     return 'running'// 有调度信息
-  if (checkSend(thisRoom.name, resource_))
+  if (checkSendMission(thisRoom.name, resource_))
     return 'running' // 有传送信息
   for (const i in Memory.roomControlData) {
     if (i == thisRoom.name)

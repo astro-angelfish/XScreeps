@@ -64,7 +64,7 @@ interface RoomMemory {
   state: stateType // 房间状态
   structureNum: number // 房间内建筑的总数量
   distribution: StructureDistribution // 自动布局
-  toggle: Record<string, any> // 开关 存放不同任务的一些选项
+  toggles: Record<string, any> // 开关 存放不同任务的一些选项
 }
 
 type harvestData = Record<Id<Source>, {

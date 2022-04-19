@@ -19,7 +19,7 @@ export default () => {
 
     thisRoom.spawnExecution() // 孵化爬虫
 
-    thisRoom.TowerWork() // 防御塔工作
+    thisRoom.processTowers() // 防御塔工作
 
     thisRoom.runStructureMission() // terminal link factory 工作
 

@@ -13,27 +13,27 @@ interface Room {
   getMissionModelByName(category: string, name: string): MissionModel | null
   // 主动任务
   missionSpawnFeed(): void
-  Constru_Build(): void
+  checkBuilder(): void
   missionTowerFeed(): void
   missionLabFeed(): void
   missionNukerFeed(): void
-  missionCenterLink(): void
+  checkSourceLinks(): void
   Task_Clink(): void
-  Task_consumeLink(): void
+  checkConsumeLinks(): void
   Nuke_Defend(): void
-  Task_CompoundDispatch(): void
+  checkCompoundDispatch(): void
   Task_monitorMineral(): void
   Task_montitorPower(): void
   Task_Auto_Defend(): void
 
   // 被动任务
-  Task_Carry(mission: MissionModel): void
+  checkCarryMission(mission: MissionModel): void
   Task_Repair(mission: MissionModel): void
   Task_dismantle(mission: MissionModel): void
   Task_Quick_upgrade(mission: MissionModel): void
   Task_HelpDefend(mission: MissionModel): void
   Task_HelpBuild(mission: MissionModel): void
-  Task_Compound(mission: MissionModel): void
+  checkCompoundMission(mission: MissionModel): void
   Task_aio(mission: MissionModel): void
   Task_OutMine(mission: MissionModel): void
   Task_ProcessPower(mission: MissionModel): void

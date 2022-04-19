@@ -1,5 +1,5 @@
 import { resourceComDispatch } from '@/constant/ResourceConstant'
-import { avePrice, groupLabsInRoom, haveOrder, highestPrice } from '@/module/fun/funtion'
+import { getAveragePrice, getHighestPrice, groupLabsInRoom, haveMarketOrder } from '@/module/fun/funtion'
 import { colorfyLog, sortByKey, unzipPosition, zipPosition } from '@/utils'
 import { defineMission } from '@/mount/room/mission/utils'
 
@@ -311,11 +311,11 @@ export default {
     },
     // 查询平均价格
     ave(rType: ResourceConstant, day = 1): string {
-      return `[market] 资源 ${rType} 在近 ${day} 天内的平均价格为 ${avePrice(rType, day)}`
+      return `[market] 资源 ${rType} 在近 ${day} 天内的平均价格为 ${getAveragePrice(rType, day)}`
     },
     // 查询是否有订单
     have(roomName: string, res: ResourceConstant, mtype: 'sell' | 'buy', p?: number, r?: number): string {
-      const result = haveOrder(roomName, res, mtype, p, r)
+      const result = haveMarketOrder(roomName, res, mtype, p, r)
       if (p && r)
         return `[market] 房间: ${roomName}; 资源: ${res}; 类型: ${mtype} [价格: ${p + r} 以上] 的单子 ---> ${result ? '有' : '没有'}`
       else
@@ -323,7 +323,7 @@ export default {
     },
     // 查询市场上的最高价格
     highest(rType: ResourceConstant, mtype: 'sell' | 'buy', mprice = 0): string {
-      const result = highestPrice(rType, mtype, mprice)
+      const result = getHighestPrice(rType, mtype, mprice)
       if (mprice)
         return `[market] 资源: ${rType}; 类型: ${mtype} 最高价格 ${result} [低于${mprice}]`
       else
@@ -523,9 +523,9 @@ export default {
       if (!myRoom)
         return `[power] 未找到房间 ${roomName}，请确认房间!`
 
-      myRoom.memory.toggle.StartPower = !myRoom.memory.toggle.StartPower
+      myRoom.memory.toggles.StartPower = !myRoom.memory.toggles.StartPower
 
-      return `[power] 房间 ${roomName} 的 power 升级已经设置为 ${myRoom.memory.toggle.StartPower}`
+      return `[power] 房间 ${roomName} 的 power 升级已经设置为 ${myRoom.memory.toggles.StartPower}`
     },
     // 节省能量和 Power 的模式
     save(roomName: string): string {
@@ -533,9 +533,9 @@ export default {
       if (!myRoom)
         return `[power] 未找到房间 ${roomName}，请确认房间!`
 
-      myRoom.memory.toggle.SavePower = !myRoom.memory.toggle.SavePower
+      myRoom.memory.toggles.SavePower = !myRoom.memory.toggles.SavePower
 
-      return `[power] 房间 ${roomName} 的 power 升级的 SavePower 选项已经设置为 ${myRoom.memory.toggle.SavePower}`
+      return `[power] 房间 ${roomName} 的 power 升级的 SavePower 选项已经设置为 ${myRoom.memory.toggles.SavePower}`
     },
     // 限制 pc 的技能
     option(roomName: string, type: string): string {
@@ -555,12 +555,12 @@ export default {
       if (!toggleName)
         return '[power] stru数据错误!'
 
-      if (!myRoom.memory.toggle[toggleName]) {
-        myRoom.memory.toggle[toggleName] = true
+      if (!myRoom.memory.toggles[toggleName]) {
+        myRoom.memory.toggles[toggleName] = true
         return `[power] 房间 ${roomName} 的 ${toggleName} 选项调整为 true! 将不执行对应的 power 操作`
       }
       else {
-        delete myRoom.memory.toggle[toggleName]
+        delete myRoom.memory.toggles[toggleName]
         return `[power] 房间 ${roomName} 的 ${toggleName} 选项调整为 false! 将执行对应的 power 操作`
       }
     },
@@ -579,7 +579,7 @@ export default {
         'StopEnhanceFactory',
         'StopEnhancePowerSpawn',
       ]) {
-        if (myRoom.memory.toggle[i])
+        if (myRoom.memory.toggles[i])
           result += colorfyLog(`  - ${i}: true\n`, 'red', true)
         else result += colorfyLog(`  - ${i}: false\n`, 'green', true)
       }
@@ -652,9 +652,9 @@ export default {
       if (!thisRoom)
         return `[cross] 不存在房间 ${roomName}`
 
-      thisRoom.memory.toggle.StopCross = !thisRoom.memory.toggle.StopCross
+      thisRoom.memory.toggles.StopCross = !thisRoom.memory.toggles.StopCross
 
-      if (thisRoom.memory.toggle.StopCross)
+      if (thisRoom.memory.toggles.StopCross)
         return `[cross] 房间 ${roomName} 关闭过道!`
       return `[cross] 房间 ${roomName} 开启过道!`
     },
@@ -813,9 +813,9 @@ export default {
       if (!myRoom)
         return `[factory] 未找到房间 ${roomName}，请确认房间!`
 
-      myRoom.memory.toggle.StopFactory = !myRoom.memory.toggle.StopFactory
+      myRoom.memory.toggles.StopFactory = !myRoom.memory.toggles.StopFactory
 
-      if (myRoom.memory.toggle.StopFactory)
+      if (myRoom.memory.toggles.StopFactory)
         return `[factory] 房间 ${roomName} 的工厂加工已经停止!`
       return `[factory] 房间 ${roomName} 的工厂加工已经启动!`
     },
@@ -825,7 +825,7 @@ export default {
       if (!myRoom)
         return `[factory] 未找到房间 ${roomName}，请确认房间!`
 
-      if (myRoom.memory.toggle.StopFactory)
+      if (myRoom.memory.toggles.StopFactory)
         return `[factory] 房间 ${roomName} 工厂停工中`
 
       const productData = myRoom.memory.productData

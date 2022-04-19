@@ -142,7 +142,7 @@ export default class DefendWarExtension extends Room {
       return
     if (!this.memory.state)
       return
-    if (this.memory.state != 'war') { this.memory.toggle.AutoDefend = false; this.memory.enemy = {}; return }
+    if (this.memory.state != 'war') { this.memory.toggles.AutoDefend = false; this.memory.enemy = {}; return }
     /* 激活主动防御 */
     const enemys = this.find(FIND_HOSTILE_CREEPS, {
       filter: (creep) => {
@@ -157,8 +157,8 @@ export default class DefendWarExtension extends Room {
       this.removeMission(compoundTask.id)
       return
     }
-    if (!this.memory.toggle.AutoDefend) {
-      this.memory.toggle.AutoDefend = true // 表示房间存在主动防御任务
+    if (!this.memory.toggles.AutoDefend) {
+      this.memory.toggles.AutoDefend = true // 表示房间存在主动防御任务
       /* 寻找攻击方 */
       const users = []
       for (const c of enemys) {

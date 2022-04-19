@@ -16,10 +16,10 @@ declare namespace NodeJS {
     warData: any
     MSB: MissionSpecialBody // 任务特殊体型
     /* 脚本运行总cpu */
-    UsedCpu?: number
+    usedCpu?: number
     /* 100Tick内的平均CPU */
-    CpuData?: number[]
-    AveCpu?: number
+    cpuData?: number[]
+    aveCpu?: number
   }
 }
 

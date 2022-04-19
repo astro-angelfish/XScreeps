@@ -1,4 +1,4 @@
-import { bodypartData } from '../fun/funtion'
+import { calcCreepWarStat } from '../fun/funtion'
 import creep from '@/mount/creep'
 import { isInArray } from '@/utils'
 
@@ -263,7 +263,7 @@ export function pathClosestStructure(pos: RoomPosition, wall?: boolean, ram?: bo
 
 /* 判断是否抵抗的住爬虫的攻击<只适用于单个爬虫>  敌方爬虫 自己的爬虫 防御塔数据(敌方)  返回true代表不会破防 */
 export function canSustain(creeps: Creep[], mycreep: Creep, towerData?: number): boolean {
-  const bodyData = bodypartData(mycreep)
+  const bodyData = calcCreepWarStat(mycreep)
   const toughNum = mycreep.getActiveBodyparts('tough')
   let toughBoostType = null
   if (creeps.length <= 0)
@@ -283,7 +283,7 @@ export function canSustain(creeps: Creep[], mycreep: Creep, towerData?: number):
   for (const c of creeps) {
     if (c.name == mycreep.name)
       continue
-    const enData = bodypartData(c)
+    const enData = calcCreepWarStat(c)
     let hurt = enData.attack
     if (enData.ranged_attack > hurt)
       hurt = enData.ranged_attack

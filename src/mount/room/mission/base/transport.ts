@@ -134,7 +134,7 @@ export default class RoomMissionTransportExtension extends Room {
   public missionNukerFeed(): void {
     if (Game.time % 103)
       return
-    if (this.memory.toggle.StopFillNuker)
+    if (this.memory.toggles.StopFillNuker)
       return
     if (!this.memory.structureIdData?.nukerID || !this.memory.structureIdData.storageID)
       return

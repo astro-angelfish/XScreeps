@@ -205,7 +205,7 @@ export default class RoomMissionMineExtension extends Room {
   public Task_Cross(mission: MissionModel): void {
     if (this.controller.level < 8 || !this.memory.structureIdData.observerID)
       return
-    if (this.memory.toggle.StopCross)
+    if (this.memory.toggles.StopCross)
       return
     const observer_ = Game.getObjectById(this.memory.structureIdData.observerID) as StructureObserver
     if (!observer_) { delete this.memory.structureIdData.observerID; return }

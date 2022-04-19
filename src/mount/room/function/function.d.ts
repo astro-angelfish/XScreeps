@@ -8,7 +8,7 @@ interface Room {
   runStructureMission(): void
   updateLevelCache(): void
   // tower
-  TowerWork(): void
+  processTowers(): void
   // 建筑缓存
   cacheStructures(): void
   _cacheStructuresByType: CacheStructuresByType

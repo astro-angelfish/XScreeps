@@ -1,4 +1,4 @@
-import { RoomInRange, findFollowData, findNextData, identifyGarrison, identifyNext, parts } from '@/module/fun/funtion'
+import { findFollowQuarter, findNextQuarter, havePart, identifyGarrison, isRoomInRange, isRoomNextTo } from '@/module/fun/funtion'
 import { RangeClosestCreep, RangeCreep, canSustain, pathClosestFlag, pathClosestStructure, warDataInit } from '@/module/war/war'
 import { generateID, getDistance, isInArray } from '@/utils'
 
@@ -133,7 +133,7 @@ export default class CreepMissionWarExtension extends Creep {
       if (creeps_.length > 0) {
         let highestAim: Creep = creeps_[0]
         for (const i of creeps_) {
-          if (parts(i, 'attack') || parts(i, 'work')) {
+          if (havePart(i, 'attack') || havePart(i, 'work')) {
             highestAim = i
             break
           }
@@ -273,7 +273,7 @@ export default class CreepMissionWarExtension extends Creep {
       if (creeps_.length > 0) {
         let highestAim: Creep = creeps_[0]
         for (const i of creeps_) {
-          if (parts(i, 'ranged_attack')) {
+          if (havePart(i, 'ranged_attack')) {
             highestAim = i
             break
           }
@@ -779,7 +779,7 @@ export default class CreepMissionWarExtension extends Creep {
       }
       /* 编号为 0 1 2 的爬需要遵守的规则 */
       if (this.memory.squad[this.name].index != 3 && (!isInArray([0, 49], this.pos.x) && !isInArray([0, 49], this.pos.y))) {
-        const followCreepName = findNextData(this)
+        const followCreepName = findNextQuarter(this)
         if (followCreepName == null)
           return
         var portal = this.pos.findClosestByRange(FIND_STRUCTURES, {
@@ -798,7 +798,7 @@ export default class CreepMissionWarExtension extends Creep {
       }
       /* 编号为 1 2 3 的爬需要遵守的规则 */
       if (this.memory.squad[this.name].index != 0) {
-        const disCreepName = findFollowData(this)
+        const disCreepName = findFollowQuarter(this)
         var portal = this.pos.findClosestByRange(FIND_STRUCTURES, {
           filter: (stru) => {
             return stru.structureType == 'portal'
@@ -832,7 +832,7 @@ export default class CreepMissionWarExtension extends Creep {
         }
         else {
           // 没有集结旗帜的情况下，自动判断
-          if (identifyNext(this.room.name, roomName) == false || Game.shard.name != data.shard) {
+          if (isRoomNextTo(this.room.name, roomName) == false || Game.shard.name != data.shard) {
             this.say('🔪')
             if (this.memory.squad[this.name].index == 0)
               this.arriveTo(new RoomPosition(24, 24, roomName), 18, shard, data.shardData ? data.shardData : null)
@@ -850,7 +850,7 @@ export default class CreepMissionWarExtension extends Creep {
           }
           else {
             // 没有旗帜的情况下，到入口前5格组队
-            if (RoomInRange(this.pos, roomName, 5))
+            if (isRoomInRange(this.pos, roomName, 5))
               this.memory.arrived = true
 
             else

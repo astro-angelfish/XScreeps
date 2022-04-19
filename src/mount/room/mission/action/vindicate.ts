@@ -1,4 +1,4 @@
-import { avePrice, haveOrder, highestPrice } from '@/module/fun/funtion'
+import { getAveragePrice, getHighestPrice, haveMarketOrder } from '@/module/fun/funtion'
 import { GenerateAbility, colorfyLog, isInArray } from '@/utils'
 
 /* 房间原型拓展   --行为  --维护任务 */
@@ -46,9 +46,9 @@ export default class RoomMissionVindicateExtension extends Room {
     if (Game.time % 40)
       return
     if (terminal_.store.getUsedCapacity('energy') < 100000 && Game.market.credits >= 1000000) {
-      const ave = avePrice('energy', 2)
-      const highest = highestPrice('energy', 'buy', ave + 6)
-      if (!haveOrder(this.name, 'energy', 'buy', highest, -0.2)) {
+      const ave = getAveragePrice('energy', 2)
+      const highest = getHighestPrice('energy', 'buy', ave + 6)
+      if (!haveMarketOrder(this.name, 'energy', 'buy', highest, -0.2)) {
         const result = Game.market.createOrder({
           type: ORDER_BUY,
           resourceType: 'energy',

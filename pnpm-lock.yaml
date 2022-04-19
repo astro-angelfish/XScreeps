@@ -9,7 +9,7 @@ specifiers:
   '@types/lodash': ^3.10.1
   '@types/node': ^10.17.60
   '@types/prettier': ^2.6.0
-  '@types/screeps': ^3.2.4
+  '@types/screeps': ^3.3.0
   eslint: ^8.13.0
   ohash: ^0.1.0
   prettier: ^2.6.2
@@ -34,7 +34,7 @@ devDependencies:
   '@types/lodash': 3.10.4
   '@types/node': 10.17.60
   '@types/prettier': 2.6.0
-  '@types/screeps': 3.2.4
+  '@types/screeps': 3.3.0
   eslint: 8.13.0
   prettier: 2.6.2
   rollup: 2.70.2
@@ -291,8 +291,8 @@ packages:
       '@types/node': 17.0.24
     dev: true
 
-  /@types/screeps/3.2.4:
-    resolution: {integrity: sha512-itlqAHdAZ2ZkDFERy3TkmmMIisSXT7tXfEnhhl5N7xNZbNmNs/qgGfCIRchPLIFj0w5EPpj6JurKZ3vpSxaNiQ==}
+  /@types/screeps/3.3.0:
+    resolution: {integrity: sha512-1Fw/U0V0INPS4rS+SpjRi3zswf5cxgwTdNVN0UksWAkuVidS/4NCCx0LHZqvOByx6kP8J+7O9z3SMzK5prz5cA==}
     dev: true
 
   /@types/unist/2.0.6:

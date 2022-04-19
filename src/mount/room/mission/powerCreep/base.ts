@@ -42,7 +42,7 @@ export default class PowerCreepMission extends Room {
   public missionPcEnhanceStorage(): void {
     if ((Game.time - global.Gtime[this.name]) % 7)
       return
-    if (this.memory.toggle.StopEnhanceStorage)
+    if (this.memory.toggles.StopEnhanceStorage)
       return
 
     const storage = global.structureCache[this.name].storage as StructureStorage
@@ -75,7 +75,7 @@ export default class PowerCreepMission extends Room {
   public missionPcEnhanceLab(): void {
     if ((Game.time - global.Gtime[this.name]) % 10)
       return
-    if (this.memory.toggle.StopEnhanceLab)
+    if (this.memory.toggles.StopEnhanceLab)
       return
 
     const storage = global.structureCache[this.name].storage as StructureStorage
@@ -121,9 +121,9 @@ export default class PowerCreepMission extends Room {
   public missionPcEnhanceTower(): void {
     if ((Game.time - global.Gtime[this.name]) % 11)
       return
-    if (this.memory.state !== 'war' || !this.memory.toggle.AutoDefend)
+    if (this.memory.state !== 'war' || !this.memory.toggles.AutoDefend)
       return
-    if (this.memory.toggle.StopEnhanceTower)
+    if (this.memory.toggles.StopEnhanceTower)
       return
 
     const storage = global.structureCache[this.name].storage as StructureStorage
@@ -166,7 +166,7 @@ export default class PowerCreepMission extends Room {
   public missionPcEnhanceExtension(): void {
     if ((Game.time - global.Gtime[this.name]) % 25)
       return
-    if (this.memory.toggle.StopEnhanceExtension)
+    if (this.memory.toggles.StopEnhanceExtension)
       return
 
     const storage = global.structureCache[this.name].storage as StructureStorage
@@ -196,7 +196,7 @@ export default class PowerCreepMission extends Room {
   public missionPcEnhanceSpawn(): void {
     if ((Game.time - global.Gtime[this.name]) % 13)
       return
-    if (this.memory.toggle.StopEnhanceSpawn)
+    if (this.memory.toggles.StopEnhanceSpawn)
       return
 
     const storage = global.structureCache[this.name].storage as StructureStorage
@@ -209,7 +209,7 @@ export default class PowerCreepMission extends Room {
 
     // 在战争时期、对外战争时期，启动
     let isOnWar = false
-    if (this.memory.state === 'war' && this.memory.toggle.AutoDefend) {
+    if (this.memory.state === 'war' && this.memory.toggles.AutoDefend) {
       isOnWar = true
     }
     else {
@@ -238,7 +238,7 @@ export default class PowerCreepMission extends Room {
   public missionPcEnhanceFactory(): void {
     // if ((Game.time - global.Gtime[this.name]) % 14)
     //   return
-    if (this.memory.toggle.StopEnhanceFactory)
+    if (this.memory.toggles.StopEnhanceFactory)
       return
 
     const storage = global.structureCache[this.name].storage as StructureStorage
@@ -268,7 +268,7 @@ export default class PowerCreepMission extends Room {
   public missionPcEnhancePowerSpawn(): void {
     if ((Game.time - global.Gtime[this.name]) % 13)
       return
-    if (this.memory.toggle.StopEnhancePowerSpawn)
+    if (this.memory.toggles.StopEnhancePowerSpawn)
       return
 
     const storage = global.structureCache[this.name].storage as StructureStorage
