@@ -258,10 +258,10 @@ export default class RoomMissonBehaviourExtension extends Room {
                 let identify = ResourceCanDispatch(this,disType as ResourceConstant,dispatchNum - storeNum)
                 if (identify == 'can')
                 {
-                    console.log(`[dispatch]<lab> 房间${this.name}将进行资源为${i}的资源调度!`)
+                    console.log(`[dispatch]<lab> 房间${this.name}将进行资源为${disType}的资源调度!`)
                     let dispatchTask:RDData = {
                         sourceRoom:this.name,
-                        rType:i as ResourceConstant,
+                        rType:disType as ResourceConstant,
                         num:dispatchNum - storeNum,
                         delayTick:220,
                         conditionTick:35,
@@ -305,7 +305,7 @@ export default class RoomMissonBehaviourExtension extends Room {
         //  powerspawn_ = global.Stru[this.name]['powerspawn'] as StructurePowerSpawn
         if (!storage_) return
         // SavePower 是节省能量的一种"熔断"机制 防止烧power致死
-        if (storage_.store.getUsedCapacity('energy') > this.memory.switch.SavePower?250000:150000 && storage_.store.getUsedCapacity('power') > 100)
+        if (storage_.store.getUsedCapacity('energy') > (this.memory.switch.SavePower?250000:150000) && storage_.store.getUsedCapacity('power') > 100)
         {
             /* 发布烧power任务 */
             var thisTask:MissionModel = {
