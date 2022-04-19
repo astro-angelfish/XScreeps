@@ -88,6 +88,7 @@ export function GetShardCommunication(shardName:shardName):any{
 
 /* 请求传输数据到目标shard */
 export function RequestShard(req:RequestData):boolean{
+    if(req.relateShard == req.sourceShard) return true
     var thisData = JSON.parse(InterShardMemory.getLocal())
     if (thisData.communication && thisData.communication.state != 0) return false
     thisData.communication = {
