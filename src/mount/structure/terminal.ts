@@ -165,7 +165,7 @@ export default class terminalExtension extends StructureTerminal {
         }
     }
     public ModifypriceMarket(): void {
-        if ((Game.time - global.Gtime[this.room.name]) % 5) return
+        if ((Game.time - global.Gtime[this.room.name]) % 3) return
         /** 
          * 存在订单进行订单检查
          * [普通] 300 tick 减少报价  600 tick 自动涨价
@@ -234,7 +234,11 @@ export default class terminalExtension extends StructureTerminal {
                         // console.log(this.room.name, '订单触发调价')
                         if (!order_data.ignore) {
                             /*非忽略订单。执行价格更新*/
-                            order_data.price = (Number(order_data.price) - 0.05).toFixed(3).toString();
+                            let reduceprice = 0.05;
+                            if (order_time <= drop_tick / 2) {
+                                reduceprice = 0.075
+                            }
+                            order_data.price = (Number(order_data.price) - reduceprice).toFixed(3).toString();
                             console.log(Colorful(`[调价下跌]房间${this.room.name}订单已完结,调价:${order_data.price}已存储`, 'gold', true))
                             switch (order_data.Demandlevel) {
                                 case 1:
@@ -270,10 +274,13 @@ export default class terminalExtension extends StructureTerminal {
                     /*进行正常的检测序列*/
                     if (order_time > up_tick) {
                         /*超时额定的间隔-进行涨价处理*/
-                        order_data.price = (Number(order_data.price) + 0.05).toFixed(3);
+                        let reduceprice = 0.05;
+                        let Salesmargin = (Number(Gatorder.remainingAmount) / Number(order_data.totalAmount))
+                        order_data.price = (Number(order_data.price) + reduceprice * Salesmargin).toFixed(3);
                         Game.market.changeOrderPrice(order_data.order_id, order_data.price)/*订单进行价格更新*/
                         this.room.memory.MarketPrice.order_list[j]._time = Game.time - drop_tick/*涨价后价格重新赋值-这个价格被采纳将不会触发降价*/
                         this.room.memory.MarketPrice.order_list[j].price = order_data.price /*价格赋值*/
+
                         console.log(Colorful(`[调价上涨]房间${this.room.name}调整energy,订单${order_data.order_id},价格:${order_data.price};`, 'yellow', true))
                         switch (order_data.Demandlevel) {
                             case 1:
