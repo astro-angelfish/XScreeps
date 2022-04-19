@@ -125,45 +125,42 @@ export default class RoomCoreInitExtension extends Room {
             StructureData.comsume_link = []
         }
         /* 矿点link记忆更新 */
-        if (level == 5 || level == 6)
+        if (level == 5)
         {
-            if (level == 5)
+            if (StructureData.source_links.length <= 0)
             {
-                if (StructureData.source_links.length <= 0)
+                let temp_link_list = []
+                for (let sID of StructureData.source)
                 {
-                    let temp_link_list = []
-                    for (let sID of StructureData.source)
+                    let source_ = Game.getObjectById(sID) as Source
+                    let nearlink = source_.pos.getRangedStructure(['link'],2,0) as StructureLink[]
+                    LoopLink:
+                    for (let l of nearlink)
                     {
-                        let source_ = Game.getObjectById(sID) as Source
-                        let nearlink = source_.pos.getRangedStructure(['link'],2,0) as StructureLink[]
-                        LoopLink:
-                        for (let l of nearlink)
-                        {
-                            if (StructureData.upgrade_link && l.id == StructureData.upgrade_link) continue LoopLink
-                            temp_link_list.push(l.id)
-                        }
+                        if (StructureData.upgrade_link && l.id == StructureData.upgrade_link) continue LoopLink
+                        temp_link_list.push(l.id)
                     }
-                    StructureData.source_links = temp_link_list
                 }
+                StructureData.source_links = temp_link_list
             }
-            if (level == 6 && !StructureData.upgrade_link)
+        }
+        if (level == 6)
+        {
+            if (StructureData.source_links.length < StructureData.source.length)
             {
-                if (StructureData.source_links.length < StructureData.source.length)
+                let temp_link_list = []
+                for (let sID of StructureData.source)
                 {
-                    let temp_link_list = []
-                    for (let sID of StructureData.source)
+                    let source_ = Game.getObjectById(sID) as Source
+                    let nearlink = source_.pos.getRangedStructure(['link'],2,0) as StructureLink[]
+                    LoopLink:
+                    for (let l of nearlink)
                     {
-                        let source_ = Game.getObjectById(sID) as Source
-                        let nearlink = source_.pos.getRangedStructure(['link'],2,0) as StructureLink[]
-                        LoopLink:
-                        for (let l of nearlink)
-                        {
-                            if (StructureData.upgrade_link && l.id == StructureData.upgrade_link) continue LoopLink
-                            temp_link_list.push(l.id)
-                        }
+                        if (StructureData.upgrade_link && l.id == StructureData.upgrade_link) continue LoopLink
+                        temp_link_list.push(l.id)
                     }
-                    StructureData.source_links = temp_link_list
                 }
+                StructureData.source_links = temp_link_list
             }
         }
         else if (level >= 7)
@@ -311,7 +308,7 @@ export default class RoomCoreInitExtension extends Room {
                     if (containers.length > 0) this.memory.harvestData[id].containerID = containers[0].id
                 }
             }
-            else if (level >= 5)
+            else
             {
                 let source = Game.getObjectById(id) as Source
                 if (!this.memory.harvestData[id].linkID)
@@ -336,15 +333,6 @@ export default class RoomCoreInitExtension extends Room {
                         }
                         delete this.memory.harvestData[id].containerID
                     }
-                }
-            }
-            else
-            {
-                if (!this.memory.harvestData[id].linkID)
-                {
-                    let source = Game.getObjectById(id) as Source
-                    let links = source.pos.findInRange(FIND_STRUCTURES,2,{filter:(stru)=>{return stru.structureType == 'container'}})
-                    if (links.length > 0) this.memory.harvestData[id].linkID = links[0].id
                 }
             }
         }

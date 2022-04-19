@@ -13,7 +13,9 @@ Screeps游戏个人代码，Screeps是一款硬核大型多人在线编程游戏
 
 #### 分支及作者
 本分支为master分支，作者为：superbitch
-同时感谢E19N2和somygame的代码修改意见,以及Monero的测试和bug反馈。
+感谢E19N2和somygame的代码修改意见
+感谢Monero的测试和bug反馈
+感谢QiroNT的代码格式检查及优化
 
 #### 其他
 1. 源码可以随意修改
