@@ -18,8 +18,7 @@ import processRoomWork from '@/boot/roomWork'
  * 主运行函数
  */
 export const loop = ErrorMapper.wrapLoop(() => {
-  profiler.reset(false)
-  // profiler.reset(Game.shard.name === 'shard3')
+  profiler.reset()
 
   profiler.enter('Memory 初始化')
 
@@ -88,4 +87,6 @@ export const loop = ErrorMapper.wrapLoop(() => {
   profiler.exit()
 
   profiler.log()
+  // if (Game.shard.name === 'shard3')
+  //   profiler.log()
 })

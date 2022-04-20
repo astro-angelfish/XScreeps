@@ -43,7 +43,7 @@ export default {
       if (terminal.store.getUsedCapacity('energy') + storage.store.getUsedCapacity('energy') < cost || cost > 150000)
         return colorfyLog(`[terminal] 房间 ${roomName} --> ${disRoom} 资源 ${rType} 所需路费少于 ${cost} 或大于150000，传送任务挂载失败！`, 'yellow', true)
 
-      if (thisRoom.addMission(thisTask))
+      if (thisTask && thisRoom.addMission(thisTask))
         return colorfyLog(`[terminal] 房间 ${roomName} --> ${disRoom} 资源 ${rType} 传送挂载成功！数量：${num}；路费：${cost}`, 'green', true)
       return colorfyLog(`[terminal] 房间 ${roomName} --> ${disRoom} 资源 ${rType} 传送 不明原因挂载失败！`, 'red', true)
     },
@@ -189,10 +189,12 @@ export default {
         return `[mine] 不存在房间 ${roomName}`
 
       const thisTask = thisRoom.generateOutMineMission(roomName, x, y, disRoom)
-      thisTask.maxConcurrent = 8
+      if (thisTask) {
+        thisTask.maxConcurrent = 8
 
-      if (thisRoom.addMission(thisTask))
-        return `[mine] ${roomName} -> ${disRoom} 的外矿任务挂载成功！`
+        if (thisRoom.addMission(thisTask))
+          return `[mine] ${roomName} -> ${disRoom} 的外矿任务挂载成功！`
+      }
       return `[mine] ${roomName} -> ${disRoom} 的外矿任务挂载失败！`
     },
     // 取消采集

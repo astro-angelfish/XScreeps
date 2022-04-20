@@ -24,7 +24,7 @@ export default class RoomCoreSpawnExtension extends Room {
    * 爬虫孵化配置初始化，每次脚本更新时执行
    */
   public spawnConfigInit(): void {
-    if (this.memory.spawnConfigLastUpdate === process.env.BUILD_TIME)
+    if (this.memory.spawnConfigLastUpdate === import.meta.env.BUILD_TIME)
       return
 
     if (!this.memory.spawnConfig)

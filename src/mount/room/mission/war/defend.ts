@@ -1,5 +1,5 @@
 import { deserveDefend } from '@/module/fun/funtion'
-import { colorfyLog, isInArray, unzipPosition, zipPosition } from '@/utils'
+import { unzipPosition, zipPosition } from '@/utils'
 
 /* 房间原型拓展   --任务  --防御战争 */
 export default class DefendWarExtension extends Room {

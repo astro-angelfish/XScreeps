@@ -1,4 +1,5 @@
 // 告诉 rollup 他要打包什么
+import { defineConfig } from 'rollup'
 import clear from 'rollup-plugin-clear'
 import screeps from 'rollup-plugin-screeps'
 import copy from 'rollup-plugin-copy'
@@ -11,6 +12,7 @@ let config
 // 根据指定的目标获取对应的配置项
 if (!process.env.DEST)
   console.log('未指定目标, 代码将被编译但不会上传')
+// eslint-disable-next-line no-cond-assign
 else if (!(config = require('./.secret.json')[process.env.DEST]))
   throw new Error('无效目标，请检查 secret.json 中是否包含对应配置')
 
@@ -36,7 +38,7 @@ const pluginDeploy = config && config.copyPath
 // 更新 .map 到 .map.js 并上传
   : screeps({ config, dryRun: !config })
 
-export default {
+export default defineConfig({
   // 源代码的入口是哪个文件
   input: 'src/main.ts',
   // 构建产物配置
@@ -45,7 +47,11 @@ export default {
     file: 'dist/main.js',
     format: 'cjs',
     sourcemap: true,
+    globals: {
+      lodash: '_',
+    },
   },
+  external: ['lodash'],
   plugins: [
     // 清除上次编译成果
     clear({ targets: ['dist'] }),
@@ -58,10 +64,12 @@ export default {
     // 替换代码常量
     replace({
       values: {
-        'process.env.BUILD_TIME': JSON.stringify(new Date().toISOString()),
+        'import.meta.env.BUILD_TIME': JSON.stringify(new Date().toISOString()),
+        // 是否开启 profiler
+        'import.meta.env.PROFILER': 'false',
       },
     }),
     // 执行上传或者复制
     pluginDeploy,
   ],
-}
+})

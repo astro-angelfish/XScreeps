@@ -2,7 +2,7 @@ import { colorfyLog } from '@/utils'
 
 export default {
   // 绕过房间api
-  bp: {
+  bypass: {
     /**
      * 添加要绕过的房间
      */

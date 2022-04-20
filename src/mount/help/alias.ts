@@ -1,5 +1,16 @@
 import { createHelp } from './base'
-import { colorful, colorfyLog, createConst } from '@/utils'
+import { colorfyLog } from '@/utils'
+
+/**
+ * 帮助文档中的标题
+ */
+const projectTitle = [
+  '   ____                  ___  _ __      __     ___       __ ',
+  '  / __/_ _____  ___ ____/ _ )(_) /_____/ /    / _ )___  / /_',
+  ' _\ \/ // / _ \/ -_) __/ _  / / __/ __/ _ \  / _  / _ \/ __/',
+  '/___/\_,_/ .__/\__/_/ /____/_/\__/\__/_//_/ /____/\___/\__/ ',
+  '        /_/                                                 ',
+]
 
 /**
  * 全局拓展的别名
@@ -14,7 +25,7 @@ export default [
     alias: 'help',
     exec(): string {
       return [
-        ...projectTitle.map(line => colorful(line, 'green', true)),
+        ...projectTitle.map(line => colorfyLog(line, 'green', true)),
         '\n',
         '使用前请详细阅读如下规则:',
         '1.使用frame.add时,如果布局为man,房间的中心点需要两格内有1个link和1个tower(如果刚开局，以后有就行了).',
@@ -33,7 +44,7 @@ export default [
     alias: 'manual',
     exec(): string {
       return [
-        ...projectTitle.map(line => colorful(line, 'blue', true)),
+        ...projectTitle.map(line => colorfyLog(line, 'blue', true)),
         '\n',
         createHelp(
           {
@@ -81,7 +92,7 @@ export default [
     alias: 'manual_global',
     exec(): string {
       return [
-        ...projectTitle.map(line => colorful(line, 'blue', true)),
+        ...projectTitle.map(line => colorfyLog(line, 'blue', true)),
         createHelp(
           {
             name: '名单相关',
@@ -97,8 +108,8 @@ export default [
               },
               {
                 title: '查看绕过房间:',
-                describe: '例: bypass.show()',
-                functionName: 'bypass.show',
+                describe: '例: bypass.ls()',
+                functionName: 'bypass.ls',
               },
               {
                 title: '清空绕过房间:',
@@ -107,37 +118,37 @@ export default [
               },
               {
                 title: '移除绕过房间:',
-                describe: '例: bypass.remove("W1N1","W1N2")',
+                describe: '例: bypass.rm("W1N1","W1N2")',
                 params: [
                   { name: 'roomName', desc: '移除的房间列表' },
                 ],
-                functionName: 'bypass.remove',
+                functionName: 'bypass.rm',
               },
               {
                 title: '添加白名单:',
-                describe: '例: whitesheet.add("")',
+                describe: '例: wl.add("")',
                 params: [
                   { name: 'username', desc: '添加的用户名' },
                 ],
-                functionName: 'whitesheet.add',
+                functionName: 'wl.add',
               },
               {
                 title: '查看白名单:',
-                describe: '例: whitesheet.show()',
-                functionName: 'whitesheet.show',
+                describe: '例: wl.ls()',
+                functionName: 'wl.ls',
               },
               {
                 title: '清空白名单:',
-                describe: '例: whitesheet.clean()',
-                functionName: 'whitesheet.clean',
+                describe: '例: wl.clean()',
+                functionName: 'wl.clean',
               },
               {
                 title: '移除白名单:',
-                describe: '例: whitesheet.remove("")',
+                describe: '例: wl.rm("")',
                 params: [
                   { name: 'username', desc: '移除的用户名' },
                 ],
-                functionName: 'whitesheet.remove',
+                functionName: 'wl.rm',
               },
               {
                 title: '忽略控制台任务输出:',
@@ -195,7 +206,7 @@ export default [
     alias: 'manual_room',
     exec(): string {
       return [
-        ...projectTitle.map(line => colorful(line, 'blue', true)),
+        ...projectTitle.map(line => colorfyLog(line, 'blue', true)),
         createHelp(
           // 框架控制
           {
@@ -215,11 +226,11 @@ export default [
               },
               {
                 title: '删除控制房间:',
-                describe: '例: frame.remove("W1N1") 还需手动unclaim房间',
+                describe: '例: frame.rm("W1N1") 还需手动unclaim房间',
                 params: [
                   { name: 'roomName', desc: '想删除控制的房间' },
                 ],
-                functionName: 'frame.remove',
+                functionName: 'frame.rm',
               },
               {
                 title: '房间内建筑拆除:',
@@ -234,11 +245,11 @@ export default [
               },
               {
                 title: '房间进入经济模式:',
-                describe: '例: frame.economy("W1N1") 8级房能用,进入经济模式后,不会一直升级,节省能量和cpu',
+                describe: '例: frame.eco("W1N1") 8级房能用,进入经济模式后,不会一直升级,节省能量和cpu',
                 params: [
                   { name: 'roomName', desc: '我所控制的房间' },
                 ],
-                functionName: 'frame.economy',
+                functionName: 'frame.eco',
               },
               {
                 title: '查询房间内当前存在的任务:',
@@ -307,10 +318,10 @@ export default [
               },
               {
                 title: '资源转移信息查询:',
-                describe: '例:logistic.show()',
+                describe: '例:logistic.ls()',
                 params: [
                 ],
-                functionName: 'logistic.show',
+                functionName: 'logistic.ls',
               },
               {
                 title: '资源传送:【不推荐】',
@@ -335,15 +346,15 @@ export default [
               },
               {
                 title: '查看现在所有的资源传送情况:',
-                describe: '从房间A传资源到房间B(需要有终端和仓库) 例:terminal.show()',
-                functionName: 'terminal.show',
+                describe: '从房间A传资源到房间B(需要有终端和仓库) 例:terminal.ls()',
+                functionName: 'terminal.ls',
               },
               {
                 title: '注册消费link:',
                 describe: '让中央link自动向某link传送能量 例:link.consume("W1N1","6204890bedf59067e60b4df3")',
                 params: [
                   { name: 'roomName', desc: '房间' },
-                  { name: 'linkID', desc: 'link的ID' },,
+                  { name: 'linkID', desc: 'link的ID' },
                 ],
                 functionName: 'link.consume',
               },
@@ -351,7 +362,7 @@ export default [
                 title: '删除具体任务:',
                 describe: '例:Game.rooms["xxxx"].DeleteMission("C-85ednh1ib439985674")',
                 params: [
-                  { name: 'missionID', desc: '任务Id' },,
+                  { name: 'missionID', desc: '任务Id' },
                 ],
                 functionName: 'Game.rooms["xxxx"].DeleteMission',
               },
@@ -374,12 +385,12 @@ export default [
               },
               {
                 title: '查询市场上的订单:',
-                describe: '查询市场上的订单 例: market.look("GH2O","sell")',
+                describe: '查询市场上的订单 例: market.fd("GH2O","sell")',
                 params: [
                   { name: 'rType', desc: '资源类型' },
                   { name: 'mtype', desc: '交易类型: buy | sell' },
                 ],
-                functionName: 'market.look',
+                functionName: 'market.fd',
               },
               {
                 title: '下单买某类型资源:',
@@ -426,11 +437,11 @@ export default [
               },
               {
                 title: '查询某房间正在卖的资源:',
-                describe: '例: market.query("W1N1")',
+                describe: '例: market.ls("W1N1")',
                 params: [
                   { name: 'roomName', desc: '房间名' },
                 ],
-                functionName: 'market.query',
+                functionName: 'market.ls',
               },
               {
                 title: '取消某类型资源的卖出任务:',
@@ -499,11 +510,11 @@ export default [
                           // power
                           {
                             title: '启动/关闭 GPL升级:',
-                            describe: '例:power.switch("W1N1")',
+                            describe: '例:power.toggle("W1N1")',
                             params: [
                               { name: 'roomName', desc: '房间名' },
                             ],
-                            functionName: 'power.switch',
+                            functionName: 'power.toggle',
                           },
                           {
                             title: 'GPL升级节省能量模式:',
@@ -524,11 +535,11 @@ export default [
                           },
                           {
                             title: '输出PC技能限制/激活信息:',
-                            describe: '只适用于queen类爬虫 例:power.show("W1N1")',
+                            describe: '只适用于queen类爬虫 例:power.stat("W1N1")',
                             params: [
                               { name: 'roomName', desc: '房间名' },
                             ],
-                            functionName: 'power.show',
+                            functionName: 'power.stat',
                           },
                           {
                             title: '创建pc:',
@@ -562,7 +573,7 @@ export default [
                             params: [
                               { name: 'roomName', desc: '房间名' },
                             ],
-                            functionName: 'factory.switch',
+                            functionName: 'factory.toggle',
                           },
                           {
                             title: '添加工厂基本商品生产列表:',
@@ -601,11 +612,11 @@ export default [
                           },
                           {
                             title: '输出工厂目前工作状态:',
-                            describe: '例: factory.show("W1N1")',
+                            describe: '例: factory.stat("W1N1")',
                             params: [
                               { name: 'roomName', desc: '房间名' },
                             ],
-                            functionName: 'factory.show',
+                            functionName: 'factory.stat',
                           },
                           // cross
                           {
@@ -627,19 +638,19 @@ export default [
                           },
                           {
                             title: '开启/关闭过道:',
-                            describe: '例: cross.switch("W1N1")',
+                            describe: '例: cross.toggle("W1N1")',
                             params: [
                               { name: 'roomName', desc: '房间名' },
                             ],
-                            functionName: 'cross.switch',
+                            functionName: 'cross.toggle',
                           },
                           {
                             title: '删除过道房间:',
-                            describe: '例: cross.remove("W1N1","W4N0")',
+                            describe: '例: cross.rm("W1N1","W4N0")',
                             params: [
                               { name: 'roomName', desc: '房间名' },
                             ],
-                            functionName: 'cross.remove',
+                            functionName: 'cross.rm',
                           },
                           {
                             title: '开启/关闭 power采集:',
@@ -659,11 +670,11 @@ export default [
                           },
                           {
                             title: '展示过道采集情况:',
-                            describe: '例: cross.show("W1N1")',
+                            describe: '例: cross.stat("W1N1")',
                             params: [
                               { name: 'roomName', desc: '房间名' },
                             ],
-                            functionName: 'cross.show',
+                            functionName: 'cross.stat',
                           },
                           {
                             title: '取消过道采集任务:',
@@ -708,11 +719,11 @@ export default [
                           },
                           {
                             title: '开/关核弹自动填充:',
-                            describe: '例: nuke.switch("W1N1")',
+                            describe: '例: nuke.toggle("W1N1")',
                             params: [
                               { name: 'roomName', desc: '房间名' },
                             ],
-                            functionName: 'nuke.switch',
+                            functionName: 'nuke.toggle',
                           },
                         ],
           },
@@ -725,7 +736,7 @@ export default [
     alias: 'manual_creep',
     exec(): string {
       return [
-        ...projectTitle.map(line => colorful(line, 'blue', true)),
+        ...projectTitle.map(line => colorfyLog(line, 'blue', true)),
         createHelp(
           {
             name: '日常行为',
@@ -745,12 +756,12 @@ export default [
               },
               {
                 title: '取消刷墙:',
-                describe: '例: repair.remove("W1N1","global")',
+                describe: '例: repair.rm("W1N1","global")',
                 params: [
                   { name: 'roomName', desc: '房间名' },
                   { name: 'type', desc: '刷墙类型 global(全局刷墙) | special(只刷旗子下的墙)' },
                 ],
-                functionName: 'repair.remove',
+                functionName: 'repair.rm',
               },
               {
                 title: '扩张:',
@@ -767,13 +778,13 @@ export default [
               },
               {
                 title: '取消扩张:',
-                describe: '例: expand.Cset("W1N1","W2N2","shard3")',
+                describe: '例: expand.rm("W1N1","W2N2","shard3")',
                 params: [
                   { name: 'roomName', desc: '房间名' },
                   { name: 'disRoom', desc: '目标房间' },
                   { name: 'shard', desc: '目标房间所在shard' },
                 ],
-                functionName: 'expand.remove',
+                functionName: 'expand.rm',
               },
               {
                 title: '急速冲级:',
@@ -1025,7 +1036,7 @@ export default [
     alias: 'manual_stat',
     exec(): string {
       return [
-        ...projectTitle.map(line => colorful(line, 'blue', true)),
+        ...projectTitle.map(line => colorfyLog(line, 'blue', true)),
         createHelp(
           {
             name: '统计相关',
@@ -1056,8 +1067,8 @@ export default [
     alias: 'manual_flag',
     exec(): string {
       return [
-        ...projectTitle.map(line => colorful(line, 'blue', true)),
-        `\n    ${colorful('superbitch bot', 'yellow', true)}`,
+        ...projectTitle.map(line => colorfyLog(line, 'blue', true)),
+        `\n    ${colorfyLog('superbitch bot', 'yellow', true)}`,
         '这里列出一些可能用到的旗帜及其作用 统一规定xx为任何字符串 [xx]为房间名',
         '旗帜名: [xx]/repair 房间内所有防御塔参与维修',
         '旗帜名: [xx]/stop 房间内所有防御塔停止攻击',
@@ -1078,22 +1089,4 @@ export default [
       ].join('\n')
     },
   },
-]
-
-/**
- * 帮助文档中的标题
- */
-const projectTitle = [
-  String.raw`    ███████╗██╗   ██╗██████╗ ███████╗██████╗ ██████╗ ██╗████████╗ ██████╗██╗  ██╗`,
-  String.raw`    ██╔════╝██║   ██║██╔══██╗██╔════╝██╔══██╗██╔══██╗██║╚══██╔══╝██╔════╝██║  ██║`,
-  String.raw`    ███████╗██║   ██║██████╔╝█████╗  ██████╔╝██████╔╝██║   ██║   ██║     ███████║`,
-  String.raw`    ╚════██║██║   ██║██╔═══╝ ██╔══╝  ██╔══██╗██╔══██╗██║   ██║   ██║     ██╔══██║`,
-  String.raw`    ███████║╚██████╔╝██║     ███████╗██║  ██║██████╔╝██║   ██║   ╚██████╗██║  ██║`,
-  String.raw`    ╚══════╝ ╚═════╝ ╚═╝     ╚══════╝╚═╝  ╚═╝╚═════╝ ╚═╝   ╚═╝    ╚═════╝╚═╝  ╚═╝`,
-  String.raw`                             ██████╗  ██████╗ ████████╗`,
-  String.raw`                             ██╔══██╗██╔═══██╗╚══██╔══╝`,
-  String.raw`                             ██████╔╝██║   ██║   ██║   `,
-  String.raw`                             ██╔══██╗██║   ██║   ██║   `,
-  String.raw`                             ██████╔╝╚██████╔╝   ██║   `,
-  String.raw`                             ╚═════╝  ╚═════╝    ╚═╝   `,
 ]

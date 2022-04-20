@@ -15,7 +15,7 @@ export default {
       }
 
       const thisTask = thisRoom.generateRepairMission(rtype, num, boost, level || 'T0')
-      if (thisRoom.addMission(thisTask))
+      if (thisTask && thisRoom.addMission(thisTask))
         return `[repair] 房间 ${roomName} 挂载类型为 ${rtype} 刷墙任务成功`
       return `[repair] 房间 ${roomName} 挂载类型为 ${rtype} 刷墙任务失败`
     },
@@ -98,7 +98,7 @@ export default {
       if (terminal.store.getUsedCapacity('energy') + storage.store.getUsedCapacity('energy') < cost || cost > 150000)
         return colorfyLog(`[plan] 房间 ${roomName} --> ${disRoom} 资源${'Z'}所需路费少于 ${cost} 或大于150000，传送任务挂载失败！`, 'yellow', true)
 
-      if (thisRoom.addMission(thisTask))
+      if (thisTask && thisRoom.addMission(thisTask))
         return colorfyLog(`[plan] 房间 ${roomName} --> ${disRoom} 资源${'Z'}传送挂载成功！数量：${num}；路费：${cost}`, 'green', true)
       return colorfyLog(`[plan] 房间 ${roomName} --> ${disRoom} 资源${'Z'}传送 不明原因挂载失败！`, 'red', true)
     },
@@ -274,7 +274,7 @@ export default {
         if (oi.name === '四人小队' && oi.data.disRoom === disRoom && oi.data.shard === shard && oi.data.flag === mtype)
           return `[war] 房间 ${roomName} 已经存在去往 ${disRoom}(${shard}) 的 <${mtype}> 四人小队任务了!`
       }
-      let thisTask: Omit<MissionModel, 'id'>
+      let thisTask: Omit<MissionModel, 'id'> | null
       if (mtype === 'R')
         thisTask = myRoom.generateSquadMission(disRoom, shard, time, 2, 0, 0, 2, 0, mtype)
       else if (mtype === 'A')
