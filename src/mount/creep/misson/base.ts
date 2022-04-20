@@ -98,6 +98,7 @@ export default class CreepMissonBaseExtension extends Creep {
                 case 'C计划':{this.handle_planC();break;}
                 case '黄球拆迁':{this.handle_dismantle();break;}
                 case '急速冲级':{this.handle_quickRush();break;}
+                case '普通冲级':{this.handle_normalRush();break;}
                 case '扩张援建':{this.handle_expand();break}
                 case '紧急支援':{this.handle_support();break}
                 case '控制攻击':{this.handle_control();break}

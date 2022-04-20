@@ -376,6 +376,29 @@ export default class CreepMissonActionExtension extends Creep {
         this.memory.standed = mission.Data.standed
     }
 
+    // 普通冲级
+    public handle_normalRush():void{
+        let missionData = this.memory.MissionData
+        let id = missionData.id
+        let mission = Game.rooms[this.memory.belong].GainMission(id)
+        if (!mission) return
+        var link_ = Game.getObjectById(Game.rooms[this.memory.belong].memory.StructureIdData.upgrade_link) as StructureLink
+        if (!link_){this.say("找不到冲级link!");return}
+        // boost检查
+        if (mission.LabBind && !this.BoostCheck(['work'])) return
+        this.workstate('energy')
+        if (this.memory.working)
+        {
+            this.upgrade_()
+            if (this.store.getUsedCapacity('energy') < 35 && link_.pos.isNearTo(this) )
+            this.withdraw_(link_,'energy')
+        }
+        else
+        {
+            this.withdraw_(link_,'energy')
+        }
+    }
+    
     // 紧急援建
     public handle_helpBuild():void{
         let missionData = this.memory.MissionData

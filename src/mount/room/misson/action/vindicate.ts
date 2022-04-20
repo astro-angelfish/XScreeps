@@ -30,6 +30,7 @@ export default class RoomMissonVindicateExtension extends Room {
     public Task_Quick_upgrade(mission:MissionModel):void{
         if (this.controller.level >= 8) {this.DeleteMission(mission.id);console.log(`房间${this.name}等级已到8级，删除任务!`);return}
         if (!this.memory.StructureIdData.terminalID) return
+        if (!this.memory.StructureIdData.labs || this.memory.StructureIdData.labs.length <= 0) return
         /* 能量购买 */
         let terminal_ = Game.getObjectById(this.memory.StructureIdData.terminalID) as StructureTerminal
         if (!terminal_) return
@@ -57,6 +58,14 @@ export default class RoomMissonVindicateExtension extends Room {
                 console.log(Colorful(`[急速冲级]房间${this.name}创建energy订单,价格:${highest + 0.01};数量:100000`,'green',true))
             }
         }
+    }
+
+    /* 普通冲级 */
+    public Task_Normal_upgrade(mission:MissionModel):void{
+        if (this.controller.level >= 8) {this.DeleteMission(mission.id);console.log(`房间${this.name}等级已到8级，删除任务!`);return}
+        if (!this.memory.StructureIdData.terminalID) return
+        if (!this.memory.StructureIdData.labs || this.memory.StructureIdData.labs.length <= 0) return
+        if (mission.LabBind && !this.Check_Lab(mission,'transport','complex'))  return   // boost
     }
 
     /* 紧急援建 */

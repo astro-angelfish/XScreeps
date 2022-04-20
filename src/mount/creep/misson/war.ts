@@ -33,12 +33,13 @@ export default class CreepMissonWarExtension extends Creep {
         }})
         if (!disFlag)
         {
-            var clostStructure = this.pos.findClosestByRange(FIND_HOSTILE_STRUCTURES,{filter:(struc)=>{
+            var clostStructure = this.pos.findClosestByPath(FIND_HOSTILE_STRUCTURES,{filter:(struc)=>{
                 return !isInArray([STRUCTURE_CONTROLLER,STRUCTURE_WALL],struc.structureType)
             }})
             if (clostStructure)
             {
-                clostStructure.pos.createFlag(`${generateID()}`,COLOR_WHITE)
+                let randomStr = Math.random().toString(36).substr(3)
+                clostStructure.pos.createFlag(`dismantle_${randomStr}`,COLOR_WHITE)
                 return
             }
             else

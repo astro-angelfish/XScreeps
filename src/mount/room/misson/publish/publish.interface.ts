@@ -24,4 +24,5 @@ interface Room {
     public_squad(disRoom:string,shard:shardName,interval:number,RNum:number,ANum:number,DNum:number,HNum:number,AIONum:number,flag:string):MissionModel
     public_Double(disRoom:string,shard:shardName,CreepNum:number,cType:'dismantle' | 'attack',interval:number):MissionModel
     public_resource_transfer(disRoom:string,resource?:ResourceConstant,num?:number):MissionModel
+    public_normal(num:number,boostType:ResourceConstant | null):MissionModel
 }
