@@ -47,30 +47,43 @@ export default class RoomCoreEcosphereExtension extends Room {
             {
                 let sourceIDs = this.memory.StructureIdData.source
                 if (sourceIDs.length <= 0) return
-                let source = Game.getObjectById(sourceIDs[0]) as Source
+                let sourceID = sourceIDs[0]
+                let source = Game.getObjectById(sourceID) as Source
+                let harvestcontainerID = this.memory.harvestData[sourceID].containerID;
+                if (!harvestcontainerID) return
+                let container = Game.getObjectById(harvestcontainerID) as StructureContainer
+                if (!container) return
                 let points = source.pos.getSourceLinkVoid()
                 if (points.length <= 0) return
                 LoopA:
                 for (var i of points) {
                     if (i.lookFor(LOOK_CONSTRUCTION_SITES).length <= 0 && i.lookFor(LOOK_STRUCTURES).length <= 0) {
-                        i.createConstructionSite(STRUCTURE_LINK)
-                        break LoopA
+                        if (i.isNearTo(container)) {
+                            i.createConstructionSite(STRUCTURE_LINK)
+                            break LoopA
+                        }
                     }
                 }
             }
             else if (level == 6)        // 6级出source的Link
             {
-
                 let sourceIDs = this.memory.StructureIdData.source
                 if (sourceIDs.length <= 1) return
-                let source = Game.getObjectById(sourceIDs[1]) as Source
+                let sourceID = sourceIDs[1]
+                let source = Game.getObjectById(sourceID) as Source
+                let harvestcontainerID = this.memory.harvestData[sourceID].containerID;
+                if (!harvestcontainerID) return
+                let container = Game.getObjectById(harvestcontainerID) as StructureContainer
+                if (!container) return
                 let points = source.pos.getSourceLinkVoid()
                 if (points.length <= 0) return
                 LoopA:
                 for (var i of points) {
                     if (i.lookFor(LOOK_CONSTRUCTION_SITES).length <= 0 && i.lookFor(LOOK_STRUCTURES).length <= 0) {
-                        i.createConstructionSite(STRUCTURE_LINK)
-                        break LoopA
+                        if (i.isNearTo(container)) {
+                            i.createConstructionSite(STRUCTURE_LINK)
+                            break LoopA
+                        }
                     }
                 }
             }
