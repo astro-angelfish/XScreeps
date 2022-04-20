@@ -38,7 +38,7 @@ export default class RoomFunctionFindExtension extends Room {
       for (const labId in this.memory.roomLabBind) {
         const labBind = this.memory.roomLabBind[labId]
         if (labBind.rType === resource && !labBind.occ) {
-          result[labId] = resource
+          result[labId as Id<StructureLab>] = resource
           return
         }
       }
@@ -119,7 +119,7 @@ export default class RoomFunctionFindExtension extends Room {
    * 建筑任务初始化\
    * 目前包含 terminal factory link
    */
-  public runStructureMission(): void {
+  public processStructureMission(): void {
     if (!this.memory.structureIdData)
       return
     const structureIdData = this.memory.structureIdData

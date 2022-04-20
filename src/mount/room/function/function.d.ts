@@ -5,7 +5,7 @@ interface Room {
   getStructureHitsLeast<T extends AnyStructure['structureType']>(types: T[], mode: 0 | 1 | 2 | 3): NarrowStructure<T>
   getStructureWithTypes<T extends AnyStructure['structureType']>(type: T[]): NarrowStructure<T>[]
   runStructureMissionWithTypes(strus: StructureConstant[]): void
-  runStructureMission(): void
+  processStructureMission(): void
   updateLevelCache(): void
   // tower
   processTowers(): void

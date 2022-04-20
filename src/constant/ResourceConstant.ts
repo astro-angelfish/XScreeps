@@ -157,7 +157,7 @@ export const resourceComDispatch = {
   OH: ['OH'],
 }
 
-export const CompoundColor = {
+export const compoundColor = {
   L: '#6cf0a9',
   LH: '#6cf0a9',
   LHO2: '#6cf0a9',

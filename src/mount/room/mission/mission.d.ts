@@ -18,33 +18,33 @@ interface Room {
   missionLabFeed(): void
   missionNukerFeed(): void
   checkSourceLinks(): void
-  Task_Clink(): void
+  checkCenterLinkToStorage(): void
   checkConsumeLinks(): void
-  Nuke_Defend(): void
+  checkNukeDefend(): void
   checkCompoundDispatch(): void
-  Task_monitorMineral(): void
-  Task_montitorPower(): void
-  Task_Auto_Defend(): void
+  checkMineral(): void
+  checkPower(): void
+  checkAutoDefend(): void
 
   // 被动任务
   checkCarryMission(mission: MissionModel): void
-  Task_Repair(mission: MissionModel): void
-  Task_dismantle(mission: MissionModel): void
-  Task_Quick_upgrade(mission: MissionModel): void
-  Task_HelpDefend(mission: MissionModel): void
-  Task_HelpBuild(mission: MissionModel): void
+  checkRepairMission(mission: MissionModel): void
+  checkDismantleMission(mission: MissionModel): void
+  checkQuickUpgradeMission(mission: MissionModel): void
+  checkHelpDefendMission(mission: MissionModel): void
+  checkHelpBuildMission(mission: MissionModel): void
   checkCompoundMission(mission: MissionModel): void
-  Task_aio(mission: MissionModel): void
-  Task_OutMine(mission: MissionModel): void
-  Task_ProcessPower(mission: MissionModel): void
-  Task_Cross(mission: MissionModel): void
-  Task_PowerHarvest(mission: MissionModel): void
-  Task_Red_Defend(mission: MissionModel): void
-  Task_Blue_Defend(mission: MissionModel): void
-  Task_Double_Defend(mission: MissionModel): void
-  Task_squad(mission: MissionModel): void
-  Task_double(mission: MissionModel): void
-  Task_Resource_transfer(mission: MissionModel): void
+  checkAioMission(mission: MissionModel): void
+  checkOutMineMission(mission: MissionModel): void
+  processPowerMission(mission: MissionModel): void
+  checkCrossMission(mission: MissionModel): void
+  checkPowerHarvestMission(mission: MissionModel): void
+  checkRedDefendMission(mission: MissionModel): void
+  checkBlueDefendMission(mission: MissionModel): void
+  checkDoubleDefendMission(mission: MissionModel): void
+  checkSquadMission(mission: MissionModel): void
+  checkDoubleMission(mission: MissionModel): void
+  checkResourceTransferMission(mission: MissionModel): void
 }
 
 interface RoomMemory {

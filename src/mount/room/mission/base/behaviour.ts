@@ -1,6 +1,6 @@
-import { ResourceCanDispatch } from '@/module/dispatch/resource'
-import { checkBuyMission, checkDispatch, checkSendMission, getRoomDispatchNum, resourceMap } from '@/module/fun/funtion'
-import { colorfyLog, isInArray } from '@/utils'
+import { canResourceDispatch } from '@/module/dispatch/resource'
+import { checkDispatch, checkSendMission, getRoomDispatchNum, resourceMap } from '@/module/fun/funtion'
+import { colorfyLog } from '@/utils'
 
 /* 房间原型拓展   --任务  --基本功能 */
 export default class RoomMissionBehaviourExtension extends Room {
@@ -369,12 +369,12 @@ export default class RoomMissionBehaviourExtension extends Room {
           }
 
           // 先判断能不能调度，如果能调度，就暂时 return
-          const identify = ResourceCanDispatch(this, disType, dispatchNum - storeNum)
+          const identify = canResourceDispatch(this, disType, dispatchNum - storeNum)
           if (identify === 'can') {
-            console.log(`[dispatch]<lab> 房间${this.name}将进行资源为${i}的资源调度!`)
+            console.log(`[dispatch]<lab> 房间 ${this.name} 将进行资源为 ${disType} 的资源调度!`)
             const dispatchTask: RDData = {
               sourceRoom: this.name,
-              rType: i as ResourceConstant,
+              rType: disType,
               num: dispatchNum - storeNum,
               delayTick: 220,
               conditionTick: 35,
@@ -382,51 +382,66 @@ export default class RoomMissionBehaviourExtension extends Room {
             }
             Memory.resourceDispatchData.push(dispatchTask)
           }
-          else if (identify === 'running') { return }
-          // 如果terminal存在该类型资源，就暂时return
-          if (terminal.store.getUsedCapacity(disType as ResourceConstant) > (this.memory.TerminalData[disType] ? this.memory.TerminalData[disType].num : 0))
+          else if (identify === 'running') {
             return
-          // 如果存在manage搬运任务 就 return
-          if (this.carryMissionExist('manage', terminal.pos, storage.pos, disType as ResourceConstant))
-            return
-          // 下达合成命令
-          const thisTask = this.generateCompoundMission(diff, disType as ResourceConstant, comLabs)
-          if (this.addMission(thisTask))
-            data[disType].ok = true
+          }
 
-          return
+          // 如果 terminal 存在该类型资源，就暂时 return
+          if (terminal.store.getUsedCapacity(disType) > (this.memory.TerminalData[disType]?.num || 0))
+            continue
+
+          // 如果存在 manage 搬运任务 就 return
+          if (this.carryMissionExist('manage', terminal.pos, storage.pos, disType))
+            continue
+
+          // 下达合成命令
+          const thisTask = this.generateCompoundMission(diff, disType, comLabs)
+          if (thisTask && this.addMission(thisTask)) {
+            data[disType]!.ok = true
+            return
+          }
         }
       }
+
       // 是最终目标资源的情况下
       if (targetType === disType) {
         // 下达合成命令
-        const thisTask = this.generateCompoundMission(data[disType].dispatch_num, disType as ResourceConstant, comLabs)
-        if (this.addMission(thisTask))
+        const thisTask = this.generateCompoundMission(data[disType]!.dispatch_num, disType, comLabs)
+        if (thisTask && this.addMission(thisTask)) {
           this.memory.comDispatchData = {}
-        return
+          return
+        }
       }
     }
   }
 
-  /* 烧Power发布函数任务 */
-  public Task_montitorPower(): void {
+  /**
+   * 烧 power 发布函数任务
+   */
+  public checkPower(): void {
     if (Game.time % 7)
       return
-    if (this.controller.level < 8)
+    if (!this.controller || this.controller.level < 8)
+      return
+    const structureIdData = this.memory.structureIdData
+    if (!structureIdData?.storageID)
       return
     if (!this.memory.toggles.StartPower)
       return
+
     // 有任务了就不发布烧帕瓦的任务
     if (this.countMissionByName('Room', 'power升级') > 0)
       return
-    const storage_ = global.structureCache[this.name].storage as StructureStorage
-    //  powerspawn_ = global.Stru[this.name]['powerspawn'] as StructurePowerSpawn
-    if (!storage_)
+
+    const storage = Game.getObjectById(structureIdData.storageID)
+    if (!storage)
       return
-    // SavePower 是节省能量的一种"熔断"机制 防止烧power致死
-    if (storage_.store.getUsedCapacity('energy') > this.memory.toggles.SavePower ? 250000 : 150000 && storage_.store.getUsedCapacity('power') > 100) {
-      /* 发布烧power任务 */
-      const thisTask: MissionModel = {
+
+    // SavePower 是节省能量的一种"熔断"机制 防止烧 power 致死
+    if (storage.store.energy > (this.memory.toggles.SavePower ? 250000 : 150000)
+     && storage.store.power > 100) {
+      // 发布烧 power 任务
+      const thisTask: Omit<MissionModel, 'id'> = {
         name: 'power升级',
         delayTick: 200,
         category: 'Room',
@@ -437,30 +452,48 @@ export default class RoomMissionBehaviourExtension extends Room {
   }
 
   /* 烧Power执行函数 */
-  public Task_ProcessPower(mission: MissionModel): void {
-    const storage_ = global.structureCache[this.name].storage as StructureStorage
-    const powerspawn_ = global.structureCache[this.name].powerspawn as StructurePowerSpawn
-    const terminal_ = global.structureCache[this.name].terminal as StructureTerminal
-    if (!storage_ || !powerspawn_ || !terminal_)
+  public processPowerMission(mission: MissionModel): void {
+    const structureIdData = this.memory.structureIdData
+    if (!structureIdData)
       return
-    if (mission.state == 1) {
+
+    const storage = structureIdData.storageID ? Game.getObjectById(structureIdData.storageID) : null
+    const powerSpawn = structureIdData.powerSpawnID ? Game.getObjectById(structureIdData.powerSpawnID) : null
+    const terminal = structureIdData.terminalID ? Game.getObjectById(structureIdData.terminalID) : null
+    if (!storage || !powerSpawn || !terminal)
+      return
+
+    if (mission.state === 1) {
       if (this.countCreepMissionByName('manage', '物流运输') > 0)
         return
-      if (powerspawn_.store.getFreeCapacity('energy') > 0) {
-        var carryTask = this.generateCarryMission({ manage: { num: 1, bind: [] } }, 10, this.name, storage_.pos.x, storage_.pos.y, this.name, powerspawn_.pos.x, powerspawn_.pos.y, 'energy', powerspawn_.store.getFreeCapacity('energy'))
+
+      if (powerSpawn.store.getFreeCapacity('energy') > 0) {
+        const carryTask = this.generateCarryMission(
+          { manage: { num: 1, bind: [] } },
+          10,
+          this.name, storage.pos.x, storage.pos.y,
+          this.name, powerSpawn.pos.x, powerSpawn.pos.y,
+          'energy', powerSpawn.store.getFreeCapacity('energy'))
         this.addMission(carryTask)
         return
       }
-      if (powerspawn_.store.getFreeCapacity('power') > 0) {
-        var carryTask = this.generateCarryMission({ manage: { num: 1, bind: [] } }, 10, this.name, storage_.pos.x, storage_.pos.y, this.name, powerspawn_.pos.x, powerspawn_.pos.y, 'power', powerspawn_.store.getFreeCapacity('power'))
+      if (powerSpawn.store.getFreeCapacity('power') > 0) {
+        const carryTask = this.generateCarryMission(
+          { manage: { num: 1, bind: [] } },
+          10,
+          this.name, storage.pos.x, storage.pos.y,
+          this.name, powerSpawn.pos.x, powerSpawn.pos.y,
+          'power', powerSpawn.store.getFreeCapacity('power'))
         this.addMission(carryTask)
         return
       }
+
       mission.state = 2
     }
-    else if (mission.state == 2) {
-      const result = powerspawn_.processPower()
-      if (result != OK)
+
+    else if (mission.state === 2) {
+      const result = powerSpawn.processPower()
+      if (result !== OK)
         this.removeMission(mission.id)
     }
   }

@@ -1,9 +1,9 @@
 import { ErrorMapper } from '@/_errorMap/errorMapper'
 import { initMemory } from '@/module/global/init'
-import { CreepNumStatistic } from '@/module/global/statistic'
+import { countCreeps } from '@/module/global/statistic'
 import { pixel } from '@/module/fun/pixel'
 import { initShardMemory, processShardMemory } from '@/module/shard/base'
-import { ResourceDispatchTick } from '@/module/dispatch/resource'
+import { tickResourceDispatch } from '@/module/dispatch/resource'
 import layoutVisual from '@/module/layoutVisual'
 import { SquadManager } from '@/module/squad/base'
 import { stateScanner } from '@/module/stat/stat'
@@ -12,7 +12,7 @@ import { statCPU } from '@/module/fun/funtion'
 import { profiler } from '@/utils'
 import mountPrototype from '@/mount'
 import CreepWork from '@/boot/creepWork'
-import RoomWork from '@/boot/roomWork'
+import processRoomWork from '@/boot/roomWork'
 
 /**
  * 主运行函数
@@ -48,10 +48,10 @@ export const loop = ErrorMapper.wrapLoop(() => {
   profiler.enter('房间框架')
 
   // 爬虫数量统计及死亡 Memory 回收
-  CreepNumStatistic()
+  countCreeps()
 
   // 房间框架运行
-  RoomWork()
+  processRoomWork()
 
   profiler.exit()
 
@@ -68,7 +68,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
   SquadManager()
 
   /* 资源调度超时管理 */
-  ResourceDispatchTick()
+  tickResourceDispatch()
 
   /* 像素 */
   pixel()

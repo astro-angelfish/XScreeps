@@ -86,9 +86,9 @@ export default class RoomCoreInitExtension extends Room {
     // }
 
     // 验证有效性的函数
-    const emptyOrHasInvalidStructure = (arr: Id<RoomObject>[] | null | undefined) =>
+    const emptyOrHasInvalidStructure = <T extends _HasId>(arr: Id<T>[] | null | undefined) =>
       !arr || arr.length <= 0 || arr.some(s => Game.getObjectById(s) === null)
-    const isInvalidStructure = (id: Id<RoomObject> | null | undefined) =>
+    const isInvalidStructure = <T extends _HasId>(id: Id<T> | null | undefined) =>
       !id || Game.getObjectById(id) === null
 
     // Spawn 建筑记忆更新

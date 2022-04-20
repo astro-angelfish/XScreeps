@@ -2,7 +2,7 @@ import { identity, object, zip } from 'lodash'
 import { createHelp } from '../help/base'
 import { checkDispatch, checkSendMission, getRoomDispatchNum } from '@/module/fun/funtion'
 import { StatisticalResources, colorfyLog, isInArray } from '@/utils'
-import { ResourceCanDispatch, identifyDispatch } from '@/module/dispatch/resource'
+import { canResourceDispatch, identifyDispatch } from '@/module/dispatch/resource'
 export class factoryExtension extends StructureFactory {
   public manageMission(): void {
     if (this.room.memory.toggles.StopFactory)
@@ -147,7 +147,7 @@ export class factoryExtension extends StructureFactory {
             if (numList[i] < COMMODITIES[disCom].components[i] * 5) {
               flow = false
               // 判断一下能否调度 不能调度直接跳转到baseList相关合成判断
-              const identify = ResourceCanDispatch(this.room, i as ResourceConstant, COMMODITIES[disCom].components[i] * 5)
+              const identify = canResourceDispatch(this.room, i as ResourceConstant, COMMODITIES[disCom].components[i] * 5)
               if (identify == 'can') {
                 console.log(`[dispatch]<factory> 房间${this.room.name}将进行资源为${i}的资源调度!`)
                 const dispatchTask: RDData = {
@@ -170,7 +170,7 @@ export class factoryExtension extends StructureFactory {
           else {
             if (numList[i] < COMMODITIES[disCom].components[i] * 10) {
               flow = false
-              const identify = ResourceCanDispatch(this.room, i as ResourceConstant, COMMODITIES[disCom].components[i] * 10)
+              const identify = canResourceDispatch(this.room, i as ResourceConstant, COMMODITIES[disCom].components[i] * 10)
               if (identify == 'can') {
                 console.log(`[dispatch]<factory> 房间${this.room.name}将进行资源为${i}的资源调度!`)
                 const dispatchTask: RDData = {
@@ -233,7 +233,7 @@ export class factoryExtension extends StructureFactory {
             for (var i in COMMODITIES[l].components) {
               if (!isInArray(minList, i)
                             && storage_.store.getUsedCapacity(i as ResourceConstant) < COMMODITIES[l].components[i]
-                            && ResourceCanDispatch(this.room, i as ResourceConstant, COMMODITIES[l].components[i] * 100) == 'no')
+                            && canResourceDispatch(this.room, i as ResourceConstant, COMMODITIES[l].components[i] * 100) == 'no')
                 continue LoopJ
             }
           }
@@ -285,7 +285,7 @@ export class factoryExtension extends StructureFactory {
           this.room.memory.productData.balanceData[i] = { num: COMMODITIES[disCom].components[i] * 10, fill: true }
           if (this.room.countCreepMissionByName('manage', '物流运输') <= 0) {
             if (this.store.getUsedCapacity(i as ResourceConstant) + storage_.store.getUsedCapacity(i as ResourceConstant) < COMMODITIES[disCom].components[i]) {
-              const identify = ResourceCanDispatch(this.room, i as ResourceConstant, COMMODITIES[disCom].components[i] * 100)
+              const identify = canResourceDispatch(this.room, i as ResourceConstant, COMMODITIES[disCom].components[i] * 100)
               if (identify == 'can') {
                 console.log(`[dispatch]<factory> 房间${this.room.name}将进行资源为${i}的资源调度!`)
                 const dispatchTask: RDData = {
