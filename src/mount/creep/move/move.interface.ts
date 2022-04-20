@@ -65,14 +65,20 @@ interface CreepMemory{
 type shardName = "shard0" | "shard1" | "shard2" | "shard3"
 
 interface shardRoomData{
-    shardName:shardName,    // 星门通向的shard
+    shard:shardName,    // 星门所在shard
     roomName:string,        // 星门所处的房间
-    disRoomName:string,     // 星门通向的房间
+    disShardName?:shardName
+    // disRoomName:string,     // 星门通向的房间
+    x:number,
+    y:number
 }
 
 interface shardAffirmData{
-    shardName:shardName,    // 星门通向的shard
+    shardName:shardName,    // 星门所在shard
+    disShardName:shardName  // 星门通向shard
     roomName:string,        // 星门所处的房间
     disRoomName:string,     // 星门通向的房间
-    affirm:boolean
+    affirm:boolean,
+    x:number,
+    y:number
 }

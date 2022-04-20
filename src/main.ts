@@ -7,13 +7,13 @@ import RoomWork from '@/boot/roomWork'
 import CreepWork from '@/boot/creepWork'
 import { CreepNumStatistic } from './module/global/statistic'
 import { pixel } from './module/fun/pixel'
-import { InitShardMemory, InterShardRun } from './module/shard/base'
 import { ResourceDispatchTick } from './module/dispatch/resource'
 import layoutVisual from './module/layoutVisual'
 import { SquadManager } from './module/squad/squard'
 import { stateScanner } from './module/stat/stat'
 import { showTowerData } from './module/visual/visual'
 import { statCPU } from './module/fun/funtion'
+import { InterShardManager } from './module/shard/intershard'
 /**
  * 主运行函数
  */
@@ -23,11 +23,9 @@ export const loop = ErrorMapper.wrapLoop(() =>{
     /* Memory初始化 */
     MemoryInit()
     let a1 = Game.cpu.getUsed()
-    /* 跨shard初始化 */
-    InitShardMemory()
+    // /* 跨shard记忆运行 */
 
-    /* 跨shard记忆运行 */
-    InterShardRun()
+    InterShardManager()
 
     let b = Game.cpu.getUsed()
 
@@ -83,5 +81,5 @@ export const loop = ErrorMapper.wrapLoop(() =>{
         // console.log("爬虫:",e-d)
         // console.log("其他杂项:",f-e)
     // }
-
+    InterShardMemory.setLocal(JSON.stringify(global.intershardData))
 })

@@ -1,4 +1,5 @@
 import { RoleData, RoleLevelData } from "@/constant/SpawnConstant"
+import creep from "@/mount/creep"
 import { CalculateEnergy, GenerateAbility } from "@/utils"
 
 /* [通用]爬虫运行主程序 */
@@ -25,10 +26,10 @@ export default()=>{
       /* 跨shard找回记忆 */
       if (!thisCreep.memory.role)
       {
-        var InshardMemory = JSON.parse(InterShardMemory.getLocal()) || {}
-        if (InshardMemory.creep && InshardMemory.creep[c])
+        var InshardMemory = global.intershardData
+        if (InshardMemory['creep'][c])
         {
-            Game.creeps[c].memory = InshardMemory.creep[c].MemoryData
+            Game.creeps[c].memory = InshardMemory['creep'][c].MemoryData
             InshardMemory.creep[c].state = 1
         }
         continue

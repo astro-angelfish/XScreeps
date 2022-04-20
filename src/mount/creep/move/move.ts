@@ -1,6 +1,6 @@
 // import { RequestShard } from "@/shard/base"
 import { hurts, parts } from "@/module/fun/funtion"
-import { RequestShard } from "@/module/shard/base"
+import { RequestShard } from "@/module/shard/intershard"
 import { canSustain } from "@/module/war/war"
 import { closestPotalRoom, getOppositeDirection, isInArray } from "@/utils"
 
@@ -290,7 +290,7 @@ export default class CreepMoveExtension extends Creep {
                     var thisportal:StructurePortal
                     for (var i of portal)
                     {
-                        var porType = i.destination as {shard:string, room:string}
+                        var porType = i.destination as {shard?:string, room?:string, roomName?:string}
                         if (porType.shard == shard )
                         thisportal = i
                     }
@@ -322,7 +322,7 @@ export default class CreepMoveExtension extends Creep {
                 let data =  []
                 for (let data_ of shardData)
                 {
-                    data.push({shardName:data_.shardName,roomName:data_.roomName,disRoomName:data_.disRoomName,affirm:false})
+                    data.push({shardName:data_.shard,roomName:data_.roomName,x:data_.x,y:data_.y,affirm:false})
                 }
                 this.memory.shardAffirm = data
             }
@@ -334,7 +334,7 @@ export default class CreepMoveExtension extends Creep {
             // 更新目的shardRoom
             for (var sr of this.memory.shardAffirm)
             {
-                if (sr.disRoomName == this.pos.roomName && sr.shardName == Game.shard.name)
+                if (sr.disRoomName == this.pos.roomName && sr.disShardName == Game.shard.name)
                 {
                     sr.affirm = true
                     break
@@ -346,7 +346,7 @@ export default class CreepMoveExtension extends Creep {
             {
                 if (!nr.affirm)
                 {
-                    nextShardRoom = {shardName:nr.shardName,roomName:nr.roomName,disRoomName:nr.disRoomName}
+                    nextShardRoom = {shard:nr.shardName,roomName:nr.roomName,x:nr.x,y:nr.y}
                     break
                 }
             }
@@ -368,21 +368,47 @@ export default class CreepMoveExtension extends Creep {
             }
             else
             {
+                // console.log(JSON.stringify(nextShardRoom))
                 /* 寻找星门 */
                 var portal = this.room.find(FIND_STRUCTURES,{filter:(structure)=>{
                     return structure.structureType == STRUCTURE_PORTAL 
                 }}) as StructurePortal[]
                 if (portal.length <= 0) return
                 var thisportal:StructurePortal
+                LoopA:
                 for (var i of portal)
                 {
-                    var porType = i.destination as {shard:string, room:string}
-                    if (porType.shard == nextShardRoom.shardName && porType.room == nextShardRoom.disRoomName)
+                    var porType = i.destination as {shard?:string, room?:string, roomName?:string}
+                    if ( i.pos.x ==nextShardRoom.x && i.pos.y == nextShardRoom.y )
                     {
+                        // if (Game.shard.name == 'shard0')
+                        // {
+                        //     console.log('porType:',JSON.stringify(porType))
+                        // }
+                        /* 更新一下shardaffirm的disRoomName信息 */
+                        LoopB:
+                        for (var sr of this.memory.shardAffirm)
+                        {
+                            if (sr.roomName == this.pos.roomName)
+                            {
+                                sr.disRoomName = porType.room
+                                nextShardRoom.disShardName = porType.shard as shardName
+                                sr.disShardName = porType.shard as shardName
+                                break LoopB
+                            }
+                        }
+                        // if (Game.shard.name == 'shard0')
+                        // {
+                        //     console.log('affirm:',JSON.stringify(sr))
+                        // }
                         thisportal = i
-                        break
+                        break LoopA
                     }
                 }
+                // if (Game.shard.name == 'shard0')
+                // {
+                //     console.log('nextshardRoom:',JSON.stringify(nextShardRoom))
+                // }
                 if (!thisportal) {console.log("找不到thisportal");return}
                 if (!this.pos.isNearTo(thisportal)) this.goTo(thisportal.pos,1)
                 else
@@ -390,14 +416,34 @@ export default class CreepMoveExtension extends Creep {
                     /* moveData里的shardmemory */
                     /* 靠近后等待信息传送 */
                     var RequestData = {
-                        relateShard:nextShardRoom.shardName,
+                        relateShard:nextShardRoom.disShardName,
                         sourceShard:Game.shard.name as shardName,
                         type:1,
                         data:{id:this.name,MemoryData:this.memory}
                     }
-                    if(RequestShard(RequestData) || RequestData.relateShard == RequestData.sourceShard)
+                    // if (Game.shard.name == 'shard0')
+                    // {
+                    //     console.log('requestData:',JSON.stringify(RequestData))
+                    // }
+                    if (RequestData.relateShard)
                     {
+                        if(RequestShard(RequestData))
+                        {
+                            this.moveTo(thisportal)
+                        }
+                    }
+                    else
+                    {
+                        /* 说明可能是本地星门 */
                         this.moveTo(thisportal)
+                        for (var nnr of this.memory.shardAffirm)    // 更新affirm
+                        {
+                            if (!nnr.affirm)
+                            {
+                                nnr.affirm = true
+                                break
+                            }
+                        }
                     }
                 }
             }
