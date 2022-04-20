@@ -794,6 +794,24 @@ export default [
                                 functionName: 'upgrade.Cquick'
                             },
                             {
+                                title: '普通冲级:',
+                                describe: '例: upgrade.normal("W1N1",2,"GH2O")',
+                                params: [
+                                    { name: 'roomName', desc: '房间名' },
+                                    { name: 'num', desc: '冲级爬数量' },
+                                    { name: 'boost', desc: 'boost类型 null | GH | GH2O | XGH2O' },
+                                ],
+                                functionName: 'upgrade.normal'
+                            },
+                            {
+                                title: '取消普通冲级:',
+                                describe: '例: upgrade.Cnormal("W1N1")',
+                                params: [
+                                    { name: 'roomName', desc: '房间名' },
+                                ],
+                                functionName: 'upgrade.Cnormal'
+                            },
+                            {
                                 title: '签名:',
                                 describe: '例: scout.sign("W1N1","W2N2","shard3","hello world")',
                                 params: [

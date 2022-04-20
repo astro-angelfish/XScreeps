@@ -37,38 +37,34 @@
  *      }
  * }
  *   
- */ 
+ */
 
 /* ShardMemory数据初始化 */
-export function InitShardMemory():void{
+export function InitShardMemory(): void {
     if (Game.time % 10) return
     var Data = JSON.parse(InterShardMemory.getLocal()) || {}
-    if (Object.keys(Data).length < 3 || !Data['creep'] || !Data['misson'])
-    {
-        InterShardMemory.setLocal(JSON.stringify({'creep':{},'misson':{},shardName:Game.shard.name}))
-        console.log('已经初始化',Game.shard.name,'的InterShardMemory!')
+    if (Object.keys(Data).length < 3 || !Data['creep'] || !Data['misson']) {
+        InterShardMemory.setLocal(JSON.stringify({ 'creep': {}, 'misson': {}, shardName: Game.shard.name }))
+        console.log('已经初始化', Game.shard.name, '的InterShardMemory!')
         return
     }
     /* 爬虫shard记忆超时计算 */
-    for (var cData in Data['creep'])
-    {
+    for (var cData in Data['creep']) {
         Data['creep'][cData].delay -= 10
         if (Data['creep'][cData].delay <= 0)
-            delete  Data['creep'][cData]
-        
+            delete Data['creep'][cData]
+
         if (Game.creeps[cData] && Game.creeps[cData].memory.role)
             delete Data['creep'][cData]
     }
     /* 任务shard记忆超时计算 */
-    for (var mData in Data['misson'])
-    {
+    for (var mData in Data['misson']) {
         Data['misson'][mData].delay -= 10
         if (Data['misson'][mData].delay <= 0)
-            delete  Data['misson'][mData]
+            delete Data['misson'][mData]
     }
     /* 通信更新 */
-    if (Data['communication'])
-    {
+    if (Data['communication']) {
         Data['communication'].delay -= 10
         if (Data['communication'].delay <= 0)
             delete Data['communication']
@@ -78,33 +74,34 @@ export function InitShardMemory():void{
 }
 
 /* 获取其他shard的数据 */
-export function GetShardCommunication(shardName:shardName):any{
+export function GetShardCommunication(shardName: shardName): any {
     if (shardName == Game.shard.name) return null
     var Data = JSON.parse(InterShardMemory.getRemote(shardName)) || {}
-    if(Object.keys(Data).length < 3) return null    // 说明该shard不存在InterShardMemory
+    if (Object.keys(Data).length < 3) return null    // 说明该shard不存在InterShardMemory
     if (!Data['communication']) return null
     return Data['communication']
 }
 
 /* 请求传输数据到目标shard */
-export function RequestShard(req:RequestData):boolean{
-    if(req.relateShard == req.sourceShard) return true
+export function RequestShard(req: RequestData): boolean {
+    if (req.relateShard == req.sourceShard) return true
     var thisData = JSON.parse(InterShardMemory.getLocal())
+    // console.log(JSON.stringify(thisData))
     if (thisData.communication && thisData.communication.state != 0) return false
     thisData.communication = {
-        state:1,
-        relateShard:req.relateShard,
-        sourceShard:req.sourceShard,
-        type:req.type,
-        data:req.data,
-        delay:100,
+        state: 1,
+        relateShard: req.relateShard,
+        sourceShard: req.sourceShard,
+        type: req.type,
+        data: req.data,
+        delay: 100,
     }
     InterShardMemory.setLocal(JSON.stringify(thisData))
     return true
 }
 
 /* 响应目标shard的传输数据 并将其拷贝到自己的记忆里 */
-export function ResponseShard(shardName:shardName):boolean{
+export function ResponseShard(shardName: shardName): boolean {
     var comData = GetShardCommunication(shardName)
     if (comData === null) return false
     if (comData.state != 1 || comData.relateShard != Game.shard.name) return false
@@ -112,19 +109,17 @@ export function ResponseShard(shardName:shardName):boolean{
     if (thisData.communication && thisData.communication['relateShard'] != Game.shard.name) return false    // 在忙中，无法响应
     thisData.communication = {
         state: 2,
-        relateShard:comData.relateShard,
-        sourceShard:comData.sourceShard,
-        type:comData.type,
-        data:comData.data,
-        delay:100,
+        relateShard: comData.relateShard,
+        sourceShard: comData.sourceShard,
+        type: comData.type,
+        data: comData.data,
+        delay: 100,
     }
-    if (comData.type == 1)
-    {
-        thisData['creep'][comData.data['id']] = {MemoryData:comData.data['MemoryData'],delay:100,state:1}
+    if (comData.type == 1) {
+        thisData['creep'][comData.data['id']] = { MemoryData: comData.data['MemoryData'], delay: 100, state: 1 }
     }
-    else if (comData.type == 2)
-    {
-        thisData['misson'][comData.data['id']] = {MemoryData:comData.data['MemoryData'],delay:50,state:1}
+    else if (comData.type == 2) {
+        thisData['misson'][comData.data['id']] = { MemoryData: comData.data['MemoryData'], delay: 50, state: 1 }
     }
     InterShardMemory.setLocal(JSON.stringify(thisData))
     // 响应成功
@@ -132,14 +127,13 @@ export function ResponseShard(shardName:shardName):boolean{
 }
 
 /* 确认目标shard已经收到了数据 */
-export function ConfirmShard():boolean{
+export function ConfirmShard(): boolean {
     var thisData = JSON.parse(InterShardMemory.getLocal())
     if (!thisData.communication) return false
     var comData = GetShardCommunication(thisData.communication['relateShard'])
     if (comData === null) return false
     if (comData.state != 2 || comData.relateShard != thisData.communication['relateShard']) return false
-    if (comData.state == 2)
-    {
+    if (comData.state == 2) {
         thisData.communication.state = 3
         delete thisData.communication.data
         InterShardMemory.setLocal(JSON.stringify(thisData))
@@ -150,65 +144,59 @@ export function ConfirmShard():boolean{
 }
 
 /* 删除communication */
-export function DeleteShard():boolean{
+export function DeleteShard(): boolean {
     var thisData = JSON.parse(InterShardMemory.getLocal())
     if (!thisData.communication) return false
-    if (Game.shard.name == thisData.communication['relateShard'])
-    {
+    if (Game.shard.name == thisData.communication['relateShard']) {
         var Data = JSON.parse(InterShardMemory.getRemote(thisData.communication['sourceShard'])) || {}
-        if (Data['communication'].state == 3)
-        {
-            delete thisData.communication
-            InterShardMemory.setLocal(JSON.stringify(thisData))
-            return true
+        switch (Data['communication'].state) {
+            // case 2:
+            //     this.ConfirmShard();
+            //     break;
+            case 3:
+                delete thisData.communication
+                InterShardMemory.setLocal(JSON.stringify(thisData))
+                return true
+                break;
         }
         return false
     }
-    else if (Game.shard.name == thisData.communication['sourceShard'])
-    {
+    else if (Game.shard.name == thisData.communication['sourceShard']) {
         /* 只需要确定对方是否还有communication */
         var Data = JSON.parse(InterShardMemory.getRemote(thisData.communication['relateShard'])) || {}
-        if (!Data['communication'])
-        {
+        if (!Data['communication']) {
             delete thisData.communication
             InterShardMemory.setLocal(JSON.stringify(thisData))
             return true
         }
         return false
-        
+
     }
     return false
 }
 
 /* 跨shard运行主函数 */
-export function InterShardRun():void{
+export function InterShardRun(): void {
     var Data = JSON.parse(InterShardMemory.getLocal()) || {}
-    if (Object.keys(Data).length < 3)
-    {
+    if (Object.keys(Data).length < 3) {
         return
     }
     /* 没有通话状态，就一直监听 */
-    if (!Data.communication)
-    {
-        var allShardList = ['shard1','shard2','shard3']
-        var thisShardList = _.difference(allShardList,[Game.shard.name])
-        for (var s of thisShardList)
-        {
-            if (ResponseShard(s as shardName )) return
+    if (!Data.communication) {
+        var allShardList = ['shard0', 'shard1', 'shard2', 'shard3']
+        var thisShardList = _.difference(allShardList, [Game.shard.name])
+        for (var s of thisShardList) {
+            if (ResponseShard(s as shardName)) return
         }
     }
-    else
-    {
-        if (Data.communication.state == 1)
-        {
+    else {
+        if (Data.communication.state == 1) {
             ConfirmShard()
         }
-        else if (Data.communication.state == 2)
-        {
+        else if (Data.communication.state == 2) {
             DeleteShard()
         }
-        else if (Data.communication.state == 3)
-        {
+        else if (Data.communication.state == 3) {
             DeleteShard()
         }
     }

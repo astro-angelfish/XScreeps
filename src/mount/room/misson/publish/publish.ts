@@ -235,6 +235,29 @@ export default class RoomMissonPublish extends Room {
         return thisTask
     }
 
+    /**
+     *                  普通冲级任务发布函数
+     * @param num       冲级爬数量
+     * @param boostType boost类型
+     * @returns         任务对象
+     */
+     public public_normal(num:number,boostType:ResourceConstant | null):MissionModel{
+        var thisTask:MissionModel = {
+            name:'急速冲级',
+            range:'Creep',
+            delayTick:99999,
+            level:10,
+            Data:{
+            },
+        }
+        thisTask.CreepBind = {'rush':{num:num>2?2:num,bind:[]}}
+        if (boostType)
+        {
+            thisTask.LabBind = this.Bind_Lab([boostType])
+        }
+        return thisTask
+    }
+
     public public_expand(disRoom:string,shard:shardName,num:number,cnum?:number):MissionModel{
         var thisTask:MissionModel = {
             name:'扩张援建',

@@ -313,6 +313,25 @@ export default {
                 }
             return `[upgrade] 房间${roomName}修改急速冲级任务数量失败!`
         },
+        normal(roomName:string,num:number,boostType:null| ResourceConstant):string{
+            let thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[upgrade] 不存在房间${roomName}`
+            var thisTask = thisRoom.public_normal(num,boostType)
+            if (thisTask && thisRoom.AddMission(thisTask))
+            return `[upgrade] 房间${roomName}挂载普通冲级任务成功`
+            return `[upgrade] 房间${roomName}挂载普通冲级任务失败`
+        },
+        Cnormal(roomName:string):string{
+            var thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[repair] 不存在房间${roomName}`
+            for (var i of thisRoom.memory.Misson['Creep'])
+            if (i.name == '普通冲级')
+            {
+                if (thisRoom.DeleteMission(i.id))
+                return `[upgrade] 房间${roomName}删除普通冲级任务成功`
+            }
+            return `[upgrade] 房间${roomName}删除普通冲级任务失败!`
+        },
         Dynamicquick(roomName: string, boolean: boolean): string {
             var thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[repair] 不存在房间${roomName}`

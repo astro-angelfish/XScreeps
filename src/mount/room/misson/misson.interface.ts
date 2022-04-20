@@ -31,6 +31,7 @@ interface Room {
     Task_Repair(mission: MissionModel): void
     Task_dismantle(mission: MissionModel): void
     Task_Quick_upgrade(mission: MissionModel): void
+    Task_Normal_upgrade(mission:MissionModel):void
     Task_HelpDefend(mission: MissionModel): void
     Task_HelpBuild(mission: MissionModel): void
     Task_Compound(misson: MissionModel): void
