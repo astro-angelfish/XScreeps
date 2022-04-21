@@ -1,4 +1,5 @@
 import { RoleData, RoleLevelData } from "@/constant/SpawnConstant"
+import creep from "@/mount/creep"
 import { CalculateEnergy, GenerateAbility } from "@/utils"
 
 /* [通用]爬虫运行主程序 */
@@ -12,7 +13,6 @@ export default () => {
   /* creep */
   let adaption = true  // 每tick执行一次adaption检查
   for (var c in Game.creeps) {
-    var creeps_a = Game.cpu.getUsed();
     let thisCreep = Game.creeps[c]
     if (!thisCreep) continue
     if (thisCreep.spawning) {
@@ -21,9 +21,9 @@ export default () => {
     }
     /* 跨shard找回记忆 */
     if (!thisCreep.memory.role) {
-      var InshardMemory = JSON.parse(InterShardMemory.getLocal()) || {}
-      if (InshardMemory.creep && InshardMemory.creep[c]) {
-        Game.creeps[c].memory = InshardMemory.creep[c].MemoryData
+      var InshardMemory = global.intershardData
+      if (InshardMemory['creep'][c]) {
+        Game.creeps[c].memory = InshardMemory['creep'][c].MemoryData
         InshardMemory.creep[c].state = 1
       }
       continue
@@ -41,7 +41,6 @@ export default () => {
       }
       /* adaption爬虫执行自S */
     }
-    var creeps_b = Game.cpu.getUsed();
     /* 非任务类型爬虫 */
     if (RoleData[thisCreep.memory.role].fun) {
       RoleData[thisCreep.memory.role].fun(thisCreep)
@@ -50,7 +49,5 @@ export default () => {
     else {
       thisCreep.ManageMisson()
     }
-    var creeps_c = Game.cpu.getUsed();
-    Memory.creepscpu[thisCreep.name] = (creeps_c - creeps_b).toFixed(5).toString() + '|' + (creeps_b - creeps_a).toFixed(5).toString() + '|' + thisCreep.room.name
   }
 }

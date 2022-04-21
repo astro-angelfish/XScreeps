@@ -7,13 +7,13 @@ import RoomWork from '@/boot/roomWork'
 import CreepWork from '@/boot/creepWork'
 import { CreepNumStatistic } from './module/global/statistic'
 import { pixel } from './module/fun/pixel'
-import { InitShardMemory, InterShardRun } from './module/shard/base'
 import { ResourceDispatchTick } from './module/dispatch/resource'
 import layoutVisual from './module/layoutVisual'
 import { SquadManager } from './module/squad/squard'
 import { stateScanner } from './module/stat/stat'
 import { showTowerData } from './module/visual/visual'
 import { statCPU } from './module/fun/funtion'
+import { InterShardManager } from './module/shard/intershard'
 /**
  * 主运行函数
  */
@@ -24,10 +24,10 @@ export const loop = ErrorMapper.wrapLoop(() =>{
     MemoryInit()
     let a1 = Game.cpu.getUsed()
     /* 跨shard初始化 */
-    InitShardMemory()
+    // InitShardMemory()
 
     /* 跨shard记忆运行 */
-    InterShardRun()
+    InterShardManager()
 
     let b = Game.cpu.getUsed()
 
@@ -72,6 +72,7 @@ export const loop = ErrorMapper.wrapLoop(() =>{
 
     let f = Game.cpu.getUsed()
     
+    InterShardMemory.setLocal(JSON.stringify(global.intershardData))
     // if (Game.shard.name == 'shard3')
     // {
     //     /* 分析cpu */

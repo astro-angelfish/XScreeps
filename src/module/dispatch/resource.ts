@@ -226,18 +226,18 @@ export function ResourceLimitUpdate(thisRoom:Room):void{
         let disCom = thisRoom.memory.productData.flowCom
         if (COMMODITIES[disCom].level >= 4)
         {
-            for (let row in COMMODITIES[b].components)
+            for (let row in COMMODITIES[thisRoom.memory.productData.flowCom].components)
             {
-                if (!global.ResourceLimit[thisRoom.name][row] || global.ResourceLimit[thisRoom.name][row] < COMMODITIES[b].components[row] * 10)
-                global.ResourceLimit[thisRoom.name][row] = COMMODITIES[b].components[row] * 10
+                if (!global.ResourceLimit[thisRoom.name][row] || global.ResourceLimit[thisRoom.name][row] < COMMODITIES[thisRoom.memory.productData.flowCom].components[row] * 10)
+                global.ResourceLimit[thisRoom.name][row] = COMMODITIES[thisRoom.memory.productData.flowCom].components[row] * 10
             }
         }
         else if (COMMODITIES[disCom].level == 3)
         {
-            for (let row in COMMODITIES[b].components)
+            for (let row in COMMODITIES[thisRoom.memory.productData.flowCom].components)
             {
-                if (!global.ResourceLimit[thisRoom.name][row] || global.ResourceLimit[thisRoom.name][row] < COMMODITIES[b].components[row] * 40)
-                global.ResourceLimit[thisRoom.name][row]= COMMODITIES[b].components[row] * 40
+                if (!global.ResourceLimit[thisRoom.name][row] || global.ResourceLimit[thisRoom.name][row] < COMMODITIES[thisRoom.memory.productData.flowCom].components[row] * 100)
+                global.ResourceLimit[thisRoom.name][row]= COMMODITIES[thisRoom.memory.productData.flowCom].components[row] * 100
             }
         }
         else if ((COMMODITIES[disCom].level <= 2))
