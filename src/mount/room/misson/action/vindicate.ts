@@ -128,4 +128,16 @@ export default class RoomMissonVindicateExtension extends Room {
             }
         }
     }
+
+    /* 扩张援建任务 */
+    public Task_Expand(mission:MissionModel):void{
+        if (mission.Data.defend)
+        {
+            global.MSB[mission.id] ={
+                'claim':GenerateAbility(0,0,10,0,0,5,1,4),
+                'Ebuild':GenerateAbility(10,4,20,0,0,6,0,0),
+                'Eupgrade':GenerateAbility(10,4,20,0,0,6,0,0)
+            }
+        }
+    }
 }

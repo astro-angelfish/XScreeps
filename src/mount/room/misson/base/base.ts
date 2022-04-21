@@ -57,6 +57,7 @@ export default class RoomMissonFrameExtension extends Room {
                 case '双人小队':{this.Task_double(misson);break A;}
                 case '资源转移':{this.Task_Resource_transfer(misson);break A;}
                 case '普通冲级':{this.Task_Normal_upgrade(misson);break A;}
+                case '扩张援建':{this.Task_Expand(misson);break A;}
             }
         }
     }

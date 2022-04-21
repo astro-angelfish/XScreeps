@@ -258,7 +258,16 @@ export default class RoomMissonPublish extends Room {
         return thisTask
     }
 
-    public public_expand(disRoom:string,shard:shardName,num:number,cnum?:number):MissionModel{
+    /**
+     * 
+     * @param disRoom 目标房间
+     * @param shard 目标房间shard
+     * @param num  援建工和升级工分别数量
+     * @param cnum claimer数量
+     * @param defend 是否需要能抵抗一定攻击的能力
+     * @returns 任务模型
+     */
+    public public_expand(disRoom:string,shard:shardName,num:number,cnum:number,defend?:boolean):MissionModel{
         var thisTask:MissionModel = {
             name:'扩张援建',
             range:'Creep',
@@ -266,14 +275,15 @@ export default class RoomMissonPublish extends Room {
             level:10,
             Data:{
                 disRoom:disRoom,
-                shard:shard
+                shard:shard,
+                defend:defend
             },
         }
         thisTask.reserve = true
         thisTask.CreepBind = {
-            'claim':{num:cnum,bind:[],interval:1000},
-            'Ebuild':{num:num,bind:[],interval:1000},
-            'Eupgrade':{num:num,bind:[],interval:1000}
+            'claim':{num:cnum,bind:[],interval:1000,MSB:defend?defend:false},
+            'Ebuild':{num:num,bind:[],interval:1000,MSB:defend?defend:false},
+            'Eupgrade':{num:num,bind:[],interval:1000,MSB:defend?defend:false}
         }
         return thisTask
     }

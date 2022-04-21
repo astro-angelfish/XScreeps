@@ -754,13 +754,14 @@ export default [
                             },
                             {
                                 title: '扩张:',
-                                describe: '例: expand.set("W1N1","W2N2","shard3",2,1)',
+                                describe: '例: expand.set("W1N1","W2N2","shard3",2,1,false)',
                                 params: [
                                     { name: 'roomName', desc: '房间名' },
                                     { name: 'disRoom', desc: '目标房间' },
                                     { name: 'shard', desc: '目标房间所在shard' },
                                     { name: 'num', desc: '援建/升级爬数量' },
                                     { name: 'Cnum', desc: 'claim爬数量 默认1' },
+                                    { name: 'defend', desc: '是否需要一定防御能力' },
                                     { name: 'shardData(可选)', desc: '多次跨shard参数' },
                                 ],
                                 functionName: 'expand.set'

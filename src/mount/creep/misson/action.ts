@@ -268,9 +268,19 @@ export default class CreepMissonActionExtension extends Creep {
     public handle_expand():void{
         let missionData = this.memory.MissionData
         let id = missionData.id
+        if (this.getActiveBodyparts('heal') && this.hits < this.hitsMax) this.heal(this)
         if (this.room.name != missionData.Data.disRoom || Game.shard.name != missionData.Data.shard)
         {
-            this.arriveTo(new RoomPosition(24,24,missionData.Data.disRoom),20,missionData.Data.shard,missionData.Data.shardData?missionData.Data.shardData:null)
+            this.arriveTo(new RoomPosition(24,24,missionData.Data.disRoom),10,missionData.Data.shard,missionData.Data.shardData?missionData.Data.shardData:null)
+            return
+        }
+        if (!this.memory.arrived)
+        {
+            if (Game.flags[`${this.memory.belong}/expand`] && Game.flags[`${this.memory.belong}/expand`].pos.roomName == this.room.name)
+            {
+                if (!this.pos.isEqualTo(Game.flags[`${this.memory.belong}/expand`])) this.goTo(Game.flags[`${this.memory.belong}/expand`].pos,0)
+                else this.memory.arrived = true
+            }
             return
         }
         this.workstate('energy')

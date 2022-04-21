@@ -85,10 +85,10 @@ export default {
     },
     /* 扩张 */
     expand:{
-        set(roomName:string,disRoom:string,shard:shardName,num:number,Cnum:number = 1,shardData?:shardRoomData[]):string{
+        set(roomName:string,disRoom:string,shard:shardName,num:number,Cnum:number = 1,defend:boolean = false,shardData?:shardRoomData[]):string{
             var thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[expand] 不存在房间${roomName}`
-            let task = thisRoom.public_expand(disRoom,shard,num,Cnum)
+            let task = thisRoom.public_expand(disRoom,shard,num,Cnum,defend)
             if (task)
             {
                 if (shardData) task.Data.shardData = shardData

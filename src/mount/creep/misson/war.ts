@@ -18,6 +18,7 @@ export default class CreepMissonWarExtension extends Creep {
             this.arriveTo(new RoomPosition(25,25,data.disRoom),20,data.shard,data.shardData?data.shardData:null)
             return
         }
+        this.memory.standed = true
         // 对方开安全模式情况下 删除任务
         if (this.room.controller && this.room.controller.safeMode)
         {
