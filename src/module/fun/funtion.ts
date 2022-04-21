@@ -1,4 +1,5 @@
 import { ResourceMapData } from '@/constant/ResourceConstant'
+import { getCoordPosFromRoomName } from '@/utils'
 
 /* 杂物堆 */
 
@@ -341,12 +342,12 @@ export function findNextQuarter(creep: Creep): string | undefined {
  * 方向常量 ↑:1 →:3 ↓:5 ←:7
  */
 export function isRoomNextTo(thisRoom: string, disRoom: string): boolean {
-  const thisRoomData = regularRoom(thisRoom)
-  const disRoomData = regularRoom(disRoom)
+  const thisRoomData = getCoordPosFromRoomName(thisRoom)
+  const disRoomData = getCoordPosFromRoomName(disRoom)
 
-  if (thisRoomData.coor[0] === disRoomData.coor[0] && thisRoomData.coor[1] === disRoomData.coor[1]) {
-    const xDist = Math.abs(thisRoomData.num[0] - disRoomData.num[0])
-    const yDist = Math.abs(thisRoomData.num[1] - disRoomData.num[1])
+  if (thisRoomData.coord[0] === disRoomData.coord[0] && thisRoomData.coord[1] === disRoomData.coord[1]) {
+    const xDist = Math.abs(thisRoomData.pos[0] - disRoomData.pos[0])
+    const yDist = Math.abs(thisRoomData.pos[1] - disRoomData.pos[1])
 
     if ((xDist === 0 && yDist === 1) || (xDist === 1 && yDist === 0)) {
       const result = Game.rooms[thisRoom].findExitTo(disRoom)
@@ -355,16 +356,16 @@ export function isRoomNextTo(thisRoom: string, disRoom: string): boolean {
         let direction: number | undefined
         // x方向相邻
         if (xDist === 1) {
-          const count = thisRoomData.num[0] - disRoomData.num[0]
+          const count = thisRoomData.pos[0] - disRoomData.pos[0]
           // W区
-          if (thisRoomData.coor[0] === 'W') {
+          if (thisRoomData.coord[0] === 'W') {
             switch (count) {
               case 1: { direction = 3; break }
               case -1: { direction = 7; break }
             }
           }
           // E区
-          else if (thisRoomData.coor[0] === 'E') {
+          else if (thisRoomData.coord[0] === 'E') {
             switch (count) {
               case 1: { direction = 7; break }
               case -1: { direction = 3; break }
@@ -373,16 +374,16 @@ export function isRoomNextTo(thisRoom: string, disRoom: string): boolean {
         }
         // y方向相邻
         else if (yDist === 1) {
-          const count = thisRoomData.num[1] - disRoomData.num[1]
+          const count = thisRoomData.pos[1] - disRoomData.pos[1]
           // N区
-          if (thisRoomData.coor[1] === 'N') {
+          if (thisRoomData.coord[1] === 'N') {
             switch (count) {
               case 1: { direction = 5; break }
               case -1: { direction = 1; break }
             }
           }
           // S区
-          else if (thisRoomData.coor[1] === 'S') {
+          else if (thisRoomData.coord[1] === 'S') {
             switch (count) {
               case 1: { direction = 1; break }
               case -1: { direction = 5; break }
@@ -401,22 +402,6 @@ export function isRoomNextTo(thisRoom: string, disRoom: string): boolean {
   return false
 }
 
-const regRoom = /^([WE])(\d{1,2})([NS])(\d{1,2})$/
-/**
- * 格式化房间名称信息
- * @param roomName 房间名
- * @returns 一个对象 例: W1N2 -----> {coor:["W","N"], num:[1,2]}
- */
-export function regularRoom(roomName: string): { coor: string[]; num: number[] } {
-  const result = roomName.match(regRoom)
-  if (!result)
-    throw new Error(`[regularRoom] 解析房间名错误 roomName:${roomName}`)
-  return {
-    coor: [result[1], result[3]],
-    num: [parseInt(result[2]), parseInt(result[4])],
-  }
-}
-
 /**
  * 获取相邻房间相对于本房间的方向
  * @param thisRoom 当前房间
@@ -425,12 +410,12 @@ export function regularRoom(roomName: string): { coor: string[]; num: number[] }
  * 方向常量 ↑:1 →:3 ↓:5 ←:7
  */
 export function calcNextRoomDirection(thisRoom: string, disRoom: string): TOP | RIGHT | BOTTOM | LEFT | undefined {
-  const thisRoomData = regularRoom(thisRoom)
-  const disRoomData = regularRoom(disRoom)
+  const thisRoomData = getCoordPosFromRoomName(thisRoom)
+  const disRoomData = getCoordPosFromRoomName(disRoom)
 
-  if (thisRoomData.coor[0] === disRoomData.coor[0] && thisRoomData.coor[1] === disRoomData.coor[1]) {
-    const xDist = Math.abs(thisRoomData.num[0] - disRoomData.num[0])
-    const yDist = Math.abs(thisRoomData.num[1] - disRoomData.num[1])
+  if (thisRoomData.coord[0] === disRoomData.coord[0] && thisRoomData.coord[1] === disRoomData.coord[1]) {
+    const xDist = Math.abs(thisRoomData.pos[0] - disRoomData.pos[0])
+    const yDist = Math.abs(thisRoomData.pos[1] - disRoomData.pos[1])
 
     if ((xDist === 0 && yDist === 1) || (xDist === 1 && yDist === 0)) {
       const result = Game.rooms[thisRoom].findExitTo(disRoom)
@@ -439,16 +424,16 @@ export function calcNextRoomDirection(thisRoom: string, disRoom: string): TOP | 
         let direction: TOP | RIGHT | BOTTOM | LEFT | undefined
         // x方向相邻
         if (xDist === 1) {
-          const count = thisRoomData.num[0] - disRoomData.num[0]
+          const count = thisRoomData.pos[0] - disRoomData.pos[0]
           // W区
-          if (thisRoomData.coor[0] === 'W') {
+          if (thisRoomData.coord[0] === 'W') {
             switch (count) {
               case 1: { direction = RIGHT; break }
               case -1: { direction = LEFT; break }
             }
           }
           // E区
-          else if (thisRoomData.coor[0] === 'E') {
+          else if (thisRoomData.coord[0] === 'E') {
             switch (count) {
               case 1: { direction = LEFT; break }
               case -1: { direction = RIGHT; break }
@@ -457,16 +442,16 @@ export function calcNextRoomDirection(thisRoom: string, disRoom: string): TOP | 
         }
         // y方向相邻
         else if (yDist === 1) {
-          const count = thisRoomData.num[1] - disRoomData.num[1]
+          const count = thisRoomData.pos[1] - disRoomData.pos[1]
           // N区
-          if (thisRoomData.coor[1] === 'N') {
+          if (thisRoomData.coord[1] === 'N') {
             switch (count) {
               case 1: { direction = BOTTOM; break }
               case -1: { direction = TOP; break }
             }
           }
           // S区
-          else if (thisRoomData.coor[1] === 'S') {
+          else if (thisRoomData.coord[1] === 'S') {
             switch (count) {
               case 1: { direction = TOP; break }
               case -1: { direction = BOTTOM; break }

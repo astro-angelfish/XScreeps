@@ -6,6 +6,7 @@ import CreepMissionTransportExtension from './mission/transport'
 import CreepMissionActionExtension from './mission/action'
 import CreepMissionMineExtension from './mission/mine'
 import CreepMissionWarExtension from './mission/war'
+
 // 定义好挂载顺序
 const plugins = [
   CreepMoveExtension,

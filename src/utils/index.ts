@@ -3,6 +3,7 @@ export * from './log'
 export * from './profiling'
 export * from './position'
 export * from './cache'
+export * from './room'
 
 export const initialTick = Game.time
 

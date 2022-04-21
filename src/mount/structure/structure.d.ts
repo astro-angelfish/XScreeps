@@ -3,9 +3,9 @@ interface StructureLink {
 }
 interface StructureTerminal {
   manageMission(): void
-  ResourceBalance(): void
-  ResourceSend(task: MissionModel): void
-  ResourceDeal(task: MissionModel): void
+  processResourceBalance(): void
+  processResourceSendMission(task: MissionModel): void
+  processResourceDealMission(task: MissionModel): void
 }
 
 interface RoomMemory {

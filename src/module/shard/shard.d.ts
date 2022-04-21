@@ -10,3 +10,10 @@ interface RequestData {
   data: any
   type: number
 }
+
+/* 存放全局声明 */
+declare namespace NodeJS {
+  interface Global {
+    intershardData: any
+  }
+}

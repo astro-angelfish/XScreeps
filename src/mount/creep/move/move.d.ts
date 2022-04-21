@@ -20,13 +20,13 @@ interface Creep {
   arriveTo(target: RoomPosition, range: number, shard: string, shardData?: shardRoomData[]): void
   updateShardAffirm(): void
   serializeFarPath(positions: RoomPosition[]): string
-  goTo_defend(target: RoomPosition, range: number): CreepMoveReturnCode | ERR_NO_PATH | ERR_NOT_IN_RANGE | ERR_INVALID_TARGET
-  findPath_defend(target: RoomPosition, range: number): string|null
+  goToWhenDefend(target: RoomPosition, range: number): CreepMoveReturnCode | ERR_NO_PATH | ERR_NOT_IN_RANGE | ERR_INVALID_TARGET
+  findPathWhenDefend(target: RoomPosition, range: number): string|null
   // 逃离移动
-  Flee(target: RoomPosition, range: number): void
+  fleeFrom(target: RoomPosition, range: number): void
   // 战争相关移动
-  findPath_aio(target: RoomPosition, range: number): string|null
-  goTo_aio(target: RoomPosition, range: number): CreepMoveReturnCode | ERR_NO_PATH | ERR_NOT_IN_RANGE | ERR_INVALID_TARGET
+  findPathWhenAio(target: RoomPosition, range: number): string|null
+  goToWhenAio(target: RoomPosition, range: number): CreepMoveReturnCode | ERR_NO_PATH | ERR_NOT_IN_RANGE | ERR_INVALID_TARGET
 }
 
 /* 爬虫移动记忆 */
@@ -63,14 +63,20 @@ interface CreepMemory{
 }
 
 interface shardRoomData {
-  shardName: string // 星门通向的shard
+  shard: string // 星门所在shard
   roomName: string // 星门所处的房间
-  disRoomName: string // 星门通向的房间
+  disShardName?: string
+  // disRoomName:string,     // 星门通向的房间
+  x: number
+  y: number
 }
 
 interface shardAffirmData {
-  shardName: string // 星门通向的shard
-  roomName: string // 星门所处的房间
-  disRoomName: string // 星门通向的房间
+  shardName: string // 星门所在shard
+  roomName: string// 星门所处的房间
+  disShardName?: string // 星门通向shard
+  disRoomName?: string // 星门通向的房间
   affirm: boolean
+  x: number
+  y: number
 }

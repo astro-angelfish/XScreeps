@@ -2,7 +2,7 @@ import { ErrorMapper } from '@/_errorMap/errorMapper'
 import { initMemory } from '@/module/global/init'
 import { countCreeps } from '@/module/global/statistic'
 import { pixel } from '@/module/fun/pixel'
-import { initShardMemory, processShardMemory } from '@/module/shard/base'
+import { initShardMemory, processShard } from '@/module/shard/base'
 import { tickResourceDispatch } from '@/module/dispatch/resource'
 import layoutVisual from '@/module/layoutVisual'
 import { SquadManager } from '@/module/squad/base'
@@ -33,7 +33,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
   initShardMemory()
 
   // 跨 shard 记忆运行
-  processShardMemory()
+  processShard()
 
   profiler.exit()
 

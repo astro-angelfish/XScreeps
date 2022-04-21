@@ -8,6 +8,8 @@ declare namespace NodeJS {
     creepNumData: Record<string, Record<string, number>> // 每种类型爬虫的实际数量
     // 寻路的键值对
     routeCache: Record<string, string>
+    routeCacheDefend: Record<string, string>
+    routeCacheAio: Record<string, string>
     Gtime: Record<string, number>
     // 将对象全局获取，这样只用获取一次对象，不用每次都分别获取
     structureCache: Record<string, globalStrcutureData>

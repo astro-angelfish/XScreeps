@@ -183,7 +183,7 @@ export default class CreepMissionWarExtension extends Creep {
           },
         })
         if (nearstram)
-          this.goTo_defend(nearstram.pos, 0)
+          this.goToWhenDefend(nearstram.pos, 0)
         else this.moveTo(nstC.pos)
       }
     }
@@ -202,7 +202,7 @@ export default class CreepMissionWarExtension extends Creep {
             return stru.structureType == 'rampart' && stru.pos.getStructureList(['extension', 'link', 'observer', 'tower', 'controller', 'extractor']).length <= 0 && (stru.pos.lookFor(LOOK_CREEPS).length <= 0 || stru.pos.lookFor(LOOK_CREEPS)[0] == this)
           },
         })
-        this.goTo_defend(nearstram.pos, 0)
+        this.goToWhenDefend(nearstram.pos, 0)
       }
     }
     if (this.pos.x >= 48 || this.pos.x <= 1 || this.pos.y >= 48 || this.pos.y <= 1)
@@ -322,7 +322,7 @@ export default class CreepMissionWarExtension extends Creep {
           },
         })
         if (nearstram)
-          this.goTo_defend(nearstram.pos, 0)
+          this.goToWhenDefend(nearstram.pos, 0)
         else this.moveTo(nstC.pos)
       }
     }
@@ -341,7 +341,7 @@ export default class CreepMissionWarExtension extends Creep {
             return stru.structureType == 'rampart' && stru.pos.getStructureList(['extension', 'link', 'observer', 'tower', 'controller', 'extractor']).length <= 0 && (stru.pos.lookFor(LOOK_CREEPS).length <= 0 || stru.pos.lookFor(LOOK_CREEPS)[0] == this)
           },
         })
-        this.goTo_defend(nearstram.pos, 0)
+        this.goToWhenDefend(nearstram.pos, 0)
       }
     }
     if (this.pos.x >= 48 || this.pos.x <= 1 || this.pos.y >= 48 || this.pos.y <= 1)
@@ -531,7 +531,7 @@ export default class CreepMissionWarExtension extends Creep {
           if (!canSustain(ranged3Attack, this, towerHurt)) {
             const closestHurtCreep = RangeClosestCreep(this.pos, ranged3Attack, true)
             if (closestHurtCreep)
-              this.Flee(closestHurtCreep.pos, 3)
+              this.fleeFrom(closestHurtCreep.pos, 3)
           }
         }
       }
@@ -578,16 +578,16 @@ export default class CreepMissionWarExtension extends Creep {
                 this.heal(this)
                 const closestHurtCreep = RangeClosestCreep(this.pos, ranged3Attack, true)
                 if (closestHurtCreep)
-                  this.Flee(closestHurtCreep.pos, 3)
+                  this.fleeFrom(closestHurtCreep.pos, 3)
               }
               else {
                 if (!this.pos.isNearTo(pos_))
-                  this.goTo_aio(pos_, 1)
+                  this.goToWhenAio(pos_, 1)
               }
             }
             else {
               if (!this.pos.isNearTo(pos_))
-                this.goTo_aio(pos_, 1)
+                this.goToWhenAio(pos_, 1)
             }
             // 根据建筑类型判断攻击方式
             if (isInArray([STRUCTURE_WALL, STRUCTURE_ROAD, STRUCTURE_CONTAINER], stru[0].structureType)) {
@@ -1091,7 +1091,7 @@ export default class CreepMissionWarExtension extends Creep {
             },
           })
           if (closestAttackCreep)
-            this.Flee(closestAttackCreep.pos, 3)
+            this.fleeFrom(closestAttackCreep.pos, 3)
           return
         }
         // 寻找最近的敌人攻击
