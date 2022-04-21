@@ -207,7 +207,7 @@ export default class RoomCoreInitExtension extends Room {
         /* 终端识别 */
         if (!this.memory.StructureIdData.terminalID && level >= 6)
         {
-            var Terminal = this.getStructure(STRUCTURE_TERMINAL)
+            var Terminal = this.find(FIND_MY_STRUCTURES,{filter:{structureType:STRUCTURE_TERMINAL }})
             if (Terminal.length == 1) this.memory.StructureIdData.terminalID = Terminal[0].id
         }
         /* 提取器识别 */

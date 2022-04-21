@@ -337,10 +337,45 @@ export default class CreepMissonActionExtension extends Creep {
 
             }
             else
-            {
+            { 
+                // 以withdraw开头的旗帜  例如： withdraw_0
+                let withdrawFlag = this.pos.findClosestByPath(FIND_FLAGS,{filter:(flag)=>{
+                    return flag.name.indexOf('withdraw') == 0
+                }})
+                if (withdrawFlag)
+                {
+                    let tank_ = withdrawFlag.pos.GetStructureList(['storage','terminal','container','tower'])
+                    if (tank_.length > 0) {this.withdraw_(tank_[0],'energy');return}
+                }
+                let harvestFlag = Game.flags[`${this.memory.belong}/HB/harvest`]
+                if (harvestFlag)
+                {
+                    if (this.hits < this.hitsMax)
+                    {
+                        this.heal(this)
+                    }
+                    if (this.room.name != harvestFlag.pos.roomName)
+                    {
+                        this.goTo(harvestFlag.pos,1)
+                    }
+                    else
+                    {
+                        let source = this.pos.findClosestByRange(FIND_SOURCES_ACTIVE)
+                        if (source) {this.harvest_(source)}
+                    }
+                    return
+                }
+                let resources = this.pos.findClosestByPath(FIND_DROPPED_RESOURCES,{filter:(res)=>{
+                    return res.amount > 200 && res.resourceType == 'energy'
+                }})
+                if (resources)
+                {
+                    if (!this.pos.isNearTo(resources)) this.goTo(resources.pos,1)
+                    else this.pickup(resources)
+                    return
+                }
                 let source = this.pos.findClosestByPath(FIND_SOURCES_ACTIVE)
                 if (source) this.harvest_(source)
-                if (this.ticksToLive < 120 && this.store.getUsedCapacity('energy') <= 20) this.suicide()
             }
         }
         else if (this.memory.role == 'Eupgrade')
@@ -352,9 +387,44 @@ export default class CreepMissonActionExtension extends Creep {
             }
             else
             {
+                // 以withdraw开头的旗帜  例如： withdraw_0
+                let withdrawFlag = this.pos.findClosestByPath(FIND_FLAGS,{filter:(flag)=>{
+                    return flag.name.indexOf('withdraw') == 0
+                }})
+                if (withdrawFlag)
+                {
+                    let tank_ = withdrawFlag.pos.GetStructureList(['storage','terminal','container','tower'])
+                    if (tank_.length > 0) {this.withdraw_(tank_[0],'energy');return}
+                }
+                let harvestFlag = Game.flags[`${this.memory.belong}/HB/harvest`]
+                if (harvestFlag)
+                {
+                    if (this.hits < this.hitsMax)
+                    {
+                        this.heal(this)
+                    }
+                    if (this.room.name != harvestFlag.pos.roomName)
+                    {
+                        this.goTo(harvestFlag.pos,1)
+                    }
+                    else
+                    {
+                        let source = this.pos.findClosestByRange(FIND_SOURCES_ACTIVE)
+                        if (source) {this.harvest_(source)}
+                    }
+                    return
+                }
+                let resources = this.pos.findClosestByPath(FIND_DROPPED_RESOURCES,{filter:(res)=>{
+                    return res.amount > 200 && res.resourceType == 'energy'
+                }})
+                if (resources)
+                {
+                    if (!this.pos.isNearTo(resources)) this.goTo(resources.pos,1)
+                    else this.pickup(resources)
+                    return
+                }
                 let source = this.pos.findClosestByPath(FIND_SOURCES_ACTIVE)
                 if (source) this.harvest_(source)
-                if (this.ticksToLive < 120 && this.store.getUsedCapacity('energy') <= 20) this.suicide()
             }
         }
     }
