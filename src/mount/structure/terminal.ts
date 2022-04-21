@@ -221,14 +221,30 @@ export default class terminalExtension extends StructureTerminal {
                     }
                     if (thisDealOrder.amount >= this.store.getUsedCapacity(i.rType))
                     {
-                        Game.market.deal(thisDealOrder.id,this.store.getUsedCapacity(i.rType),this.room.name)
-                        i.num -= this.store.getUsedCapacity(i.rType)
+                        if (i.num > this.store.getUsedCapacity(i.rType))
+                        {
+                            Game.market.deal(thisDealOrder.id,this.store.getUsedCapacity(i.rType),this.room.name)
+                            i.num -= this.store.getUsedCapacity(i.rType)
+                        }
+                        else
+                        {
+                            Game.market.deal(thisDealOrder.id,i.num,this.room.name)
+                            i.num = 0
+                        }
                         break LoopA
                     }
                     else
                     {
-                        Game.market.deal(thisDealOrder.id,thisDealOrder.amount,this.room.name)
-                        i.num -= thisDealOrder.amount
+                        if (i.num > thisDealOrder.amount)
+                        {
+                            Game.market.deal(thisDealOrder.id,thisDealOrder.amount,this.room.name)
+                            i.num -= thisDealOrder.amount
+                        }
+                        else
+                        {
+                            Game.market.deal(thisDealOrder.id,i.num,this.room.name)
+                            i.num = 0
+                        }
                         break LoopA
                     }
                 }

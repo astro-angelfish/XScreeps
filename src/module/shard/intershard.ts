@@ -126,7 +126,7 @@ export function CleanShard():void{
 export function RequestShard(req:RequestData):boolean{
     if (Game.shard.name == req.relateShard) return true     // 跨同shard的星门
     var Data = global.intershardData
-    if (Data['hall'][req.relateShard] && isInArray([1,2,3],Data['hall'][req.relateShard].state) ) return false // 房间正在处理其他事务
+    if (Data['hall'][req.relateShard] && isInArray([1, 2, 3], Data['hall'][req.relateShard].state) && Game.time < Data['hall'][req.relateShard].time + 50) return false // 超时或者有其他事务
     Data['hall'][req.relateShard] = {
         state:1,
         relateShard:req.relateShard,
@@ -135,7 +135,6 @@ export function RequestShard(req:RequestData):boolean{
         data:req.data,
         delay:100,
     }
-    // console.log("request data",JSON.stringify(Data['hall'][req.relateShard]))
     return true
 }
 
@@ -161,10 +160,6 @@ export function ResponseShard():void{
     for (var o_shard of _.difference(['shard0','shard1','shard2','shard3'],[Game.shard.name]))
     {
         var comData = UpdateShardHallData(o_shard as shardName)
-        // if (Game.shard.name == 'shard2' && o_shard == 'shard3')
-        // {
-        //     console.log(JSON.stringify(comData))
-        // }
         if (comData === null) continue
         if (comData.state != 1) continue
         Data['hall'][o_shard]=  {
@@ -174,10 +169,6 @@ export function ResponseShard():void{
             type:comData.type,
             data:comData.data,
             delay:100,
-        }
-        if (Game.shard.name == 'shard2' && o_shard == 'shard3')
-        {
-        //     console.log( JSON.stringify(Data['hall'][o_shard]))
         }
         if (comData.type == 1)
         {
@@ -207,14 +198,6 @@ export function ResponseShard():void{
             Data['command'].push({name:comData.data.name,done:false,data:comData.data.data})
         }
     }
-    // if (Game.shard.name == 'shard2')
-    // {
-    //     console.log( "Data",JSON.stringify(Data))
-    // }
-    // if (Game.shard.name == 'shard2')
-    // {
-    //     console.log( "InterMemory",InterShardMemory.getLocal())
-    // }
 }
 
 /**
@@ -266,7 +249,6 @@ export function InterShardManager():void{
     InitShard()
     CleanShard()
     ResponseShard()
-    // console.log(JSON.stringify(global.intershardData))
     ConfirmShard()
     DeleteShard()
     InterShardMemory.setLocal(JSON.stringify(global.intershardData))

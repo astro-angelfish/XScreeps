@@ -109,6 +109,7 @@ export default class CreepMissonMineExtension extends Creep {
         }
         else if (this.memory.role == 'out-harvest')
         {
+            if (!Game.rooms[creepMisson.disRoom]) return
             if (!Memory.outMineData[creepMisson.disRoom] || Memory.outMineData[creepMisson.disRoom].minepoint.length <= 0) return
             for (var point of Memory.outMineData[creepMisson.disRoom].minepoint)
             {
@@ -163,6 +164,7 @@ export default class CreepMissonMineExtension extends Creep {
         }
         else if (this.memory.role == 'out-car')
         {
+            if (!Game.rooms[creepMisson.disRoom]) return
             this.workstate('energy')
             if (!Memory.outMineData[creepMisson.disRoom] || Memory.outMineData[creepMisson.disRoom].minepoint.length <= 0) return
             for (var point of Memory.outMineData[creepMisson.disRoom].minepoint)

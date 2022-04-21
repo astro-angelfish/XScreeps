@@ -179,6 +179,11 @@ export default class RoomMissonMineExtension extends Room {
         }
         else if (misson.Data.state == 2)    // 采集状态 [正常状态]
         {
+            // if (!Game.rooms[disRoomName])
+            // {
+            //     misson.Data.state = 1
+            //     return
+            // }
             misson.CreepBind['out-harvest'].num = Memory.outMineData[disRoomName].minepoint.length
             misson.CreepBind['out-defend'].num = 0
             if (Memory.outMineData[disRoomName].car)

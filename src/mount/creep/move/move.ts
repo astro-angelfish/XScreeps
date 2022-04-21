@@ -368,7 +368,6 @@ export default class CreepMoveExtension extends Creep {
             }
             else
             {
-                // console.log(JSON.stringify(nextShardRoom))
                 /* 寻找星门 */
                 var portal = this.room.find(FIND_STRUCTURES,{filter:(structure)=>{
                     return structure.structureType == STRUCTURE_PORTAL 
@@ -381,15 +380,11 @@ export default class CreepMoveExtension extends Creep {
                     var porType = i.destination as {shard?:string, room?:string, roomName?:string}
                     if ( i.pos.x ==nextShardRoom.x && i.pos.y == nextShardRoom.y )
                     {
-                        // if (Game.shard.name == 'shard0')
-                        // {
-                        //     console.log('porType:',JSON.stringify(porType))
-                        // }
                         /* 更新一下shardaffirm的disRoomName信息 */
                         LoopB:
                         for (var sr of this.memory.shardAffirm)
                         {
-                            if (sr.roomName == this.pos.roomName)
+                            if (sr.roomName == this.pos.roomName && sr.shardName == Game.shard.name)
                             {
                                 sr.disRoomName = porType.room
                                 nextShardRoom.disShardName = porType.shard as shardName
@@ -397,18 +392,10 @@ export default class CreepMoveExtension extends Creep {
                                 break LoopB
                             }
                         }
-                        // if (Game.shard.name == 'shard0')
-                        // {
-                        //     console.log('affirm:',JSON.stringify(sr))
-                        // }
                         thisportal = i
                         break LoopA
                     }
                 }
-                // if (Game.shard.name == 'shard0')
-                // {
-                //     console.log('nextshardRoom:',JSON.stringify(nextShardRoom))
-                // }
                 if (!thisportal) {console.log("找不到thisportal");return}
                 if (!this.pos.isNearTo(thisportal)) this.goTo(thisportal.pos,1)
                 else
@@ -421,10 +408,6 @@ export default class CreepMoveExtension extends Creep {
                         type:1,
                         data:{id:this.name,MemoryData:this.memory}
                     }
-                    // if (Game.shard.name == 'shard0')
-                    // {
-                    //     console.log('requestData:',JSON.stringify(RequestData))
-                    // }
                     if (RequestData.relateShard)
                     {
                         if(RequestShard(RequestData))

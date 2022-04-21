@@ -243,7 +243,7 @@ export default class RoomMissonPublish extends Room {
      */
     public public_normal(num:number,boostType:ResourceConstant | null):MissionModel{
         var thisTask:MissionModel = {
-            name:'急速冲级',
+            name:'普通冲级',
             range:'Creep',
             delayTick:99999,
             level:10,
