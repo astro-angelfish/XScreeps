@@ -35,7 +35,7 @@ export default class CreepMissonWarExtension extends Creep {
         if (!disFlag)
         {
             var clostStructure = this.pos.findClosestByPath(FIND_HOSTILE_STRUCTURES,{filter:(struc)=>{
-                return !isInArray([STRUCTURE_CONTROLLER,STRUCTURE_WALL],struc.structureType)
+                return !isInArray([STRUCTURE_WALL],struc.structureType)
             }})
             if (clostStructure)
             {
@@ -151,7 +151,7 @@ export default class CreepMissonWarExtension extends Creep {
                 }
                 Game.rooms[this.memory.belong].memory.enemy[this.name].push(highestAim.id)
                 /* 方便识别小队，把周围的爬也放进去 【如果本来不是小队但暂时在周围的，后续爬虫会自动更新】 */
-                let nearHCreep = creep.pos.findInRange(FIND_HOSTILE_CREEPS,1,{filter:(creep)=>{
+                let nearHCreep = highestAim.pos.findInRange(FIND_HOSTILE_CREEPS,1,{filter:(creep)=>{
                     return !isInArray(Memory.whitesheet,creep.name) && !this.isInDefend(creep)
                 }})
                 if (nearHCreep.length > 0) for (var n of nearHCreep) Game.rooms[this.memory.belong].memory.enemy[this.name].push(n.id)
@@ -208,6 +208,7 @@ export default class CreepMissonWarExtension extends Creep {
                 var nearstram = closestCreep.pos.findClosestByRange(FIND_MY_STRUCTURES,{filter:(stru)=>{
                     return stru.structureType == 'rampart' && stru.pos.GetStructureList(['extension','link','observer','tower','controller','extractor']).length <= 0 && (stru.pos.lookFor(LOOK_CREEPS).length <= 0 ||stru.pos.lookFor(LOOK_CREEPS)[0] == this )
                 }})
+                if (nearstram)
                 this.goTo_defend(nearstram.pos,0)
             }
         }
@@ -282,7 +283,7 @@ export default class CreepMissonWarExtension extends Creep {
                 }
                 Game.rooms[this.memory.belong].memory.enemy[this.name].push(highestAim.id)
                 /* 方便识别小队，把周围的爬也放进去 【如果本来不是小队但暂时在周围的，后续爬虫会自动更新】 */
-                let nearHCreep = creep.pos.findInRange(FIND_HOSTILE_CREEPS,1,{filter:(creep)=>{
+                let nearHCreep = highestAim.pos.findInRange(FIND_HOSTILE_CREEPS,1,{filter:(creep)=>{
                     return !isInArray(Memory.whitesheet,creep.name) && !this.isInDefend(creep)
                 }})
                 if (nearHCreep.length > 0) for (var n of nearHCreep) Game.rooms[this.memory.belong].memory.enemy[this.name].push(n.id)
@@ -339,6 +340,7 @@ export default class CreepMissonWarExtension extends Creep {
                 var nearstram = closestCreep.pos.findClosestByRange(FIND_MY_STRUCTURES,{filter:(stru)=>{
                     return stru.structureType == 'rampart' && stru.pos.GetStructureList(['extension','link','observer','tower','controller','extractor']).length <= 0 && (stru.pos.lookFor(LOOK_CREEPS).length <= 0 ||stru.pos.lookFor(LOOK_CREEPS)[0] == this )
                 }})
+                if (nearstram)
                 this.goTo_defend(nearstram.pos,0)
             }
         }
@@ -1245,7 +1247,7 @@ export default class CreepMissonWarExtension extends Creep {
                     }
                     // 还找不到就直接找最近的wall或者rampart攻击
                     var walls = this.pos.findClosestByPath(FIND_STRUCTURES,{filter:(stru)=>{
-                        return isInArray([STRUCTURE_WALL,STRUCTURE_RAMPART],stru.structureType)
+                        return isInArray([STRUCTURE_RAMPART],stru.structureType)
                     }})
                     if (walls)
                     {
@@ -1318,7 +1320,7 @@ export default class CreepMissonWarExtension extends Creep {
                     }
                     // 还找不到就直接找最近的wall或者rampart攻击
                     var walls = this.pos.findClosestByPath(FIND_STRUCTURES,{filter:(stru)=>{
-                        return isInArray([STRUCTURE_WALL,STRUCTURE_RAMPART],stru.structureType)
+                        return isInArray([STRUCTURE_RAMPART],stru.structureType)
                     }})
                     if (walls)
                     {

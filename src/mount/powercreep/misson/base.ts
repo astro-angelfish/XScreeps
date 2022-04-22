@@ -125,7 +125,8 @@ export default class PowerCreepMissonBase extends PowerCreep {
         {
             this.usePower(PWR_GENERATE_OPS)
             // 过少就去提取ops资源
-            if (storage_.store.getUsedCapacity('ops') < 2500)
+            let terminal_ = global.Stru[this.memory.belong]['terminal'] as StructureTerminal
+            if (terminal_ && storage_.store.getUsedCapacity('ops') + terminal_.store.getUsedCapacity('ops')< 2500)
             {
                 // 资源调度
                 let room_ = Game.rooms[this.memory.belong]
