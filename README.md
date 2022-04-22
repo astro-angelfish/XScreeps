@@ -42,7 +42,8 @@ $ pnpm lint
 ## 仓库
 
 本仓库为 QiroNT 维护分支，代码经过大幅整理和调整，与其它上游分支差距较大。\
-分支上游作者：superbitch, E19N2, somygame, Monero
+分支上游作者：superbitch, E19N2, somygame, Monero\
+上游地址：<https://gitee.com/mikebraton/xscreeps>
 
 更换 license 许可：
 
