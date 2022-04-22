@@ -86,21 +86,21 @@ export default class CreepMissionBaseExtension extends Creep {
         case '物流运输':{ this.processCarryMission(); break }
         case '墙体维护':{ this.processRepairMission(); break }
         case 'C计划':{ this.processPlanCMission(); break }
-        case '黄球拆迁':{ this.handle_dismantle(); break }
+        case '黄球拆迁':{ this.processDismantleMission(); break }
         case '急速冲级':{ this.processQuickRushMission(); break }
         case '扩张援建':{ this.processExpandMission(); break }
         case '紧急支援':{ this.handle_support(); break }
-        case '控制攻击':{ this.handle_control(); break }
+        case '控制攻击':{ this.processControlMission(); break }
         case '紧急援建':{ this.processHelpBuildMission(); break }
         case '房间签名':{ this.processSignMission(); break }
         case '攻防一体':{ this.handle_aio(); break }
         case '原矿开采':{ this.processMineralMission(); break }
-        case '外矿开采':{ this.handle_outmine(); break }
-        case 'power采集':{ this.handle_power(); break }
-        case 'deposit采集':{ this.handle_deposit(); break }
-        case '红球防御':{ this.handle_defend_attack(); break }
-        case '蓝球防御':{ this.handle_defend_range(); break }
-        case '双人防御':{ this.handle_defend_double(); break }
+        case '外矿开采':{ this.processOutineMission(); break }
+        case 'power采集':{ this.processPowerMission(); break }
+        case 'deposit采集':{ this.processDepositMission(); break }
+        case '红球防御':{ this.processDefendAttackMission(); break }
+        case '蓝球防御':{ this.processDefendRangeMission(); break }
+        case '双人防御':{ this.processDefendDoubleMission(); break }
         case '四人小队':{ this.handle_task_squard(); break }
         case '双人小队':{ this.handle_double(); break }
       }

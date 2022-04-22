@@ -9,21 +9,21 @@ interface Creep {
   processCarryMission(): void
   processRepairMission(): void
   processPlanCMission(): void
-  handle_dismantle(): void
+  processDismantleMission(): void
   processQuickRushMission(): void
   processExpandMission(): void
   handle_support(): void
-  handle_control(): void
+  processControlMission(): void
   processHelpBuildMission(): void
   processSignMission(): void
   handle_aio(): void
   processMineralMission(): void
-  handle_outmine(): void
-  handle_power(): void
-  handle_deposit(): void
-  handle_defend_attack(): void
-  handle_defend_range(): void
-  handle_defend_double(): void
+  processOutineMission(): void
+  processPowerMission(): void
+  processDepositMission(): void
+  processDefendAttackMission(): void
+  processDefendRangeMission(): void
+  processDefendDoubleMission(): void
   handle_task_squard(): void
   handle_double(): void
 }

@@ -103,4 +103,4 @@ type RoomLabBind = Record<string, {
   occ?: boolean
 }>
 
-type enemyAllotData = Record<string, string[]>
+type enemyAllotData = Record<string, Id<Creep>[]>
