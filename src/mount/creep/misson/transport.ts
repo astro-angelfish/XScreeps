@@ -61,7 +61,7 @@ export default class CreepMissonTransportExtension extends Creep {
     public handle_carry():void{
         var Data = this.memory.MissionData.Data
         /* 数据不全拒绝执行任务 */
-        if (!Data || Object.keys(Data).length < 7)
+        if (!Data || Data.num <= 0)
         {
             Game.rooms[this.memory.belong].DeleteMission(this.memory.MissionData.id)
             return

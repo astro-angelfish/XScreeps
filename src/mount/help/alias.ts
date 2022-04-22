@@ -837,24 +837,35 @@ export default [
                             },
                             {
                                 title: '指定资源搬运:',
-                                describe: '例: carry.special("W1N1","energy",new RoomPosition(10,10,"W1N2"),new RoomPosition(14,13,"W2N2",2,100000))',
+                                describe: '例: carry.special("W1N1","energy","Flag1","Flag2",2,100000))',
                                 params: [
                                     { name: 'roomName', desc: '房间名' },
                                     { name: 'rType', desc: '搬运的资源类型' },
-                                    { name: 'souP', desc: '抽取资源的建筑的位置' },
-                                    { name: 'disP', desc: '存放资源的建筑位置' },
+                                    { name: 'souP', desc: '抽取资源的建筑的位置的旗帜' },
+                                    { name: 'disP', desc: '存放资源的建筑位置的旗帜' },
                                     { name: 'num', desc: '搬运爬数量' },
                                     { name: 'resourcenum', desc: '搬运的资源数量' },
                                 ],
                                 functionName: 'carry.special'
                             },
                             {
-                                title: '取消指定资源搬运:',
-                                describe: '例: carry.Cspecial("W1N1")',
+                                title: '所有类型资源搬运(掠夺):',
+                                describe: '例: carry.all("W1N1","Flag1","Flag2",3))',
+                                params: [
+                                    { name: 'roomName', desc: '房间名' },,
+                                    { name: 'souP', desc: '抽取资源的建筑的位置的旗帜' },
+                                    { name: 'disP', desc: '存放资源的建筑位置的旗帜' },
+                                    { name: 'num', desc: '搬运爬数量' },
+                                ],
+                                functionName: 'carry.all'
+                            },
+                            {
+                                title: '取消资源搬运任务:',
+                                describe: '例: carry.cancel("W1N1")',
                                 params: [
                                     { name: 'roomName', desc: '房间名' },
                                 ],
-                                functionName: 'carry.Cspecial'
+                                functionName: 'carry.cancel'
                             },
                             {
                                 title: '紧急援建:',

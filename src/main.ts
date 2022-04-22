@@ -22,7 +22,7 @@ export const loop = ErrorMapper.wrapLoop(() =>{
 
     /* Memory初始化 */
     MemoryInit()
-    let a1 = Game.cpu.getUsed()
+
     // /* 跨shard记忆运行 */
 
     InterShardManager()
@@ -50,6 +50,9 @@ export const loop = ErrorMapper.wrapLoop(() =>{
     /* 四人小队模块 */
     SquadManager()
 
+    /* 跨shardMemory提交 */
+    InterShardMemory.setLocal(JSON.stringify(global.intershardData))
+
     /* 资源调度超时管理 */
     ResourceDispatchTick()
 
@@ -74,12 +77,10 @@ export const loop = ErrorMapper.wrapLoop(() =>{
     // {
         /* 分析cpu */
         // console.log("-----------------------------cpu消耗分析----------------------------------------")
-        // console.log("Memory初始化:",a1-a)
-        // console.log("shard初始化:",b-a1)
+        // console.log("Memory初始化:",b-a)
         // console.log("原型挂载:",c-b)
         // console.log("房间框架:",d-c)
         // console.log("爬虫:",e-d)
         // console.log("其他杂项:",f-e)
     // }
-    InterShardMemory.setLocal(JSON.stringify(global.intershardData))
 })
