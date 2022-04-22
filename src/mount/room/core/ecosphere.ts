@@ -21,7 +21,6 @@ export default class RoomCoreEcosphereExtension extends Room {
             switch (LayOutPlan)
             {
                 case 'man':{break;}
-                case 'hoho':{break;}
                 case 'dev':{this.RoomRuleLayout(level,devPlanConstant);break;}
             }
             /* link */
