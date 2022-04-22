@@ -103,7 +103,7 @@ export default class RoomMissionMineExtension extends Room {
   /**
    * 房间外矿处理任务 只适用于一般外矿
    */
-  public checkOutMineMission(mission: MissionModel): void {
+  public verifyOutMineMission(mission: MissionModel): void {
     if ((Game.time - global.Gtime[this.name]) % 13)
       return
 
@@ -239,7 +239,7 @@ export default class RoomMissionMineExtension extends Room {
   /**
    * 过道采集监控发布任务
    */
-  public checkCrossMission(mission: MissionModel): void {
+  public verifyCrossMission(mission: MissionModel): void {
     if (!this.controller || this.controller.level < 8 || !this.memory.structureIdData?.observerID)
       return
     if (this.memory.toggles.StopCross)
@@ -347,7 +347,7 @@ export default class RoomMissionMineExtension extends Room {
   /**
    * Power 采集
    */
-  public checkPowerHarvestMission(mission: MissionModel): void {
+  public verifyPowerHarvestMission(mission: MissionModel): void {
     if (!this.controller || this.controller.level < 8)
       return
 

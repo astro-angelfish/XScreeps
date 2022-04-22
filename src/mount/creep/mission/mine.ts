@@ -107,7 +107,7 @@ export default class CreepMissionMineExtension extends Creep {
       const source = disPos.lookFor(LOOK_SOURCES)[0]
       if (!source)
         return
-      this.workstate('energy')
+      this.processBasicWorkState('energy')
       if (this.memory.working) {
         var container_ = source.pos.findInRange(FIND_STRUCTURES, 1, { filter: (stru) => { return stru.structureType == 'container' } }) as StructureContainer[]
         if (container_[0]) {
@@ -138,7 +138,7 @@ export default class CreepMissionMineExtension extends Creep {
       }
     }
     else if (this.memory.role == 'out-car') {
-      this.workstate('energy')
+      this.processBasicWorkState('energy')
       if (!Memory.outMineData[creepMission.disRoom] || Memory.outMineData[creepMission.disRoom].minepoint.length <= 0)
         return
       for (var point of Memory.outMineData[creepMission.disRoom].minepoint) {
@@ -161,7 +161,7 @@ export default class CreepMissionMineExtension extends Creep {
             },
           })
           if (construsions) {
-            this.build_(construsions)
+            this.processBasicBuild(construsions)
             return
           }
           const road_ = this.pos.getStructure('road')
@@ -193,7 +193,7 @@ export default class CreepMissionMineExtension extends Creep {
             this.goTo(container_[0].pos, 1)
             return
           }
-          this.withdraw_(container_[0], 'energy')
+          this.processBasicWithdraw(container_[0], 'energy')
         }
         else if (container_[0] && container_[0].store.getUsedCapacity('energy') < this.store.getCapacity()) {
           this.goTo(container_[0].pos, 1)
@@ -407,7 +407,7 @@ export default class CreepMissionMineExtension extends Creep {
       }
     }
     else if (role == 'power-carry') {
-      this.workstate('power')
+      this.processBasicWorkState('power')
       if (!this.memory.working) {
         if (!this.pos.inRangeTo(missionPostion, 5)) {
           this.goTo(missionPostion, 5)
@@ -478,7 +478,7 @@ export default class CreepMissionMineExtension extends Creep {
       const hcreep = this.pos.findClosestByRange(FIND_HOSTILE_CREEPS)
       Game.notify(`来自${this.memory.belong}的商品爬虫在房间${this.room.name}遭受攻击,攻击者疑似为${hcreep ? hcreep.owner.username : '不明生物'}`)
     }
-    this.workstate(creepMission.rType)
+    this.processBasicWorkState(creepMission.rType)
     if (this.memory.working) {
       const storage_ = Game.getObjectById(Game.rooms[this.memory.belong].memory.structureIdData.storageID) as StructureStorage
       if (!storage_)

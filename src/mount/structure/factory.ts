@@ -396,7 +396,7 @@ export class factoryExtension extends StructureFactory {
       }
       else if (result === ERR_BUSY) {
         if (Game.powerCreeps[`${this.room.name}/queen/${Game.shard.name}`])
-          this.room.missionPcEnhanceFactory()
+          this.room.checkPcEnhanceFactory()
         else console.log(`[factory] 房间 ${this.room.name} 出现工厂等级错误，不能生产 ${disCom}`)
       }
 
@@ -457,7 +457,7 @@ export class factoryExtension extends StructureFactory {
       }
       else if (result === ERR_BUSY) {
         if (Game.powerCreeps[`${this.room.name}/queen/${Game.shard.name}`])
-          this.room.missionPcEnhanceFactory()
+          this.room.checkPcEnhanceFactory()
         else console.log(`[factory] 房间 ${this.room.name} 出现工厂等级错误，不能生产 ${disCom}`)
       }
     }
@@ -501,7 +501,7 @@ export class factoryExtension extends StructureFactory {
     if (!Game.powerCreeps[`${this.room.name}/queen/${Game.shard.name}`])
       return `${this.room.name} 此房间无pc请先孵化pc`
 
-    this.room.missionPcEnhanceFactory()
+    this.room.checkPcEnhanceFactory()
 
     return '发布pc确定工厂等级任务成功'
   }

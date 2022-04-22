@@ -1,102 +1,100 @@
+import { profileMethod } from '@/utils'
+
 /* 爬虫原型拓展   --任务  --任务基础 */
-
-import { isInArray } from '@/utils'
-
 export default class CreepMissionBaseExtension extends Creep {
+  @profileMethod()
   public manageMission(): void {
     if (this.spawning)
       return
+
     if (!this.memory.missionData)
       this.memory.missionData = {}
-    /* 生命低于10就将资源上交 */
-    if (isInArray(['transport', 'manage'], this.memory.role)) {
-      if (Game.time % 5 == 0)
+
+    const belongRoom = Game.rooms[this.memory.belong] as Room | undefined
+
+    // 生命低于 10 就将资源上交
+    if (['transport', 'manage'].includes(this.memory.role)) {
+      if (Game.time % 5 === 0)
         this.memory.standed = true
       else this.memory.standed = false
-      if (this.ticksToLive < 10) {
-        const storage_ = Game.getObjectById(Game.rooms[this.memory.belong].memory.structureIdData.storageID) as StructureStorage
-        if (!storage_)
+
+      if (this.ticksToLive! < 10 && belongRoom) {
+        const storage = belongRoom.memory.structureIdData?.storageID ? Game.getObjectById(belongRoom.memory.structureIdData.storageID) : null
+        if (!storage)
           return
-        if (this.store.getUsedCapacity() > 0) {
-          for (const i in this.store) {
-            this.transfer_(storage_, i as ResourceConstant)
-            return
-          }
-        }
+
+        if (this.store.getUsedCapacity() > 0)
+          this.processBasicTransfer(storage, Object.keys(this.store)[0] as ResourceConstant)
+
         return
       }
     }
-    if (Object.keys(this.memory.missionData).length <= 0) {
+
+    if (Object.keys(this.memory.missionData).length <= 0 && belongRoom) {
       if (this.memory.taskRB) {
-        const task_ = Game.rooms[this.memory.belong].getMissionById(this.memory.taskRB)
-        if (task_) {
-          task_.creepBind[this.memory.role].bind.push(this.name)
-          this.memory.missionData.id = task_.id // 任务id
-          this.memory.missionData.name = task_.name // 任务名
-          this.memory.missionData.Data = task_.data ? task_.data : {} // 任务数据传输
+        const task = belongRoom.getMissionById(this.memory.taskRB)
+        if (task?.creepBind) {
+          task.creepBind[this.memory.role].bind.push(this.name)
+          this.memory.missionData.id = task.id // 任务id
+          this.memory.missionData.name = task.name // 任务名
+          this.memory.missionData.Data = task.data ? task.data : {} // 任务数据传输
           return
         }
       }
-      /* 每任务的情况下考虑领任务 */
-      if (!Game.rooms[this.memory.belong].memory.mission.Creep)
-        Game.rooms[this.memory.belong].memory.mission.Creep = []
-      const taskList = Game.rooms[this.memory.belong].memory.mission.Creep
-      const thisTaskList: MissionModel[] = []
-      for (const Stask of taskList) {
-        if (Stask.creepBind && isInArray(Object.keys(Stask.creepBind), this.memory.role))
-          thisTaskList.push(Stask)
-      }
-      if (thisTaskList.length <= 0) {
-        /* 没任务就处理剩余资源 */
-        if (this.room.name != this.memory.belong)
+
+      // 没任务的情况下考虑领任务
+      if (!belongRoom.memory.mission.Creep)
+        belongRoom.memory.mission.Creep = []
+
+      const taskList = belongRoom.memory.mission.Creep
+        .filter(i => i.creepBind && Object.keys(i.creepBind).includes(this.memory.role))
+
+      // 没任务就处理剩余资源
+      if (taskList.length <= 0) {
+        if (this.room.name !== this.memory.belong)
           return
-        const st = this.store
-        if (!st)
-          return
-        for (const i of Object.keys(st)) {
-          const storage_ = Game.getObjectById(Game.rooms[this.memory.belong].memory.structureIdData.storageID) as StructureStorage
-          if (!storage_)
-            return
-          this.say('🛒')
-          if (this.transfer(storage_, i as ResourceConstant) == ERR_NOT_IN_RANGE)
-            this.goTo(storage_.pos, 1)
-          return
+
+        if (this.store.getUsedCapacity() > 0) {
+          const storage = belongRoom.memory.structureIdData?.storageID ? Game.getObjectById(belongRoom.memory.structureIdData.storageID) : null
+          if (storage)
+            this.processBasicTransfer(storage, Object.keys(this.store)[0] as ResourceConstant)
         }
       }
+
+      // 还没有绑定的任务，就等待接取任务
       else {
-        /* 还没有绑定的任务，就等待接取任务 */
-        LoopBind:
-        for (const t of thisTaskList) {
-          if (t.creepBind && t.creepBind[this.memory.role] && t.creepBind[this.memory.role].bind.length < t.creepBind[this.memory.role].num) {
-            /* 绑定任务了就输入任务数据 */
-            t.processing = true // 领取任务后，任务开始计时
-            t.creepBind[this.memory.role].bind.push(this.name)
-            this.memory.missionData.id = t.id // 任务id
-            this.memory.missionData.name = t.name // 任务名
-            this.memory.missionData.Data = t.data ? t.data : {} // 任务数据传输
-            // this.memory.MissionData.Sata = t.Sata?t.Sata:{}
-            break LoopBind
-          }
+        const task = taskList.find(t => t.creepBind?.[this.memory.role] && t.creepBind[this.memory.role].bind.length < t.creepBind[this.memory.role].num)
+        if (task) {
+          // 绑定任务了就输入任务
+          // 领取任务后，任务开始计时数据
+          task.processing = true
+          task.creepBind![this.memory.role].bind.push(this.name)
+          this.memory.missionData.id = task.id // 任务id
+          this.memory.missionData.name = task.name // 任务名
+          this.memory.missionData.Data = task.data || {} // 任务数据传输
+          // this.memory.MissionData.Sata = t.Sata?t.Sata:{}
         }
-        if (Object.keys(this.memory.missionData).length <= 0)
+        else {
           this.say('💤')
+        }
       }
     }
+
     else {
       switch (this.memory.missionData.name) {
-        case '虫卵填充':{ this.handle_feed(); break }
-        case '物流运输':{ this.handle_carry(); break }
-        case '墙体维护':{ this.handle_repair(); break }
-        case 'C计划':{ this.handle_planC(); break }
+        case '虫卵填充':{ this.processFeedMission(); break }
+        case '物流运输':{ this.processCarryMission(); break }
+        case '墙体维护':{ this.processRepairMission(); break }
+        case 'C计划':{ this.processPlanCMission(); break }
         case '黄球拆迁':{ this.handle_dismantle(); break }
-        case '急速冲级':{ this.handle_quickRush(); break }
-        case '扩张援建':{ this.handle_expand(); break }
+        case '急速冲级':{ this.processQuickRushMission(); break }
+        case '扩张援建':{ this.processExpandMission(); break }
         case '紧急支援':{ this.handle_support(); break }
         case '控制攻击':{ this.handle_control(); break }
-        case '紧急援建':{ this.handle_helpBuild(); break }
-        case '房间签名':{ this.handle_sign(); break }
+        case '紧急援建':{ this.processHelpBuildMission(); break }
+        case '房间签名':{ this.processSignMission(); break }
         case '攻防一体':{ this.handle_aio(); break }
-        case '原矿开采':{ this.handle_mineral(); break }
+        case '原矿开采':{ this.processMineralMission(); break }
         case '外矿开采':{ this.handle_outmine(); break }
         case 'power采集':{ this.handle_power(); break }
         case 'deposit采集':{ this.handle_deposit(); break }

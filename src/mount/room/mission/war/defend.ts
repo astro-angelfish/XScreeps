@@ -318,7 +318,7 @@ export default class DefendWarExtension extends Room {
   /**
    * 红球防御
    */
-  public checkRedDefendMission(mission: MissionModel): void {
+  public verifyRedDefendMission(mission: MissionModel): void {
     if ((Game.time - global.Gtime[this.name]) % 10)
       return
 
@@ -337,7 +337,7 @@ export default class DefendWarExtension extends Room {
   /**
    * 蓝球防御
    */
-  public checkBlueDefendMission(mission: MissionModel): void {
+  public verifyBlueDefendMission(mission: MissionModel): void {
     if ((Game.time - global.Gtime[this.name]) % 10)
       return
 
@@ -356,7 +356,7 @@ export default class DefendWarExtension extends Room {
   /**
    * 双人防御
    */
-  public checkDoubleDefendMission(mission: MissionModel): void {
+  public verifyDoubleDefendMission(mission: MissionModel): void {
     if ((Game.time - global.Gtime[this.name]) % 10)
       return
 

@@ -5,7 +5,7 @@ export default class PowerCreepMission extends Room {
   /**
    * Pc任务管理器
    */
-  public missionPowerCreep(): void {
+  public checkPowerCreep(): void {
     if (!this.controller || this.controller.level < 8)
       return
 
@@ -26,20 +26,20 @@ export default class PowerCreepMission extends Room {
       }
     }
 
-    this.missionPcEnhanceStorage()
-    this.missionPcEnhanceLab()
-    this.missionPcEnhanceExtension()
-    this.missionPcEnhanceSpawn()
-    this.missionPcEnhanceTower()
-    // this.missionPcEnhanceFactory()
-    this.missionPcEnhancePowerSpawn()
+    this.checkPcEnhanceStorage()
+    this.checkPcEnhanceLab()
+    this.checkPcEnhanceExtension()
+    this.checkPcEnhanceSpawn()
+    this.checkPcEnhanceTower()
+    // this.checkPcEnhanceFactory()
+    this.checkPcEnhancePowerSpawn()
   }
 
   /**
    * 挂载增强 storage 的任务\
    * 适用于 queen 类型 pc
    */
-  public missionPcEnhanceStorage(): void {
+  public checkPcEnhanceStorage(): void {
     if ((Game.time - global.Gtime[this.name]) % 7)
       return
     if (this.memory.toggles.StopEnhanceStorage)
@@ -72,7 +72,7 @@ export default class PowerCreepMission extends Room {
    * 挂载增强 lab 的任务\
    * 适用于 queen 类型 pc
    */
-  public missionPcEnhanceLab(): void {
+  public checkPcEnhanceLab(): void {
     if ((Game.time - global.Gtime[this.name]) % 10)
       return
     if (this.memory.toggles.StopEnhanceLab)
@@ -118,7 +118,7 @@ export default class PowerCreepMission extends Room {
    * 挂载防御塔任务，配合主动防御\
    * 适用于 queen 类型 pc
    */
-  public missionPcEnhanceTower(): void {
+  public checkPcEnhanceTower(): void {
     if ((Game.time - global.Gtime[this.name]) % 11)
       return
     if (this.memory.state !== 'war' || !this.memory.toggles.AutoDefend)
@@ -163,7 +163,7 @@ export default class PowerCreepMission extends Room {
    * 挂载填充拓展任务
    * 适用于 queen 类型 pc
    */
-  public missionPcEnhanceExtension(): void {
+  public checkPcEnhanceExtension(): void {
     if ((Game.time - global.Gtime[this.name]) % 25)
       return
     if (this.memory.toggles.StopEnhanceExtension)
@@ -193,7 +193,7 @@ export default class PowerCreepMission extends Room {
    * 挂载 spawn 加速任务
    * 适用于 queen 类型 pc
    */
-  public missionPcEnhanceSpawn(): void {
+  public checkPcEnhanceSpawn(): void {
     if ((Game.time - global.Gtime[this.name]) % 13)
       return
     if (this.memory.toggles.StopEnhanceSpawn)
@@ -235,7 +235,7 @@ export default class PowerCreepMission extends Room {
    * 挂载升级工厂任务
    * 适用于 queen 类型 pc
    */
-  public missionPcEnhanceFactory(): void {
+  public checkPcEnhanceFactory(): void {
     // if ((Game.time - global.Gtime[this.name]) % 14)
     //   return
     if (this.memory.toggles.StopEnhanceFactory)
@@ -265,7 +265,7 @@ export default class PowerCreepMission extends Room {
    * 挂载 powerspawn 增强任务
    * 适用于 queen 类型 pc
    */
-  public missionPcEnhancePowerSpawn(): void {
+  public checkPcEnhancePowerSpawn(): void {
     if ((Game.time - global.Gtime[this.name]) % 13)
       return
     if (this.memory.toggles.StopEnhancePowerSpawn)

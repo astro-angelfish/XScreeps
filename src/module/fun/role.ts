@@ -9,7 +9,7 @@ import { getDistance } from '@/utils'
 export function harvest_(creep_: Creep): void {
   if (!Game.rooms[creep_.memory.belong])
     return
-  creep_.workstate('energy')
+  creep_.processBasicWorkState('energy')
   if (!Game.rooms[creep_.memory.belong].memory.harvestData)
     return
   if (creep_.memory.working) {
@@ -96,7 +96,7 @@ export function harvest_(creep_: Creep): void {
 export function carry_(creep_: Creep): void {
   if (!Game.rooms[creep_.memory.belong])
     return
-  creep_.workstate('energy')
+  creep_.processBasicWorkState('energy')
   if (!creep_.memory.containerID) {
     const harvestData = Game.rooms[creep_.memory.belong].memory.harvestData
     if (!harvestData)
@@ -154,7 +154,7 @@ export function carry_(creep_: Creep): void {
     }
     if (!target)
       return
-    creep_.transfer_(target, 'energy')
+    creep_.processBasicTransfer(target, 'energy')
   }
   else {
     const container = Game.getObjectById(creep_.memory.containerID) as StructureContainer
@@ -179,9 +179,9 @@ export function carry_(creep_: Creep): void {
 export function upgrade_(creep_: Creep): void {
   if (!Game.rooms[creep_.memory.belong])
     return
-  creep_.workstate('energy')
+  creep_.processBasicWorkState('energy')
   if (creep_.memory.working) {
-    creep_.upgrade_()
+    creep_.processBasicUpgrade()
     delete creep_.memory.targetID
   }
   else {
@@ -227,7 +227,7 @@ export function upgrade_(creep_: Creep): void {
     else {
       const target = Game.getObjectById(creep_.memory.targetID) as StructureStorage
       if (target)
-        creep_.withdraw_(target, 'energy')
+        creep_.processBasicWithdraw(target, 'energy')
     }
   }
 }
@@ -239,11 +239,11 @@ export function build_(creep: Creep): void {
     return
   if (!creep.memory.standed)
     creep.memory.standed = false
-  creep.workstate('energy')
+  creep.processBasicWorkState('energy')
   if (creep.memory.working) {
     const construction = creep.pos.findClosestByRange(FIND_MY_CONSTRUCTION_SITES)
     if (construction) {
-      creep.build_(construction)
+      creep.processBasicBuild(construction)
     }
     else {
       /* 没有建筑物则考虑道路维护 */
@@ -283,11 +283,11 @@ export function build_(creep: Creep): void {
       if (!storage)
         delete thisRoom.memory.structureIdData.storageID
 
-      if (storage && storage.store.getUsedCapacity('energy') >= creep.store.getCapacity()) { creep.withdraw_(storage, 'energy') }
+      if (storage && storage.store.getUsedCapacity('energy') >= creep.store.getCapacity()) { creep.processBasicWithdraw(storage, 'energy') }
       else {
         const terminal_ = Game.getObjectById(Game.rooms[creep.memory.belong].memory.structureIdData.terminalID) as StructureTerminal
         if (terminal_ && terminal_.store.getUsedCapacity('energy') >= creep.store.getCapacity())
-          creep.withdraw_(terminal_, 'energy')
+          creep.processBasicWithdraw(terminal_, 'energy')
       }
     }
     else {

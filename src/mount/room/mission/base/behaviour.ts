@@ -7,7 +7,7 @@ export default class RoomMissionBehaviourExtension extends Room {
   /**
    * 检查搬运任务
    */
-  public checkCarryMission(mission: MissionModel): void {
+  public verifyCarryMission(mission: MissionModel): void {
     /* 搬运任务需求 sourcePosX,Y sourceRoom targetPosX,Y targetRoom num  rType  */
     // 没有任务数据 或者数据不全就取消任务
     if (!mission.data)
@@ -125,7 +125,7 @@ export default class RoomMissionBehaviourExtension extends Room {
   /**
    * lab合成任务 （底层）
    */
-  public checkCompoundMission(mission: MissionModel): void {
+  public verifyCompoundMission(mission: MissionModel): void {
     if (Game.time % 5)
       return
     const structureIdData = this.memory.structureIdData

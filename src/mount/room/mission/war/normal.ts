@@ -3,7 +3,7 @@ export default class NormalWarExtension extends Room {
   /**
    * 拆迁黄球
    */
-  public checkDismantleMission(mission: MissionModel): void {
+  public verifyDismantleMission(mission: MissionModel): void {
     if ((Game.time - global.Gtime[this.name]) % 10)
       return
 
@@ -23,7 +23,7 @@ export default class NormalWarExtension extends Room {
   /**
    * 一体机
    */
-  public checkAioMission(mission: MissionModel): void {
+  public verifyAioMission(mission: MissionModel): void {
     if (mission.data.boost) {
       // 体型
       const bodylevel = mission.data.bodylevel
@@ -56,7 +56,7 @@ export default class NormalWarExtension extends Room {
   /**
    * 双人小队
    */
-  public checkDoubleMission(mission: MissionModel): void {
+  public verifyDoubleMission(mission: MissionModel): void {
     if ((Game.time - global.Gtime[this.name]) % 11)
       return
 
@@ -66,7 +66,7 @@ export default class NormalWarExtension extends Room {
   /**
    * 四人小队
    */
-  public checkSquadMission(mission: MissionModel): void {
+  public verifySquadMission(mission: MissionModel): void {
     if ((Game.time - global.Gtime[this.name]) % 7)
       return
 
@@ -92,7 +92,7 @@ export default class NormalWarExtension extends Room {
   /**
    * 紧急支援
    */
-  public checkHelpDefendMission(mission: MissionModel): void {
+  public verifyHelpDefendMission(mission: MissionModel): void {
     if (mission.data.sType === 'aio' && mission.data.boost)
       global.SpecialBodyData[this.name].saio = { move: 10, ranged_attack: 6, heal: 23, tough: 11 }
 

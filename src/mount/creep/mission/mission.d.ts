@@ -1,23 +1,23 @@
 /**
  * 任务相关声明
  */
-interface Creep{
+interface Creep {
   manageMission(): void
 
   // 任务
-  handle_feed(): void
-  handle_carry(): void
-  handle_repair(): void
-  handle_planC(): void
+  processFeedMission(): void
+  processCarryMission(): void
+  processRepairMission(): void
+  processPlanCMission(): void
   handle_dismantle(): void
-  handle_quickRush(): void
-  handle_expand(): void
+  processQuickRushMission(): void
+  processExpandMission(): void
   handle_support(): void
   handle_control(): void
-  handle_helpBuild(): void
-  handle_sign(): void
+  processHelpBuildMission(): void
+  processSignMission(): void
   handle_aio(): void
-  handle_mineral(): void
+  processMineralMission(): void
   handle_outmine(): void
   handle_power(): void
   handle_deposit(): void
@@ -28,7 +28,7 @@ interface Creep{
   handle_double(): void
 }
 
-interface CreepMemory{
+interface CreepMemory {
   missionData?: any
   double?: string // 双人小队
   captain?: boolean

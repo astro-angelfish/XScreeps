@@ -9,7 +9,7 @@ export default class CreepMissionWarExtension extends Creep {
     const id = missionData.id
     const data = missionData.Data
     if (data.boost) {
-      if (!this.BoostCheck(['move', 'work']))
+      if (!this.processBoost(['move', 'work']))
         return
     }
     if (this.room.name != data.disRoom || data.shard != Game.shard.name) {
@@ -77,7 +77,7 @@ export default class CreepMissionWarExtension extends Creep {
 
   // 红球防御
   public handle_defend_attack(): void {
-    if (!this.BoostCheck(['move', 'attack']))
+    if (!this.processBoost(['move', 'attack']))
       return
     this.memory.standed = true
     if (this.hitsMax - this.hits > 200)
@@ -211,7 +211,7 @@ export default class CreepMissionWarExtension extends Creep {
 
   // 蓝球防御
   public handle_defend_range(): void {
-    if (!this.BoostCheck(['move', 'ranged_attack']))
+    if (!this.processBoost(['move', 'ranged_attack']))
       return
     this.memory.crossLevel = 15
     if (this.hitsMax - this.hits > 200)
@@ -351,11 +351,11 @@ export default class CreepMissionWarExtension extends Creep {
   // 双人防御
   public handle_defend_double(): void {
     if (this.memory.role == 'defend-douAttack') {
-      if (!this.BoostCheck(['move', 'attack', 'tough']))
+      if (!this.processBoost(['move', 'attack', 'tough']))
         return
     }
     else {
-      if (!this.BoostCheck(['move', 'heal', 'tough']))
+      if (!this.processBoost(['move', 'heal', 'tough']))
         return
     }
     if (!this.memory.double) {
@@ -463,7 +463,7 @@ export default class CreepMissionWarExtension extends Creep {
     if (!missionData)
       return
     if (this.room.name == this.memory.belong && Game.shard.name == this.memory.shard) {
-      if (data.boost && !this.BoostCheck(['move', 'heal', 'tough', 'ranged_attack']))
+      if (data.boost && !this.processBoost(['move', 'heal', 'tough', 'ranged_attack']))
         return
     }
     if ((this.room.name != data.disRoom || Game.shard.name != data.shard)) {
@@ -669,27 +669,27 @@ export default class CreepMissionWarExtension extends Creep {
         const thisRoom = Game.rooms[this.memory.belong]
         /* boost检查 */
         if (this.getActiveBodyparts('move') > 0) {
-          if (!this.BoostCheck([, 'move']))
+          if (!this.processBoost([, 'move']))
             return
         }
         if (this.getActiveBodyparts('heal') > 0) {
-          if (!this.BoostCheck([, 'heal']))
+          if (!this.processBoost([, 'heal']))
             return
         }
         if (this.getActiveBodyparts('work') > 0) {
-          if (!this.BoostCheck([, 'work']))
+          if (!this.processBoost([, 'work']))
             return
         }
         if (this.getActiveBodyparts('attack') > 0) {
-          if (!this.BoostCheck([, 'attack']))
+          if (!this.processBoost([, 'attack']))
             return
         }
         if (this.getActiveBodyparts('ranged_attack') > 0) {
-          if (!this.BoostCheck([, 'ranged_attack']))
+          if (!this.processBoost([, 'ranged_attack']))
             return
         }
         if (this.getActiveBodyparts('tough') > 0) {
-          if (!this.BoostCheck([, 'tough']))
+          if (!this.processBoost([, 'tough']))
             return
         }
         /* 组队检查 */
@@ -883,15 +883,15 @@ export default class CreepMissionWarExtension extends Creep {
     const roomName = data.disRoom
     if (this.room.name == this.memory.belong && data.boost) {
       if (this.memory.role == 'double-attack') {
-        if (!this.BoostCheck(['move', 'attack', 'tough']))
+        if (!this.processBoost(['move', 'attack', 'tough']))
           return
       }
       else if (this.memory.role == 'double-heal') {
-        if (!this.BoostCheck(['move', 'heal', 'ranged_attack', 'tough']))
+        if (!this.processBoost(['move', 'heal', 'ranged_attack', 'tough']))
           return
       }
       else if (this.memory.role == 'aio') {
-        if (!this.BoostCheck(['move', 'heal', 'ranged_attack', 'tough']))
+        if (!this.processBoost(['move', 'heal', 'ranged_attack', 'tough']))
           return
       }
     }
@@ -1116,15 +1116,15 @@ export default class CreepMissionWarExtension extends Creep {
     const roomName = data.disRoom
     if (this.room.name == this.memory.belong) {
       if (this.memory.role == 'double-attack') {
-        if (!this.BoostCheck(['move', 'attack', 'tough']))
+        if (!this.processBoost(['move', 'attack', 'tough']))
           return
       }
       else if (this.memory.role == 'double-heal') {
-        if (!this.BoostCheck(['move', 'heal', 'ranged_attack', 'tough']))
+        if (!this.processBoost(['move', 'heal', 'ranged_attack', 'tough']))
           return
       }
       else if (this.memory.role == 'double-dismantle') {
-        if (!this.BoostCheck(['move', 'work', 'tough']))
+        if (!this.processBoost(['move', 'work', 'tough']))
           return
       }
     }

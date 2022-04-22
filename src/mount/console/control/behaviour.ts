@@ -856,7 +856,7 @@ export default {
       if (!Game.powerCreeps[`${myRoom.name}/queen/${Game.shard.name}`])
         return `[factory] ${myRoom.name}此房间无pc请先孵化pc!`
 
-      myRoom.missionPcEnhanceFactory()
+      myRoom.checkPcEnhanceFactory()
 
       return `[factory] 房间 ${roomName} 发布 pc 确定工厂等级任务成功!`
     },

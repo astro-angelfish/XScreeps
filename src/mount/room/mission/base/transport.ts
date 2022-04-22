@@ -1,7 +1,7 @@
 /* 房间原型拓展   --任务  --运输工任务 */
 export default class RoomMissionTransportExtension extends Room {
   // 虫卵填充任务
-  public missionSpawnFeed(): void {
+  public checkSpawnFeed(): void {
     // 每 10tick 观察一次
     if (Game.time % 10)
       return
@@ -32,7 +32,7 @@ export default class RoomMissionTransportExtension extends Room {
   }
 
   // 防御塔填充任务
-  public missionTowerFeed(): void {
+  public checkTowerFeed(): void {
     if (Game.shard.name === 'shard3' ? Game.time % 15 : Game.time % 5)
       return
 
@@ -78,7 +78,7 @@ export default class RoomMissionTransportExtension extends Room {
   /**
    * 实验室能量填充任务，包含多余物回收
    */
-  public missionLabFeed(): void {
+  public checkLabFeed(): void {
     if ((global.Gtime[this.name] - Game.time) % 13)
       return
     if (!this.memory.structureIdData?.storageID)
@@ -131,7 +131,7 @@ export default class RoomMissionTransportExtension extends Room {
   }
 
   // 核弹填充任务
-  public missionNukerFeed(): void {
+  public checkNukerFeed(): void {
     if (Game.time % 103)
       return
     if (this.memory.toggles.StopFillNuker)

@@ -1,12 +1,13 @@
 import { roleData } from '@/constant/spawnConstant'
 import { checkSendMission, getRoomDispatchNum } from '@/module/fun/funtion'
-import { colorfyLog, generateID, sortByKey } from '@/utils'
+import { colorfyLog, generateID, profileMethod, sortByKey } from '@/utils'
 
 /* 房间原型拓展   --任务  --任务框架 */
 export default class RoomMissionFrameExtension extends Room {
   /**
    * 执行房间任务
    */
+  @profileMethod()
   public processMission(): void {
     // 冷却监测
     this.processCooldown()
@@ -15,47 +16,47 @@ export default class RoomMissionFrameExtension extends Room {
     // 任务-爬虫 绑定信息更新
     this.removeUnbindMissions()
     // 任务-爬虫 孵化
-    this.missionRoleSpawnByMission()
-    /* PC任务管理器 */
-    this.missionPowerCreep()
+    this.checkRoleSpawnByMission()
+    // PC任务管理器
+    this.checkPowerCreep()
 
-    /* [全自动] 任务挂载区域 需要按照任务重要程度进行排序 */
-    this.missionSpawnFeed() // 虫卵填充任务
+    // [全自动] 任务挂载区域 需要按照任务重要程度进行排序
+    this.checkSpawnFeed() // 虫卵填充任务
     this.checkSourceLinks() // 能量采集
     this.checkConsumeLinks() // 消费、冲级link
     this.checkBuilder() // 建筑任务
     this.checkCenterLinkToStorage() // 链接送仓任务
-    this.missionTowerFeed() // 防御塔填充任务
-    this.missionLabFeed() // 实验室填充\回收任务
-    this.missionNukerFeed() // 核弹填充任务
+    this.checkTowerFeed() // 防御塔填充任务
+    this.checkLabFeed() // 实验室填充\回收任务
+    this.checkNukerFeed() // 核弹填充任务
     this.checkNukeDefend() // 核弹防御
     this.checkCompoundDispatch() // 合成规划 （中级）
     this.checkMineral() // 挖矿
     this.checkPower() // 烧power任务监控
     this.checkAutoDefend() // 主动防御任务发布
 
-    /* 基本任务监控区域 */
+    // 基本任务监控区域
     for (const index in this.memory.mission) {
       for (const mission of this.memory.mission[index]) {
         switch (mission.name) {
-          case '物流运输': { this.checkCarryMission(mission); break }
-          case '墙体维护': { this.checkRepairMission(mission); break }
-          case '黄球拆迁': { this.checkDismantleMission(mission); break }
-          case '急速冲级': { this.checkQuickUpgradeMission(mission); break }
-          case '紧急援建': { this.checkHelpBuildMission(mission); break }
-          case '紧急支援': { this.checkHelpDefendMission(mission); break }
-          case '资源合成': { this.checkCompoundMission(mission); break }
-          case '攻防一体': { this.checkAioMission(mission); break }
-          case '外矿开采': { this.checkOutMineMission(mission); break }
+          case '物流运输': { this.verifyCarryMission(mission); break }
+          case '墙体维护': { this.verifyRepairMission(mission); break }
+          case '黄球拆迁': { this.verifyDismantleMission(mission); break }
+          case '急速冲级': { this.verifyQuickUpgradeMission(mission); break }
+          case '紧急援建': { this.verifyHelpBuildMission(mission); break }
+          case '紧急支援': { this.verifyHelpDefendMission(mission); break }
+          case '资源合成': { this.verifyCompoundMission(mission); break }
+          case '攻防一体': { this.verifyAioMission(mission); break }
+          case '外矿开采': { this.verifyOutMineMission(mission); break }
           case 'power升级': { this.processPowerMission(mission); break }
-          case '过道采集': { this.checkCrossMission(mission); break }
-          case 'power采集': { this.checkPowerHarvestMission(mission); break }
-          case '红球防御': { this.checkRedDefendMission(mission); break }
-          case '蓝球防御': { this.checkBlueDefendMission(mission); break }
-          case '双人防御': { this.checkDoubleDefendMission(mission); break }
-          case '四人小队': { this.checkSquadMission(mission); break }
-          case '双人小队': { this.checkDoubleMission(mission); break }
-          case '资源转移': { this.checkResourceTransferMission(mission); break }
+          case '过道采集': { this.verifyCrossMission(mission); break }
+          case 'power采集': { this.verifyPowerHarvestMission(mission); break }
+          case '红球防御': { this.verifyRedDefendMission(mission); break }
+          case '蓝球防御': { this.verifyBlueDefendMission(mission); break }
+          case '双人防御': { this.verifyDoubleDefendMission(mission); break }
+          case '四人小队': { this.verifySquadMission(mission); break }
+          case '双人小队': { this.verifyDoubleMission(mission); break }
+          case '资源转移': { this.verifyResourceTransferMission(mission); break }
         }
       }
     }
@@ -379,7 +380,7 @@ export default class RoomMissionFrameExtension extends Room {
   /**
    * 任务所需角色孵化管理
    */
-  public missionRoleSpawnByMission(): void {
+  public checkRoleSpawnByMission(): void {
     if (!this.memory.mission.Creep)
       this.memory.mission.Creep = []
 

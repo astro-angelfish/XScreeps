@@ -50,3 +50,5 @@ type StructureData = Record<string, Structure[]>
 type MissionSpecialBody = Record<string, Record<string, import('@/utils').BodyParam>>
 
 type NarrowStructure<T extends AnyStructure['structureType'], N = AnyStructure> = N extends { structureType: T } ? N : never
+
+type StorageStructures<T extends AnyStructure = AnyStructure> = T extends { store: unknown } ? T : never

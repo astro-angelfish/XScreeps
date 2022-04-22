@@ -12,7 +12,7 @@ interface CreepMemory {
   boostData: BoostData
   /* 目标Id */
   targetID?: string
-  containerID?: string
+  containerID?: Id<StorageStructures>
   adaption?: boolean
   taskRB?: string
   msb?: boolean

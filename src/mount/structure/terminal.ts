@@ -497,25 +497,18 @@ export default class terminalExtension extends StructureTerminal {
 
     // 寻找价格最低的
     orders.sort(sortByKey('price'))
-    // eslint-disable-next-line no-unreachable-loop
-    for (const ii of orders) {
-      if (ii.price > maxPrice)
-        return
+    const lowest = orders[0]
 
-      if (ii.amount >= num) {
-        if (Game.market.deal(ii.id, num, this.room.name) === OK) {
-          this.room.removeMission(task.id)
-          return
-        }
-        else {
-          return
-        }
-      }
-      else {
-        if (Game.market.deal(ii.id, ii.amount, this.room.name) === OK)
-          task.data.num -= ii.amount
-        return
-      }
+    if (lowest.price > maxPrice)
+      return
+
+    if (lowest.amount >= num) {
+      if (Game.market.deal(lowest.id, num, this.room.name) === OK)
+        this.room.removeMission(task.id)
+    }
+    else {
+      if (Game.market.deal(lowest.id, lowest.amount, this.room.name) === OK)
+        task.data.num -= lowest.amount
     }
   }
 }

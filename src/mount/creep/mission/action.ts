@@ -1,204 +1,281 @@
-import { filter } from 'lodash'
-import structure from '@/mount/structure'
-import { GenerateAbility, filter_structure, generateID, isInArray, unzipPosition, zipPosition } from '@/utils'
+import { unzipPosition, zipPosition } from '@/utils'
 
 /* 爬虫原型拓展   --任务  --任务行为 */
 export default class CreepMissionActionExtension extends Creep {
-  // 刷墙
-  public handle_repair(): void {
+  /**
+   * 刷墙
+   */
+  public processRepairMission(): void {
     const missionData = this.memory.missionData
     const id = missionData.id
-    const mission = Game.rooms[this.memory.belong].getMissionById(id)
     if (!id)
       return
-    let storage_ = Game.getObjectById(Game.rooms[this.memory.belong].memory.structureIdData.storageID) as StructureStorage
-    this.workstate('energy')
-    /* boost检查 */
+
+    const belongRoom = Game.rooms[this.memory.belong]
+    if (!belongRoom)
+      return
+
+    const mission = belongRoom.getMissionById(id)
+    if (!mission)
+      return
+
+    const storage = belongRoom.memory.structureIdData?.storageID ? Game.getObjectById(belongRoom.memory.structureIdData.storageID) : null
+
+    this.processBasicWorkState(RESOURCE_ENERGY)
+
+    // boost 检查
     if (mission.labBind) {
-      if (!storage_)
-        return // 如果是boost的，没有仓库就不刷了
-      // 需要boost检查，必要情况下可以不检查
-      let boo = false
-      for (const ids in mission.labBind) {
-        const lab_ = Game.getObjectById(ids) as StructureLab
-        if (!lab_ || !lab_.mineralType || lab_.store.getUsedCapacity(lab_.mineralType) < 500)
-          boo = true
-      }
-      if (!boo) {
-        if (!this.BoostCheck(['work']))
+      // 如果是 boost 的，没有仓库就不刷了
+      if (!storage)
+        return
+
+      // 需要 boost 检查，必要情况下可以不检查
+      if (!(Object.keys(mission.labBind).map(Game.getObjectById) as (StructureLab | null)[])
+        .every(lab => !lab || !lab.mineralType || lab.store[lab.mineralType] < 500)) {
+        if (!this.processBoost(['work']))
           return
       }
     }
-    if (mission.data.RepairType == 'global') {
+
+    if (mission.data.RepairType === 'global') {
       if (this.memory.working) {
         if (this.memory.targetID) {
           this.say('🛠️')
-          var target_ = Game.getObjectById(this.memory.targetID) as StructureRampart
-          if (!target_) { delete this.memory.targetID; return }
-          this.repair_(target_)
+
+          const target = Game.getObjectById(this.memory.targetID as Id<StructureRampart>)
+          if (!target) {
+            delete this.memory.targetID
+            return
+          }
+
+          this.processBasicRepair(target)
         }
+
         else {
-          var leastRam = this.room.getStructureHitsLeast([STRUCTURE_RAMPART, STRUCTURE_WALL], 3)
+          const leastRam = this.room.getStructureHitsLeast([STRUCTURE_RAMPART, STRUCTURE_WALL], 3)
           if (!leastRam)
             return
+
           this.memory.targetID = leastRam.id
         }
+
         delete this.memory.containerID
       }
+
       else {
-        /* 寻找hits最小的墙 */
-        var leastRam = this.room.getStructureHitsLeast([STRUCTURE_RAMPART, STRUCTURE_WALL], 3)
+        // 寻找 hits 最小的墙
+        const leastRam = this.room.getStructureHitsLeast([STRUCTURE_RAMPART, STRUCTURE_WALL], 3)
         if (!leastRam)
           return
+
         this.memory.targetID = leastRam.id
+
         if (!this.memory.containerID) {
-          var tank = this.pos.findClosestByPath(FIND_MY_STRUCTURES, {
-            filter: (stru) => {
-              return stru.structureType == 'storage'
-                        || (stru.structureType == 'link' && isInArray(Game.rooms[this.memory.belong].memory.structureIdData.consumeLink, stru.id) && stru.store.getUsedCapacity('energy') > this.store.getCapacity())
-            },
-          })
-          if (tank) { this.memory.containerID = tank.id }
+          const tank = this.pos.findClosestByPath(
+            this.room.getStructureWithTypes([STRUCTURE_STORAGE, STRUCTURE_LINK])
+              .filter(struct => struct.structureType === STRUCTURE_STORAGE
+               || (belongRoom.memory.structureIdData?.consumeLink?.includes(struct.id) && (struct.store.energy || 0) > this.store.getCapacity())))
+          if (tank) {
+            this.memory.containerID = tank.id
+          }
           else {
-            const closestStore = this.pos.findClosestByRange(FIND_STRUCTURES, { filter: (stru) => { return (stru.structureType == 'container' || stru.structureType == 'tower') && stru.store.getUsedCapacity('energy') >= this.store.getFreeCapacity() } })
+            const closestStore = this.pos.findClosestByRange(
+              this.room.getStructureWithTypes([STRUCTURE_CONTAINER, STRUCTURE_TOWER])
+                .filter(struct => (struct.store.energy || 0) >= this.store.getFreeCapacity()))
             if (closestStore)
-              this.withdraw_(closestStore, 'energy')
+              this.processBasicWithdraw(closestStore, RESOURCE_ENERGY)
+
             return
           }
         }
-        const tank_ = Game.getObjectById(this.memory.containerID) as StructureStorage
-        this.withdraw_(tank_, 'energy')
-      }
-    }
-    else if (mission.data.RepairType == 'nuker') {
-      // 没有仓库和终端就不防了
-      if (!storage_) {
-        delete Game.rooms[this.memory.belong].memory.structureIdData.storageID
-        storage_ = Game.getObjectById(Game.rooms[this.memory.belong].memory.structureIdData.terminalID) as StructureStorage
-        return
-      }
-      if (!storage_)
-        return
-      // 核弹防御
-      /* 防核函数  测试成功！ */
-      if (!Game.rooms[this.memory.belong].memory.nukeData)
-        return
-      if (Object.keys(Game.rooms[this.memory.belong].memory.nukeData.damage).length <= 0) {
-        Game.rooms[this.memory.belong].removeMission(id)
-        return
-      }
-      /* 优先修spawn和terminal */
-      if (!this.memory.targetID) {
-        for (const dmgPoint in Game.rooms[this.memory.belong].memory.nukeData.damage) {
-          if (Game.rooms[this.memory.belong].memory.nukeData.damage[dmgPoint] <= 0)
-            continue
-          const position_ = unzipPosition(dmgPoint)
-          if (!position_.GetStructure('rampart')) {
-            position_.createConstructionSite('rampart')
-            if (!this.memory.working)
-              this.withdraw_(storage_, 'energy')
-            else this.build_(position_.lookFor(LOOK_CONSTRUCTION_SITES)[0])
-            return
-          }
-          this.memory.targetID = position_.GetStructure('rampart').id
+
+        const tank = Game.getObjectById(this.memory.containerID)
+        if (!tank) {
+          delete this.memory.containerID
           return
         }
-        if (!Game.rooms[this.memory.belong].removeMission(id))
+        this.processBasicWithdraw(tank, RESOURCE_ENERGY)
+      }
+    }
+
+    else if (mission.data.RepairType === 'nuker') {
+      // 没有仓库和终端就不防了
+      const terminal = belongRoom.memory.structureIdData?.terminalID ? Game.getObjectById(belongRoom.memory.structureIdData.terminalID) : null
+      if (!storage && !terminal)
+        return
+      const targetStorage = storage || terminal!
+
+      // 核弹防御
+      // 防核函数  测试成功！
+      if (!belongRoom.memory.nukeData)
+        return
+
+      if (Object.keys(belongRoom.memory.nukeData.damage).length <= 0) {
+        belongRoom.removeMission(id)
+        return
+      }
+
+      // 优先修 spawn 和 terminal
+      if (!this.memory.targetID) {
+        for (const dmgPoint in belongRoom.memory.nukeData.damage) {
+          if (belongRoom.memory.nukeData.damage[dmgPoint] <= 0)
+            continue
+
+          const pos = unzipPosition(dmgPoint)
+          if (!pos)
+            continue
+
+          const ram = pos.getStructure('rampart')
+          if (!ram) {
+            pos.createConstructionSite('rampart')
+
+            if (!this.memory.working)
+              this.processBasicWithdraw(targetStorage, RESOURCE_ENERGY)
+            else this.processBasicBuild(pos.lookFor(LOOK_CONSTRUCTION_SITES)[0])
+
+            return
+          }
+
+          this.memory.targetID = ram.id
+          return
+        }
+
+        if (!belongRoom.removeMission(id))
           this.memory.missionData = {}
       }
+
       else {
         if (!this.memory.working) {
           this.memory.standed = false
-          this.withdraw_(storage_, 'energy')
+          this.processBasicWithdraw(targetStorage, RESOURCE_ENERGY)
         }
+
         else {
           this.memory.standed = false
-          if (this.memory.crossLevel > 10)
+          if ((this.memory.crossLevel || 0) > 10)
             this.memory.crossLevel = 10 - Math.ceil(Math.random() * 10)
-          const wall_ = Game.getObjectById(this.memory.targetID) as StructureRampart
-          const strPos = zipPosition(wall_.pos)
-          if (!wall_ || wall_.hits >= Game.rooms[this.memory.belong].memory.nukeData.damage[strPos] + Game.rooms[this.memory.belong].memory.nukeData.rampart[strPos] + 500000) {
+
+          const ram = Game.getObjectById(this.memory.targetID as Id<StructureRampart>)
+          if (!ram) {
             delete this.memory.targetID
-            Game.rooms[this.memory.belong].memory.nukeData.damage[strPos] = 0
-            Game.rooms[this.memory.belong].memory.nukeData.rampart[strPos] = 0
             return
           }
-          if (this.repair(wall_) == ERR_NOT_IN_RANGE)
-            this.goTo(wall_.pos, 3)
+
+          const strPos = zipPosition(ram.pos)
+          if (ram.hits >= belongRoom.memory.nukeData.damage[strPos] + belongRoom.memory.nukeData.rampart[strPos] + 500000) {
+            delete this.memory.targetID
+            belongRoom.memory.nukeData.damage[strPos] = 0
+            belongRoom.memory.nukeData.rampart[strPos] = 0
+            return
+          }
+
+          if (this.repair(ram) === ERR_NOT_IN_RANGE)
+            this.goTo(ram.pos, 3)
         }
       }
     }
-    else if (mission.data.RepairType == 'special') {
+
+    else if (mission.data.RepairType === 'special') {
       if (this.memory.working) {
         if (this.memory.targetID) {
           this.say('🛠️')
-          var target_ = Game.getObjectById(this.memory.targetID) as StructureRampart
-          if (!target_) { delete this.memory.targetID; return }
-          this.repair_(target_)
+
+          const target = Game.getObjectById(this.memory.targetID as Id<StructureRampart>)
+          if (!target) {
+            delete this.memory.targetID
+            return
+          }
+
+          this.processBasicRepair(target)
         }
+
         else {
-          var leastRam = this.room.getStructureHitsLeast([STRUCTURE_RAMPART, STRUCTURE_WALL], 3)
+          const leastRam = this.room.getStructureHitsLeast([STRUCTURE_RAMPART, STRUCTURE_WALL], 3)
           if (!leastRam)
             return
+
           this.memory.targetID = leastRam.id
         }
+
         delete this.memory.containerID
       }
+
       else {
-        /* 寻找插了旗子的hits最小的墙 */
-        const flags = this.room.find(FIND_FLAGS, {
-          filter: (flag) => {
-            return flag.name.indexOf('repair') == 0
-          },
-        })
+        // 寻找插了旗子的 hits 最小的墙
+        const flags = this.room.find(FIND_FLAGS).filter(flag => flag.name.startsWith('repair'))
         if (flags.length <= 0)
           return
+
         let disWall = null
         for (const f of flags) {
-          const fwall = f.pos.getStructureList(['rampart', 'constructedWall'])[0]
-          if (!fwall) { f.remove() }
+          const wall = f.pos.getStructureList(['rampart', 'constructedWall'])[0]
+          if (!wall) {
+            f.remove()
+          }
           else {
-            if (!disWall || fwall.hits < disWall.hits)
-              disWall = fwall
+            if (!disWall || wall.hits < disWall.hits)
+              disWall = wall
           }
         }
+        // 没有旗子就删除任务
         if (!disWall) {
-          // 没有旗子就删除任务
-          Game.rooms[this.memory.belong].removeMission(id)
+          belongRoom.removeMission(id)
           return
         }
+
         this.memory.targetID = disWall.id
         if (!this.memory.containerID) {
-          var tank = this.pos.findClosestByPath(FIND_MY_STRUCTURES, {
-            filter: (stru) => {
-              return stru.structureType == 'storage'
-                        || (stru.structureType == 'link' && isInArray(Game.rooms[this.memory.belong].memory.structureIdData.consumeLink, stru.id) && stru.store.getUsedCapacity('energy') > this.store.getCapacity())
-            },
-          })
-          if (tank) { this.memory.containerID = tank.id }
+          const tank = this.pos.findClosestByPath(
+            this.room.getStructureWithTypes([STRUCTURE_STORAGE, STRUCTURE_LINK])
+              .filter(struct => struct.structureType === STRUCTURE_STORAGE
+               || (belongRoom.memory.structureIdData?.consumeLink?.includes(struct.id) && (struct.store.energy || 0) > this.store.getCapacity())))
+          if (tank) {
+            this.memory.containerID = tank.id
+          }
           else {
-            const closestStore = this.pos.findClosestByRange(FIND_STRUCTURES, { filter: (stru) => { return (stru.structureType == 'container' || stru.structureType == 'tower') && stru.store.getUsedCapacity('energy') >= this.store.getFreeCapacity() } })
+            const closestStore = this.pos.findClosestByRange(
+              this.room.getStructureWithTypes([STRUCTURE_CONTAINER, STRUCTURE_TOWER])
+                .filter(struct => (struct.store.energy || 0) >= this.store.getFreeCapacity()))
             if (closestStore)
-              this.withdraw_(closestStore, 'energy')
+              this.processBasicWithdraw(closestStore, RESOURCE_ENERGY)
+
             return
           }
         }
-        const tank_ = Game.getObjectById(this.memory.containerID) as StructureStorage
-        this.withdraw_(tank_, 'energy')
+
+        const tank = Game.getObjectById(this.memory.containerID)
+        if (!tank) {
+          delete this.memory.containerID
+          return
+        }
+        this.processBasicWithdraw(tank, RESOURCE_ENERGY)
       }
     }
   }
 
-  // C计划
-  public handle_planC(): void {
+  /**
+   * C计划
+   */
+  public processPlanCMission(): void {
     const mission = this.memory.missionData
+
     // if (Game.rooms[mission.Data.disRoom] && !Game.rooms[mission.Data.disRoom].controller.safeMode) Game.rooms[mission.Data.disRoom].controller.activateSafeMode()
-    if (this.memory.role == 'cclaim') {
-      if (this.room.name != mission.Data.disRoom || Game.shard.name != mission.Data.shard) {
+
+    if (this.memory.role === 'cclaim') {
+      if (this.room.name !== mission.Data.disRoom || Game.shard.name !== mission.Data.shard) {
         this.arriveTo(new RoomPosition(25, 25, mission.Data.disRoom), 20, mission.Data.shard)
       }
       else {
-        if (!this.pos.isNearTo(this.room.controller)) { this.goTo(this.room.controller.pos, 1) }
+        if (!this.room.controller) {
+          console.log(`C计划分配到了一个没有控制器的房间，请检查！creep: ${this.name}, room: ${this.room.name}, missionId: ${mission.id}`)
+          Game.notify(`C计划分配到了一个没有控制器的房间，请检查！creep: ${this.name}, room: ${this.room.name}, missionId: ${mission.id}`)
+          delete this.memory.missionData
+          return
+        }
+
+        if (!this.pos.isNearTo(this.room.controller)) {
+          this.goTo(this.room.controller.pos, 1)
+        }
         else {
           if (!this.room.controller.owner)
             this.claimController(this.room.controller)
@@ -206,305 +283,399 @@ export default class CreepMissionActionExtension extends Creep {
         }
       }
     }
+
     else {
-      this.workstate('energy')
-      if (this.room.name == this.memory.belong && !this.memory.working) {
-        const store = this.pos.findClosestByRange(FIND_STRUCTURES, {
-          filter: (stru) => {
-            return (stru.structureType == 'container'
-                    || stru.structureType == 'tower'
-                    || stru.structureType == 'storage') && stru.store.getUsedCapacity('energy') >= this.store.getFreeCapacity()
-          },
-        })
+      this.processBasicWorkState(RESOURCE_ENERGY)
+
+      if (this.room.name === this.memory.belong && !this.memory.working) {
+        const store = this.pos.findClosestByRange(
+          this.room.getStructureWithTypes([STRUCTURE_CONTAINER, STRUCTURE_TOWER, STRUCTURE_STORAGE])
+            .filter(struct => (struct.store.energy || 0) >= this.store.getFreeCapacity()))
         if (store)
-          this.withdraw_(store, 'energy')
+          this.processBasicWithdraw(store, RESOURCE_ENERGY)
 
         return
       }
-      if (!Game.rooms[mission.Data.disRoom]) {
+
+      const disRoom = Game.rooms[mission.Data.disRoom]
+
+      if (!disRoom) {
         this.goTo(new RoomPosition(25, 25, mission.Data.disRoom), 20)
         return
       }
-      if (Game.rooms[mission.Data.disRoom].controller.level >= 2)
-        global.SpecialBodyData[this.memory.belong].cupgrade = GenerateAbility(1, 1, 1, 0, 0, 0, 0, 0)
+
+      if (!disRoom.controller) {
+        console.log(`C计划分配到了一个没有控制器的房间，请检查！creep: ${this.name}, room: ${this.room.name}, missionId: ${mission.id}`)
+        Game.notify(`C计划分配到了一个没有控制器的房间，请检查！creep: ${this.name}, room: ${this.room.name}, missionId: ${mission.id}`)
+        delete this.memory.missionData
+        return
+      }
+
+      if (disRoom.controller.level >= 2)
+        global.SpecialBodyData[this.memory.belong].cupgrade = { work: 1, carry: 1, move: 1 }
 
       if (this.memory.working) {
-        if (this.room.name != mission.Data.disRoom) {
-          this.goTo(Game.rooms[mission.Data.disRoom].controller.pos, 1)
+        if (this.room.name !== mission.Data.disRoom) {
+          this.goTo(disRoom.controller.pos, 1)
           return
         }
+
         const cons = this.pos.findClosestByRange(FIND_MY_CONSTRUCTION_SITES)
-        if (cons) { this.build_(cons) }
-        else { this.upgrade_(); this.say('cupgrade') }
+        if (cons) {
+          this.processBasicBuild(cons)
+        }
+        else {
+          this.processBasicUpgrade()
+          this.say('cupgrade')
+        }
       }
+
       else {
         const source = this.pos.findClosestByRange(FIND_SOURCES_ACTIVE)
         if (source)
-          this.harvest_(source)
+          this.processBasicHarvest(source)
       }
     }
   }
 
-  // 扩张援建
-  public handle_expand(): void {
+  /**
+   * 扩张援建
+   */
+  public processExpandMission(): void {
     const missionData = this.memory.missionData
     const id = missionData.id
-    if (this.room.name != missionData.Data.disRoom || Game.shard.name != missionData.Data.shard) {
-      this.arriveTo(new RoomPosition(24, 24, missionData.Data.disRoom), 20, missionData.Data.shard, missionData.Data.shardData ? missionData.Data.shardData : null)
+
+    if (this.room.name !== missionData.Data.disRoom || Game.shard.name !== missionData.Data.shard) {
+      this.arriveTo(new RoomPosition(24, 24, missionData.Data.disRoom), 20, missionData.Data.shard, missionData.Data.shardData)
       return
     }
-    this.workstate('energy')
-    if (this.memory.role == 'claim') {
-      if (!this.pos.isNearTo(Game.rooms[missionData.Data.disRoom].controller)) { this.goTo(Game.rooms[missionData.Data.disRoom].controller.pos, 1) }
+
+    this.processBasicWorkState(RESOURCE_ENERGY)
+
+    if (this.memory.role === 'claim') {
+      const disRoom = Game.rooms[missionData.Data.disRoom]
+      if (!disRoom.controller) {
+        console.log(`扩张援建分配到了一个没有控制器的房间，请检查！creep: ${this.name}, room: ${this.room.name}, missionId: ${missionData.id}`)
+        Game.notify(`扩张援建分配到了一个没有控制器的房间，请检查！creep: ${this.name}, room: ${this.room.name}, missionId: ${missionData.id}`)
+        delete this.memory.missionData
+        return
+      }
+
+      if (!this.pos.isNearTo(disRoom.controller)) {
+        this.goTo(disRoom.controller.pos, 1)
+      }
       else {
-        this.claimController(Game.rooms[missionData.Data.disRoom].controller)
+        this.claimController(disRoom.controller)
         this.say('claim')
       }
-      if (missionData.Data.shard == this.memory.shard) {
-        if (Game.rooms[missionData.Data.disRoom].controller.level && Game.rooms[missionData.Data.disRoom].controller.owner) {
-          const mission = Game.rooms[this.memory.belong].getMissionById(id)
-          if (!mission)
+
+      if (missionData.Data.shard === this.memory.shard) {
+        if (disRoom.controller.level && disRoom.controller.owner) {
+          const belongRoom = Game.rooms[this.memory.belong]
+          if (!belongRoom)
+            return
+
+          const mission = belongRoom.getMissionById(id)
+          if (!mission?.creepBind)
             return
           mission.creepBind[this.memory.role].num = 0
         }
       }
     }
-    else if (this.memory.role == 'Ebuild') {
+
+    else if (this.memory.role === 'Ebuild') {
       if (this.memory.working) {
-        /* 优先遭建筑 */
+        // 优先造建筑
         const cons = this.pos.findClosestByRange(FIND_MY_CONSTRUCTION_SITES)
         if (cons) {
-          this.build_(cons)
+          this.processBasicBuild(cons)
           return
         }
-        const roads = this.pos.findClosestByRange(FIND_STRUCTURES, {
-          filter: (stru) => {
-            return (stru.structureType == 'road' || stru.structureType == 'container') && stru.hits < stru.hitsMax
-          },
-        })
+
+        const roads = this.pos.findClosestByRange(
+          this.room.getStructureWithTypes([STRUCTURE_ROAD, STRUCTURE_CONTAINER])
+            .filter(struct => struct.hits < struct.hitsMax))
         if (roads) {
-          this.repair_(roads)
+          this.processBasicRepair(roads)
           return
         }
-        const tower = this.pos.findClosestByPath(FIND_MY_STRUCTURES, {
-          filter: (stru) => {
-            return stru.structureType == 'tower' && stru.store.getFreeCapacity('energy') > 0
-          },
-        })
+
+        const tower = this.pos.findClosestByPath(
+          this.room.getStructureWithType(STRUCTURE_TOWER)
+            .filter(tower => tower.store.getFreeCapacity(RESOURCE_ENERGY) > 0))
         if (tower) {
-          this.transfer_(tower, 'energy')
+          this.processBasicTransfer(tower, RESOURCE_ENERGY)
           return
         }
+
         const store = this.pos.getClosestStore()
         if (store) {
-          this.transfer_(store, 'energy')
+          this.processBasicTransfer(store, RESOURCE_ENERGY)
           return
         }
-        this.upgrade_()
+
+        this.processBasicUpgrade()
       }
+
       else {
         const source = this.pos.findClosestByPath(FIND_SOURCES_ACTIVE)
         if (source)
-          this.harvest_(source)
-        if (this.ticksToLive < 120 && this.store.getUsedCapacity('energy') <= 20)
+          this.processBasicHarvest(source)
+
+        if (this.ticksToLive! < 120 && (this.store.energy || 0) <= 20)
           this.suicide()
       }
     }
-    else if (this.memory.role == 'Eupgrade') {
+
+    else if (this.memory.role === 'Eupgrade') {
       if (this.memory.working) {
         this.say('upgrade')
-        this.upgrade_()
+        this.processBasicUpgrade()
       }
+
       else {
         const source = this.pos.findClosestByPath(FIND_SOURCES_ACTIVE)
         if (source)
-          this.harvest_(source)
-        if (this.ticksToLive < 120 && this.store.getUsedCapacity('energy') <= 20)
+          this.processBasicHarvest(source)
+        if (this.ticksToLive! < 120 && (this.store.energy || 0) <= 20)
           this.suicide()
       }
     }
   }
 
-  // 急速冲级
-  public handle_quickRush(): void {
+  /**
+   * 急速冲级
+   */
+  public processQuickRushMission(): void {
     const missionData = this.memory.missionData
     const id = missionData.id
-    const mission = Game.rooms[this.memory.belong].getMissionById(id)
+
+    const belongRoom = Game.rooms[this.memory.belong]
+    if (!belongRoom)
+      return
+
+    const mission = belongRoom.getMissionById(id)
     if (!mission)
       return
-    // boost检查
-    if (mission.labBind && !this.BoostCheck(['work']))
+
+    // boost 检查
+    if (mission.labBind && !this.processBoost(['work']))
       return
-    this.workstate('energy')
-    const terminal_ = global.structureCache[this.memory.belong].terminal as StructureTerminal
-    if (!terminal_) { this.say('找不到terminal!'); return }
+
+    this.processBasicWorkState(RESOURCE_ENERGY)
+
+    const terminal = this.room.memory.structureIdData?.terminalID ? Game.getObjectById(this.room.memory.structureIdData.terminalID) : null
+    if (!terminal) {
+      this.say('NO-TERMINAL')
+      return
+    }
+
     if (this.memory.working) {
-      this.upgrade_()
-      if (this.store.getUsedCapacity('energy') < 35 && terminal_.pos.isNearTo(this))
-        this.withdraw_(terminal_, 'energy')
+      this.processBasicUpgrade()
+      if ((this.store.energy || 0) < 35 && terminal.pos.isNearTo(this))
+        this.processBasicWithdraw(terminal, RESOURCE_ENERGY)
     }
+
     else {
-      this.withdraw_(terminal_, 'energy')
+      this.processBasicWithdraw(terminal, RESOURCE_ENERGY)
     }
+
     this.memory.standed = mission.data.standed
   }
 
-  // 紧急援建
-  public handle_helpBuild(): void {
+  /**
+   * 紧急援建
+   */
+  public processHelpBuildMission(): void {
     const missionData = this.memory.missionData
-    const id = missionData.id
     const data = missionData.Data
     if (!missionData)
       return
-    if (this.room.name == this.memory.belong && Game.shard.name == this.memory.shard) {
-      if (!this.BoostCheck(['move', 'work', 'heal', 'tough', 'carry']))
+
+    if (this.room.name === this.memory.belong && Game.shard.name === this.memory.shard) {
+      if (!this.processBoost(['move', 'work', 'heal', 'tough', 'carry']))
         return
-      if (this.store.getUsedCapacity('energy') <= 0) {
-        const stroge_ = global.structureCache[this.memory.belong].storage as StructureStorage
-        if (stroge_) {
-          this.withdraw_(stroge_, 'energy')
+
+      if (this.store.getUsedCapacity(RESOURCE_ENERGY) <= 0) {
+        const storage = this.room.memory.structureIdData?.storageID ? Game.getObjectById(this.room.memory.structureIdData.storageID) : null
+        if (storage) {
+          this.processBasicWithdraw(storage, RESOURCE_ENERGY)
           return
         }
       }
     }
-    if ((this.room.name != data.disRoom || Game.shard.name != data.shard) && !this.memory.swith) {
+
+    if ((this.room.name !== data.disRoom || Game.shard.name !== data.shard) && !this.memory.swith) {
       this.heal(this)
-      this.arriveTo(new RoomPosition(24, 24, data.disRoom), 23, data.shard, data.shardData ? data.shardData : null)
+      this.arriveTo(new RoomPosition(24, 24, data.disRoom), 23, data.shard, data.shardData)
+      return
     }
-    else {
-      this.memory.swith = true
-      const runFlag = this.pos.findClosestByRange(FIND_FLAGS, {
-        filter: (flag) => {
-          return flag.color == COLOR_BLUE
-        },
-      })
-      if (runFlag) {
-        this.goTo(runFlag.pos, 0)
+
+    this.memory.swith = true
+
+    const runFlag = this.pos.findClosestByRange(
+      this.room.find(FIND_FLAGS)
+        .filter(flag => flag.color === COLOR_BLUE))
+    if (runFlag) {
+      this.goTo(runFlag.pos, 0)
+      return
+    }
+
+    this.processBasicWorkState(RESOURCE_ENERGY)
+
+    if (this.memory.working) {
+      if (this.room.name !== data.disRoom) {
+        this.arriveTo(new RoomPosition(24, 24, data.disRoom), 23, data.shard)
         return
       }
-      this.workstate('energy')
-      if (this.memory.working) {
-        if (this.room.name != data.disRoom) { this.arriveTo(new RoomPosition(24, 24, data.disRoom), 23, data.shard); return }
+
+      if (this.hits < this.hitsMax)
+        this.heal(this)
+
+      if (this.room.name !== data.disRoom) {
+        this.goTo(new RoomPosition(24, 24, data.disRoom), 23)
+        return
+      }
+
+      const cons = this.pos.findClosestByRange(FIND_CONSTRUCTION_SITES)
+      if (cons)
+        this.processBasicBuild(cons)
+    }
+
+    else {
+      // 以 withdraw 开头的旗帜  例如： withdraw_0
+      const withdrawFlag = this.pos.findClosestByPath(
+        this.room.find(FIND_FLAGS)
+          .filter(flag => flag.name.startsWith('withdraw')))
+      if (withdrawFlag) {
+        const tank = withdrawFlag.pos.getStructureList(['storage', 'terminal', 'container', 'tower'])
+        if (tank.length > 0) {
+          this.processBasicWithdraw(tank[0], RESOURCE_ENERGY)
+          return
+        }
+      }
+
+      const harvestFlag = Game.flags[`${this.memory.belong}/HB/harvest`]
+      if (harvestFlag) {
         if (this.hits < this.hitsMax)
           this.heal(this)
 
-        if (this.room.name != data.disRoom) { this.goTo(new RoomPosition(24, 24, data.disRoom), 23); return }
-        const cons = this.pos.findClosestByRange(FIND_CONSTRUCTION_SITES)
-        if (cons)
-          this.build_(cons)
-      }
-      else {
-        // 以withdraw开头的旗帜  例如： withdraw_0
-        const withdrawFlag = this.pos.findClosestByPath(FIND_FLAGS, {
-          filter: (flag) => {
-            return flag.name.indexOf('withdraw') == 0
-          },
-        })
-        if (withdrawFlag) {
-          const tank_ = withdrawFlag.pos.getStructureList(['storage', 'terminal', 'container', 'tower'])
-          if (tank_.length > 0) { this.withdraw_(tank_[0], 'energy'); return }
+        if (this.room.name !== harvestFlag.pos.roomName) {
+          this.goTo(harvestFlag.pos, 1)
         }
-        const harvestFlag = Game.flags[`${this.memory.belong}/HB/harvest`]
-        if (harvestFlag) {
-          if (this.hits < this.hitsMax)
-            this.heal(this)
+        else {
+          const source = this.pos.findClosestByRange(FIND_SOURCES_ACTIVE)
+          if (source)
+            this.processBasicHarvest(source)
+        }
 
-          if (this.room.name != harvestFlag.pos.roomName) {
-            this.goTo(harvestFlag.pos, 1)
-          }
-          else {
-            const source = this.pos.findClosestByRange(FIND_SOURCES_ACTIVE)
-            if (source)
-              this.harvest_(source)
-          }
-          return
-        }
-        const source = this.pos.findClosestByPath(FIND_SOURCES_ACTIVE)
-        if (source)
-          this.harvest_(source)
+        return
       }
+
+      const source = this.pos.findClosestByPath(FIND_SOURCES_ACTIVE)
+      if (source)
+        this.processBasicHarvest(source)
     }
   }
 
-  // 房间签名
-  public handle_sign(): void {
+  /**
+   * 房间签名
+   */
+  public processSignMission(): void {
     const missionData = this.memory.missionData
     const id = missionData.id
     const data = missionData.Data
     if (!missionData)
       return
-    if (this.room.name != data.disRoom || Game.shard.name != data.shard) {
-      this.arriveTo(new RoomPosition(24, 24, data.disRoom), 23, data.shard, data.shardData ? data.shardData : null)
+
+    if (this.room.name !== data.disRoom || Game.shard.name !== data.shard) {
+      this.arriveTo(new RoomPosition(24, 24, data.disRoom), 23, data.shard, data.shardData)
+      return
     }
-    else {
-      const control = this.room.controller
-      if (control) {
-        if (!this.pos.isNearTo(control))
-          this.goTo(control.pos, 1)
-        else this.signController(control, data.str)
-        if (control.sign == data.str)
-          Game.rooms[this.memory.belong].removeMission(id)
-      }
+
+    const controller = this.room.controller
+    if (!controller)
+      return
+
+    if (!this.pos.isNearTo(controller)) {
+      this.goTo(controller.pos, 1)
+      return
+    }
+
+    this.signController(controller, data.str)
+
+    if (controller.sign === data.str) {
+      const belongRoom = Game.rooms[this.memory.belong]
+      if (belongRoom)
+        belongRoom.removeMission(id)
     }
   }
 
-  /* 原矿开采任务处理 */
-  public handle_mineral(): void {
-    const extractor = Game.getObjectById(Game.rooms[this.memory.belong].memory.structureIdData.extractorID) as StructureExtractor
+  /**
+   * 原矿开采任务处理
+   */
+  public processMineralMission(): void {
+    const belongRoom = Game.rooms[this.memory.belong]
+    if (!belongRoom)
+      return
+
+    const extractor = belongRoom.memory.structureIdData?.extractorID ? Game.getObjectById(belongRoom.memory.structureIdData.extractorID) : null
     if (!extractor)
       return
-    let container: StructureContainer
+
     if (!this.memory.containerID) {
-      const con = extractor.pos.findInRange(FIND_STRUCTURES, 1, {
-        filter: (stru) => {
-          return stru.structureType == 'container'
-        },
-      }) as StructureContainer[]
+      const con = extractor.pos.findInRange(extractor.room.getStructureWithType(STRUCTURE_CONTAINER), 1)
       if (con.length > 0)
         this.memory.containerID = con[0].id
+      else return
     }
-    else {
-      container = Game.getObjectById(this.memory.containerID) as StructureContainer
-      if (!container)
+
+    const container = Game.getObjectById(this.memory.containerID as Id<StructureContainer>)
+    if (!container)
+      return
+
+    // container 杂质清理
+    if (container.store.getUsedCapacity() > 0 && this.pos.isEqualTo(container))
+      this.processBasicWithdraw(container, Object.keys(container.store)[0] as ResourceConstant)
+
+    if (!this.memory.working)
+      this.memory.working = false
+    if (this.memory.working && this.store.getFreeCapacity() === this.store.getCapacity())
+      this.memory.working = false
+    if (!this.memory.working && this.store.getFreeCapacity() === 0)
+      this.memory.working = true
+
+    if (this.memory.working) {
+      const storage = this.room.memory.structureIdData?.storageID ? Game.getObjectById(this.room.memory.structureIdData.storageID) : null
+      if (!storage)
         return
-      /* container杂志清理 */
-      if (container.store && container.store.getUsedCapacity() > 0 && this.pos.isEqualTo(container)) {
-        for (var i in container.store)
-          this.withdraw(container, i as ResourceConstant)
+
+      if (!this.pos.isNearTo(storage)) {
+        this.goTo(storage.pos, 1)
+        return
       }
-      if (!this.memory.working)
-        this.memory.working = false
-      if (this.memory.working && this.store.getFreeCapacity() == this.store.getCapacity())
-        this.memory.working = false
-      if (!this.memory.working && this.store.getFreeCapacity() == 0)
-        this.memory.working = true
-      if (this.memory.working) {
-        const storage_ = Game.getObjectById(Game.rooms[this.memory.belong].memory.structureIdData.storageID) as StructureStorage
-        if (!storage_)
-          return
-        if (!this.pos.isNearTo(storage_)) { this.goTo(storage_.pos, 1) }
-        else {
-          for (var i in this.store) {
-            this.transfer(storage_, i as ResourceConstant)
-            return
-          }
-        }
+
+      this.processBasicTransfer(storage, Object.keys(this.store)[0] as ResourceConstant)
+    }
+
+    else {
+      if (!this.pos.isEqualTo(container.pos)) {
+        this.goTo(container.pos, 0)
+        return
       }
-      else {
-        if (!this.pos.isEqualTo(container.pos)) { this.goTo(container.pos, 0) }
-        else {
-          if (this.ticksToLive < 15)
-            this.suicide()
-          const mineral = Game.getObjectById(Game.rooms[this.memory.belong].memory.structureIdData.mineralID) as Mineral
-          if (!mineral.mineralAmount) {
-            Game.rooms[this.memory.belong].removeMission(this.memory.missionData.id)
-            this.suicide()
-            return
-          }
-          if (!extractor.cooldown)
-            this.harvest(mineral)
-        }
+
+      if (this.ticksToLive! < 15)
+        this.suicide()
+
+      const mineral = belongRoom.memory.structureIdData?.mineralID ? Game.getObjectById(belongRoom.memory.structureIdData.mineralID) : null
+      if (!mineral?.mineralAmount) {
+        belongRoom.removeMission(this.memory.missionData.id)
+        this.suicide()
+        return
       }
+
+      if (!extractor.cooldown)
+        this.harvest(mineral)
     }
   }
 }

@@ -26,7 +26,7 @@ export default class PositionFunctionFindExtension extends RoomPosition {
       case 2: {
         // 获取 hits / hitsMax 最小的
         return structures.filter(s => s.hits < s.hitsMax)
-          .reduce((pv, cv) => (pv ? pv.hits / pv.hitsMax : 1) < cv.hits / cv.hitsMax ? pv : cv)
+          .reduce((pv, cv) => pv.hits / pv.hitsMax < cv.hits / cv.hitsMax ? pv : cv)
       }
     }
   }

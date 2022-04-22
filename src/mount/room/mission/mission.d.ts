@@ -12,11 +12,11 @@ interface Room {
   checkBuy(resource: ResourceConstant): boolean
   getMissionModelByName(category: string, name: string): MissionModel | null
   // 主动任务
-  missionSpawnFeed(): void
+  checkSpawnFeed(): void
   checkBuilder(): void
-  missionTowerFeed(): void
-  missionLabFeed(): void
-  missionNukerFeed(): void
+  checkTowerFeed(): void
+  checkLabFeed(): void
+  checkNukerFeed(): void
   checkSourceLinks(): void
   checkCenterLinkToStorage(): void
   checkConsumeLinks(): void
@@ -27,24 +27,24 @@ interface Room {
   checkAutoDefend(): void
 
   // 被动任务
-  checkCarryMission(mission: MissionModel): void
-  checkRepairMission(mission: MissionModel): void
-  checkDismantleMission(mission: MissionModel): void
-  checkQuickUpgradeMission(mission: MissionModel): void
-  checkHelpDefendMission(mission: MissionModel): void
-  checkHelpBuildMission(mission: MissionModel): void
-  checkCompoundMission(mission: MissionModel): void
-  checkAioMission(mission: MissionModel): void
-  checkOutMineMission(mission: MissionModel): void
+  verifyCarryMission(mission: MissionModel): void
+  verifyRepairMission(mission: MissionModel): void
+  verifyDismantleMission(mission: MissionModel): void
+  verifyQuickUpgradeMission(mission: MissionModel): void
+  verifyHelpDefendMission(mission: MissionModel): void
+  verifyHelpBuildMission(mission: MissionModel): void
+  verifyCompoundMission(mission: MissionModel): void
+  verifyAioMission(mission: MissionModel): void
+  verifyOutMineMission(mission: MissionModel): void
   processPowerMission(mission: MissionModel): void
-  checkCrossMission(mission: MissionModel): void
-  checkPowerHarvestMission(mission: MissionModel): void
-  checkRedDefendMission(mission: MissionModel): void
-  checkBlueDefendMission(mission: MissionModel): void
-  checkDoubleDefendMission(mission: MissionModel): void
-  checkSquadMission(mission: MissionModel): void
-  checkDoubleMission(mission: MissionModel): void
-  checkResourceTransferMission(mission: MissionModel): void
+  verifyCrossMission(mission: MissionModel): void
+  verifyPowerHarvestMission(mission: MissionModel): void
+  verifyRedDefendMission(mission: MissionModel): void
+  verifyBlueDefendMission(mission: MissionModel): void
+  verifyDoubleDefendMission(mission: MissionModel): void
+  verifySquadMission(mission: MissionModel): void
+  verifyDoubleMission(mission: MissionModel): void
+  verifyResourceTransferMission(mission: MissionModel): void
 }
 
 interface RoomMemory {

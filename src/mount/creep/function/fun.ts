@@ -1,156 +1,175 @@
-/* 爬虫原型拓展   --功能  --功能 */
-
 import { BoostedPartData } from '@/constant/BoostConstant'
-import { isInArray } from '@/utils'
 
+/* 爬虫原型拓展   --功能  --功能 */
 export default class CreepFunctionExtension extends Creep {
   /**
-     *
-     * working状态
-     */
-  public workstate(rType: ResourceConstant = RESOURCE_ENERGY): void {
+   * working 状态
+   */
+  public processBasicWorkState(rType: ResourceConstant = RESOURCE_ENERGY): void {
     if (!this.memory.working)
       this.memory.working = false
-    if (this.memory.working && this.store[rType] == 0)
+    if (this.memory.working && this.store[rType] === 0)
       this.memory.working = false
-
-    if (!this.memory.working && this.store.getFreeCapacity() == 0)
+    if (!this.memory.working && this.store.getFreeCapacity() === 0)
       this.memory.working = true
   }
 
-  public harvest_(source_: Source): void {
-    if (this.harvest(source_) == ERR_NOT_IN_RANGE) {
+  public processBasicHarvest(source_: Source): void {
+    if (this.harvest(source_) === ERR_NOT_IN_RANGE) {
       this.goTo(source_.pos, 1)
       this.memory.standed = false
     }
-    else { this.memory.standed = true }
+    else {
+      this.memory.standed = true
+    }
   }
 
-  public transfer_(distination: Structure, rType: ResourceConstant = RESOURCE_ENERGY): void {
-    if (this.transfer(distination, rType) == ERR_NOT_IN_RANGE)
+  public processBasicTransfer(distination: Structure, rType: ResourceConstant = RESOURCE_ENERGY): void {
+    if (this.transfer(distination, rType) === ERR_NOT_IN_RANGE)
       this.goTo(distination.pos, 1)
   }
 
-  public upgrade_(): void {
+  public processBasicUpgrade(): void {
     if (this.room.controller) {
-      if (this.upgradeController(this.room.controller) == ERR_NOT_IN_RANGE) {
+      if (this.upgradeController(this.room.controller) === ERR_NOT_IN_RANGE) {
         this.goTo(this.room.controller.pos, 1)
         this.memory.standed = false
       }
-      else { this.memory.standed = true }
+      else {
+        this.memory.standed = true
+      }
     }
   }
 
   // 考虑到建筑和修复有可能造成堵虫，所以解除钉扎状态
-  public build_(distination: ConstructionSite): void {
-    if (this.build(distination) == ERR_NOT_IN_RANGE) {
+  public processBasicBuild(distination: ConstructionSite): void {
+    if (this.build(distination) === ERR_NOT_IN_RANGE) {
       this.goTo(distination.pos, 1)
       this.memory.standed = false
     }
-    else { this.memory.standed = true }
+    else {
+      this.memory.standed = true
+    }
   }
 
-  public repair_(distination: Structure): void {
-    if (this.repair(distination) == ERR_NOT_IN_RANGE) {
+  public processBasicRepair(distination: Structure): void {
+    if (this.repair(distination) === ERR_NOT_IN_RANGE) {
       this.goTo(distination.pos, 1)
       this.memory.standed = false
     }
-    else { this.memory.standed = true }
+    else {
+      this.memory.standed = true
+    }
   }
 
-  public withdraw_(distination: Structure, rType: ResourceConstant = RESOURCE_ENERGY): void {
-    if (this.withdraw(distination, rType) == ERR_NOT_IN_RANGE)
+  public processBasicWithdraw(distination: Structure, rType: ResourceConstant = RESOURCE_ENERGY): void {
+    if (this.withdraw(distination, rType) === ERR_NOT_IN_RANGE)
       this.goTo(distination.pos, 1)
 
     this.memory.standed = false
   }
 
-  // 确认是否boost了,并进行相应Boost
-  public BoostCheck(boostBody: string[]): boolean {
+  // 确认是否 boost 了，并进行相应 boost
+  public processBoost(boostBody: string[]): boolean {
     for (const body in this.memory.boostData) {
-      if (!isInArray(boostBody, body))
+      if (!boostBody.includes(body))
         continue
+
       if (!this.memory.boostData[body].boosted) {
-        var tempID: string
         const thisRoomMission = Game.rooms[this.memory.belong].getMissionById(this.memory.missionData.id)
         if (!thisRoomMission)
           return false
-        LoopB:
-        for (const j in thisRoomMission.labBind) {
-          if (BoostedPartData[thisRoomMission.labBind[j]] && body == BoostedPartData[thisRoomMission.labBind[j]]) {
-            tempID = j
-            break LoopB
-          }
-        }
-        if (!tempID)
+
+        if (!thisRoomMission.labBind)
           continue
-        const disLab = Game.getObjectById(tempID) as StructureLab
+        const labId = Object.entries(thisRoomMission.labBind)
+          .find(([, rType]) => body === BoostedPartData[rType])?.[0] as Id<StructureLab>
+        if (!labId)
+          continue
+        const disLab = Game.getObjectById(labId)
         if (!disLab)
           continue
-        // 计算body部件
-        let s = 0
-        for (const b of this.body) {
-          if (b.type == body)
-            s++
-        }
         if (!disLab.mineralType)
           return false
-        if (!this.pos.isNearTo(disLab)) { this.goTo(disLab.pos, 1) }
-        else {
-          for (const i of this.body)
-            if (i.type == body && i.boost != thisRoomMission.labBind[tempID]) { disLab.boostCreep(this); return false }
 
-          this.memory.boostData[body] = { boosted: true, num: s, type: thisRoomMission.labBind[tempID] as ResourceConstant }
+        if (!this.pos.isNearTo(disLab)) {
+          this.goTo(disLab.pos, 1)
         }
+        else {
+          // 计算 body 部件
+          const parts = Object.values(this.body).filter(i => i.type === body)
+          if (parts.some(i => i.boost !== thisRoomMission.labBind![labId])) {
+            disLab.boostCreep(this)
+            return false
+          }
+
+          this.memory.boostData[body] = {
+            boosted: true,
+            num: parts.length,
+            type: thisRoomMission.labBind[labId],
+          }
+        }
+
         return false
       }
     }
+
     return true
   }
 
-  // 召唤所有房间内的防御塔治疗/攻击 自己/爬虫 [不一定成功]
-  public optTower(otype: 'heal'|'attack', creep: Creep): void {
-    if (this.room.name != this.memory.belong || Game.shard.name != this.memory.shard)
+  /**
+   * 召唤所有房间内的防御塔治疗/攻击 自己/爬虫 [不一定成功]
+   */
+  public optTower(otype: 'heal' | 'attack', creep: Creep): void {
+    if (this.room.name !== this.memory.belong || Game.shard.name !== this.memory.shard)
       return
-    for (const i of Game.rooms[this.memory.belong].memory.structureIdData.AtowerID) {
-      const tower_ = Game.getObjectById(i) as StructureTower
-      if (!tower_)
-        continue
-      if (otype == 'heal')
-        tower_.heal(creep)
+    const room = Game.rooms[this.memory.belong]
+    if (!room?.memory.structureIdData?.AtowerID)
+      return
 
+    for (const id of room.memory.structureIdData.AtowerID) {
+      const tower = Game.getObjectById(id)
+      if (!tower)
+        continue
+
+      if (otype === 'heal')
+        tower.heal(creep)
       else
-        tower_.attack(creep)
+        tower.attack(creep)
     }
   }
 
   public isInDefend(creep: Creep): boolean {
-    for (const i in Game.rooms[this.memory.belong].memory.enemy) {
-      for (const id of Game.rooms[this.memory.belong].memory.enemy[i]) {
-        if (creep.id == id)
+    const room = Game.rooms[this.memory.belong]
+    if (!room?.memory.enemy)
+      return false
+
+    for (const i in room.memory.enemy) {
+      for (const id of room.memory.enemy[i]) {
+        if (creep.id === id)
           return true
       }
     }
     return false
   }
 
-  // 寻找数组里距离自己最近的爬虫 hurt为true则去除没有攻击部件的爬
-  public closestCreep(creep: Creep[], hurt?: boolean): Creep {
-    if (creep.length <= 0)
-      return null
-    let result = creep[0]
-    // 计算距离
-    for (const i of creep) {
-      // 距离
-      if (hurt) {
-        if (!i.getActiveBodyparts('attack') && !i.getActiveBodyparts('ranged_attack'))
-          continue
-      }
-      const distance0 = Math.max(Math.abs(this.pos.x - result.pos.x), Math.abs(this.pos.y - result.pos.y))
-      const distance1 = Math.max(Math.abs(this.pos.x - i.pos.x), Math.abs(this.pos.y - i.pos.y))
-      if (distance1 < distance0)
-        result = i
-    }
-    return result
+  /**
+   * 寻找数组里距离自己最近的爬虫
+   * @param canAttack 为 true 则去除没有攻击部件的爬
+   */
+  public getClosestCreep(creeps: Creep[], canAttack?: boolean): Creep | undefined {
+    if (creeps.length <= 0)
+      return
+
+    if (canAttack)
+      creeps = creeps.filter(i => i.getActiveBodyparts('attack') || i.getActiveBodyparts('ranged_attack'))
+
+    return creeps
+      .map(creep => ({
+        creep,
+        distance: Math.max(Math.abs(this.pos.x - creep.pos.x), Math.abs(this.pos.y - creep.pos.y)),
+      }))
+      .reduce((a, b) => a.distance < b.distance ? a : b)
+      .creep
   }
 }

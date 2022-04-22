@@ -1,4 +1,5 @@
 import { allStructureTypes } from '@/constant/structureConstant'
+import { cacheMethodOHash, profileMethod } from '@/utils'
 
 /* 房间原型拓展   --方法  --寻找 */
 export default class RoomFunctionFindExtension extends Room {
@@ -75,18 +76,20 @@ export default class RoomFunctionFindExtension extends Room {
    * 获取指定列表中类型的 hit 最小的建筑 (比值)
    * @param mode 0: hits 最小, 1: hitsMax - hits 最小, 2: hits / hitsMax 最小
    */
+  @profileMethod()
+  @cacheMethodOHash()
   public getStructureHitsLeast<T extends AnyStructure['structureType']>(types: T[], mode: 0 | 1 | 2 | 3 = 2): NarrowStructure<T> {
     const structures = this.getStructureWithTypes(types).filter(v => v.hits < v.hitsMax)
     switch (mode) {
       case 0:
       case 3: {
-        return structures.reduce((pv, cv) => (pv ? pv.hits : Infinity) < cv.hits ? pv : cv)
+        return structures.reduce((pv, cv) => pv.hits < cv.hits ? pv : cv)
       }
       case 1: {
-        return structures.reduce((pv, cv) => (pv ? pv.hitsMax - pv.hits : 0) > cv.hitsMax - cv.hits ? pv : cv)
+        return structures.reduce((pv, cv) => pv.hitsMax - pv.hits > cv.hitsMax - cv.hits ? pv : cv)
       }
       case 2: {
-        return structures.reduce((pv, cv) => (pv ? pv.hits / pv.hitsMax : 1) < cv.hits / cv.hitsMax ? pv : cv)
+        return structures.reduce((pv, cv) => pv.hits / pv.hitsMax < cv.hits / cv.hitsMax ? pv : cv)
       }
     }
   }

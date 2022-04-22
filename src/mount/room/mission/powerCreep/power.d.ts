@@ -1,4 +1,4 @@
 interface Room {
-  missionPowerCreep(): void
-  missionPcEnhanceFactory(): void
+  checkPowerCreep(): void
+  checkPcEnhanceFactory(): void
 }

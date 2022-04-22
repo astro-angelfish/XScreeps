@@ -3,7 +3,7 @@ import { colorfyLog } from '@/utils'
 
 /* 房间原型拓展   --行为  --维护任务 */
 export default class RoomMissionVindicateExtension extends Room {
-  public checkRepairMission(mission: MissionModel): void {
+  public verifyRepairMission(mission: MissionModel): void {
     // 根据 level 决定任务爬虫体型
     const level = mission.data.level
     if (!level)
@@ -28,7 +28,7 @@ export default class RoomMissionVindicateExtension extends Room {
   /**
    * 急速冲级
    */
-  public checkQuickUpgradeMission(mission: MissionModel): void {
+  public verifyQuickUpgradeMission(mission: MissionModel): void {
     if (!this.controller)
       return
     if (this.controller.level >= 8) {
@@ -76,7 +76,7 @@ export default class RoomMissionVindicateExtension extends Room {
   /**
    * 紧急援建
    */
-  public checkHelpBuildMission(mission: MissionModel): void {
+  public verifyHelpBuildMission(mission: MissionModel): void {
     if (!mission.data.defend)
       global.MSB[mission.id] = { architect: { work: 15, carry: 24, move: 10, heal: 1 } }
 
@@ -90,7 +90,7 @@ export default class RoomMissionVindicateExtension extends Room {
   }
 
   /* 资源转移任务 */
-  public checkResourceTransferMission(mission: MissionModel): void {
+  public verifyResourceTransferMission(mission: MissionModel): void {
     if ((Game.time - global.Gtime[this.name]) % 50)
       return
     const structureIdData = this.memory.structureIdData
