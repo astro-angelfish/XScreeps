@@ -1,18 +1,18 @@
-import { ErrorMapper } from '@/_errorMap/errorMapper'
-import { initMemory } from '@/module/global/init'
-import { countCreeps } from '@/module/global/statistic'
-import { pixel } from '@/module/fun/pixel'
-import { initShardMemory, processShard } from '@/module/shard/base'
-import { tickResourceDispatch } from '@/module/dispatch/resource'
-import layoutVisual from '@/module/layoutVisual'
-import { SquadManager } from '@/module/squad/base'
-import { stateScanner } from '@/module/stat/stat'
-import { showTowerData } from '@/module/visual/visual'
-import { statCPU } from '@/module/fun/funtion'
+import { processCreepWork } from './creep'
+import { processRoomWork } from './room'
+import { mountPrototype } from './misc/mount'
+import { statCPU } from './misc/statCPU'
+import { ErrorMapper } from '@/misc/errorMapper'
+import { initMemory } from '@/misc/initMemory'
+import { countCreeps } from '@/misc/statistic'
+import { pixel } from '@/misc/pixel'
+import { initShardMemory, processShard } from '@/shard'
+import { tickResourceDispatch } from '@/room/dispatch/resource'
+import layoutVisual from '@/room/layoutVisual'
+import { processSquads } from '@/creep/squad'
+import { stateScanner } from '@/misc/stat'
+import { showTowerData } from '@/misc/visual'
 import { profiler } from '@/utils'
-import mountPrototype from '@/mount'
-import CreepWork from '@/boot/creepWork'
-import processRoomWork from '@/boot/roomWork'
 
 /**
  * 主运行函数
@@ -56,15 +56,15 @@ export const loop = ErrorMapper.wrapLoop(() => {
 
   profiler.enter('爬虫')
 
-  /* 爬虫运行 */
-  CreepWork()
+  // 爬虫运行
+  processCreepWork()
 
   profiler.exit()
 
   profiler.enter('杂项')
 
-  /* 四人小队模块 */
-  SquadManager()
+  // 四人小队模块
+  processSquads()
 
   /* 资源调度超时管理 */
   tickResourceDispatch()

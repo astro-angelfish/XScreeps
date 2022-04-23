@@ -97,3 +97,168 @@ export function closestPortalRoom(roomName1: string, roomName2: string): string 
   // 转换回房间名
   return getRoomNameFromXY(rooms[0][0], rooms[0][1])
 }
+
+/**
+ * 判断房间 thisRoom 是否可以直接通过出口到达房间 disRoom
+ * @param thisRoom 当前房间
+ * @param disRoom 目标房价
+ * @returns boolean
+ * 方向常量 ↑:1 →:3 ↓:5 ←:7
+ */
+export function isRoomNextTo(thisRoom: string, disRoom: string): boolean {
+  const thisRoomData = getCoordPosFromRoomName(thisRoom)
+  const disRoomData = getCoordPosFromRoomName(disRoom)
+
+  if (thisRoomData.coord[0] === disRoomData.coord[0] && thisRoomData.coord[1] === disRoomData.coord[1]) {
+    const xDist = Math.abs(thisRoomData.pos[0] - disRoomData.pos[0])
+    const yDist = Math.abs(thisRoomData.pos[1] - disRoomData.pos[1])
+
+    if ((xDist === 0 && yDist === 1) || (xDist === 1 && yDist === 0)) {
+      const result = Game.rooms[thisRoom].findExitTo(disRoom)
+      if (result !== -2 && result !== -10) {
+        // 判断一个房间相对另一个房间的方向是否和返回的出口方向一致
+        let direction: number | undefined
+        // x方向相邻
+        if (xDist === 1) {
+          const count = thisRoomData.pos[0] - disRoomData.pos[0]
+          // W区
+          if (thisRoomData.coord[0] === 'W') {
+            switch (count) {
+              case 1: { direction = 3; break }
+              case -1: { direction = 7; break }
+            }
+          }
+          // E区
+          else if (thisRoomData.coord[0] === 'E') {
+            switch (count) {
+              case 1: { direction = 7; break }
+              case -1: { direction = 3; break }
+            }
+          }
+        }
+        // y方向相邻
+        else if (yDist === 1) {
+          const count = thisRoomData.pos[1] - disRoomData.pos[1]
+          // N区
+          if (thisRoomData.coord[1] === 'N') {
+            switch (count) {
+              case 1: { direction = 5; break }
+              case -1: { direction = 1; break }
+            }
+          }
+          // S区
+          else if (thisRoomData.coord[1] === 'S') {
+            switch (count) {
+              case 1: { direction = 1; break }
+              case -1: { direction = 5; break }
+            }
+          }
+        }
+
+        if (!direction)
+          return false
+        else if (direction === result)
+          return true
+      }
+    }
+  }
+
+  return false
+}
+
+/**
+ * 获取相邻房间相对于本房间的方向
+ * @param thisRoom 当前房间
+ * @param disRoom 目标房价
+ * @returns number
+ * 方向常量 ↑:1 →:3 ↓:5 ←:7
+ */
+export function calcNextRoomDirection(thisRoom: string, disRoom: string): TOP | RIGHT | BOTTOM | LEFT | undefined {
+  const thisRoomData = getCoordPosFromRoomName(thisRoom)
+  const disRoomData = getCoordPosFromRoomName(disRoom)
+
+  if (thisRoomData.coord[0] === disRoomData.coord[0] && thisRoomData.coord[1] === disRoomData.coord[1]) {
+    const xDist = Math.abs(thisRoomData.pos[0] - disRoomData.pos[0])
+    const yDist = Math.abs(thisRoomData.pos[1] - disRoomData.pos[1])
+
+    if ((xDist === 0 && yDist === 1) || (xDist === 1 && yDist === 0)) {
+      const result = Game.rooms[thisRoom].findExitTo(disRoom)
+      if (result !== -2 && result !== -10) {
+        // 判断一个房间相对另一个房间的方向是否和返回的出口方向一致
+        let direction: TOP | RIGHT | BOTTOM | LEFT | undefined
+        // x方向相邻
+        if (xDist === 1) {
+          const count = thisRoomData.pos[0] - disRoomData.pos[0]
+          // W区
+          if (thisRoomData.coord[0] === 'W') {
+            switch (count) {
+              case 1: { direction = RIGHT; break }
+              case -1: { direction = LEFT; break }
+            }
+          }
+          // E区
+          else if (thisRoomData.coord[0] === 'E') {
+            switch (count) {
+              case 1: { direction = LEFT; break }
+              case -1: { direction = RIGHT; break }
+            }
+          }
+        }
+        // y方向相邻
+        else if (yDist === 1) {
+          const count = thisRoomData.pos[1] - disRoomData.pos[1]
+          // N区
+          if (thisRoomData.coord[1] === 'N') {
+            switch (count) {
+              case 1: { direction = BOTTOM; break }
+              case -1: { direction = TOP; break }
+            }
+          }
+          // S区
+          else if (thisRoomData.coord[1] === 'S') {
+            switch (count) {
+              case 1: { direction = TOP; break }
+              case -1: { direction = BOTTOM; break }
+            }
+          }
+        }
+
+        return direction
+      }
+    }
+  }
+}
+
+/**
+ * 判断是否处于房间入口指定格数内
+ * @param creep
+ * @returns
+ */
+export function isRoomInRange(thisPos: RoomPosition, disRoom: string, range: number): boolean {
+  const thisRoom = thisPos.roomName
+
+  const direction = calcNextRoomDirection(thisRoom, disRoom)
+  if (!direction)
+    return false
+
+  if (!range || range <= 0 || range >= 49)
+    return false
+
+  switch (direction) {
+    case TOP: {
+      return thisPos.y <= range
+    }
+    case BOTTOM: {
+      return thisPos.y >= (49 - range)
+    }
+    case LEFT: {
+      return thisPos.x <= range
+    }
+    case RIGHT: {
+      return thisPos.x >= (49 - range)
+    }
+    default: {
+      return false
+    }
+  }
+}

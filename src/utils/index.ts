@@ -4,6 +4,10 @@ export * from './profiling'
 export * from './position'
 export * from './cache'
 export * from './room'
+export * from './mount'
+export * from './memory'
+export * from './resource'
+export * from './creep'
 
 export const initialTick = Game.time
 

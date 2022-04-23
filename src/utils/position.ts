@@ -19,6 +19,14 @@ export function unzipPosition(str: string): RoomPosition | undefined {
 }
 
 /**
+ * 没有房间名的字符串解压 例如 14/23
+ */
+export function unzipXY(str: string): [number, number] | undefined {
+  const info = str.split('/', 2)
+  return info.length === 2 ? [Number(info[0]), Number(info[1])] : undefined
+}
+
+/**
  * 获取指定方向相反的方向
  */
 export function getOppositeDirection(direction: DirectionConstant): DirectionConstant {
