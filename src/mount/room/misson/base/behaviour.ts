@@ -175,7 +175,7 @@ export default class RoomMissonBehaviourExtension extends Room {
                     num: 10000,
                     delayTick: 200,
                     conditionTick: 35,
-                    buy: true,
+                    buy: false,
                     mtype: 'deal'
                 }
                 Memory.ResourceDispatchData.push(dispatchTask)
@@ -192,7 +192,7 @@ export default class RoomMissonBehaviourExtension extends Room {
                     num: 1000,
                     delayTick: 100,
                     conditionTick: 25,
-                    buy: true,
+                    buy: false,
                     mtype: 'deal'
                 }
                 Memory.ResourceDispatchData.push(dispatchTask)
