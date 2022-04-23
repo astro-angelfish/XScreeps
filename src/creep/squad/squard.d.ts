@@ -2,7 +2,8 @@
 type arrayType = 'line' | 'squard' | 'free'
 
 /* 存储在全局Memory中，以任务ID为key的小队数据格式 */
-interface squadData{
+interface SquadData {
+  creepIds: [Id<Creep>, Id<Creep>, Id<Creep>, Id<Creep>]
   creepData: Squad // 爬虫位置、信息
   array: arrayType // 线性阵列 四方阵列 自由阵列
   sourceRoom: string // 源房间
@@ -16,21 +17,29 @@ interface squadData{
   init?: boolean // 是否已经初始化方向了
   gather?: boolean // 是否已经集结了
 }
-/* 小队爬虫信息数据格式   位置，索引，角色，爬虫类型==> heal or attack */
-type Squad = Record<string, { position: '↘'|'↖'|'↗'|'↙'; index: number;role: string;creepType: string }>
 
-interface Memory{
-  squadMemory: Record<string, squadData> /* 小队执行Memory载体 */
+type SquadGroupIds = [Id<Creep>, Id<Creep>, Id<Creep>, Id<Creep>]
+
+/* 小队爬虫信息数据格式   位置，索引，角色，爬虫类型==> heal or attack */
+type Squad = Record<string, {
+  position: '↘'|'↖'|'↗'|'↙'
+  index: number
+  role: string
+  creepType: string
+}>
+
+interface Memory {
+  squadMemory: Record<string, SquadData> /* 小队执行Memory载体 */
 }
 
-interface RoomMemory{
+interface RoomMemory {
   squadData: Record<string, Squad>
 }
 
-interface FlagMemory{
+interface FlagMemory {
   danger?: boolean
 }
 
-interface CreepMemory{
+interface CreepMemory {
   creepType?: string
 }

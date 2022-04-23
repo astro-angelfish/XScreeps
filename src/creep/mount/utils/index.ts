@@ -172,4 +172,22 @@ export default class CreepUtilsExtension extends Creep {
       .reduce((a, b) => a.distance < b.distance ? a : b)
       .creep
   }
+
+  /**
+   * 计算 rangedMassAttack 对指定目标的伤害
+   */
+  public calcRangedMassAttackDamage(target: Creep | PowerCreep | Structure): number {
+    // 对 ram 下无伤害
+    if (target.pos.getStructure(STRUCTURE_RAMPART))
+      return 0
+
+    const distance = this.pos.getRangeTo(target)
+    if (distance > 3)
+      return 0
+    if (distance > 2)
+      return 1
+    if (distance > 1)
+      return 4
+    return 10
+  }
 }

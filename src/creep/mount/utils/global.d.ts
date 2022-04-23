@@ -13,4 +13,5 @@ interface Creep{
   optTower(otype: 'heal'|'attack', creep: Creep): void
   isInDefend(creep: Creep): boolean
   getClosestCreep(creep: Creep[], hurt?: boolean): Creep | undefined
+  calcRangedMassAttackDamage(target: Creep | PowerCreep | Structure): number
 }

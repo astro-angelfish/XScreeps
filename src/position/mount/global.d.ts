@@ -14,4 +14,5 @@ interface RoomPosition {
   findRangeCreep(num: number): Creep[]
   calcTowerRangeData(target: StructureTower, tempData: ARH): void
   getStraightDistanceTo(pos: RoomPosition): number
+  isWalkable(): boolean
 }

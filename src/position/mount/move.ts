@@ -32,4 +32,17 @@ export default class PositionFunctionMoveExtension extends RoomPosition {
   public getStraightDistanceTo(pos: RoomPosition): number {
     return Math.sqrt((this.x - pos.x) ** 2 + (this.y - pos.y) ** 2)
   }
+
+  /**
+   * Creep 是否可以移动到这个位置
+   */
+  public isWalkable(): boolean {
+    return this.lookFor(LOOK_TERRAIN)[0] !== 'wall'
+     && this.lookFor(LOOK_STRUCTURES).filter(struct =>
+       struct.structureType !== STRUCTURE_CONTAINER
+        && struct.structureType !== STRUCTURE_ROAD
+        && (struct.structureType !== STRUCTURE_RAMPART || (struct as StructureRampart).my)).length === 0
+     && this.lookFor(LOOK_CONSTRUCTION_SITES).length === 0
+     && this.lookFor(LOOK_CREEPS).length === 0
+  }
 }
