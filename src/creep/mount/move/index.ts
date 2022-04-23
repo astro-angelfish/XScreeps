@@ -139,9 +139,11 @@ export default class CreepMoveExtension extends Creep {
    */
   @profileMethod()
   public goByPath(): CreepMoveReturnCode | ERR_NO_PATH | ERR_NOT_IN_RANGE | ERR_INVALID_TARGET {
-    if (!this.memory.moveData?.path || !this.memory.moveData.index)
+    if (!this.memory.moveData?.path)
       return ERR_NO_PATH
 
+    if (!this.memory.moveData.index)
+      this.memory.moveData.index = 0
     const index = this.memory.moveData.index
     // 移动索引超过数组上限代表到达目的地
     if (index >= this.memory.moveData.path.length) {
@@ -250,7 +252,6 @@ export default class CreepMoveExtension extends Creep {
   /**
    * 单位移动 (goByPath中的移动基本函数)
    */
-  @profileMethod()
   public go(direction: DirectionConstant): CreepMoveReturnCode | ERR_INVALID_TARGET {
     const moveResult = this.move(direction)
     if (moveResult !== OK)

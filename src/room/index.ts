@@ -1,5 +1,6 @@
 import { processResourceDispatch } from '@/room/dispatch/resource'
 import { processRoomDataVisual } from '@/misc/visual'
+import { profiler } from '@/utils'
 
 /* [通用]房间运行主程序 */
 export function processRoomWork() {
@@ -10,6 +11,8 @@ export function processRoomWork() {
     const thisRoom = Game.rooms[roomName]
     if (!thisRoom)
       continue
+
+    profiler.enter(`房间 ${roomName}`)
 
     // 房间核心
     // 房间数据初始化
@@ -34,5 +37,7 @@ export function processRoomWork() {
     processRoomDataVisual(thisRoom)
     // 房间等级 Memory 信息更新
     thisRoom.updateLevelCache()
+
+    profiler.exit()
   }
 }

@@ -1,15 +1,20 @@
 import dev from './dev'
-import RoomVisual from './RoomVisual'
-import { isInArray } from '@/utils'
+import RoomVisual from './roomVisual'
+
 export const drawByConfig = function(str: string) {
   let data: any
   let xx: number
   let yy: number
-  if (str == 'LayoutVisual') {
+
+  if (str === 'LayoutVisual') {
     xx = -25
     yy = -25
     data = dev
   }
+  else {
+    return
+  }
+
   const flag = Game.flags[str]
   if (!flag)
     return
@@ -26,7 +31,7 @@ export const drawByConfig = function(str: string) {
       const x = pos.x + xx + flag.pos.x
       const y = pos.y + yy + flag.pos.y
       try {
-        if (terrian.get(x, y) != TERRAIN_MASK_WALL)
+        if (terrian.get(x, y) !== TERRAIN_MASK_WALL)
           rv.structure(x, y, type)
       }
       catch (e) {
@@ -39,7 +44,7 @@ export const drawByConfig = function(str: string) {
   const pos = flag.pos
   for (let i = pos.x - 9; i < pos.x + 10; i++) {
     for (let j = pos.y - 9; j < pos.y + 10; j++) {
-      if (!isInArray([0, 1, 48, 49], i) && !isInArray([0, 1, 48, 49], j) && (Math.abs(i - pos.x) == 9 || Math.abs(j - pos.y) == 9) && terrian.get(i, j) != TERRAIN_MASK_WALL)
+      if (![0, 1, 48, 49].includes(i) && ![0, 1, 48, 49].includes(j) && (Math.abs(i - pos.x) === 9 || Math.abs(j - pos.y) === 9) && terrian.get(i, j) !== TERRAIN_MASK_WALL)
         rv.structure(i, j, STRUCTURE_RAMPART)
     }
   }

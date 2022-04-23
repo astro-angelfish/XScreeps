@@ -38,6 +38,7 @@ export default class CreepMissionCoreExtension extends Creep {
           this.memory.missionData.id = task.id // 任务id
           this.memory.missionData.name = task.name // 任务名
           this.memory.missionData.Data = task.data ? task.data : {} // 任务数据传输
+          task.processing = true
           return
         }
       }

@@ -221,11 +221,11 @@ export function findClosestFlagByPath(pos: RoomPosition, flags: Flag[], name: st
 
     const creeps = global.warData.enemy[pos.roomName].data
     return pos.findClosestByPath(
-      flags.filter(flag => flag.name.startsWith(name)
+      flags.filter(flag => flag.pos.roomName === pos.roomName && flag.name.startsWith(name)
        && findCreepsInRange(flag.pos, creeps, range || 3, true).length <= 0))
   }
 
-  return pos.findClosestByPath(flags.filter(flag => flag.name.startsWith(name)))
+  return pos.findClosestByPath(flags.filter(flag => flag.pos.roomName === pos.roomName && flag.name.startsWith(name)))
 }
 
 /**

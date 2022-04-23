@@ -149,6 +149,10 @@ export function processRoomDataVisual(room: Room): void {
     0, row += 1,
     { color: 'black', font: 0.7, align: 'left' })
   room.visual.text(
+    `测量基数:${(global.cpuData?.length || 0)}`,
+    0, row += 1,
+    { color: 'black', font: 0.7, align: 'left' })
+  room.visual.text(
     `房间状态:${(room.memory.state === 'peace' ? '和平' : '战争')}`,
     0, row += 1,
     { color: room.memory.state === 'peace' ? '#006400' : 'red', font: 0.7, align: 'left' })

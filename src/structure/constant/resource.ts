@@ -197,3 +197,15 @@ export const compoundColor = {
   ZK: '#74787c',
   UL: '#7c8577',
 }
+
+export const unzipMap = {
+  battery: 'energy',
+  lemergium_bar: 'L',
+  zynthium_bar: 'Z',
+  keanium_bar: 'K',
+  utrium_bar: 'U',
+  ghodium_melt: 'G',
+  oxidant: 'O',
+  reductant: 'H',
+  purifier: 'X',
+} as const

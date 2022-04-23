@@ -36,7 +36,7 @@ class Profiler {
 
     if (name) {
       name = name.replace(/\./g, '_DOT_')
-      if (this.currentStack.at(-1) !== name) {
+      if (this.currentStack[this.currentStack.length - 1] !== name) {
         const index = this.currentStack.indexOf(name)
         if (index !== -1)
           this.currentStack.splice(index + 1)
@@ -53,7 +53,7 @@ class Profiler {
     if (!import.meta.env.PROFILER)
       return
 
-    this.profilerTime -= Game.cpu.getUsed()
+    const logTime = Game.cpu.getUsed()
 
     if (this.currentStack.length)
       for (let i = 0; i < this.currentStack.length; i++) this.exit()
@@ -67,10 +67,10 @@ class Profiler {
           const start = this.startTimes[fullKey]
           const end = this.endTimes[fullKey]
           const duration = end - start
-          logs.push(`${spaceBefore}${prefix.at(-1)!.replace(/_DOT_/g, '.')} ${(duration * 1000).toFixed(2)}μs`)
+          logs.push(`${spaceBefore}${prefix[prefix.length - 1]!.replace(/_DOT_/g, '.')} ${(duration * 1000).toFixed(2)}μs`)
         }
         else {
-          logs.push(`${spaceBefore}${prefix.at(-1)!.replace(/_DOT_/g, '.')}`)
+          logs.push(`${spaceBefore}${prefix[prefix.length - 1]!.replace(/_DOT_/g, '.')}`)
         }
       }
 
@@ -97,10 +97,9 @@ class Profiler {
     }
     iter(Object.keys(this.endTimes), [])
 
-    this.profilerTime += Game.cpu.getUsed()
-
     const totalUsed = Game.cpu.getUsed() - this.startTime
-    logs.unshift(`[脚本性能数据] Shard:${Game.shard.name} Time:${Game.time} CPU:${(totalUsed * 1000).toFixed(2)}μs(${totalUsed}ms, ${(totalUsed / Game.cpu.limit * 100).toFixed(2)}%, profiling:${(this.profilerTime * 1000).toFixed(2)}μs)`)
+    const totalLogTime = Game.cpu.getUsed() - logTime
+    logs.unshift(`[脚本性能数据] Shard:${Game.shard.name} Time:${Game.time} CPU:${(totalUsed * 1000).toFixed(2)}μs(${totalUsed.toFixed(2)}ms, ${(totalUsed / Game.cpu.limit * 100).toFixed(2)}%, profiling:${(this.profilerTime * 1000).toFixed(2)}μs, log:${(totalLogTime * 1000).toFixed(2)}μs)`)
     console.log(logs.join('\n'))
   }
 }

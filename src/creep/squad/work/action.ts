@@ -2,58 +2,56 @@
 
 import { SquadDirection, crossConst, leftConst, rightConst, tactical } from './constant'
 import { getSquadCreepAtPos, getSquadHealDirection, getSquadRoomPosition, getSquadStandPos } from './state'
-import creep from '@/creep/mount'
-import { isInArray } from '@/utils'
 
 /* 小队战术动作 斜插 */
 export function SquadCross(SquadData: Squad): void {
-  for (var cName in SquadData) {
+  for (const cName in SquadData) {
     if (Game.creeps[cName] && Game.creeps[cName].fatigue)
       return
   }
-  for (var cName in SquadData) {
+  for (const cName in SquadData) {
     if (!Game.creeps[cName])
       continue
-    Game.creeps[cName].move(SquadDirection[crossConst[SquadData[cName].position]])
+    Game.creeps[cName].move(SquadDirection[crossConst[SquadData[cName].position] as keyof typeof SquadDirection])
     SquadData[cName].position = tactical.cross[SquadData[cName].position] as '↘' | '↗' | '↖' | '↙'
   }
 }
 
 /* 小队战术动作 右转 */
 export function SquadRight(SquadData: Squad): void {
-  for (var cName in SquadData) {
+  for (const cName in SquadData) {
     if (Game.creeps[cName] && Game.creeps[cName].fatigue)
       return
   }
-  for (var cName in SquadData) {
+  for (const cName in SquadData) {
     if (!Game.creeps[cName])
       continue
-    Game.creeps[cName].move(SquadDirection[rightConst[SquadData[cName].position]])
+    Game.creeps[cName].move(SquadDirection[rightConst[SquadData[cName].position] as keyof typeof SquadDirection])
     SquadData[cName].position = tactical.right[SquadData[cName].position] as '↘' | '↗' | '↖' | '↙'
   }
 }
 
 /* 小队战术动作 左转 */
 export function SquadLeft(SquadData: Squad): void {
-  for (var cName in SquadData) {
+  for (const cName in SquadData) {
     if (Game.creeps[cName] && Game.creeps[cName].fatigue)
       return
   }
-  for (var cName in SquadData) {
+  for (const cName in SquadData) {
     if (!Game.creeps[cName])
       continue
-    Game.creeps[cName].move(SquadDirection[leftConst[SquadData[cName].position]])
+    Game.creeps[cName].move(SquadDirection[leftConst[SquadData[cName].position] as keyof typeof SquadDirection])
     SquadData[cName].position = tactical.left[SquadData[cName].position] as '↘' | '↗' | '↖' | '↙'
   }
 }
 
 /* 进入目标房间前使用  治疗爬方向朝向目标房间的入口 */
 export function initSquad(thisRoom: string, disRoom: string, SquadData: Squad): void {
-  const Healdirection = getSquadHealDirection(SquadData)
-  if (Healdirection == null) {
+  const healDirection = getSquadHealDirection(SquadData)
+  if (healDirection == null) {
 
   }
-  else if (Healdirection == '←') {
+  else if (healDirection === '←') {
     switch (Game.rooms[thisRoom].findExitTo(disRoom)) {
       case FIND_EXIT_LEFT:{ break }
       case FIND_EXIT_RIGHT:{ SquadCross(SquadData); break }
@@ -61,7 +59,7 @@ export function initSquad(thisRoom: string, disRoom: string, SquadData: Squad): 
       case FIND_EXIT_TOP:{ SquadRight(SquadData); break }
     }
   }
-  else if (Healdirection == '→') {
+  else if (healDirection === '→') {
     switch (Game.rooms[thisRoom].findExitTo(disRoom)) {
       case FIND_EXIT_LEFT:{ SquadCross(SquadData); break }
       case FIND_EXIT_RIGHT:{ break }
@@ -69,7 +67,7 @@ export function initSquad(thisRoom: string, disRoom: string, SquadData: Squad): 
       case FIND_EXIT_TOP:{ SquadLeft(SquadData); break }
     }
   }
-  else if (Healdirection == '↑') {
+  else if (healDirection === '↑') {
     switch (Game.rooms[thisRoom].findExitTo(disRoom)) {
       case FIND_EXIT_LEFT:{ SquadLeft(SquadData); break }
       case FIND_EXIT_RIGHT:{ SquadRight(SquadData); break }
@@ -77,7 +75,7 @@ export function initSquad(thisRoom: string, disRoom: string, SquadData: Squad): 
       case FIND_EXIT_TOP:{ break }
     }
   }
-  else if (Healdirection == '↓') {
+  else if (healDirection === '↓') {
     switch (Game.rooms[thisRoom].findExitTo(disRoom)) {
       case FIND_EXIT_LEFT:{ SquadRight(SquadData); break }
       case FIND_EXIT_RIGHT:{ SquadLeft(SquadData); break }
@@ -88,9 +86,9 @@ export function initSquad(thisRoom: string, disRoom: string, SquadData: Squad): 
 }
 
 /* 根据小队攻击爬的方向和目标方向进行战术动作 使得攻击爬方向朝向目标方向 */
-export function SquadAttackOrient(Attackdirection: string, direction_: string, SquadData: Squad): void {
+export function squadAttackOrient(Attackdirection: string, direction_: string, SquadData: Squad): void {
   /* 根据自己的方向进行旋转 */
-  if (Attackdirection == '←') {
+  if (Attackdirection === '←') {
     switch (direction_) {
       case '←':{ break }
       case '→':{ SquadCross(SquadData); break }
@@ -98,7 +96,7 @@ export function SquadAttackOrient(Attackdirection: string, direction_: string, S
       case '↑':{ SquadRight(SquadData); break }
     }
   }
-  else if (Attackdirection == '→') {
+  else if (Attackdirection === '→') {
     switch (direction_) {
       case '←':{ SquadCross(SquadData); break }
       case '→':{ break }
@@ -106,7 +104,7 @@ export function SquadAttackOrient(Attackdirection: string, direction_: string, S
       case '↑':{ SquadLeft(SquadData); break }
     }
   }
-  else if (Attackdirection == '↑') {
+  else if (Attackdirection === '↑') {
     switch (direction_) {
       case '←':{ SquadLeft(SquadData); break }
       case '→':{ SquadRight(SquadData); break }
@@ -114,7 +112,7 @@ export function SquadAttackOrient(Attackdirection: string, direction_: string, S
       case '↑':{ break }
     }
   }
-  else if (Attackdirection == '↓') {
+  else if (Attackdirection === '↓') {
     switch (direction_) {
       case '←':{ SquadRight(SquadData); break }
       case '→':{ SquadLeft(SquadData); break }
@@ -130,7 +128,10 @@ export function steadySquad(SquadData: Squad): void {
     if (!Game.creeps[i])
       continue
     const disPos = getSquadRoomPosition(SquadData, SquadData[i].position)
-    /* 用不同的移动方式防止各种bug */
+    if (!disPos)
+      continue
+
+    // 用不同的移动方式防止各种bug
     if (Game.time % 3)
       Game.creeps[i].moveTo(disPos)
     else Game.creeps[i].goTo(disPos, 0)
@@ -152,24 +153,23 @@ export function getClosestSquadColorFlagByRange(SquadData: Squad, color: ColorCo
 }
 
 /* 小队寻找某类旗帜 */
-export function SquadNameFlagPath(SquadData: Squad, name: string): Flag {
+export function squadNameFlagPath(SquadData: Squad, name: string): Flag | undefined {
   const pos_ = getSquadStandPos(SquadData)
   if (!pos_)
-    return null
+    return
   const disFlag = pos_.findClosestByPath(FIND_FLAGS, {
     filter: (flag) => {
-      return flag.name.indexOf(name) == 0
+      return flag.name.indexOf(name) === 0
     },
   })
   if (disFlag)
     return disFlag
-  return null
 }
 
-export function SquadNameFlagRange(SquadData: Squad, name: string): Flag {
+export function squadNameFlagRange(SquadData: Squad, name: string): Flag | undefined {
   const pos_ = getSquadStandPos(SquadData)
   if (!pos_)
-    return null
+    return
   const disFlag = pos_.findClosestByRange(FIND_FLAGS, {
     filter: (flag) => {
       return flag.name.indexOf(name) == 0
@@ -177,19 +177,18 @@ export function SquadNameFlagRange(SquadData: Squad, name: string): Flag {
   })
   if (disFlag)
     return disFlag
-  return null
 }
 
 /* 小队行为 */
-export function Squadaction(SquadData: Squad): void {
+export function squadAction(SquadData: Squad): void {
   for (const i in SquadData) {
     const creep = Game.creeps[i]
     if (!creep)
       continue
     /* 治疗类型爬 */
-    if (creep.memory.creepType == 'heal') {
+    if (creep.memory.creepType === 'heal') {
       /* 寻找小队内血量最少的爬 */
-      var woundCreep: Creep
+      let woundCreep: Creep | undefined
       for (const wc in SquadData) {
         if (Game.creeps[wc] && !woundCreep && Game.creeps[wc].hits < Game.creeps[wc].hitsMax)
           woundCreep = Game.creeps[wc]
@@ -198,40 +197,43 @@ export function Squadaction(SquadData: Squad): void {
             woundCreep = Game.creeps[wc]
         }
       }
-      if (woundCreep) { creep.heal(woundCreep) }
-      else
-      /* 如果奶量都满的,就奶攻击爬 */
-      {
+      if (woundCreep) {
+        creep.heal(woundCreep)
+      }
+      // 如果奶量都满的,就奶攻击爬
+      else {
         const index = SquadData[i].index
-        var disIndex: number
-        if (index == 1)
+        let disIndex: number
+        if (index === 1)
           disIndex = 0
-        else if (index == 3)
+        else if (index === 3)
           disIndex = 2
         else disIndex = index
-        var disCreep: Creep
+        let disCreep: Creep | undefined
         for (const Index in SquadData) {
-          if (SquadData[Index].index == disIndex && Game.creeps[Index])
+          if (SquadData[Index].index === disIndex && Game.creeps[Index])
             disCreep = Game.creeps[Index]
         }
         if (!disCreep)
           disCreep = creep
         creep.heal(disCreep)
       }
-      /* 如果有攻击部件，攻击附近血量最少的爬 */
+      // 如果有攻击部件，攻击附近血量最少的爬
       if (creep.getActiveBodyparts('ranged_attack') > 0) {
-        var enemy = creep.pos.findInRange(FIND_HOSTILE_CREEPS, 3, {
-          filter: (creep_) => {
-            return !isInArray(Memory.whitelist, creep_.owner.username) && !creep_.pos.getStructure('rampart')
+        const enemy = creep.pos.findInRange(FIND_HOSTILE_CREEPS, 3, {
+          filter: (creep) => {
+            return !Memory.whitelist?.includes(creep.owner.username) && !creep.pos.getStructure('rampart')
           },
         })
-        var enemyCreep: Creep
-        if (enemy.length == 0) {
+        let enemyCreep: Creep | undefined
+        if (enemy.length === 0) {
           enemyCreep = enemy[0]
         }
         else if (enemy.length > 1) {
-          for (var ec of enemy) {
-            if (!enemyCreep) { enemyCreep = ec }
+          for (const ec of enemy) {
+            if (!enemyCreep) {
+              enemyCreep = ec
+            }
             else {
               if (ec.hits < enemyCreep.hits)
                 enemyCreep = ec
@@ -243,29 +245,29 @@ export function Squadaction(SquadData: Squad): void {
 
         else
           creep.rangedMassAttack()
-        if (creep.memory.role == 'x-aio') {
+        if (creep.memory.role === 'x-aio') {
           /* aio操作 暂缺 */
         }
       }
     }
-    /* 攻击类型的爬也有可能携带heal部件 */
-    else if (creep.memory.creepType == 'attack') {
+    // 攻击类型的爬也有可能携带heal部件
+    else if (creep.memory.creepType === 'attack') {
       /* 治疗自己 */
       if (creep.getActiveBodyparts('heal') > 0 && creep.hits < creep.hitsMax)
         creep.heal(creep)
       /* 如果有攻击部件，攻击附近血量最少的爬 */
       if (creep.getActiveBodyparts('ranged_attack') > 0) {
-        var enemy = creep.pos.findInRange(FIND_HOSTILE_CREEPS, 3, {
-          filter: (creep_) => {
-            return !isInArray(Memory.whitelist, creep_.owner.username) && !creep_.pos.getStructure('rampart')
+        const enemy = creep.pos.findInRange(FIND_HOSTILE_CREEPS, 3, {
+          filter: (creep) => {
+            return !Memory.whitelist?.includes(creep.owner.username) && !creep.pos.getStructure('rampart')
           },
         })
-        var enemyCreep: Creep = null
-        if (enemy.length == 1) {
+        let enemyCreep: Creep | undefined
+        if (enemy.length === 1) {
           enemyCreep = enemy[0]
         }
         else if (enemy.length > 1) {
-          for (var ec of enemy) {
+          for (const ec of enemy) {
             if (!enemyCreep) { enemyCreep = ec }
             else {
               if (ec.hits < enemyCreep.hits)
@@ -280,9 +282,9 @@ export function Squadaction(SquadData: Squad): void {
           creep.rangedMassAttack()
       }
       if (creep.getActiveBodyparts('attack') > 0) {
-        var enemy = creep.pos.findInRange(FIND_HOSTILE_CREEPS, 1, {
-          filter: (creep_) => {
-            return !isInArray(Memory.whitelist, creep_.owner.username) && !creep_.pos.getStructure('rampart')
+        const enemy = creep.pos.findInRange(FIND_HOSTILE_CREEPS, 1, {
+          filter: (creep) => {
+            return !Memory.whitelist?.includes(creep.owner.username) && !creep.pos.getStructure('rampart')
           },
         })
         if (enemy.length > 0) {
@@ -291,7 +293,7 @@ export function Squadaction(SquadData: Squad): void {
         else {
           const flag = creep.pos.findInRange(FIND_FLAGS, 1, {
             filter: (flag) => {
-              return flag.name.indexOf('squad_attack') == 0
+              return flag.name.indexOf('squad_attack') === 0
             },
           })
           if (flag.length > 0) {
@@ -307,7 +309,7 @@ export function Squadaction(SquadData: Squad): void {
       if (creep.getActiveBodyparts('work') > 0) {
         const flag = creep.pos.findInRange(FIND_FLAGS, 1, {
           filter: (flag) => {
-            return flag.name.indexOf('squad_attack') == 0
+            return flag.name.indexOf('squad_attack') === 0
           },
         })
         if (flag.length > 0) {

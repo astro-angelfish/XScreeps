@@ -12,7 +12,7 @@ import layoutVisual from '@/room/layoutVisual'
 import { processSquads } from '@/creep/squad'
 import { stateScanner } from '@/misc/stat'
 import { showTowerData } from '@/misc/visual'
-import { profiler } from '@/utils'
+import { haveShards, profiler } from '@/utils'
 
 /**
  * 主运行函数
@@ -30,10 +30,12 @@ export const loop = ErrorMapper.wrapLoop(() => {
   profiler.enter('跨 Shard 通讯')
 
   // 跨 shard 初始化
-  initShardMemory()
+  if (haveShards)
+    initShardMemory()
 
   // 跨 shard 记忆运行
-  processShard()
+  if (haveShards)
+    processShard()
 
   profiler.exit()
 
@@ -66,27 +68,34 @@ export const loop = ErrorMapper.wrapLoop(() => {
   // 四人小队模块
   processSquads()
 
-  /* 资源调度超时管理 */
+  // 跨 shardMemory 提交
+  if (haveShards)
+    InterShardMemory.setLocal(JSON.stringify(global.intershardData))
+
+  // 资源调度超时管理
   tickResourceDispatch()
 
-  /* 像素 */
+  // 像素
   pixel()
 
-  /* 布局可视化 */
+  // 布局可视化
   layoutVisual()
 
-  /* 防御塔数据展示 更新 */
+  // 防御塔数据展示 更新
   showTowerData()
 
-  /* 状态统计 screepsplus */
+  // 状态统计 screepsplus
   stateScanner()
 
-  /* CPU计算 */
+  // CPU计算
   statCPU()
 
   profiler.exit()
 
-  profiler.log()
+  if (global.logProfiler) {
+    profiler.log()
+    delete global.logProfiler
+  }
   // if (Game.shard.name === 'shard3')
   //   profiler.log()
 })

@@ -1,4 +1,4 @@
-import { isOPWR } from '@/powercreep/constant/constant'
+import { isOPWR } from '@/powercreep/utils'
 
 /* 超能powercreep相关任务 */
 export default class RoomMissionPowerCreepExtension extends Room {
@@ -33,6 +33,7 @@ export default class RoomMissionPowerCreepExtension extends Room {
     this.checkPcEnhanceTower()
     // this.checkPcEnhanceFactory()
     this.checkPcEnhancePowerSpawn()
+    this.checkPcEnhanceSource()
   }
 
   /**
@@ -45,7 +46,7 @@ export default class RoomMissionPowerCreepExtension extends Room {
     if (this.memory.toggles.StopEnhanceStorage)
       return
 
-    const storage = global.structureCache[this.name].storage as StructureStorage
+    const storage = this.memory.structureIdData?.storageID ? Game.getObjectById(this.memory.structureIdData.storageID) : null
     if (!storage)
       return
 
@@ -78,7 +79,7 @@ export default class RoomMissionPowerCreepExtension extends Room {
     if (this.memory.toggles.StopEnhanceLab)
       return
 
-    const storage = global.structureCache[this.name].storage as StructureStorage
+    const storage = this.memory.structureIdData?.storageID ? Game.getObjectById(this.memory.structureIdData.storageID) : null
     if (!storage)
       return
 
@@ -126,7 +127,7 @@ export default class RoomMissionPowerCreepExtension extends Room {
     if (this.memory.toggles.StopEnhanceTower)
       return
 
-    const storage = global.structureCache[this.name].storage as StructureStorage
+    const storage = this.memory.structureIdData?.storageID ? Game.getObjectById(this.memory.structureIdData.storageID) : null
     if (!storage)
       return
 
@@ -169,7 +170,7 @@ export default class RoomMissionPowerCreepExtension extends Room {
     if (this.memory.toggles.StopEnhanceExtension)
       return
 
-    const storage = global.structureCache[this.name].storage as StructureStorage
+    const storage = this.memory.structureIdData?.storageID ? Game.getObjectById(this.memory.structureIdData.storageID) : null
     if (!storage || storage.store.getUsedCapacity('energy') < 20000)
       return
 
@@ -199,7 +200,7 @@ export default class RoomMissionPowerCreepExtension extends Room {
     if (this.memory.toggles.StopEnhanceSpawn)
       return
 
-    const storage = global.structureCache[this.name].storage as StructureStorage
+    const storage = this.memory.structureIdData?.storageID ? Game.getObjectById(this.memory.structureIdData.storageID) : null
     if (!storage)
       return
 
@@ -241,7 +242,7 @@ export default class RoomMissionPowerCreepExtension extends Room {
     if (this.memory.toggles.StopEnhanceFactory)
       return
 
-    const storage = global.structureCache[this.name].storage as StructureStorage
+    const storage = this.memory.structureIdData?.storageID ? Game.getObjectById(this.memory.structureIdData.storageID) : null
     if (!storage)
       return
 
@@ -249,7 +250,7 @@ export default class RoomMissionPowerCreepExtension extends Room {
     if (!pc?.powers[PWR_OPERATE_FACTORY] || pc.powers[PWR_OPERATE_FACTORY].cooldown)
       return
 
-    if (this.countMissionByName('Room', '工厂合成') > 0)
+    if (this.countMissionByName('PowerCreep', '工厂强化') > 0)
       return
 
     this.addMission({
@@ -271,7 +272,7 @@ export default class RoomMissionPowerCreepExtension extends Room {
     if (this.memory.toggles.StopEnhancePowerSpawn)
       return
 
-    const storage = global.structureCache[this.name].storage as StructureStorage
+    const storage = this.memory.structureIdData?.storageID ? Game.getObjectById(this.memory.structureIdData.storageID) : null
     if (!storage)
       return
 
@@ -279,7 +280,7 @@ export default class RoomMissionPowerCreepExtension extends Room {
     if (!pc?.powers[PWR_OPERATE_POWER] || pc.powers[PWR_OPERATE_POWER].cooldown)
       return
 
-    if (this.countMissionByName('Room', 'power升级') > 0)
+    if (this.countMissionByName('PowerCreep', 'power强化') > 0)
       return
 
     this.addMission({
@@ -289,5 +290,50 @@ export default class RoomMissionPowerCreepExtension extends Room {
       creepBind: { queen: { num: 1, bind: [] } },
       data: {},
     })
+  }
+
+  /**
+   * 挂载 source 增强任务
+   * 适用于 queen 类型 pc
+   */
+  public checkPcEnhanceSource(): void {
+    if ((Game.time - global.Gtime[this.name]) % 13)
+      return
+    if (this.memory.toggles.StopEnhanceSource)
+      return
+
+    if (!this.memory.structureIdData?.source)
+      return
+
+    const pc = Game.powerCreeps[`${this.name}/queen/${Game.shard.name}`]
+    if (!pc || !pc.powers[PWR_REGEN_SOURCE] || pc.powers[PWR_REGEN_SOURCE].cooldown)
+      return
+
+    if (this.countMissionByName('PowerCreep', 'source强化') > 0)
+      return
+
+    for (const i in this.memory.structureIdData.source) {
+      const source = Game.getObjectById(this.memory.structureIdData.source[i])
+      if (!source)
+        continue
+
+      if (source.effects) {
+        if (source.effects.length > 0)
+          continue
+      }
+
+      this.addMission({
+        name: 'source强化',
+        delayTick: 50,
+        category: 'PowerCreep',
+        creepBind: {
+          queen: { num: 1, bind: [] },
+        },
+        data: {
+          source_id: source.id,
+        },
+        maxConcurrent: 2,
+      })
+    }
   }
 }

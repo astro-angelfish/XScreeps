@@ -1,4 +1,4 @@
-import { labReactionMap } from '@/structure/constant/ResourceConstant'
+import { labReactionMap } from '@/structure/constant/resource'
 import { defineMission } from '@/room/utils'
 import { zipPosition } from '@/utils'
 
@@ -240,7 +240,41 @@ export default class RoomMissionGenerate extends Room {
     return thisTask
   }
 
-  public generateExpandMission(disRoom: string, shard: string, num: number, cnum?: number): Omit<MissionModel, 'id'> {
+  /**
+   * 普通冲级任务发布函数
+   * @param num 冲级爬数量
+   * @param boostType boost 类型
+   * @returns 任务对象
+   */
+  public generateNormalUpgradeMission(num: number, boostType?: ResourceConstant): Omit<MissionModel, 'id'> {
+    const thisTask = defineMission({
+      name: '普通冲级',
+      category: 'Creep',
+      delayTick: 99999,
+      level: 10,
+      creepBind: {
+        rush: { num: num > 2 ? 2 : num, bind: [] },
+      },
+      data: {
+      },
+    })
+
+    if (boostType)
+      thisTask.labBind = this.bindLab([boostType])
+
+    return thisTask
+  }
+
+  /**
+   *
+   * @param disRoom 目标房间
+   * @param shard 目标房间 shard
+   * @param num 援建工和升级工分别数量
+   * @param cnum claimer 数量
+   * @param defend 是否需要能抵抗一定攻击的能力
+   * @returns 任务模型
+   */
+  public generateExpandMission(disRoom: string, shard: string, num: number, cnum: number, defend?: boolean): Omit<MissionModel, 'id'> {
     const thisTask = defineMission({
       name: '扩张援建',
       category: 'Creep',
@@ -250,11 +284,12 @@ export default class RoomMissionGenerate extends Room {
       data: {
         disRoom,
         shard,
+        defend,
       },
       creepBind: {
-        claim: { num: cnum || 0, bind: [] },
-        Ebuild: { num, bind: [] },
-        Eupgrade: { num, bind: [] },
+        claim: { num: cnum, bind: [], interval: 1000, MSB: defend },
+        Ebuild: { num, bind: [], interval: 1000, MSB: defend },
+        Eupgrade: { num, bind: [], interval: 1000, MSB: defend },
       },
     })
 

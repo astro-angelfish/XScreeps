@@ -22,6 +22,8 @@ declare namespace NodeJS {
     /* 100Tick内的平均CPU */
     cpuData?: number[]
     aveCpu?: number
+    repairList?: Record<string, (Id<StructureContainer> | Id<StructureRoad>)[]>
+    logProfiler?: boolean
   }
 }
 

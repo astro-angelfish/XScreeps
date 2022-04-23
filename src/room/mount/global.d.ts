@@ -40,6 +40,7 @@ interface Room {
 
   // tower
   processTowers(): void
+  collectTowerRepairList(): void
 
   // 建筑缓存
   cacheStructures(): void

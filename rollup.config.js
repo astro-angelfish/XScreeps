@@ -47,9 +47,6 @@ export default defineConfig({
     file: 'dist/main.js',
     format: 'cjs',
     sourcemap: true,
-    globals: {
-      lodash: '_',
-    },
   },
   external: ['lodash'],
   plugins: [
@@ -60,13 +57,16 @@ export default defineConfig({
     // 模块化依赖
     commonjs(),
     // 编译 ts
-    typescript({ tsconfig: './tsconfig.json' }),
+    typescript({
+      tsconfig: './tsconfig.json',
+    }),
     // 替换代码常量
     replace({
+      preventAssignment: true,
       values: {
         'import.meta.env.BUILD_TIME': JSON.stringify(new Date().toISOString()),
         // 是否开启 profiler
-        'import.meta.env.PROFILER': 'false',
+        'import.meta.env.PROFILER': 'true',
       },
     }),
     // 执行上传或者复制

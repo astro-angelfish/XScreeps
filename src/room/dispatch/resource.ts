@@ -304,6 +304,20 @@ export function processResourceLimitUpdate(thisRoom: Room): void {
       }
     }
   }
+
+  // 检测传送任务
+  if (thisRoom.countMissionByName('Structure', '资源传送') > 0) {
+    for (const sobj of thisRoom.memory.mission.Structure) {
+      if (sobj.name === '资源传送') {
+        const sobj_rType = sobj.data.rType as ResourceConstant
+        const sobj_num = sobj.data.num
+        if (!resourceLimit[sobj_rType])
+          resourceLimit[sobj_rType] = sobj_num
+        else
+          resourceLimit[sobj_rType] = resourceLimit[sobj_rType]! > sobj_num ? resourceLimit[sobj_rType] : sobj_num
+      }
+    }
+  }
 }
 
 /* --------------隔离区---------------- */

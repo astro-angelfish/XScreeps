@@ -19,4 +19,5 @@ interface PowerCreep{
   processPwrSpawnMission(): void
   processPwrFactoryMission(): void
   processPwrPowerSpawnMission(): void
+  processPwrSourceMission(): void
 }

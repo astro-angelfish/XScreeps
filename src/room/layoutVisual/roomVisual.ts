@@ -21,13 +21,13 @@ const dirs = [
   [-1, 0],
   [-1, -1],
 ]
-function rotate(x: number, y: number, s: number, c: number, px: number, py: number) {
-  const xDelta = x * c - y * s
-  const yDelta = x * s + y * c
-  return { x: px + xDelta, y: py + yDelta }
-}
+// function rotate(x: number, y: number, s: number, c: number, px: number, py: number) {
+//   const xDelta = x * c - y * s
+//   const yDelta = x * s + y * c
+//   return { x: px + xDelta, y: py + yDelta }
+// }
 
-function relPoly(x: number, y: number, poly: number[][]): number[][] {
+function relPoly(x: number, y: number, poly: [number, number][]): [number, number][] {
   return poly.map((p) => {
     p[0] += x
     p[1] += y
@@ -45,7 +45,7 @@ export default class extends RoomVisual {
       for (let i = 1; i <= 4; i++) {
         const d = dirs[i]
         const c = [r[0] + d[0], r[1] + d[1]]
-        const rd = _.some(this.roads!, r => r[0] == c[0] && r[1] == c[1])
+        const rd = this.roads!.some(r => r[0] === c[0] && r[1] === c[1])
         if (rd) {
           this.line(r[0], r[1], c[0], c[1], {
             color,
@@ -72,21 +72,21 @@ export default class extends RoomVisual {
           opacity: opts.opacity,
         })
         break
-      case STRUCTURE_LINK:
-        const osize = 0.3
-        const isize = 0.2
+      case STRUCTURE_LINK: {
+        // const osize = 0.3
+        // const isize = 0.2
         let outer = [
           [0.0, -0.5],
           [0.4, 0.0],
           [0.0, 0.5],
           [-0.4, 0.0],
-        ]
+        ] as [number, number][]
         let inner = [
           [0.0, -0.3],
           [0.25, 0.0],
           [0.0, 0.3],
           [-0.25, 0.0],
-        ]
+        ] as [number, number][]
         outer = relPoly(x, y, outer)
         inner = relPoly(x, y, inner)
         outer.push(outer[0])
@@ -102,6 +102,7 @@ export default class extends RoomVisual {
           opacity: opts.opacity,
         })
         break
+      }
       case STRUCTURE_EXTENSION:
         this.circle(x, y, {
           radius: 0.5,
@@ -145,7 +146,7 @@ export default class extends RoomVisual {
           this.roads = []
         this.roads.push([x, y])
         break
-      case STRUCTURE_STORAGE:
+      case STRUCTURE_STORAGE: {
         const outline1 = relPoly(x, y, [
           [-0.45, -0.55],
           [0, -0.65],
@@ -168,6 +169,7 @@ export default class extends RoomVisual {
           opacity: opts.opacity,
         })
         break
+      }
       case STRUCTURE_SPAWN:
         this.circle(x, y, {
           radius: 0.65,
@@ -183,8 +185,7 @@ export default class extends RoomVisual {
         })
 
         break
-      case STRUCTURE_TERMINAL:
-      {
+      case STRUCTURE_TERMINAL: {
         let outer = [
           [0.0, -0.8],
           [0.55, -0.55],
@@ -194,7 +195,7 @@ export default class extends RoomVisual {
           [-0.55, 0.55],
           [-0.8, 0.0],
           [-0.55, -0.55],
-        ]
+        ] as [number, number][]
         let inner = [
           [0.0, -0.65],
           [0.45, -0.45],
@@ -204,7 +205,7 @@ export default class extends RoomVisual {
           [-0.45, 0.45],
           [-0.65, 0.0],
           [-0.45, -0.45],
-        ]
+        ] as [number, number][]
         outer = relPoly(x, y, outer)
         inner = relPoly(x, y, inner)
         outer.push(outer[0])
@@ -250,7 +251,7 @@ export default class extends RoomVisual {
             [-0.45, 0.55],
             [0.45, 0.55],
             [0.45, 0.3],
-          ]
+          ] as [number, number][]
           box = relPoly(x, y, box)
           this.poly(box, {
             stroke: colors.outline,
@@ -287,7 +288,7 @@ export default class extends RoomVisual {
           opacity: opts.opacity,
         })
         break
-      case STRUCTURE_NUKER:
+      case STRUCTURE_NUKER: {
         let outline = [
           [0, -1],
           [-0.47, 0.2],
@@ -295,7 +296,7 @@ export default class extends RoomVisual {
           [0.5, 0.5],
           [0.47, 0.2],
           [0, -1],
-        ]
+        ] as [number, number][]
         outline = relPoly(x, y, outline)
         this.poly(outline, {
           stroke: colors.outline,
@@ -308,7 +309,7 @@ export default class extends RoomVisual {
           [-0.40, 0.2],
           [0.40, 0.2],
           [0, -0.80],
-        ]
+        ] as [number, number][]
         inline = relPoly(x, y, inline)
         this.poly(inline, {
           stroke: colors.outline,
@@ -317,6 +318,7 @@ export default class extends RoomVisual {
           opacity: opts.opacity,
         })
         break
+      }
       default:
         this.circle(x, y, {
           fill: 'red',

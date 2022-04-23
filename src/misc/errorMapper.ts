@@ -103,6 +103,10 @@ export class ErrorMapper {
       */
   public static wrapLoop(loop: () => void): () => void {
     return () => {
+      if (Game.cpu.tickLimit < 500) {
+        console.log(`bucket 不足 (${Game.cpu.bucket})`)
+        return
+      }
       try {
         // 执行玩家代码
         loop()

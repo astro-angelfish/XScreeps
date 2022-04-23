@@ -1,11 +1,12 @@
 import { devPlanConstant } from '@/room/constant/plan'
-import { colorfyLog } from '@/utils'
+import { colorfyLog, profileMethod } from '@/utils'
 
 /* 房间原型拓展   --内核  --房间生态 */
 export default class RoomEcosphereExtension extends Room {
   /**
    * 房间生态主函数
    */
+  @profileMethod()
   public processRoomEcosphere(): void {
     this.processRoomState() // 房间状态监测
     this.processRoomPlan() // 房间布局及自动修复

@@ -1,3 +1,4 @@
+import { unzipMap } from '../constant/resource'
 import { canResourceDispatch, identifyDispatch } from '@/room/dispatch/resource'
 
 export class factoryExtension extends StructureFactory {
@@ -6,6 +7,7 @@ export class factoryExtension extends StructureFactory {
       return
     this.processResourceMemory()
     this.processResourceBalance()
+    this.processFactoryUnzip()
     this.processFactoryProduce()
   }
 
@@ -168,6 +170,10 @@ export class factoryExtension extends StructureFactory {
 
     if (!this.room.memory.productData.state)
       this.room.memory.productData.state = 'sleep'
+
+    // 优先资源解压
+    if (this.room.memory.productData.unzip && Object.keys(this.room.memory.productData.unzip).length)
+      return
 
     const state = this.room.memory.productData.state
 
@@ -459,6 +465,68 @@ export class factoryExtension extends StructureFactory {
         if (Game.powerCreeps[`${this.room.name}/queen/${Game.shard.name}`])
           this.room.checkPcEnhanceFactory()
         else console.log(`[factory] 房间 ${this.room.name} 出现工厂等级错误，不能生产 ${disCom}`)
+      }
+    }
+  }
+
+  /**
+   * 工厂解压 测试中
+   */
+  public processFactoryUnzip(): void {
+    if (!this.room.memory.productData.unzip)
+      this.room.memory.productData.unzip = {}
+    if (this.cooldown)
+      return
+    if ((Game.time - global.Gtime[this.room.name]) % 10)
+      return
+
+    const unzipData = this.room.memory.productData.unzip
+    if (!unzipData || !Object.keys(unzipData).length)
+      return
+
+    const unzipResource = 'battery' in unzipData ? 'battery' : Object.keys(unzipData)[0] as keyof typeof unzipMap
+    if (!Object.keys(unzipMap).includes(unzipResource)) {
+      delete unzipData[unzipResource]
+      console.log(`房间 ${this.room.name} 存在错误解压资源类型，为: ${unzipResource}`)
+      return
+    }
+
+    const storage = this.room.memory.structureIdData?.storageID ? Game.getObjectById(this.room.memory.structureIdData.storageID) : null
+    if (!storage)
+      return
+
+    if (storage.store.getUsedCapacity(unzipResource) <= 0) {
+      this.room.memory.productData.balanceData = {}
+      delete unzipData[unzipResource]
+      return
+    }
+
+    // 判断是否有足够解压资源
+    if (unzipResource === 'battery') {
+      this.room.memory.productData.balanceData.battery = { num: 1000, fill: true }
+      const result = this.produce(unzipMap[unzipResource])
+      if (result === OK)
+        unzipData.battery!.num -= 50
+
+      if (result === -7 || result === -10 || unzipData.battery!.num <= 0) {
+        this.room.memory.productData.balanceData = {}
+        delete unzipData[unzipResource]
+      }
+    }
+    else {
+      // 能量太少拒绝解压
+      if (storage.store.getUsedCapacity('energy') < 25000)
+        return
+
+      this.room.memory.productData.balanceData[unzipResource] = { num: 1000, fill: true }
+      this.room.memory.productData.balanceData.energy = { num: 5000, fill: true }
+      const result = this.produce(unzipMap[unzipResource])
+      if (result === OK)
+        unzipData[unzipResource]!.num -= 100
+
+      if (result === -7 || result === -10 || unzipData[unzipResource]!.num <= 0) {
+        this.room.memory.productData.balanceData = {}
+        delete unzipData[unzipResource]
       }
     }
   }

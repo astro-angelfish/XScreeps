@@ -24,7 +24,7 @@ export const SquadDirection = {
   '↑': 1,
   '←': 7,
   '→': 3,
-}
+} as const
 
 /* 房间出口方向文字-常量映射 */
 export const identifyDirectionConst = {

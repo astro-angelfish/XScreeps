@@ -22,7 +22,7 @@ export default class terminalExtension extends StructureTerminal {
     }
 
     if (thisTask.delayTick < 99995)
-      thisTask.delayTick--
+      thisTask.processing = true
 
     switch (thisTask.name) {
       case '资源传送': { this.processResourceSendMission(thisTask); break }
@@ -245,7 +245,7 @@ export default class terminalExtension extends StructureTerminal {
           orders.sort(sortByKey('price'))
 
           // 倒数第二 没有就倒数第一
-          const thisDealOrder = orders.at(-2) || orders.at(-1)
+          const thisDealOrder = orders.length >= 2 ? orders[orders.length - 2] : orders[orders.length - 1]
           if (!thisDealOrder)
             continue
 
@@ -258,18 +258,32 @@ export default class terminalExtension extends StructureTerminal {
           }
 
           if (thisDealOrder.amount >= this.store.getUsedCapacity(rType)) {
-            Game.market.deal(thisDealOrder.id, this.store.getUsedCapacity(rType), this.room.name)
-            i.num -= this.store.getUsedCapacity(rType)
+            if (i.num > this.store.getUsedCapacity(i.rType)) {
+              Game.market.deal(thisDealOrder.id, this.store.getUsedCapacity(rType), this.room.name)
+              i.num -= this.store.getUsedCapacity(rType)
+            }
+            else {
+              Game.market.deal(thisDealOrder.id, i.num, this.room.name)
+              i.num = 0
+            }
             stopProcessing = true
             break
           }
           else {
-            Game.market.deal(thisDealOrder.id, thisDealOrder.amount, this.room.name)
-            i.num -= thisDealOrder.amount
+            if (i.num > thisDealOrder.amount) {
+              Game.market.deal(thisDealOrder.id, thisDealOrder.amount, this.room.name)
+              i.num -= thisDealOrder.amount
+            }
+            else {
+              Game.market.deal(thisDealOrder.id, i.num, this.room.name)
+              i.num = 0
+            }
             stopProcessing = true
             break
           }
         }
+        if (stopProcessing)
+          break
       }
       // order 类型
       else if (t === 'order') {
@@ -475,7 +489,7 @@ export default class terminalExtension extends StructureTerminal {
     const historyLength = historyList.length
     // 以防特殊情况
     if (historyList.length < 3) {
-      console.log('marketHistroy错误')
+      console.log(`资源${rType}的订单太少，无法购买!`)
       return
     }
 

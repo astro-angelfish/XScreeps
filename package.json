@@ -5,6 +5,7 @@
     "build": "rollup -cw",
     "push": "rollup -cw --environment DEST:main",
     "local": "rollup -cw --environment DEST:local",
+    "pserver": "rollup -cw --environment DEST:pserver",
     "lint": "eslint --fix ."
   },
   "dependencies": {
@@ -12,7 +13,7 @@
     "source-map": "^0.6.1"
   },
   "devDependencies": {
-    "@antfu/eslint-config-ts": "^0.20.6",
+    "@antfu/eslint-config-ts": "^0.20.7",
     "@rollup/plugin-commonjs": "^21.1.0",
     "@rollup/plugin-node-resolve": "^13.2.1",
     "@rollup/plugin-replace": "^4.0.0",
@@ -21,13 +22,14 @@
     "@types/node": "^10.17.60",
     "@types/prettier": "^2.6.0",
     "@types/screeps": "^3.3.0",
-    "eslint": "^8.13.0",
+    "eslint": "^8.14.0",
     "prettier": "^2.6.2",
     "rollup": "^2.70.2",
     "rollup-plugin-clear": "^2.0.7",
     "rollup-plugin-copy": "^3.4.0",
     "rollup-plugin-screeps": "^1.0.1",
     "rollup-plugin-typescript2": "^0.31.2",
+    "tslib": "^2.4.0",
     "typescript": "^4.6.3"
   }
 }

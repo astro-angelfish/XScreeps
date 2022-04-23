@@ -42,6 +42,7 @@ export default class RoomMissionCoreExtension extends Room {
           case '墙体维护': { this.verifyRepairMission(mission); break }
           case '黄球拆迁': { this.verifyDismantleMission(mission); break }
           case '急速冲级': { this.verifyQuickUpgradeMission(mission); break }
+          case '普通冲级': { this.verifyNormalUpgradeMission(mission); break }
           case '紧急援建': { this.verifyHelpBuildMission(mission); break }
           case '紧急支援': { this.verifyHelpDefendMission(mission); break }
           case '资源合成': { this.verifyCompoundMission(mission); break }
@@ -56,6 +57,7 @@ export default class RoomMissionCoreExtension extends Room {
           case '四人小队': { this.verifySquadMission(mission); break }
           case '双人小队': { this.verifyDoubleMission(mission); break }
           case '资源转移': { this.verifyResourceTransferMission(mission); break }
+          case '扩张援建':{ this.verifyExpandMission(mission); break }
         }
       }
     }

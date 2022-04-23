@@ -836,9 +836,13 @@ export default {
       result += `工厂等级: ${productData.level}\n`
       result += `工厂状态: ${productData.state}\n`
 
+      result += '商品解压:\n'
+      for (const i in myRoom.memory.productData.unzip)
+        result += `  - ${i}: ${myRoom.memory.productData.unzip[i as keyof typeof myRoom.memory.productData.unzip]!.num}\n`
+
       result += '基本加工资源列表:\n'
       for (const i in productData.baseList)
-        result += `  - ${i}: ${productData.baseList[i as keyof typeof productData.baseList]?.num || 0}\n`
+        result += `  - ${i}: ${productData.baseList[i as keyof typeof productData.baseList]!.num || 0}\n`
 
       result += `流水线商品: ${myRoom.memory.productData.flowCom}\n`
 
@@ -916,10 +920,51 @@ export default {
 
       return factory.del(cType)
     },
+    unzip(roomName: string, cType: CommodityConstant, num: number): string {
+      const myRoom = Game.rooms[roomName]
+      if (!myRoom)
+        return `[factory] 未找到房间 ${roomName}，请确认房间!`
+
+      if (!myRoom.memory.structureIdData?.factoryId)
+        return `[factory] 房间 ${roomName} 无工厂，请先建造工厂!`
+      const factory = Game.getObjectById(myRoom.memory.structureIdData.factoryId)
+      if (!factory)
+        return colorfyLog(`[factory] 未找到房间 ${roomName} 的工厂!`, 'red', true)
+
+      if (!myRoom.memory.productData.unzip)
+        myRoom.memory.productData.unzip = {}
+
+      if (myRoom.memory.productData.unzip[cType])
+        return colorfyLog(`[factory] 房间 ${roomName} 已经存在 ${cType} 的解压缩任务!`, 'red', true)
+      myRoom.memory.productData.unzip[cType] = { num }
+      return colorfyLog(`[factory] 房间 ${roomName} 已经设置 ${cType} 的解压缩任务，数量: ${num}!`, 'blue', true)
+    },
+    Cunzip(roomName: string, cType: CommodityConstant): string {
+      const myRoom = Game.rooms[roomName]
+      if (!myRoom)
+        return `[factory] 未找到房间 ${roomName}，请确认房间!`
+
+      if (!myRoom.memory.structureIdData?.factoryId)
+        return `[factory] 房间 ${roomName} 无工厂，请先建造工厂!`
+      const factory = Game.getObjectById(myRoom.memory.structureIdData.factoryId)
+      if (!factory)
+        return colorfyLog(`[factory] 未找到房间 ${roomName} 的工厂!`, 'red', true)
+
+      if (!myRoom.memory.productData.unzip)
+        myRoom.memory.productData.unzip = {}
+
+      if (!myRoom.memory.productData.unzip[cType])
+        return colorfyLog(`[factory] 房间 ${roomName} 不存在 ${cType} 的解压缩任务!`, 'red', true)
+      delete myRoom.memory.productData.unzip[cType]
+      return colorfyLog(`[factory] 房间 ${roomName} ${cType} 的解压缩任务已经删除!`, 'blue', true)
+    },
   },
 
   pixel(): string {
     Memory.stopPixel = !Memory.stopPixel
     return `[pixel] 自动搓像素改为 ${!Memory.stopPixel}`
+  },
+  profile() {
+    global.logProfiler = true
   },
 }

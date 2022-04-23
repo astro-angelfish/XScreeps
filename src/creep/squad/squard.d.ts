@@ -3,7 +3,7 @@ type arrayType = 'line' | 'squard' | 'free'
 
 /* 存储在全局Memory中，以任务ID为key的小队数据格式 */
 interface SquadData {
-  creepIds: [Id<Creep>, Id<Creep>, Id<Creep>, Id<Creep>]
+  creepIds: SquadGroupIds
   creepData: Squad // 爬虫位置、信息
   array: arrayType // 线性阵列 四方阵列 自由阵列
   sourceRoom: string // 源房间

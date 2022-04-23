@@ -1,5 +1,8 @@
+import { profileMethod } from '@/utils'
+
 /* 房间原型拓展   --方法  --防御塔 */
 export default class RoomTowerExtension extends Room {
+  @profileMethod()
   public processTowers(): void {
     if (this.memory.state === 'peace') {
       // 修墙塔
@@ -14,16 +17,22 @@ export default class RoomTowerExtension extends Room {
       }
 
       // 修 road / container
-      if (this.memory.structureIdData?.NtowerID) {
-        const tower = Game.getObjectById(this.memory.structureIdData.NtowerID)
-        if (tower) {
-          if ((Game.time - global.Gtime[this.name]) % 5 === 0) {
-            // 寻找路，修路
-            const repairRoad = tower.pos.findClosestByRange(
-              this.getStructureWithTypes([STRUCTURE_ROAD, STRUCTURE_CONTAINER])
-                .filter(s => s.hits / s.hitsMax < 0.8))
-            if (repairRoad)
-              tower.repair(repairRoad)
+      this.collectTowerRepairList()
+      const repairList = global.repairList![this.name]
+      if (repairList?.length) {
+        if (this.memory.structureIdData?.NtowerID) {
+          const tower = Game.getObjectById(this.memory.structureIdData.NtowerID)
+          if (tower) {
+            for (const id of repairList) {
+              const struct = Game.getObjectById(id)
+              if (struct && struct.hits < struct.hitsMax) {
+                tower.repair(struct)
+                break
+              }
+              else {
+                repairList.splice(repairList.indexOf(id), 1)
+              }
+            }
           }
         }
       }
@@ -68,5 +77,19 @@ export default class RoomTowerExtension extends Room {
         }
       }
     }
+  }
+
+  public collectTowerRepairList(): void {
+    if ((Game.time - global.Gtime[this.name]) % 20 !== 0)
+      return
+
+    if (!global.repairList)
+      global.repairList = {}
+
+    global.repairList[this.name] = []
+
+    const repairRoad = this.getStructureWithTypes([STRUCTURE_ROAD, STRUCTURE_CONTAINER])
+      .filter(struct => !global.repairList![this.name].includes(struct.id) && struct.hits / struct.hitsMax < 0.8).map(struct => struct.id)
+    global.repairList[this.name].push(...repairRoad)
   }
 }

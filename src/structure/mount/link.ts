@@ -18,7 +18,7 @@ export default class linkExtension extends StructureLink {
     const thisTask = tasks[0]
 
     if (thisTask.delayTick < 99995)
-      thisTask.delayTick--
+      thisTask.processing = true
 
     switch (thisTask.name) {
       case '链传送能': { this.processLinkMission(thisTask); break }

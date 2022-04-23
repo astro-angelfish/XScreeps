@@ -1,5 +1,5 @@
 import { roleData } from '@/creep/constant/spawn'
-import { generateBody, getBodyEnergyCost } from '@/utils'
+import { generateBody, getBodyEnergyCost, profiler } from '@/utils'
 
 /* [通用]爬虫运行主程序 */
 export function processCreepWork() {
@@ -16,9 +16,14 @@ export function processCreepWork() {
     if (!thisCreep)
       continue
 
+    profiler.enter(`爬虫 ${thisCreep.name}`)
+
     // 爬虫出生角色可视化
-    if (thisCreep.spawning)
+    if (thisCreep.spawning) {
       thisCreep.room.visual.text(`${thisCreep.memory.role}`, thisCreep.pos.x, thisCreep.pos.y, { color: '#ffffff', font: 0.4, align: 'center', backgroundColor: '#696969', opacity: 0.3 })
+      profiler.exit()
+      continue
+    }
 
     // 跨 shard 找回记忆
     if (!thisCreep.memory.role) {
@@ -27,18 +32,24 @@ export function processCreepWork() {
         Game.creeps[c].memory = InshardMemory.creep[c].MemoryData
         InshardMemory.creep[c].state = 1
       }
+
+      profiler.exit()
       continue
     }
 
     const thisRoleData = roleData[thisCreep.memory.role]
-    if (!thisRoleData)
+    if (!thisRoleData) {
+      profiler.exit()
       continue
+    }
 
     // 自适应体型生产的爬虫执行恢复体型的相关逻辑
     if (reducedToEA && thisCreep.memory.reducedToEA && thisCreep.store.getUsedCapacity() === 0) {
       const belongRoom = Game.rooms[thisCreep.memory.belong]
-      if (!belongRoom)
+      if (!belongRoom) {
+        profiler.exit()
         continue
+      }
 
       // 如果 global 有该爬虫的部件信息，优先用 global 的数据
       let bodyParam = global.SpecialBodyData[belongRoom.name][thisCreep.memory.role]
@@ -68,5 +79,7 @@ export function processCreepWork() {
     // 任务类型爬虫
     else
       thisCreep.manageMission()
+
+    profiler.exit()
   }
 }

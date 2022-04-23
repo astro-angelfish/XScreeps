@@ -1,4 +1,5 @@
 import { boostedPartData } from '@/creep/constant/boost'
+import { profileMethod } from '@/utils'
 
 /* 爬虫原型拓展   --功能  --功能 */
 export default class CreepUtilsExtension extends Creep {
@@ -14,6 +15,7 @@ export default class CreepUtilsExtension extends Creep {
       this.memory.working = true
   }
 
+  @profileMethod()
   public processBasicHarvest(source_: Source): void {
     if (this.harvest(source_) === ERR_NOT_IN_RANGE) {
       this.goTo(source_.pos, 1)
@@ -24,11 +26,13 @@ export default class CreepUtilsExtension extends Creep {
     }
   }
 
+  @profileMethod()
   public processBasicTransfer(distination: Structure, rType: ResourceConstant = RESOURCE_ENERGY): void {
     if (this.transfer(distination, rType) === ERR_NOT_IN_RANGE)
       this.goTo(distination.pos, 1)
   }
 
+  @profileMethod()
   public processBasicUpgrade(): void {
     if (this.room.controller) {
       if (this.upgradeController(this.room.controller) === ERR_NOT_IN_RANGE) {
@@ -42,6 +46,7 @@ export default class CreepUtilsExtension extends Creep {
   }
 
   // 考虑到建筑和修复有可能造成堵虫，所以解除钉扎状态
+  @profileMethod()
   public processBasicBuild(distination: ConstructionSite): void {
     if (this.build(distination) === ERR_NOT_IN_RANGE) {
       this.goTo(distination.pos, 1)
@@ -52,6 +57,7 @@ export default class CreepUtilsExtension extends Creep {
     }
   }
 
+  @profileMethod()
   public processBasicRepair(distination: Structure): void {
     if (this.repair(distination) === ERR_NOT_IN_RANGE) {
       this.goTo(distination.pos, 1)
@@ -62,6 +68,7 @@ export default class CreepUtilsExtension extends Creep {
     }
   }
 
+  @profileMethod()
   public processBasicWithdraw(distination: Structure, rType: ResourceConstant = RESOURCE_ENERGY): void {
     if (this.withdraw(distination, rType) === ERR_NOT_IN_RANGE)
       this.goTo(distination.pos, 1)
@@ -70,6 +77,7 @@ export default class CreepUtilsExtension extends Creep {
   }
 
   // 确认是否 boost 了，并进行相应 boost
+  @profileMethod()
   public processBoost(boostBody: string[]): boolean {
     for (const body in this.memory.boostData) {
       if (!boostBody.includes(body))
@@ -120,6 +128,7 @@ export default class CreepUtilsExtension extends Creep {
   /**
    * 召唤所有房间内的防御塔治疗/攻击 自己/爬虫 [不一定成功]
    */
+  @profileMethod()
   public optTower(otype: 'heal' | 'attack', creep: Creep): void {
     if (this.room.name !== this.memory.belong || Game.shard.name !== this.memory.shard)
       return

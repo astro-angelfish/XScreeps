@@ -68,8 +68,8 @@ export function colorHex(color: string) {
   }
 }
 
-export function Colorful(content: string, colorName: Colors | string = null, bolder = false): string {
-  const colorStyle = colorName ? `color: ${colors[colorName] ? colors[colorName] : colorName};` : ''
+export function Colorful(content: string, colorName?: Colors | string, bolder = false): string {
+  const colorStyle = colorName ? `color: ${colorName in colors ? colors[colorName as Colors] : colorName};` : ''
   const bolderStyle = bolder ? 'font-weight: bolder;' : ''
 
   return `<text style="${[colorStyle, bolderStyle].join(' ')}">${content}</text>`
@@ -88,7 +88,7 @@ export function getStore(roomName?: string) {
   if (roomName) {
     const storage = Game.rooms[roomName].storage
     const terminal = Game.rooms[roomName].terminal
-    const factory = Game.getObjectById(Game.rooms[roomName].memory.structureIdData ? Game.rooms[roomName].memory.structureIdData.factoryId : '') as StructureFactory
+    const factory = Game.rooms[roomName].memory.structureIdData?.factoryId ? Game.getObjectById(Game.rooms[roomName].memory.structureIdData!.factoryId!) : null
     const storageUsed = storage?.store.getUsedCapacity() || 0
     const storeCapacity = storage?.store.getCapacity() || 1
     const storageProportion = `${(storageUsed / storeCapacity * 100).toFixed(2)}%`
@@ -111,7 +111,7 @@ export function getStore(roomName?: string) {
     for (let i = 0; i < rooms.length; i++) {
       const storage = Game.rooms[rooms[i]].storage
       const terminal = Game.rooms[rooms[i]].terminal
-      const factory = Game.getObjectById(Game.rooms[rooms[i]].memory.structureIdData ? Game.rooms[rooms[i]].memory.structureIdData.factoryId : '') as StructureFactory
+      const factory = Game.rooms[rooms[i]].memory.structureIdData?.factoryId ? Game.getObjectById(Game.rooms[rooms[i]].memory.structureIdData!.factoryId!) : null
       const storageUsed = storage?.store.getUsedCapacity() || 0
       const storeCapacity = storage?.store.getCapacity() || 1
       const storageProportion = `${(storageUsed / storeCapacity * 100).toFixed(2)}%`

@@ -32,6 +32,7 @@ interface Room {
   verifyRepairMission(mission: MissionModel): void
   verifyDismantleMission(mission: MissionModel): void
   verifyQuickUpgradeMission(mission: MissionModel): void
+  verifyNormalUpgradeMission(mission: MissionModel): void
   verifyHelpDefendMission(mission: MissionModel): void
   verifyHelpBuildMission(mission: MissionModel): void
   verifyCompoundMission(mission: MissionModel): void
@@ -46,10 +47,12 @@ interface Room {
   verifySquadMission(mission: MissionModel): void
   verifyDoubleMission(mission: MissionModel): void
   verifyResourceTransferMission(mission: MissionModel): void
+  verifyExpandMission(mission: MissionModel): void
 
   // pc 任务
   checkPowerCreep(): void
   checkPcEnhanceFactory(): void
+  checkPcEnhanceSource(): void
 
   // 生成任务
   generateCarryMission(creepData: CreepBindData, delayTick: number, sR: string, sX: number, sY: number, tR: string, tX: number, tY: number, rType?: ResourceConstant, num?: number): Omit<MissionModel, 'id'>
@@ -58,7 +61,7 @@ interface Room {
   generateLinkMission(structure: string[], disStructure: string, level: number, delayTick?: number): Omit<MissionModel, 'id'>
   generateDismantleMission(disRoom: string, shard: string, num: number, interval?: number, boost?: boolean): Omit<MissionModel, 'id'>
   generateQuickMission(num: number, boostType?: ResourceConstant): Omit<MissionModel, 'id'>
-  generateExpandMission(disRoom: string, shard: string, num: number, cnum?: number): Omit<MissionModel, 'id'>
+  generateExpandMission(disRoom: string, shard: string, num: number, cnum: number, defend?: boolean): Omit<MissionModel, 'id'>
   generateSupportMission(disRoom: string, sType: 'double' | 'aio', shard: string, num: number, boost: boolean): Omit<MissionModel, 'id'>
   generateControlMission(disRoom: string, shard: string, interval: number): Omit<MissionModel, 'id'>
   generateHelpBuildMission(disRoom: string, num: number, shard?: string, time?: number, defend?: boolean): Omit<MissionModel, 'id'> | null
@@ -76,6 +79,7 @@ interface Room {
   generateSquadMission(disRoom: string, shard: string, interval: number, RNum: number, ANum: number, DNum: number, HNum: number, AIONum: number, flag: string): Omit<MissionModel, 'id'> | null
   generateDoubleMission(disRoom: string, shard: string, CreepNum: number, cType: 'dismantle' | 'attack', interval: number): Omit<MissionModel, 'id'> | null
   generateResourceTransferMission(disRoom: string, resource?: ResourceConstant, num?: number): Omit<MissionModel, 'id'>
+  generateNormalUpgradeMission(num: number, boostType?: ResourceConstant): Omit<MissionModel, 'id'>
 }
 
 interface RoomMemory {

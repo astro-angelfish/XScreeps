@@ -683,6 +683,7 @@ export default class CreepMissionWarExtension extends Creep {
       }
       if (!Memory.squadMemory[squadID]) {
         Memory.squadMemory[squadID] = {
+          creepIds: Object.keys(this.memory.squad) as SquadGroupIds,
           creepData: this.memory.squad,
           sourceRoom: this.memory.belong,
           presentRoom: this.room.name,
@@ -737,9 +738,9 @@ export default class CreepMissionWarExtension extends Creep {
       if (!belongRoom.memory.squadData)
         belongRoom.memory.squadData = {}
 
-      const missionSquardData = belongRoom.memory.squadData[squadID]
-      if (!missionSquardData)
+      if (!belongRoom.memory.squadData[squadID])
         belongRoom.memory.squadData[squadID] = {}
+      const missionSquardData = belongRoom.memory.squadData[squadID]
 
       // 编队信息初始化
       if (this.memory.creepType === 'heal' && !this.memory.squad) {
@@ -919,7 +920,7 @@ export default class CreepMissionWarExtension extends Creep {
    */
   public handleSupportMission(): void {
     const missionData = this.memory.missionData
-    const id = missionData.id
+    // const id = missionData.id
     const data = missionData.Data
     if (!missionData)
       return
@@ -986,7 +987,7 @@ export default class CreepMissionWarExtension extends Creep {
       }
 
       // 支援旗帜 support_double
-      const flag = this.pos.findClosestByRange(
+      const flag = this.pos.findClosestByPath(
         this.room.find(FIND_FLAGS)
           .filter(flag => flag.name.startsWith('support_double')))
       if (flag) {
@@ -1212,10 +1213,10 @@ export default class CreepMissionWarExtension extends Creep {
         return
       }
 
-      // 展开攻击
-      const enemy = this.pos.findInRange(
-        this.room.find(FIND_HOSTILE_CREEPS)
-          .filter(creep => !Memory.whitelist?.includes(creep.owner.username) && !creep.pos.getStructure(STRUCTURE_RAMPART)), 3)[0]
+      // 攻击离四格内离自己最近的爬
+      const enemy = this.pos.findClosestByPath(
+        this.pos.findInRange(this.room.find(FIND_HOSTILE_CREEPS)
+          .filter(creep => !Memory.whitelist?.includes(creep.owner.username) && !creep.pos.getStructure(STRUCTURE_RAMPART)), 4))
       if (enemy) {
         this.goTo(enemy.pos, 1)
         this.attack(enemy)

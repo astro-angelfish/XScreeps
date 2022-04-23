@@ -7,8 +7,8 @@ type CatteryResource = {
 
 const addStore = (resource: CatteryResource, store: CatteryResource) => {
   for (const key in store) {
-    if (store[key] > 0)
-      resource[key] = (resource[key] || 0) + store[key]
+    if ((store[key as ResourceConstant] || 0) > 0)
+      resource[key as ResourceConstant] = (resource[key as ResourceConstant] || 0) + (store[key as ResourceConstant] || 0)
   }
 
   return resource
@@ -25,7 +25,7 @@ export const getCatteryResource = (cattery: Room): CatteryResource => {
 
 export const uniqueColor = (str: string, resType: ResourceConstant): string => {
   return `<span class='resource-name' style='position: relative; color: ${
-    resourceColorMap[resType] || 'inherited'
+    resType in resourceColorMap ? resourceColorMap[resType as keyof typeof resourceColorMap] : 'inherited'
   }'>${str}</span>`
 }
 
@@ -41,11 +41,11 @@ export const allResource = (): void => {
 
   const addRoomList = (text: string, resType: ResourceConstant): string => {
     let str = text
-    if (allResource[resType]) {
+    if (resType in allResource) {
       str += '<div class=\'resource-room\' style=\'position: absolute; display: none; top: 100%; right: 0; padding: 5px; background: #333; color: #ccc; border: 1px solid #ccc; border-radius: 5px; z-index: 10;\'>'
       for (const key in catteriesResource) {
         if (catteriesResource[key][resType])
-          str += `${_.padRight(key, 6)}: ${_.padLeft((catteriesResource[key][resType] || 0).toLocaleString(), 9)}<br/>`
+          str += `${key.padEnd(6)}: ${(catteriesResource[key][resType] || 0).toLocaleString().padStart(9)}<br/>`
       }
       str += '</div>'
     }
@@ -54,10 +54,10 @@ export const allResource = (): void => {
 
   const addList = (list: ResourceConstant[], color?: string): string => {
     let str = `<div style='position: relative; color: ${color};'>`
-    list.forEach(res => (str += uniqueColor(_.padLeft(res, 15), res)))
+    list.forEach(res => (str += uniqueColor(res.padStart(15), res)))
     str += '<br/>'
     list.forEach(
-      res => (str += uniqueColor(addRoomList(_.padLeft((allResource[res] || 0).toLocaleString(), 15), res), res)),
+      res => (str += uniqueColor(addRoomList((res in allResource ? allResource[res as keyof typeof allResource] : 0).toLocaleString().padStart(15), res), res)),
     )
     str += '<br/></div>'
     return str
@@ -97,11 +97,11 @@ export const roomResource = (roomName: string): void => {
 
   const addRoomList = (text: string, resType: ResourceConstant): string => {
     let str = text
-    if (allResource[resType]) {
+    if (resType in allResource) {
       str += '<div class=\'resource-room\' style=\'position: absolute; display: none; top: 100%; right: 0; padding: 5px; background: #333; color: #ccc; border: 1px solid #ccc; border-radius: 5px; z-index: 10;\'>'
       for (const key in catteriesResource) {
         if (catteriesResource[key][resType])
-          str += `${_.padRight(key, 6)}: ${_.padLeft((catteriesResource[key][resType] || 0).toLocaleString(), 9)}<br/>`
+          str += `${key.padEnd(6)}: ${(catteriesResource[key][resType] || 0).toLocaleString().padStart(9)}<br/>`
       }
       str += '</div>'
     }
@@ -110,10 +110,10 @@ export const roomResource = (roomName: string): void => {
 
   const addList = (list: ResourceConstant[], color?: string): string => {
     let str = `<div style='position: relative; color: ${color};'>`
-    list.forEach(res => (str += uniqueColor(_.padLeft(res, 15), res)))
+    list.forEach(res => (str += uniqueColor(res.padStart(15), res)))
     str += '<br/>'
     list.forEach(
-      res => (str += uniqueColor(addRoomList(_.padLeft((allResource[res] || 0).toLocaleString(), 15), res), res)),
+      res => (str += uniqueColor(addRoomList((res in allResource ? allResource[res as keyof typeof allResource] : 0).toLocaleString().padStart(15), res), res)),
     )
     str += '<br/></div>'
     return str

@@ -3,13 +3,14 @@
  */
 import { roleData } from '@/creep/constant/spawn'
 import type { BodyParam } from '@/utils'
-import { reduceBodyUntilFit, sortByKey } from '@/utils'
+import { profileMethod, reduceBodyUntilFit, sortByKey } from '@/utils'
 
 /* 房间原型拓展   --内核  --房间孵化 */
 export default class RoomSpawnExtension extends Room {
   /**
    * 孵化总函数
    */
+  @profileMethod()
   public spawnMain(): void {
     if (!this.controller)
       return
@@ -129,6 +130,7 @@ export default class RoomSpawnExtension extends Room {
   /**
    * 孵化函数
    */
+  @profileMethod()
   public spawnExecution(): void {
     // 没有孵化任务
     if (!this.memory.spawnQueue?.length)

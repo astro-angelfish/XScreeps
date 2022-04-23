@@ -38,6 +38,8 @@ export default class RoomMissionVerifyExtension extends Room {
 
     if (!this.memory.structureIdData?.terminalID)
       return
+    if (!this.memory.structureIdData.labs?.length)
+      return
 
     // 能量购买
     const terminal = Game.getObjectById(this.memory.structureIdData.terminalID)
@@ -73,6 +75,28 @@ export default class RoomMissionVerifyExtension extends Room {
   }
 
   /**
+   * 普通冲级
+   */
+  public verifyNormalUpgradeMission(mission: MissionModel): void {
+    if (!this.controller)
+      return
+    if (this.controller.level >= 8) {
+      this.removeMission(mission.id)
+      console.log(`房间${this.name}等级已到8级，删除任务!`)
+      return
+    }
+
+    if (!this.memory.structureIdData?.terminalID)
+      return
+    if (!this.memory.structureIdData.labs?.length)
+      return
+
+    // boost
+    if (mission.labBind)
+      this.checkLab(mission, 'transport', 'complex')
+  }
+
+  /**
    * 紧急援建
    */
   public verifyHelpBuildMission(mission: MissionModel): void {
@@ -88,7 +112,9 @@ export default class RoomMissionVerifyExtension extends Room {
     }
   }
 
-  /* 资源转移任务 */
+  /**
+   * 资源转移任务
+   */
   public verifyResourceTransferMission(mission: MissionModel): void {
     if ((Game.time - global.Gtime[this.name]) % 50)
       return
@@ -143,6 +169,19 @@ export default class RoomMissionVerifyExtension extends Room {
       const sendTask = this.generateSendMission(mission.data.disRoom, rType, missNum)
       if (sendTask && this.addMission(sendTask))
         mission.data.num -= missNum
+    }
+  }
+
+  /**
+   * 扩张援建任务
+   */
+  public verifyExpandMission(mission: MissionModel): void {
+    if (mission.data.defend) {
+      global.MSB[mission.id] = {
+        claim: { move: 10, heal: 5, claim: 1, tough: 4 },
+        Ebuild: { work: 10, carry: 4, move: 20, heal: 6 },
+        Eupgrade: { work: 10, carry: 4, move: 20, heal: 6 },
+      }
     }
   }
 }

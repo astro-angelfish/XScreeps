@@ -1,7 +1,7 @@
 /* 四人小队框架控制 */
 
 import { squadMove, squadNear } from './move/move'
-import { SquadAttackOrient, SquadNameFlagPath, Squadaction, getClosestSquadColorFlagByRange, initSquad, steadySquad } from './work/action'
+import { getClosestSquadColorFlagByRange, initSquad, squadAction, squadAttackOrient, squadNameFlagPath, steadySquad } from './work/action'
 import { getSquadAttackDirection, getSquadPosDirection, getSquadStandCreep, isSquadArrivedRoom, isSquadReady } from './work/state'
 import { generateID } from '@/utils'
 
@@ -74,57 +74,61 @@ export function processSquad(squardID: string): void {
       squadMove(squadData, blueFlag.pos, 0)
       if (squadNear(squadData, blueFlag.pos))
         data.gather = true
-
       return
     }
-    /* 优先调整坐标 */
+
+    // 优先调整坐标
     if (!data.init) {
       data.init = true
-      initSquad(data.presentRoom, data.disRoom, squadData)
+      initSquad(data.presentRoom!, data.disRoom, squadData)
       return
     }
+
     squadMove(squadData, new RoomPosition(25, 25, data.disRoom), 10)
+
     return
   }
-  /* 小队行为 攻击周围的敌人和建筑 */
-  Squadaction(squadData)
-  const attack_flag = SquadNameFlagPath(squadData, 'squad_attack')
-  if (attack_flag) {
-    if (attack_flag.pos.lookFor(LOOK_STRUCTURES).length <= 0) { attack_flag.remove() }
+
+  // 小队行为 攻击周围的敌人和建筑
+  squadAction(squadData)
+
+  const attackFlag = squadNameFlagPath(squadData, 'squad_attack')
+  if (attackFlag) {
+    if (attackFlag.pos.lookFor(LOOK_STRUCTURES).length <= 0) {
+      attackFlag.remove()
+    }
     else {
-      const Attackdirection = getSquadAttackDirection(data.creepData)
-      if (getSquadPosDirection(squadData, attack_flag.pos) != null && Attackdirection != getSquadPosDirection(squadData, attack_flag.pos)) {
-        if (!isInArray(['↙', '↗', '↘', '↖'], getSquadPosDirection(squadData, attack_flag.pos))) {
-          SquadAttackOrient(Attackdirection, getSquadPosDirection(squadData, attack_flag.pos), squadData)
+      const attackDirection = getSquadAttackDirection(data.creepData)
+      const flagDirection = getSquadPosDirection(squadData, attackFlag.pos)
+      if (attackDirection && flagDirection && attackDirection !== flagDirection) {
+        if (!['↙', '↗', '↘', '↖'].includes(flagDirection)) {
+          squadAttackOrient(attackDirection, flagDirection, squadData)
           return
         }
       }
-      if (!squadNear(squadData, attack_flag.pos))
-        squadMove(squadData, attack_flag.pos, 1)
+      if (!squadNear(squadData, attackFlag.pos))
+        squadMove(squadData, attackFlag.pos, 1)
     }
   }
   else {
     const standCreep = getSquadStandCreep(squadData)
     if (!standCreep)
       return
-    const clostStructure = standCreep.pos.findClosestByPath(FIND_HOSTILE_STRUCTURES, {
-      filter: (struc) => {
-        return !isInArray([STRUCTURE_CONTROLLER, STRUCTURE_STORAGE], struc.structureType)
-      },
-    })
+    const clostStructure = standCreep.pos.findClosestByPath(
+      standCreep.room.find(FIND_HOSTILE_STRUCTURES)
+        .filter(struct => struct.structureType !== STRUCTURE_CONTROLLER && struct.structureType !== STRUCTURE_STORAGE))
     if (clostStructure) {
       clostStructure.pos.createFlag(`squad_attack_${generateID()}`, COLOR_WHITE)
       return
     }
     else { return }
   }
-  if (!attack_flag)
-    return
-  /* retreat_xx 是紧急撤退标志 */
-  const retreatFlag = SquadNameFlagPath(squadData, 'retreat')
+
+  // retreat_xx 是紧急撤退标志
+  const retreatFlag = squadNameFlagPath(squadData, 'retreat')
   if (retreatFlag) {
-    squadMove(squadData, blueFlag.pos, 0)
-    if (squadNear(squadData, blueFlag.pos))
+    squadMove(squadData, retreatFlag.pos, 0)
+    if (squadNear(squadData, retreatFlag.pos))
       retreatFlag.remove()
   }
 }

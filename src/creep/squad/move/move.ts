@@ -1,8 +1,7 @@
 /* 四人小队寻路 */
 
 import { SquadPos } from '../work/constant'
-import { getSquadStandCreep, getSquadStandPos, isSquadReady } from '../work/state'
-import { isInArray } from '@/utils'
+import { getSquadStandPos, isSquadReady } from '../work/state'
 
 /* squad阵型寻路移动通用函数  为了更好的反应，每一tick的寻路都是实时的，比较消耗cpu (话说都打架了还考虑什么cpu？) */
 export function squadMove(squadData: Squad, disPos: RoomPosition, range: number): void {
@@ -24,7 +23,7 @@ export function squadMove(squadData: Squad, disPos: RoomPosition, range: number)
       /* 第一层设置沼泽 */
       for (let x = 0; x < 50; x++) {
         for (let y = 0; y < 50; y++) {
-          if (terrian.get(x, y) == TERRAIN_MASK_SWAMP) {
+          if (terrian.get(x, y) === TERRAIN_MASK_SWAMP) {
             costs.set(x, y, 10)
             if (x > 2)
               costs.set(x - 1, y, 10)
@@ -40,7 +39,7 @@ export function squadMove(squadData: Squad, disPos: RoomPosition, range: number)
       /* 第二层设置墙壁 */
       for (let x = 0; x < 50; x++) {
         for (let y = 0; y < 50; y++) {
-          if (terrian.get(x, y) == TERRAIN_MASK_WALL) {
+          if (terrian.get(x, y) === TERRAIN_MASK_WALL) {
             costs.set(x, y, 0xFF)
             if (x > 2)
               costs.set(x - 1, y, 0xFF)
@@ -55,7 +54,7 @@ export function squadMove(squadData: Squad, disPos: RoomPosition, range: number)
       }
       if (!room_) {
         /* 没有视野就不访问其他内容 */
-        return
+        return costs
       }
       // 将其他地图中的道路设置为1，无法行走的建筑设置为255
       room_.find(FIND_STRUCTURES).forEach((struct) => {
@@ -70,7 +69,7 @@ export function squadMove(squadData: Squad, disPos: RoomPosition, range: number)
       /* 防止撞到其他虫子造成堵虫 */
       room_.find(FIND_CREEPS).forEach((creep) => {
         /* 是要不是四人小队的爬都设置成255 */
-        if (!isInArray(Object.keys(squadData), creep.name)) {
+        if (!Object.keys(squadData).includes(creep.name)) {
           costs.set(creep.pos.x, creep.pos.y, 255)
           costs.set(creep.pos.x - 1, creep.pos.y, 255)
           costs.set(creep.pos.x, creep.pos.y - 1, 255)
@@ -84,7 +83,7 @@ export function squadMove(squadData: Squad, disPos: RoomPosition, range: number)
   const direction = standPos.getDirectionTo(result.path[0])
   if (!direction)
     return
-  for (var c in squadData) {
+  for (const c in squadData) {
     if (Game.creeps[c]) {
       /* 如果有疲劳单位，就停止 */
       if (Game.creeps[c].fatigue)
@@ -98,7 +97,7 @@ export function squadMove(squadData: Squad, disPos: RoomPosition, range: number)
       if (result.path[0].x <= 48 && result.path[0].y <= 48) {
         const nextPostion = new RoomPosition(result.path[0].x + SquadPos[squadData[c].position][0], result.path[0].y + SquadPos[squadData[c].position][1], result.path[0].roomName)
         if (nextPostion) {
-          if (nextPostion.lookFor(LOOK_TERRAIN)[0] == 'wall') {
+          if (nextPostion.lookFor(LOOK_TERRAIN)[0] === 'wall') {
             Game.creeps[c].say('❗')
             return
           }
@@ -106,7 +105,7 @@ export function squadMove(squadData: Squad, disPos: RoomPosition, range: number)
       }
     }
   }
-  for (var c in squadData) {
+  for (const c in squadData) {
     if (Game.creeps[c])
       Game.creeps[c].move(direction)
   }

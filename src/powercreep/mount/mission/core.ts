@@ -114,6 +114,7 @@ export default class PowerCreepMissionCoreExtension extends PowerCreep {
       case '虫卵强化':{ this.processPwrSpawnMission(); break }
       case '工厂强化':{ this.processPwrFactoryMission(); break }
       case 'power强化':{ this.processPwrPowerSpawnMission(); break }
+      case 'source强化': { this.processPwrSourceMission(); break }
     }
   }
 
@@ -143,8 +144,11 @@ export default class PowerCreepMissionCoreExtension extends PowerCreep {
     if (num < 200 || num < Math.ceil(this.store.getCapacity() / 4)) {
       this.usePower(PWR_GENERATE_OPS)
 
+      const terminal = belongRoom.memory.structureIdData?.terminalID ? Game.getObjectById(belongRoom.memory.structureIdData.terminalID) : null
+      const totalOps = (storage.store.ops || 0) + (terminal?.store.ops || 0)
+
       // 过少就去提取 ops 资源
-      if ((storage.store.ops || 0) < 2500) {
+      if (totalOps < 2500) {
         // 资源调度
         if (belongRoom.countMissionByName('Structure', '资源购买') <= 0) {
           // 已经存在其它房间的传送信息的情况

@@ -42,4 +42,6 @@ export function initMemory(): void {
     global.MSB = {}
   if (!Memory.stopPixel)
     Memory.stopPixel = false
+  if (!global.repairList)
+    global.repairList = {}
 }

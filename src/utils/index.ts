@@ -10,6 +10,7 @@ export * from './resource'
 export * from './creep'
 
 export const initialTick = Game.time
+export const haveShards = typeof InterShardMemory !== 'undefined'
 
 /**
  * 按照列表中某个属性进行排序，配合sort使用

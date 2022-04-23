@@ -1,8 +1,11 @@
+import { profileMethod } from '@/utils'
+
 /* 房间原型拓展   --内核  --房间初始化 */
 export default class RoomInitExtension extends Room {
   /**
    * 房间初始化主函数
    */
+  @profileMethod()
   public initRoom(): void {
     this.initRoomMemory()
     this.initRoomStructure()
@@ -59,6 +62,7 @@ export default class RoomInitExtension extends Room {
   /**
    * 定时刷新房间内的建筑，将建筑id储存起来  【已测试】 <能用就行，不想改了QAQ>
    */
+  @profileMethod()
   public initRoomStructure(): void {
     if (!this.controller)
       return
@@ -255,7 +259,7 @@ export default class RoomInitExtension extends Room {
               harvestData[id].containerID = containers[0].id
           }
         }
-        if (level >= 5) {
+        else {
           if (isInvalidStructure(harvestData[id].linkID)) {
             const links = source.pos.getRangedStructure([STRUCTURE_LINK], 2, 0)
             if (links.length > 0)
@@ -292,6 +296,7 @@ export default class RoomInitExtension extends Room {
    * 房间全局建筑初始化\
    * 目前只支持 storage terminal factory powerspawn Ntower
    */
+  @profileMethod()
   public initGlobalRoomStructure(): void {
     if (!this.memory.structureIdData)
       return

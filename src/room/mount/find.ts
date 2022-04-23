@@ -1,9 +1,11 @@
+import { flatten, zipObject } from 'lodash'
 import { allStructureTypes } from '@/structure/constant/structure'
 import { cacheMethodOHash, profileMethod } from '@/utils'
 
 /* 房间原型拓展   --方法  --寻找 */
 export default class RoomFindExtension extends Room {
   /* 获取指定 structureType 的建筑列表 */
+  @profileMethod()
   public getStructureWithType<T extends AnyStructure['structureType']>(type: T): NarrowStructure<T>[] {
     if (this._cacheStructuresByType && this._cacheSBTUpdated === Game.time)
       return this._cacheStructuresByType[type]
@@ -16,8 +18,9 @@ export default class RoomFindExtension extends Room {
   /**
    * 将房间内建筑按 stuctureType 分类放进缓存
    */
+  @profileMethod()
   public cacheStructures(): void {
-    this._cacheStructuresByType = Object.fromEntries(allStructureTypes.map(v => [v, []])) as unknown as CacheStructuresByType
+    this._cacheStructuresByType = zipObject(allStructureTypes.map(v => [v, []])) as unknown as CacheStructuresByType
     for (const structure of this.find(FIND_STRUCTURES))
       this._cacheStructuresByType[structure.structureType].push(structure as never)
     this._cacheSBTUpdated = Game.time
@@ -26,6 +29,7 @@ export default class RoomFindExtension extends Room {
   /**
    * 任务 lab 绑定数据生成便捷函数
    */
+  @profileMethod()
   public bindLab(rTypes: ResourceConstant[]): MissionLabBind | undefined {
     const result: MissionLabBind = {}
     const tempList: Id<StructureLab>[] = []
@@ -97,13 +101,14 @@ export default class RoomFindExtension extends Room {
   /**
    * 获取指定类型的建筑
    */
+  @profileMethod()
   public getStructureWithTypes<T extends AnyStructure['structureType']>(types: T[]): NarrowStructure<T>[] {
     if (this._cacheStructuresByType && this._cacheSBTUpdated === Game.time)
-      return types.map(v => this._cacheStructuresByType[v]).flat()
+      return flatten(types.map(v => this._cacheStructuresByType[v]))
 
     this.cacheStructures()
 
-    return types.map(v => this._cacheStructuresByType[v]).flat()
+    return flatten(types.map(v => this._cacheStructuresByType[v]))
   }
 
   /**
@@ -122,6 +127,7 @@ export default class RoomFindExtension extends Room {
    * 建筑任务初始化\
    * 目前包含 terminal factory link
    */
+  @profileMethod()
   public processStructureMission(): void {
     if (!this.memory.structureIdData)
       return
