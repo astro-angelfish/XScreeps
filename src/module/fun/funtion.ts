@@ -440,7 +440,7 @@ export function statCPU(): void {
     if (!global.CpuData) global.CpuData = []
     global.UsedCpu = mainEndCpu
     let length_i = 300;
-    if (global.CpuData.length > length_i) {
+    if (global.CpuData.length >= length_i) {
         global.CpuData = global.CpuData.slice(1);
     }
     global.CpuData.push(global.UsedCpu)

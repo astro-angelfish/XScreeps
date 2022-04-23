@@ -17,24 +17,24 @@ export default class RoomMissonPublish extends Room {
      * @param num       要搬运的数量[可选]
      * @returns         任务对象
      */
-    public public_Carry(creepData:BindData,delayTick:number,sR:string,sX:number,sY:number,tR:string,tX:number,tY:number,rType?:ResourceConstant,num?:number):MissionModel{
-        var thisTask:MissionModel = 
-            {
-                name :'物流运输',
-                CreepBind:creepData,
-                range:'Creep',
-                delayTick:delayTick,
-                cooldownTick:1,
-                maxTime:3,
-                Data:{
-                    sourceRoom:sR,
-                    sourcePosX:sX,
-                    sourcePosY:sY,
-                    targetRoom:tR,
-                    targetPosX:tX,
-                    targetPosY:tY,
-                }
+    public public_Carry(creepData: BindData, delayTick: number, sR: string, sX: number, sY: number, tR: string, tX: number, tY: number, rType?: ResourceConstant, num?: number): MissionModel {
+        var thisTask: MissionModel =
+        {
+            name: '物流运输',
+            CreepBind: creepData,
+            range: 'Creep',
+            delayTick: delayTick,
+            cooldownTick: 1,
+            maxTime: 3,
+            Data: {
+                sourceRoom: sR,
+                sourcePosX: sX,
+                sourcePosY: sY,
+                targetRoom: tR,
+                targetPosX: tX,
+                targetPosY: tY,
             }
+        }
         if (rType) thisTask.Data.rType = rType
         if (num) thisTask.Data.num = num
         return thisTask
@@ -48,37 +48,33 @@ export default class RoomMissonPublish extends Room {
      * @param level     身体部件 分为 T0 T1 T2
      * @returns         任务对象
      */
-    public public_repair(Rtype:'global' | 'special' | 'nuker',num:number,boostType:ResourceConstant,level?:'T0' | 'T1' | 'T2'):MissionModel
-    {
-        var thisTask:MissionModel = {
-            name:'墙体维护',
-            range:'Creep',
-            delayTick:99999,
-            level:10,
-            Data:{
-                RepairType:Rtype,
-                num:num,
-                boostType:boostType,
-                level:level
+    public public_repair(Rtype: 'global' | 'special' | 'nuker', num: number, boostType: ResourceConstant, level?: 'T0' | 'T1' | 'T2'): MissionModel {
+        var thisTask: MissionModel = {
+            name: '墙体维护',
+            range: 'Creep',
+            delayTick: 99999,
+            level: 10,
+            Data: {
+                RepairType: Rtype,
+                num: num,
+                boostType: boostType,
+                level: level
             },
-            maxTime:3
+            maxTime: 3
         }
-        thisTask.CreepBind = {'repair':{num:num,bind:[],MSB:(level?true:false)}}
-        if (boostType == 'LH')
-        {
+        thisTask.CreepBind = { 'repair': { num: num, bind: [], MSB: (level ? true : false) } }
+        if (boostType == 'LH') {
             var labData = this.Bind_Lab(['LH'])
             if (labData === null) return null
             thisTask.LabBind = labData
         }
-        else if (boostType == 'LH2O')
-        {
+        else if (boostType == 'LH2O') {
             var labData = this.Bind_Lab(['LH2O'])
             if (labData === null) return null
             thisTask.LabBind = labData
 
         }
-        else if (boostType == 'XLH2O')
-        {
+        else if (boostType == 'XLH2O') {
             var labData = this.Bind_Lab(['XLH2O'])
             if (labData === null) return null
             thisTask.LabBind = labData
@@ -92,27 +88,25 @@ export default class RoomMissonPublish extends Room {
      * @param disRoom   目标房间
      * @returns         任务对象
      */
-    public public_planC(disRoom:string,Cnum:number,upNum:number,shard?:shardName,):MissionModel{
-        var thisTask:MissionModel = {
-            name:'C计划',
-            range:'Creep',
-            delayTick:20500,
-            level:10,
-            Data:{
-                state:0,
-                disRoom:disRoom,
+    public public_planC(disRoom: string, Cnum: number, upNum: number, shard?: shardName,): MissionModel {
+        var thisTask: MissionModel = {
+            name: 'C计划',
+            range: 'Creep',
+            delayTick: 20500,
+            level: 10,
+            Data: {
+                state: 0,
+                disRoom: disRoom,
             },
         }
         thisTask.reserve = true
-        if (!shard)
-        {
+        if (!shard) {
             thisTask.Data.shard = Game.shard.name
-            thisTask.CreepBind = {'cclaim':{num:Cnum,bind:[]},'cupgrade':{num:upNum,bind:[]}}
+            thisTask.CreepBind = { 'cclaim': { num: Cnum, bind: [] }, 'cupgrade': { num: upNum, bind: [] } }
         }
-        else
-        {
+        else {
             thisTask.Data.shard = shard
-            thisTask.CreepBind = {'cclaim':{num:Cnum,bind:[],interval:1000},'cupgrade':{num:upNum,bind:[],interval:1000}}
+            thisTask.CreepBind = { 'cclaim': { num: Cnum, bind: [], interval: 1000 }, 'cupgrade': { num: upNum, bind: [], interval: 1000 } }
         }
         return thisTask
     }
@@ -125,21 +119,21 @@ export default class RoomMissonPublish extends Room {
      * @param delayTick 过期时间
      * @returns         任务对象
      */
-    public public_link(structure:string[],dislink:string,level:number,delayTick?:number):MissionModel{
-        var thisTask:MissionModel = {
-            name:'链传送能',
-            range:'Structure',
-            delayTick:20,
-            structure:structure,
-            level:level,
-            Data:{
-                disStructure:dislink
+    public public_link(structure: string[], dislink: string, level: number, delayTick?: number): MissionModel {
+        var thisTask: MissionModel = {
+            name: '链传送能',
+            range: 'Structure',
+            delayTick: 20,
+            structure: structure,
+            level: level,
+            Data: {
+                disStructure: dislink
             }
         }
         if (delayTick) thisTask.delayTick = delayTick
         return thisTask
     }
-    
+
     /**
      *                  拆迁任务发布函数
      * @param disRoom   目标房间
@@ -148,68 +142,65 @@ export default class RoomMissonPublish extends Room {
      * @param boost     是否boost
      * @returns         任务对象
      */
-    public public_dismantle(disRoom:string,shard:shardName,num:number,interval?:number,boost?:boolean):MissionModel{
-        var thisTask:MissionModel = {
-            name:'黄球拆迁',
-            range:'Creep',
-            delayTick:20500,
-            level:10,
-            Data:{
-                disRoom:disRoom,
-                num:num,
-                shard:shard
+    public public_dismantle(disRoom: string, shard: shardName, num: number, interval?: number, boost?: boolean): MissionModel {
+        var thisTask: MissionModel = {
+            name: '黄球拆迁',
+            range: 'Creep',
+            delayTick: 20500,
+            level: 10,
+            Data: {
+                disRoom: disRoom,
+                num: num,
+                shard: shard
             },
         }
         thisTask.reserve = true
         if (this.controller.level <= 5) thisTask.Data.boost = false
-        if (boost)
-        {
+        if (boost) {
             thisTask.Data.boost = true
-            thisTask.LabBind = this.Bind_Lab(['XZHO2','XZH2O'])
+            thisTask.LabBind = this.Bind_Lab(['XZHO2', 'XZH2O'])
         }
-        thisTask.CreepBind = {'dismantle':{num:0,interval:interval?interval:1200,bind:[],MSB:(boost?true:false)}}
+        thisTask.CreepBind = { 'dismantle': { num: 0, interval: interval ? interval : 1200, bind: [], MSB: (boost ? true : false) } }
         return thisTask
     }
 
-    public public_aio(disRoom:string,disShard:shardName,num:number,interval:number,boost:boolean,bodylevel?: "T0" | "T1" | "T2"){
-        var thisTask:MissionModel = {
-            name:'攻防一体',
-            range:'Creep',
-            delayTick:80000,
-            level:10,
-            Data:{
-                disRoom:disRoom,
-                num:num,
-                shard:disShard,
+    public public_aio(disRoom: string, disShard: shardName, num: number, interval: number, boost: boolean, bodylevel?: "T0" | "T1" | "T2") {
+        var thisTask: MissionModel = {
+            name: '攻防一体',
+            range: 'Creep',
+            delayTick: 80000,
+            level: 10,
+            Data: {
+                disRoom: disRoom,
+                num: num,
+                shard: disShard,
             },
-            maxTime:5
+            maxTime: 5
         }
-        if (boost)
-        {
+        if (boost) {
             thisTask.Data.boost = true
-            thisTask.LabBind = this.Bind_Lab(['XZHO2','XGHO2','XLHO2','XKHO2'])
+            thisTask.LabBind = this.Bind_Lab(['XZHO2', 'XGHO2', 'XLHO2', 'XKHO2'])
             if (bodylevel) thisTask.Data.bodylevel = bodylevel  // 一体机体型
         }
         else thisTask.Data.boost = false
-        thisTask.CreepBind = {'aio':{num:0,interval:interval,bind:[],MSB:(boost?true:false)}}
+        thisTask.CreepBind = { 'aio': { num: 0, interval: interval, bind: [], MSB: (boost ? true : false) } }
         thisTask.reserve = true
         return thisTask
     }
 
-    public public_control(disRoom:string,shard:shardName,interval:number):MissionModel
-    {
-        var thisTask:MissionModel = {
-            name:'控制攻击',
-            range:'Creep',
-            delayTick:99999,
-            level:10,
-            Data:{
-                disRoom:disRoom,
-                shard:shard,
+    public public_control(disRoom: string, shard: shardName, interval: number): MissionModel {
+        var thisTask: MissionModel = {
+            name: '控制攻击',
+            range: 'Creep',
+            delayTick: 99999,
+            level: 10,
+            Data: {
+                disRoom: disRoom,
+                shard: shard,
             },
         }
         thisTask.reserve = true
-        thisTask.CreepBind = {'claim-attack':{num:1,interval:interval,bind:[]}}
+        thisTask.CreepBind = { 'claim-attack': { num: 1, interval: interval, bind: [] } }
         return thisTask
     }
     /**
@@ -218,18 +209,17 @@ export default class RoomMissonPublish extends Room {
      * @param boostType boost类型
      * @returns         任务对象
      */
-    public public_quick(num:number,boostType:ResourceConstant | null):MissionModel{
-        var thisTask:MissionModel = {
-            name:'急速冲级',
-            range:'Creep',
-            delayTick:99999,
-            level:10,
-            Data:{
+    public public_quick(num: number, boostType: ResourceConstant | null): MissionModel {
+        var thisTask: MissionModel = {
+            name: '急速冲级',
+            range: 'Creep',
+            delayTick: 99999,
+            level: 10,
+            Data: {
             },
         }
-        thisTask.CreepBind = {'rush':{num:num,bind:[]}}
-        if (boostType)
-        {
+        thisTask.CreepBind = { 'rush': { num: num, bind: [] } }
+        if (boostType) {
             thisTask.LabBind = this.Bind_Lab([boostType])
         }
         return thisTask
@@ -241,174 +231,170 @@ export default class RoomMissonPublish extends Room {
      * @param boostType boost类型
      * @returns         任务对象
      */
-     public public_normal(num:number,boostType:ResourceConstant | null):MissionModel{
-        var thisTask:MissionModel = {
-            name:'急速冲级',
-            range:'Creep',
-            delayTick:99999,
-            level:10,
-            Data:{
+    public public_normal(num: number, boostType: ResourceConstant | null): MissionModel {
+        var thisTask: MissionModel = {
+            name: '急速冲级',
+            range: 'Creep',
+            delayTick: 99999,
+            level: 10,
+            Data: {
             },
         }
-        thisTask.CreepBind = {'rush':{num:num>2?2:num,bind:[]}}
-        if (boostType)
-        {
+        thisTask.CreepBind = { 'rush': { num: num > 2 ? 2 : num, bind: [] } }
+        if (boostType) {
             thisTask.LabBind = this.Bind_Lab([boostType])
         }
         return thisTask
     }
 
-    public public_expand(disRoom:string,shard:shardName,num:number,cnum?:number):MissionModel{
-        var thisTask:MissionModel = {
-            name:'扩张援建',
-            range:'Creep',
-            delayTick:40000,
-            level:10,
-            Data:{
-                disRoom:disRoom,
-                shard:shard
+    public public_expand(disRoom: string, shard: shardName, num: number, cnum?: number): MissionModel {
+        var thisTask: MissionModel = {
+            name: '扩张援建',
+            range: 'Creep',
+            delayTick: 40000,
+            level: 10,
+            Data: {
+                disRoom: disRoom,
+                shard: shard
             },
         }
         thisTask.reserve = true
         thisTask.CreepBind = {
-            'claim':{num:cnum,bind:[],interval:1000},
-            'Ebuild':{num:num,bind:[],interval:1000},
-            'Eupgrade':{num:num,bind:[],interval:1000}
+            'claim': { num: cnum, bind: [], interval: 1000 },
+            'Ebuild': { num: num, bind: [], interval: 500 },
+            'Eupgrade': { num: num, bind: [], interval: 1000 }
         }
-        return thisTask
+        thisTask.LabBind = this.Bind_Lab(['XGH2O'])
+        if (thisTask.LabBind)
+            return thisTask
     }
 
-    public public_helpBuild(disRoom:string,num:number,shard?:string,time?:number,defend?:boolean):MissionModel{
-        var thisTask:MissionModel = {
-            name:'紧急援建',
-            range:'Creep',
-            delayTick:20000,
-            level:10,
-            Data:{
-                disRoom:disRoom,
-                num:num,
-                shard:shard?shard:Game.shard.name,
-                defend:defend,
+    public public_helpBuild(disRoom: string, num: number, shard?: string, time?: number, defend?: boolean): MissionModel {
+        var thisTask: MissionModel = {
+            name: '紧急援建',
+            range: 'Creep',
+            delayTick: 20000,
+            level: 10,
+            Data: {
+                disRoom: disRoom,
+                num: num,
+                shard: shard ? shard : Game.shard.name,
+                defend: defend,
             },
-            maxTime:2,
-            reserve:true
-            
+            maxTime: 2,
+            reserve: true
+
         }
         thisTask.reserve = true
         thisTask.CreepBind = {
-            'architect':{num:num,bind:[],interval:time?time:1000,MSB:(defend?false:true)},
+            'architect': { num: num, bind: [], interval: time ? time : 1000, MSB: (defend ? false : true) },
         }
         if (defend) // 有防备的
-        thisTask.LabBind = this.Bind_Lab(['XZHO2','XLH2O','XLHO2','XGHO2','XKH2O'])
+            thisTask.LabBind = this.Bind_Lab(['XZHO2', 'XLH2O', 'XLHO2', 'XGHO2', 'XKH2O'])
         else
-        thisTask.LabBind = this.Bind_Lab(['XZHO2','XLH2O','XKH2O'])
+            thisTask.LabBind = this.Bind_Lab(['XZHO2', 'XLH2O', 'XKH2O'])
         if (thisTask.LabBind)
-        return thisTask
+            return thisTask
         return null
     }
 
-    public public_support(disRoom:string,sType:'double' | 'aio',shard:shardName,num:number = 1,boost:boolean):MissionModel{
-        var thisTask:MissionModel = {
-            name:'紧急支援',
-            range:'Creep',
-            delayTick:20000,
-            level:10,
-            Data:{
-                disRoom:disRoom,
-                sType:sType,
-                boost:boost
+    public public_support(disRoom: string, sType: 'double' | 'aio', shard: shardName, num: number = 1, boost: boolean): MissionModel {
+        var thisTask: MissionModel = {
+            name: '紧急支援',
+            range: 'Creep',
+            delayTick: 20000,
+            level: 10,
+            Data: {
+                disRoom: disRoom,
+                sType: sType,
+                boost: boost
             },
-            maxTime:3,
+            maxTime: 3,
         }
-        
+
         thisTask.reserve = true
-        if (sType == 'double')
-        {
-            thisTask.CreepBind = {'double-attack':{num:num,bind:[],interval:1000},'double-heal':{num:num,bind:[],interval:1000}}
-            thisTask.LabBind = this.Bind_Lab(['XUH2O','XLHO2','XZHO2','XGHO2','XKHO2'])
+        if (sType == 'double') {
+            thisTask.CreepBind = { 'double-attack': { num: num, bind: [], interval: 1000 }, 'double-heal': { num: num, bind: [], interval: 1000 } }
+            thisTask.LabBind = this.Bind_Lab(['XUH2O', 'XLHO2', 'XZHO2', 'XGHO2', 'XKHO2'])
         }
-        else if (sType == 'aio')
-        {
-            thisTask.CreepBind = {'saio':{num:num,bind:[],interval:1000}}
-            if (boost) thisTask.LabBind = this.Bind_Lab(['XLHO2','XZHO2','XGHO2','XKHO2'])
+        else if (sType == 'aio') {
+            thisTask.CreepBind = { 'saio': { num: num, bind: [], interval: 1000 } }
+            if (boost) thisTask.LabBind = this.Bind_Lab(['XLHO2', 'XZHO2', 'XGHO2', 'XKHO2'])
         }
-        if (shard)thisTask.Data.shard = shard
+        if (shard) thisTask.Data.shard = shard
         else thisTask.Data.shard = Game.shard.name
-        
+
         return thisTask
     }
 
     /* 双人小队发布函数 */
-    public public_Double(disRoom:string,shard:shardName,CreepNum:number,cType:'dismantle' | 'attack',interval:number):MissionModel{
-        var thisTask:MissionModel = {
-            name:'双人小队',
-            range:'Creep',
-            delayTick:20000,
-            level:10,
-            Data:{
-                disRoom:disRoom,
-                shard:shard,
-                teamType:cType,
-                num:CreepNum
+    public public_Double(disRoom: string, shard: shardName, CreepNum: number, cType: 'dismantle' | 'attack', interval: number): MissionModel {
+        var thisTask: MissionModel = {
+            name: '双人小队',
+            range: 'Creep',
+            delayTick: 20000,
+            level: 10,
+            Data: {
+                disRoom: disRoom,
+                shard: shard,
+                teamType: cType,
+                num: CreepNum
             },
-            reserve:true
+            reserve: true
         }
         if (!interval || interval < 100) return null
-        if (cType == 'dismantle')
-        {
-            thisTask.CreepBind = {'double-dismantle':{num:CreepNum,bind:[],interval:interval},'double-heal':{num:CreepNum,bind:[],interval:interval}}
-            var labData = this.Bind_Lab(['XZHO2','XZH2O','XGHO2','XLHO2','XKHO2'])
+        if (cType == 'dismantle') {
+            thisTask.CreepBind = { 'double-dismantle': { num: CreepNum, bind: [], interval: interval }, 'double-heal': { num: CreepNum, bind: [], interval: interval } }
+            var labData = this.Bind_Lab(['XZHO2', 'XZH2O', 'XGHO2', 'XLHO2', 'XKHO2'])
             if (labData === null) return null
             thisTask.LabBind = labData
         }
-        else
-        {
-            thisTask.CreepBind = {'double-attack':{num:CreepNum,bind:[],interval:interval},'double-heal':{num:CreepNum,bind:[],interval:interval}}
-            var labData = this.Bind_Lab(['XUH2O','XZHO2','XGHO2','XLHO2','XKHO2'])
+        else {
+            thisTask.CreepBind = { 'double-attack': { num: CreepNum, bind: [], interval: interval }, 'double-heal': { num: CreepNum, bind: [], interval: interval } }
+            var labData = this.Bind_Lab(['XUH2O', 'XZHO2', 'XGHO2', 'XLHO2', 'XKHO2'])
             if (labData === null) return null
             thisTask.LabBind = labData
         }
         return thisTask
     }
 
-    public public_Sign(disRoom:string,shard:string,str:string):MissionModel{
-        var thisTask:MissionModel = {
-            name:'房间签名',
-            range:'Creep',
-            delayTick:1600,
-            level:10,
-            Data:{
-                disRoom:disRoom,    // 目标房间
-                shard:shard,    // 目标shard
-                str:str,    // 签名内容
+    public public_Sign(disRoom: string, shard: string, str: string): MissionModel {
+        var thisTask: MissionModel = {
+            name: '房间签名',
+            range: 'Creep',
+            delayTick: 1600,
+            level: 10,
+            Data: {
+                disRoom: disRoom,    // 目标房间
+                shard: shard,    // 目标shard
+                str: str,    // 签名内容
             },
-            maxTime:2       // 最大同时任务数量
+            maxTime: 2       // 最大同时任务数量
         }
-        thisTask.CreepBind = {'scout':{num:1,bind:[]}}
+        thisTask.CreepBind = { 'scout': { num: 1, bind: [] } }
         return thisTask
     }
 
     /* 资源传送任务发布函数 */
-    public public_Send(disRoom:string,rType:ResourceConstant,num:number):MissionModel{
+    public public_Send(disRoom: string, rType: ResourceConstant, num: number): MissionModel {
         if (!this.memory.StructureIdData.terminalID) return null
         var terminal = Game.getObjectById(this.memory.StructureIdData.terminalID) as StructureTerminal
-        if (!terminal)
-        {
+        if (!terminal) {
             delete this.memory.StructureIdData.terminalID
             return null
         }
-        var thisTask:MissionModel = {
-            name:'资源传送',
-            range:'Structure',
-            delayTick:2500,
-            structure:[terminal.id],
-            level:5,
-            Data:{
-                disRoom:disRoom,
-                rType:rType,
-                num:num
+        var thisTask: MissionModel = {
+            name: '资源传送',
+            range: 'Structure',
+            delayTick: 2500,
+            structure: [terminal.id],
+            level: 5,
+            Data: {
+                disRoom: disRoom,
+                rType: rType,
+                num: num
             },
-            maxTime:8
+            maxTime: 8
         }
         return thisTask
     }
@@ -421,70 +407,66 @@ export default class RoomMissonPublish extends Room {
      * @param max   最高接受的价格
      * @returns     任务对象
      */
-    public public_Buy(res:ResourceConstant,num:number,range:number,max?:number):MissionModel{
+    public public_Buy(res: ResourceConstant, num: number, range: number, max?: number): MissionModel {
         if (!this.memory.StructureIdData.terminalID) return null
         var terminal = Game.getObjectById(this.memory.StructureIdData.terminalID) as StructureTerminal
-        if (!terminal)
-        {
+        if (!terminal) {
             delete this.memory.StructureIdData.terminalID
             return null
         }
         /* 开始进行任务 */
-        var thisTask:MissionModel = {
-            name:'资源购买',
-            range:'Structure',
-            structure:[terminal.id],
-            delayTick:60,
-            level:10,
-            maxTime:3,
-            Data:{
-                rType:res,
-                num:num,
-                range:range
+        var thisTask: MissionModel = {
+            name: '资源购买',
+            range: 'Structure',
+            structure: [terminal.id],
+            delayTick: 60,
+            level: 10,
+            maxTime: 3,
+            Data: {
+                rType: res,
+                num: num,
+                range: range
             }
         }
-        thisTask.Data.maxPrice = max?max:35
+        thisTask.Data.maxPrice = max ? max : 35
         return thisTask
     }
 
-    public public_Compound(num:number,disResource:ResourceConstant,bindData:string[]):MissionModel{
+    public public_Compound(num: number, disResource: ResourceConstant, bindData: string[]): MissionModel {
         // 检验阶段
         if (!this.memory.StructureIdData.labInspect || Object.keys(this.memory.StructureIdData.labInspect).length < 3) return null
         var raw1 = Game.getObjectById(this.memory.StructureIdData.labInspect.raw1) as StructureLab
         var raw2 = Game.getObjectById(this.memory.StructureIdData.labInspect.raw2) as StructureLab
-        if (!raw1) {delete this.memory.StructureIdData.labInspect.raw1;return} 
-        if (!raw2) {delete this.memory.StructureIdData.labInspect.raw2;return}
-        for (var i of this.memory.StructureIdData.labInspect.com)
-        {
+        if (!raw1) { delete this.memory.StructureIdData.labInspect.raw1; return }
+        if (!raw2) { delete this.memory.StructureIdData.labInspect.raw2; return }
+        for (var i of this.memory.StructureIdData.labInspect.com) {
             var thisLab = Game.getObjectById(i) as StructureLab
-            if (!thisLab)
-            {
+            if (!thisLab) {
                 var index = this.memory.StructureIdData.labInspect.com.indexOf(i)
-                this.memory.StructureIdData.labInspect.com.splice(index,1)
+                this.memory.StructureIdData.labInspect.com.splice(index, 1)
                 continue
             }
         }
         var raw1str = LabMap[disResource].raw1
         var raw2str = LabMap[disResource].raw2
         /* 开始进行任务 */
-        var thisTask:MissionModel = {
-            name:'资源合成',
-            range:'Room',
-            delayTick:50000,
-            processing:true,
-            level:10,
-            LabBind:{
+        var thisTask: MissionModel = {
+            name: '资源合成',
+            range: 'Room',
+            delayTick: 50000,
+            processing: true,
+            level: 10,
+            LabBind: {
             },
-            Data:{
-                num:num
+            Data: {
+                num: num
             }
         }
         thisTask.LabBind[this.memory.StructureIdData.labInspect.raw1] = raw1str
         thisTask.LabBind[this.memory.StructureIdData.labInspect.raw2] = raw2str
         var BindData = bindData
         thisTask.Data.comData = BindData
-        for (var ii of BindData)
-        {
+        for (var ii of BindData) {
             thisTask.LabBind[ii] = disResource
         }
         thisTask.Data.raw1 = raw1str
@@ -493,68 +475,67 @@ export default class RoomMissonPublish extends Room {
     }
 
     /* 外矿开采任务发布函数 */
-    public public_OutMine(sourceRoom:string,x:number,y:number,disRoom:string):MissionModel{
-        var pos = new RoomPosition(x,y,sourceRoom)
+    public public_OutMine(sourceRoom: string, x: number, y: number, disRoom: string): MissionModel {
+        var pos = new RoomPosition(x, y, sourceRoom)
         if (!this.memory.StructureIdData.storageID) return null
         if (!pos) return null
         // 检查是否已经存在重复任务了
-        for (var i of this.memory.Misson['Creep'])
-        {
+        for (var i of this.memory.Misson['Creep']) {
             if (i.name == '外矿开采' && i.Data.disRoom == disRoom)
-            return null
+                return null
         }
-        var thisTask:MissionModel = {
-            name:'外矿开采',
-            range:'Creep',
-            delayTick:99999,
-            level:10,
-            Data:{
-                disRoom:disRoom,
-                startpoint:zipPosition(pos)
+        var thisTask: MissionModel = {
+            name: '外矿开采',
+            range: 'Creep',
+            delayTick: 99999,
+            level: 10,
+            Data: {
+                disRoom: disRoom,
+                startpoint: zipPosition(pos)
             },
         }
-        thisTask.CreepBind = {'out-claim':{num:0,bind:[]},'out-harvest':{num:0,bind:[]},'out-car':{num:0,bind:[]},'out-defend':{num:0,bind:[]}}
+        thisTask.CreepBind = { 'out-claim': { num: 0, bind: [] }, 'out-harvest': { num: 0, bind: [] }, 'out-car': { num: 0, bind: [] }, 'out-defend': { num: 0, bind: [] } }
         return thisTask
     }
 
     /* power采集任务发布函数 */
-    public public_PowerHarvest(disRoom:string,x:number,y:number,num:number):MissionModel{
-        var thisTask:MissionModel = {
-            name:'power采集',
-            range:'Creep',
-            delayTick:5000,
-            level:10,
-            Data:{
-                room:disRoom,
-                x:x,
-                y:y,
-                state:1,
-                num:num,
-                Cnum:Math.ceil(num/1600)
+    public public_PowerHarvest(disRoom: string, x: number, y: number, num: number): MissionModel {
+        var thisTask: MissionModel = {
+            name: 'power采集',
+            range: 'Creep',
+            delayTick: 5000,
+            level: 10,
+            Data: {
+                room: disRoom,
+                x: x,
+                y: y,
+                state: 1,
+                num: num,
+                Cnum: Math.ceil(num / 1600)
             },
-            maxTime:2,
+            maxTime: 2,
         }
-        thisTask.CreepBind = {'power-attack':{num:1,bind:[]},'power-heal':{num:1,bind:[]},'power-carry':{num: 0 ,bind:[]}} 
+        thisTask.CreepBind = { 'power-attack': { num: 1, bind: [] }, 'power-heal': { num: 1, bind: [] }, 'power-carry': { num: 0, bind: [] } }
         return thisTask
     }
 
     /* deposit采集任务发布函数 */
-    public public_DepositHarvest(disRoom:string,x:number,y:number,rType:DepositConstant):MissionModel{
-        var thisTask:MissionModel = {
-            name:'deposit采集',
-            range:'Creep',
-            delayTick:2000,
-            level:10,
-            Data:{
-                room:disRoom,
-                x:x,
-                y:y,
-                state:1,
-                rType:rType
+    public public_DepositHarvest(disRoom: string, x: number, y: number, rType: DepositConstant): MissionModel {
+        var thisTask: MissionModel = {
+            name: 'deposit采集',
+            range: 'Creep',
+            delayTick: 2000,
+            level: 10,
+            Data: {
+                room: disRoom,
+                x: x,
+                y: y,
+                state: 1,
+                rType: rType
             },
-            maxTime:2
+            maxTime: 2
         }
-        thisTask.CreepBind = {'deposit':{num:1,bind:[]}}
+        thisTask.CreepBind = { 'deposit': { num: 1, bind: [] } }
         // var MissonNum = this.MissionNum('Creep','deposit采集')
         // if (MissonNum > 2) return null
         // thisTask.maxTime = MissonNum
@@ -562,17 +543,17 @@ export default class RoomMissonPublish extends Room {
     }
 
     /* 红球防御任务发布函数 */
-    public public_red_defend(num:number):MissionModel{
-        var thisTask:MissionModel = {
-            name:'红球防御',
-            range:'Creep',
-            delayTick:99999,
-            level:10,
-            Data:{},
+    public public_red_defend(num: number): MissionModel {
+        var thisTask: MissionModel = {
+            name: '红球防御',
+            range: 'Creep',
+            delayTick: 99999,
+            level: 10,
+            Data: {},
         }
-        var comList = ['XZHO2','XUH2O']
+        var comList = ['XZHO2', 'XUH2O']
         thisTask.CreepBind = {}
-        thisTask.CreepBind['defend-attack'] = {num:1,bind:[]}
+        thisTask.CreepBind['defend-attack'] = { num: 1, bind: [] }
         var labData = this.Bind_Lab(comList as ResourceConstant[])
         if (labData === null) return null
         thisTask.LabBind = labData
@@ -580,17 +561,17 @@ export default class RoomMissonPublish extends Room {
     }
 
     /* 蓝球防御任务发布函数 */
-    public public_blue_defend(num:number):MissionModel{
-        var thisTask:MissionModel = {
-            name:'蓝球防御',
-            range:'Creep',
-            delayTick:99999,
-            level:10,
-            Data:{}
+    public public_blue_defend(num: number): MissionModel {
+        var thisTask: MissionModel = {
+            name: '蓝球防御',
+            range: 'Creep',
+            delayTick: 99999,
+            level: 10,
+            Data: {}
         }
-        var comList = ['XZHO2','XKHO2']
+        var comList = ['XZHO2', 'XKHO2']
         thisTask.CreepBind = {}
-        thisTask.CreepBind['defend-range'] = {num:num,bind:[]}
+        thisTask.CreepBind['defend-range'] = { num: num, bind: [] }
         var labData = this.Bind_Lab(comList as ResourceConstant[])
         if (labData === null) return null
         thisTask.LabBind = labData
@@ -598,18 +579,18 @@ export default class RoomMissonPublish extends Room {
     }
 
     /* 双人小队防御任务发布函数 */
-    public public_double_defend(num:number):MissionModel{
-        var thisTask:MissionModel = {
-            name:'双人防御',
-            range:'Creep',
-            delayTick:99999,
-            level:10,
-            Data:{}
+    public public_double_defend(num: number): MissionModel {
+        var thisTask: MissionModel = {
+            name: '双人防御',
+            range: 'Creep',
+            delayTick: 99999,
+            level: 10,
+            Data: {}
         }
-        var comList = ['XZHO2','XLHO2','XUH2O','XGHO2']
+        var comList = ['XZHO2', 'XLHO2', 'XUH2O', 'XGHO2']
         thisTask.CreepBind = {}
-        thisTask.CreepBind['defend-douAttack'] = {num:num,bind:[]}
-        thisTask.CreepBind['defend-douHeal'] = {num:num,bind:[]}
+        thisTask.CreepBind['defend-douAttack'] = { num: num, bind: [] }
+        thisTask.CreepBind['defend-douHeal'] = { num: num, bind: [] }
         var labData = this.Bind_Lab(comList as ResourceConstant[])
         if (labData === null) return null
         thisTask.LabBind = labData
@@ -617,39 +598,36 @@ export default class RoomMissonPublish extends Room {
     }
 
     /* 四人小队任务发布函数 */
-    public public_squad(disRoom:string,shard:shardName,interval:number,RNum:number,ANum:number,DNum:number,HNum:number,AIONum:number,flag:string):MissionModel{
-        var thisTask:MissionModel = {
-            name:'四人小队',
-            range:'Creep',
-            delayTick:40000,
-            level:10,
-            Data:{
-                disRoom:disRoom,
-                shard:shard,
-                flag:flag
+    public public_squad(disRoom: string, shard: shardName, interval: number, RNum: number, ANum: number, DNum: number, HNum: number, AIONum: number, flag: string): MissionModel {
+        var thisTask: MissionModel = {
+            name: '四人小队',
+            range: 'Creep',
+            delayTick: 40000,
+            level: 10,
+            Data: {
+                disRoom: disRoom,
+                shard: shard,
+                flag: flag
             },
-            CreepBind:{},
-            maxTime:3,
-            reserve:true
+            CreepBind: {},
+            maxTime: 3,
+            reserve: true
         }
         if (RNum + ANum + DNum + HNum + AIONum != 4) return null    // 防止数量不对
         if (HNum != 2 && AIONum != 4) return null   // 防止搭配不均
         let creepData = {
-            'x-range':{num:RNum,bd:['XZHO2','XLHO2','XKHO2','XGHO2']},
-            'x-heal':{num:HNum,bd:['XZHO2','XLHO2','XKHO2','XGHO2']},
-            'x-aio':{num:AIONum,bd:['XZHO2','XLHO2','XKHO2','XGHO2']},
-            'x-attack':{num:ANum,bd:['XZHO2','XUH2O','XGHO2']},
-            'x-dismantle':{num:DNum,bd:['XZHO2','XZH2O','XGHO2']},
+            'x-range': { num: RNum, bd: ['XZHO2', 'XLHO2', 'XKHO2', 'XGHO2'] },
+            'x-heal': { num: HNum, bd: ['XZHO2', 'XLHO2', 'XKHO2', 'XGHO2'] },
+            'x-aio': { num: AIONum, bd: ['XZHO2', 'XLHO2', 'XKHO2', 'XGHO2'] },
+            'x-attack': { num: ANum, bd: ['XZHO2', 'XUH2O', 'XGHO2'] },
+            'x-dismantle': { num: DNum, bd: ['XZHO2', 'XZH2O', 'XGHO2'] },
         }
         let tbd = []
-        for (var i in creepData)
-        {
-            if (creepData[i].num > 0)
-            {
-                thisTask.CreepBind[i] = {num:creepData[i].num,bind:[],interval:interval}
-                for (var j of creepData[i].bd)
-                {
-                    if (!isInArray(tbd,j)) tbd.push(j)
+        for (var i in creepData) {
+            if (creepData[i].num > 0) {
+                thisTask.CreepBind[i] = { num: creepData[i].num, bind: [], interval: interval }
+                for (var j of creepData[i].bd) {
+                    if (!isInArray(tbd, j)) tbd.push(j)
                 }
             }
         }
@@ -659,20 +637,20 @@ export default class RoomMissonPublish extends Room {
         return thisTask
     }
 
-    
+
     /* 资源转移任务发布函数 */
-    public public_resource_transfer(disRoom:string,resource?:ResourceConstant,num?:number):MissionModel{
-        var thisTask:MissionModel = {
-            name:'资源转移',
-            range:'Room',
-            delayTick:40000,
-            level:10,
-            Data:{
-                disRoom:disRoom,
-                rType:resource?resource:null,
-                num:num?num:8000000,
+    public public_resource_transfer(disRoom: string, resource?: ResourceConstant, num?: number): MissionModel {
+        var thisTask: MissionModel = {
+            name: '资源转移',
+            range: 'Room',
+            delayTick: 40000,
+            level: 10,
+            Data: {
+                disRoom: disRoom,
+                rType: resource ? resource : null,
+                num: num ? num : 8000000,
             },
-            maxTime:1,
+            maxTime: 1,
         }
         return thisTask
     }
