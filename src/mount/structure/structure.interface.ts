@@ -11,7 +11,6 @@ interface StructureTerminal{
 interface RoomMemory{
     TerminalData:{[resource:string]:{num:number,fill?:boolean}}
     market:MarketData
-    Factory:Factory
     productData:factoryData
 }
 
@@ -29,12 +28,6 @@ interface LittleMarketData{
     time?:number
 }
 
-interface Factory {
-    factoryData: { [resource in CommodityConstant | MineralConstant | "energy" | "G"]?: { num?: number, fill?: boolean } }                       //资源平衡
-    produce: { [resource in CommodityConstant | MineralConstant | "energy" | "G"]?: boolean }               //合成
-    dataProduce: { [resource in CommodityConstant | MineralConstant | "energy" | "G"]?: { num?: number } }//固定数量合成
-    level:number
-}
 
 interface factoryData{
     level:number        // 工厂等级
@@ -43,6 +36,7 @@ interface factoryData{
     baseList:{[resource in CommodityConstant | MineralConstant | "energy" | "G"]?: { num: number}} // 基础生产列表、数量
     producing?:{com:CommodityConstant,num?:number}      // 正在生产的材料
     balanceData: { [resource in CommodityConstant | MineralConstant | "energy" | "G"]?: { num?: number, fill?: boolean } } // 平衡数据
+    unzip?:{[resource in CommodityConstant | MineralConstant | "energy" | "G"]?: { num: number}} // 解压
 }
 
 interface StructureFactory{

@@ -184,7 +184,7 @@ export function pathClosestFlag(pos:RoomPosition,flags:Flag[],name:string,attack
         }})
     }
     return pos.findClosestByPath(flags,{filter:(flag)=>{
-        flag.pos.roomName == pos.roomName && flag.name.indexOf(name) == 0
+        return flag.pos.roomName == pos.roomName && flag.name.indexOf(name) == 0
     }})
 }
 

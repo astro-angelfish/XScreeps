@@ -338,6 +338,7 @@ export default class CreepMissonActionExtension extends Creep {
             }
             else
             { 
+                if (this.store.getUsedCapacity('energy') / (this.ticksToLive + 50) > 10) this.memory.working = true
                 // 以withdraw开头的旗帜  例如： withdraw_0
                 let withdrawFlag = this.pos.findClosestByPath(FIND_FLAGS,{filter:(flag)=>{
                     return flag.name.indexOf('withdraw') == 0

@@ -35,7 +35,7 @@ export default class CreepMissonWarExtension extends Creep {
         if (!disFlag)
         {
             var clostStructure = this.pos.findClosestByPath(FIND_HOSTILE_STRUCTURES,{filter:(struc)=>{
-                return !isInArray([STRUCTURE_WALL],struc.structureType)
+                return !isInArray(['controller'],struc.structureType)
             }})
             if (clostStructure)
             {
@@ -989,7 +989,7 @@ export default class CreepMissonWarExtension extends Creep {
                     this.goTo(new RoomPosition(24,24,data.disRoom),10)
                 }
                 // 支援旗帜 support_double
-                let flag = this.pos.findClosestByRange(FIND_FLAGS,{filter:(flag)=>{
+                let flag = this.pos.findClosestByPath(FIND_FLAGS,{filter:(flag)=>{
                     return flag.name.indexOf('support_double') == 0
                 }})
                 if (flag)
@@ -1003,7 +1003,7 @@ export default class CreepMissonWarExtension extends Creep {
                 }
                 // 攻击建筑
                 let attack_flag = this.pos.findClosestByPath(FIND_FLAGS,{filter:(flag)=>{
-                    return flag.name.indexOf('support_double_attack') == 0
+                    return flag.name.indexOf('support_structure') == 0
                 }})
                 if (attack_flag)
                 {

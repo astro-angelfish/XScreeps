@@ -1,13 +1,12 @@
-import { checkDispatch, checkSend, DispatchNum } from '@/module/fun/funtion';
-import { createHelp } from '../help/help'
-import { Colorful, isInArray, StatisticalResources } from '@/utils'
+import { isInArray } from '@/utils'
 import {identifyDispatch, ResourceCanDispatch } from '@/module/dispatch/resource';
-import { identity, object, zip } from 'lodash';
+import { unzipMap } from '@/constant/ResourceConstant';
 export class factoryExtension extends StructureFactory {
     public ManageMission(): void {
         if (this.room.memory.switch.StopFactory) return
         this.ResourceMemory()
         this.ResourceBalance()
+        this.factoryUnzip()
         this.factoryProduce()
     }
 
@@ -114,6 +113,7 @@ export class factoryExtension extends StructureFactory {
         if ((Game.time - global.Gtime[this.room.name]) % 5) return
         if (this.cooldown) return
         if (!this.room.memory.productData.state) this.room.memory.productData.state = 'sleep'
+        if (!_.isEmpty(this.room.memory.productData.unzip)) return  // 优先资源解压
         let state = this.room.memory.productData.state
         let terminal_ = global.Stru[this.room.name]['terminal'] as StructureTerminal
         let storage_ = global.Stru[this.room.name]['storage'] as StructureStorage
@@ -426,5 +426,64 @@ export class factoryExtension extends StructureFactory {
         if (!Game.powerCreeps[`${this.room.name}/queen/${Game.shard.name}`]) return `${this.room.name}此房间无pc请先孵化pc`
         this.room.enhance_factory();
         return `发布pc确定工厂等级任务成功`
+    }
+
+    /* 工厂解压 测试中 */
+    public factoryUnzip():void{
+        if (!this.room.memory.productData.unzip) this.room.memory.productData.unzip = {}
+        if (this.cooldown) return
+        if ((Game.time - global.Gtime[this.room.name]) % 10) return
+        let unzipData = this.room.memory.productData.unzip
+        if (_.isEmpty(unzipData)) return
+        let unzipResource = Object.keys(unzipData)[0]
+        if (unzipData['battery'] && unzipResource != 'battery') unzipResource = 'battery'   // 优先解压电池
+        if (!isInArray(Object.keys(unzipMap),unzipResource))
+        {
+            delete unzipData[unzipResource]
+            console.log(`房间${this.room.name}存在错误解压资源类型,为:${unzipResource}`)
+            return
+        }
+        let storage_ = this.room.storage
+        if (!storage_) return
+        if (storage_.store.getUsedCapacity(unzipResource as ResourceConstant) <= 0)
+        {
+            this.room.memory.productData.balanceData = {}
+            delete unzipData[unzipResource]
+            return
+        }
+        // 判断是否有足够解压资源
+        if (unzipResource == 'battery')
+        {
+            this.room.memory.productData.balanceData['battery'] = {num:1000,fill:true}
+            let result = this.produce(unzipMap[unzipResource])
+            if (result == OK)
+            {
+                unzipData['battery'].num -= 50
+            }
+            if (result == -7 || result == -10 || unzipData['battery'].num <= 0)
+            {
+                this.room.memory.productData.balanceData = {}
+                delete unzipData[unzipResource]
+                return
+            }
+        }
+        else
+        {
+            if (storage_.store.getUsedCapacity('energy') < 25000) return    // 能量太少拒绝解压
+            this.room.memory.productData.balanceData[unzipResource] = {num:1000,fill:true}
+            this.room.memory.productData.balanceData['energy'] = {num:5000,fill:true}
+            let result = this.produce(unzipMap[unzipResource])
+            if (result == OK)
+            {
+                unzipData[unzipResource].num -= 100
+            }
+            if (result == -7 || result == -10 || unzipData[unzipResource].num <= 0)
+            {
+                this.room.memory.productData.balanceData = {}
+                delete unzipData[unzipResource]
+                return
+            }
+
+        }
     }
 }

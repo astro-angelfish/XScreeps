@@ -185,8 +185,8 @@ export default class RoomCoreInitExtension extends Room {
         /* 仓库记忆更新 */
         if (level >= 4 && !this.memory.StructureIdData.storageID)
         {
-            var new_storage = this.find(FIND_MY_STRUCTURES,{filter:{structureType:STRUCTURE_STORAGE }})
-            if (new_storage.length == 1) this.memory.StructureIdData.storageID = new_storage[0].id
+            var new_storage = this.storage
+            if (new_storage) this.memory.StructureIdData.storageID = new_storage.id
         }
         /* 防御塔记忆更新 */
         if (Game.time % 150 == 0 && this.controller.level >= 3)
@@ -207,8 +207,8 @@ export default class RoomCoreInitExtension extends Room {
         /* 终端识别 */
         if (!this.memory.StructureIdData.terminalID && level >= 6)
         {
-            var Terminal = this.find(FIND_MY_STRUCTURES,{filter:{structureType:STRUCTURE_TERMINAL }})
-            if (Terminal.length == 1) this.memory.StructureIdData.terminalID = Terminal[0].id
+            var Terminal = this.terminal
+            if (Terminal) this.memory.StructureIdData.terminalID = Terminal.id
         }
         /* 提取器识别 */
         if (!this.memory.StructureIdData.extractID && this.controller.level >= 5)

@@ -579,6 +579,7 @@ export default [
                                 describe: ' 例: factory.remove("W1N1","utrium_bar")',
                                 params: [
                                     { name: 'roomName', desc: '房间名' },
+                                    { name: 'rType', desc: '商品类型' },
                                 ],
                                 functionName: 'factory.remove'
                             },
@@ -599,6 +600,26 @@ export default [
                                 ],
                                 functionName: 'factory.del'
                             },
+                            {
+                                title: '添加解压商品:',
+                                describe: '添加解压商品列表 例: factory.unzip("W1N1","utrium_bar",10000)',
+                                params: [
+                                    { name: 'roomName', desc: '房间名' },
+                                    { name: 'rType', desc: '商品类型' },
+                                    { name: 'num', desc: '数量' },
+                                ],
+                                functionName: 'factory.unzip'
+                            },
+                            {
+                                title: '删除解压商品任务:',
+                                describe: ' 例: factory.Cunzip("W1N1","utrium_bar")',
+                                params: [
+                                    { name: 'roomName', desc: '房间名' },
+                                    { name: 'rType', desc: '商品类型' },
+                                ],
+                                functionName: 'factory.Cunzip'
+                            },
+                            
                             {
                                 title: '输出工厂目前工作状态:',
                                 describe: '例: factory.show("W1N1")',
