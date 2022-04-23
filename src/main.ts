@@ -17,7 +17,7 @@ import { InterShardManager } from './module/shard/intershard'
 /**
  * 主运行函数
  */
-export const loop = ErrorMapper.wrapLoop(() =>{
+export const loop = ErrorMapper.wrapLoop(() => {
     let a = Game.cpu.getUsed()
 
     /* Memory初始化 */
@@ -48,16 +48,20 @@ export const loop = ErrorMapper.wrapLoop(() =>{
     CreepWork()
 
     let e = Game.cpu.getUsed()
-    
+
     /* 四人小队模块 */
     SquadManager()
+
+    /* 跨shardMemory提交 */
+    InterShardMemory.setLocal(JSON.stringify(global.intershardData))
+
 
     /* 资源调度超时管理 */
     ResourceDispatchTick()
 
     /* 像素 */
     pixel()
-    
+
     /* 布局可视化 */
     layoutVisual()
 
@@ -71,8 +75,6 @@ export const loop = ErrorMapper.wrapLoop(() =>{
     statCPU()
 
     let f = Game.cpu.getUsed()
-    
-    InterShardMemory.setLocal(JSON.stringify(global.intershardData))
     // if (Game.shard.name == 'shard3')
     // {
     //     /* 分析cpu */

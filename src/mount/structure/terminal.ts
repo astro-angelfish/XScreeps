@@ -577,7 +577,7 @@ export default class terminalExtension extends StructureTerminal {
         let num = task.Data.num
         var HistoryList = Game.market.getHistory(rType)
         let HistoryLength = HistoryList.length
-        if (HistoryList.length < 3) { console.log("marketHistroy错误"); return }// 以防特殊情况
+        if (HistoryList.length < 3) {console.log(`资源${rType}的订单太少，无法购买!`);return}// 以防特殊情况
         var allNum: number = 0
         for (var iii = HistoryLength - 3; iii < HistoryLength; iii++) {
             allNum += HistoryList[iii].avgPrice

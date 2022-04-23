@@ -79,10 +79,10 @@ export default {
     },
     /* 扩张 */
     expand: {
-        set(roomName: string, disRoom: string, shard: shardName, num: number, Cnum: number = 1, shardData?: shardRoomData[]): string {
+        set(roomName: string, disRoom: string, shard: shardName, num: number, Cnum: number = 1, defend: boolean = false, shardData?: shardRoomData[]): string {
             var thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[expand] 不存在房间${roomName}`
-            let task = thisRoom.public_expand(disRoom, shard, num, Cnum)
+            let task = thisRoom.public_expand(disRoom, shard, num, Cnum, defend)
             if (task) {
                 if (shardData) task.Data.shardData = shardData
                 if (thisRoom.AddMission(task))
@@ -313,23 +313,22 @@ export default {
                 }
             return `[upgrade] 房间${roomName}修改急速冲级任务数量失败!`
         },
-        normal(roomName:string,num:number,boostType:null| ResourceConstant):string{
+        normal(roomName: string, num: number, boostType: null | ResourceConstant): string {
             let thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[upgrade] 不存在房间${roomName}`
-            var thisTask = thisRoom.public_normal(num,boostType)
+            var thisTask = thisRoom.public_normal(num, boostType)
             if (thisTask && thisRoom.AddMission(thisTask))
-            return `[upgrade] 房间${roomName}挂载普通冲级任务成功`
+                return `[upgrade] 房间${roomName}挂载普通冲级任务成功`
             return `[upgrade] 房间${roomName}挂载普通冲级任务失败`
         },
-        Cnormal(roomName:string):string{
+        Cnormal(roomName: string): string {
             var thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[repair] 不存在房间${roomName}`
             for (var i of thisRoom.memory.Misson['Creep'])
-            if (i.name == '普通冲级')
-            {
-                if (thisRoom.DeleteMission(i.id))
-                return `[upgrade] 房间${roomName}删除普通冲级任务成功`
-            }
+                if (i.name == '普通冲级') {
+                    if (thisRoom.DeleteMission(i.id))
+                        return `[upgrade] 房间${roomName}删除普通冲级任务成功`
+                }
             return `[upgrade] 房间${roomName}删除普通冲级任务失败!`
         },
         Dynamicquick(roomName: string, boolean: boolean): string {
@@ -344,24 +343,37 @@ export default {
     },
     /* 搬运 */
     carry: {
-        special(roomName: string, res: ResourceConstant, sP: RoomPosition, dP: RoomPosition, CreepNum?: number, ResNum?: number): string {
+        special(roomName: string, res: ResourceConstant, sPF: string, dPF: string, CreepNum?: number, ResNum?: number): string {
             let thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[carry] 不存在房间${roomName}`
+            if (!Game.flags[sPF] || !Game.flags[dPF]) return `[carry] 旗帜错误,请检查是否有相应旗帜`
+            let sP = Game.flags[sPF].pos
+            let dP = Game.flags[dPF].pos
             let time = 99999
             if (!ResNum) time = 30000
             var thisTask = thisRoom.public_Carry({ 'truck': { num: CreepNum ? CreepNum : 1, bind: [] } }, time, sP.roomName, sP.x, sP.y, dP.roomName, dP.x, dP.y, res, ResNum ? ResNum : undefined)
             if (thisRoom.AddMission(thisTask)) return `[carry] 房间${roomName}挂载special搬运任务成功`
             return `[carry] 房间${roomName}挂载special搬运任务失败`
         },
-        Cspecial(roomName: string): string {
+        all(roomName: string, sPF: string, dPF: string, CreepNum?: number): string {
+            let thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[carry] 不存在房间${roomName}`
+            if (!Game.flags[sPF] || !Game.flags[dPF]) return `[carry] 旗帜错误,请检查是否有相应旗帜`
+            let sP = Game.flags[sPF].pos
+            let dP = Game.flags[dPF].pos
+            var thisTask = thisRoom.public_Carry({ 'truck': { num: CreepNum ? CreepNum : 1, bind: [] } }, 50000, sP.roomName, sP.x, sP.y, dP.roomName, dP.x, dP.y)
+            if (thisRoom.AddMission(thisTask)) return `[carry] 房间${roomName}挂载all搬运任务成功`
+            return `[carry] 房间${roomName}挂载all搬运任务失败`
+        },
+        cancel(roomName: string): string {
             let thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[carry] 不存在房间${roomName}`
             for (var i of thisRoom.memory.Misson['Creep'])
                 if (i.name == '物流运输' && i.CreepBind['truck'] && i.Data.rType) {
                     if (thisRoom.DeleteMission(i.id))
-                        return `[carry] 房间${roomName}删除special搬运任务成功`
+                        return `[carry] 房间${roomName}删除搬运任务成功`
                 }
-            return `[carry] 房间${roomName}删除special搬运任务失败`
+            return `[carry] 房间${roomName}删除搬运任务成功`
         },
     },
     /* 支援 */

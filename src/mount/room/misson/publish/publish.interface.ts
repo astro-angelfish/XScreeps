@@ -6,7 +6,7 @@ interface Room {
     public_link(structure:string[],disStructure:string,level:number,delayTick?:number):MissionModel
     public_dismantle(disRoom:string,shard:shardName,num:number,interval?:number,boost?:boolean):MissionModel
     public_quick(num:number,boostType:ResourceConstant | null):MissionModel
-    public_expand(disRoom:string,shard:shardName,num:number,cnum?:number):MissionModel
+    public_expand(disRoom:string,shard:shardName,num:number,cnum:number,defend?:boolean):MissionModel
     public_support(disRoom:string,sType:'double' | 'aio',shard:shardName,num:number,boost:boolean):MissionModel
     public_control(disRoom:string,shard:shardName,interval:number):MissionModel
     public_helpBuild(disRoom:string,num:number,shard?:string,time?:number,defend?:boolean):MissionModel

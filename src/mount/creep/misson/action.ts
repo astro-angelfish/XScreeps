@@ -239,6 +239,7 @@ export default class CreepMissonActionExtension extends Creep {
     public handle_expand(): void {
         let missionData = this.memory.MissionData
         let id = missionData.id
+        if (this.getActiveBodyparts('heal') && this.hits < this.hitsMax) this.heal(this)
         if (this.room.name == this.memory.belong) {
             switch (this.memory.role) {
                 case 'Ebuild':
@@ -247,9 +248,13 @@ export default class CreepMissonActionExtension extends Creep {
                     break;
             }
         }
-
         if (this.room.name != missionData.Data.disRoom || Game.shard.name != missionData.Data.shard) {
-            this.arriveTo(new RoomPosition(24, 24, missionData.Data.disRoom), 20, missionData.Data.shard, missionData.Data.shardData ? missionData.Data.shardData : null)
+            this.arriveTo(new RoomPosition(24, 24, missionData.Data.disRoom), 10, missionData.Data.shard, missionData.Data.shardData ? missionData.Data.shardData : null)
+            return
+        }
+        if (!this.memory.arrived && Game.flags[`${this.memory.belong}/expand`] && Game.flags[`${this.memory.belong}/expand`].pos.roomName == this.room.name) {
+            if (!this.pos.isEqualTo(Game.flags[`${this.memory.belong}/expand`])) this.goTo(Game.flags[`${this.memory.belong}/expand`].pos, 0)
+            else this.memory.arrived = true
             return
         }
         this.workstate('energy')
@@ -303,9 +308,43 @@ export default class CreepMissonActionExtension extends Creep {
 
             }
             else {
+                // 以withdraw开头的旗帜  例如： withdraw_0
+                let withdrawFlag = this.pos.findClosestByPath(FIND_FLAGS, {
+                    filter: (flag) => {
+                        return flag.name.indexOf('withdraw') == 0
+                    }
+                })
+                if (withdrawFlag) {
+                    let tank_ = withdrawFlag.pos.GetStructureList(['storage', 'terminal', 'container', 'tower'])
+                    if (tank_.length > 0) { this.withdraw_(tank_[0], 'energy'); return }
+                }
+                let harvestFlag = Game.flags[`${this.memory.belong}/HB/harvest`]
+                if (harvestFlag) {
+                    if (this.hits < this.hitsMax) {
+                        this.heal(this)
+                    }
+                    if (this.room.name != harvestFlag.pos.roomName) {
+                        this.goTo(harvestFlag.pos, 1)
+                    }
+                    else {
+                        let source = this.pos.findClosestByRange(FIND_SOURCES_ACTIVE)
+                        if (source) { this.harvest_(source) }
+                    }
+                    return
+                }
+                let resources = this.pos.findClosestByPath(FIND_DROPPED_RESOURCES, {
+                    filter: (res) => {
+                        return res.amount > 200 && res.resourceType == 'energy'
+                    }
+                })
+                if (resources) {
+                    if (!this.pos.isNearTo(resources)) this.goTo(resources.pos, 1)
+                    else this.pickup(resources)
+                    return
+                }
                 let source = this.pos.findClosestByPath(FIND_SOURCES_ACTIVE)
                 if (source) this.harvest_(source)
-                if (this.ticksToLive < 120 && this.store.getUsedCapacity('energy') <= 20) this.suicide()
+                // if (this.ticksToLive < 120 && this.store.getUsedCapacity('energy') <= 20) this.suicide()
                 if (this.store.getUsedCapacity('energy') / (this.ticksToLive + 50) > 10) this.memory.working = true
             }
         }
@@ -315,9 +354,43 @@ export default class CreepMissonActionExtension extends Creep {
                 this.upgrade_()
             }
             else {
+                // 以withdraw开头的旗帜  例如： withdraw_0
+                let withdrawFlag = this.pos.findClosestByPath(FIND_FLAGS, {
+                    filter: (flag) => {
+                        return flag.name.indexOf('withdraw') == 0
+                    }
+                })
+                if (withdrawFlag) {
+                    let tank_ = withdrawFlag.pos.GetStructureList(['storage', 'terminal', 'container', 'tower'])
+                    if (tank_.length > 0) { this.withdraw_(tank_[0], 'energy'); return }
+                }
+                let harvestFlag = Game.flags[`${this.memory.belong}/HB/harvest`]
+                if (harvestFlag) {
+                    if (this.hits < this.hitsMax) {
+                        this.heal(this)
+                    }
+                    if (this.room.name != harvestFlag.pos.roomName) {
+                        this.goTo(harvestFlag.pos, 1)
+                    }
+                    else {
+                        let source = this.pos.findClosestByRange(FIND_SOURCES_ACTIVE)
+                        if (source) { this.harvest_(source) }
+                    }
+                    return
+                }
+                let resources = this.pos.findClosestByPath(FIND_DROPPED_RESOURCES, {
+                    filter: (res) => {
+                        return res.amount > 200 && res.resourceType == 'energy'
+                    }
+                })
+                if (resources) {
+                    if (!this.pos.isNearTo(resources)) this.goTo(resources.pos, 1)
+                    else this.pickup(resources)
+                    return
+                }
                 let source = this.pos.findClosestByPath(FIND_SOURCES_ACTIVE)
                 if (source) this.harvest_(source)
-                if (this.ticksToLive < 120 && this.store.getUsedCapacity('energy') <= 20) this.suicide()
+                // if (this.ticksToLive < 120 && this.store.getUsedCapacity('energy') <= 20) this.suicide()
                 if (this.store.getUsedCapacity('energy') / (this.ticksToLive + 50) > 10) this.memory.working = true
             }
         }
