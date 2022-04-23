@@ -4,7 +4,7 @@
 
 interface Segment {
   roomName: string
-  service: 'connect' | 'resource' | 'defend', // 服务类型
+  service: 'connect' | 'resource' | 'defend' // 服务类型
   data?: any
 }
 

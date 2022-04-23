@@ -120,7 +120,7 @@ export default class RoomCoreInitExtension extends Room {
         const position = new RoomPosition(center[0], center[1], this.name)
         const tower = position.getClosestStructure([STRUCTURE_TOWER], 0)
         if (tower && tower.my) {
-          if (position.straightDistanceTo(tower.pos) < 7)
+          if (position.getStraightDistanceTo(tower.pos) < 7)
             structureData.NtowerID = tower.id
         }
       }

@@ -1,7 +1,5 @@
 /* power操作常量 */
 
-import { isInArray } from '@/utils'
-
 export const OptCost = {
   PWR_GENERATE_OPS: 0,
   PWR_OPERATE_SPAWN: 100,
@@ -24,52 +22,33 @@ export const OptCost = {
   PWR_OPERATE_FACTORY: 100,
 }
 
-// queen类型buff是否加持
-export function isOPWR(stru: Structure): boolean {
-  if (!stru.effects || stru.effects.length <= 0) { return false }
-  else {
-    if (stru.structureType == 'tower') {
-      if (!isInArray(getAllEffects(stru), PWR_OPERATE_TOWER))
-        return false
-    }
-    else if (stru.structureType == 'spawn') {
-      if (!isInArray(getAllEffects(stru), PWR_OPERATE_SPAWN))
-        return false
-    }
-    else if (stru.structureType == 'extension') {
-      if (!isInArray(getAllEffects(stru), PWR_OPERATE_EXTENSION))
-        return false
-    }
-    else if (stru.structureType == 'terminal') {
-      if (!isInArray(getAllEffects(stru), PWR_OPERATE_TERMINAL))
-        return false
-    }
-    else if (stru.structureType == 'storage') {
-      if (!isInArray(getAllEffects(stru), PWR_OPERATE_STORAGE))
-        return false
-    }
-    else if (stru.structureType == 'factory') {
-      if (!isInArray(getAllEffects(stru), PWR_OPERATE_FACTORY))
-        return false
-    }
-    else if (stru.structureType == 'lab') {
-      if (!isInArray(getAllEffects(stru), PWR_OPERATE_LAB))
-        return false
-    }
-    else if (stru.structureType == 'powerSpawn') {
-      if (!isInArray(getAllEffects(stru), PWR_OPERATE_POWER))
-        return false
-    }
-  }
-  return true
+const opwrMap: Partial<Record<StructureConstant, PowerConstant>> = {
+  tower: PWR_OPERATE_TOWER,
+  spawn: PWR_OPERATE_SPAWN,
+  extension: PWR_OPERATE_EXTENSION,
+  terminal: PWR_OPERATE_TERMINAL,
+  storage: PWR_OPERATE_STORAGE,
+  factory: PWR_OPERATE_FACTORY,
+  lab: PWR_OPERATE_LAB,
+  powerSpawn: PWR_OPERATE_POWER,
 }
 
-export function getAllEffects(stru: Structure): PowerConstant[] {
-  if (!stru.effects || stru.effects.length <= 0)
-    return []
-  const eff_list = []
-  for (const effect_ of stru.effects)
-    eff_list.push(effect_.effect)
+/**
+ * queen 类型 buff 是否加持
+ */
+export function isOPWR(struct: Structure): boolean {
+  if (!struct.effects || struct.effects.length <= 0)
+    return false
 
-  return eff_list
+  const effect = opwrMap[struct.structureType]
+  if (!effect)
+    return true
+
+  return getAllEffects(struct).includes(effect)
+}
+
+export function getAllEffects(struct: Structure): (PowerConstant | EffectConstant)[] {
+  if (!struct.effects || struct.effects.length <= 0)
+    return []
+  return struct.effects.map(eff => eff.effect)
 }

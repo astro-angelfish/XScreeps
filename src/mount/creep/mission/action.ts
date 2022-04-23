@@ -345,8 +345,18 @@ export default class CreepMissionActionExtension extends Creep {
     const missionData = this.memory.missionData
     const id = missionData.id
 
+    if (this.getActiveBodyparts('heal') && this.hits < this.hitsMax)
+      this.heal(this)
+
     if (this.room.name !== missionData.Data.disRoom || Game.shard.name !== missionData.Data.shard) {
       this.arriveTo(new RoomPosition(24, 24, missionData.Data.disRoom), 20, missionData.Data.shard, missionData.Data.shardData)
+      return
+    }
+
+    if (!this.memory.arrived && Game.flags[`${this.memory.belong}/expand`]?.pos.roomName === this.room.name) {
+      if (!this.pos.isEqualTo(Game.flags[`${this.memory.belong}/expand`]))
+        this.goTo(Game.flags[`${this.memory.belong}/expand`].pos, 0)
+      else this.memory.arrived = true
       return
     }
 
@@ -418,6 +428,45 @@ export default class CreepMissionActionExtension extends Creep {
       }
 
       else {
+        // 以 withdraw 开头的旗帜  例如： withdraw_0
+        const withdrawFlag = this.pos.findClosestByPath(
+          this.room.find(FIND_FLAGS)
+            .filter(flag => flag.name.startsWith('withdraw')))
+        if (withdrawFlag) {
+          const tank = withdrawFlag.pos.getStructureList(['storage', 'terminal', 'container', 'tower'])
+          if (tank.length > 0) {
+            this.processBasicWithdraw(tank[0], RESOURCE_ENERGY)
+            return
+          }
+        }
+
+        const harvestFlag = Game.flags[`${this.memory.belong}/HB/harvest`]
+        if (harvestFlag) {
+          if (this.hits < this.hitsMax)
+            this.heal(this)
+
+          if (this.room.name !== harvestFlag.pos.roomName) {
+            this.goTo(harvestFlag.pos, 1)
+          }
+          else {
+            const source = this.pos.findClosestByRange(FIND_SOURCES_ACTIVE)
+            if (source)
+              this.processBasicHarvest(source)
+          }
+
+          return
+        }
+
+        const resources = this.pos.findClosestByPath(
+          this.room.find(FIND_DROPPED_RESOURCES)
+            .filter(res => res.resourceType === RESOURCE_ENERGY && res.amount > 200))
+        if (resources) {
+          if (!this.pos.isNearTo(resources))
+            this.goTo(resources.pos, 1)
+          else this.pickup(resources)
+          return
+        }
+
         const source = this.pos.findClosestByPath(FIND_SOURCES_ACTIVE)
         if (source)
           this.processBasicHarvest(source)
@@ -434,9 +483,49 @@ export default class CreepMissionActionExtension extends Creep {
       }
 
       else {
+        // 以 withdraw 开头的旗帜  例如： withdraw_0
+        const withdrawFlag = this.pos.findClosestByPath(
+          this.room.find(FIND_FLAGS)
+            .filter(flag => flag.name.startsWith('withdraw')))
+        if (withdrawFlag) {
+          const tank = withdrawFlag.pos.getStructureList(['storage', 'terminal', 'container', 'tower'])
+          if (tank.length > 0) {
+            this.processBasicWithdraw(tank[0], RESOURCE_ENERGY)
+            return
+          }
+        }
+
+        const harvestFlag = Game.flags[`${this.memory.belong}/HB/harvest`]
+        if (harvestFlag) {
+          if (this.hits < this.hitsMax)
+            this.heal(this)
+
+          if (this.room.name !== harvestFlag.pos.roomName) {
+            this.goTo(harvestFlag.pos, 1)
+          }
+          else {
+            const source = this.pos.findClosestByRange(FIND_SOURCES_ACTIVE)
+            if (source)
+              this.processBasicHarvest(source)
+          }
+
+          return
+        }
+
+        const resources = this.pos.findClosestByPath(
+          this.room.find(FIND_DROPPED_RESOURCES)
+            .filter(res => res.resourceType === RESOURCE_ENERGY && res.amount > 200))
+        if (resources) {
+          if (!this.pos.isNearTo(resources))
+            this.goTo(resources.pos, 1)
+          else this.pickup(resources)
+          return
+        }
+
         const source = this.pos.findClosestByPath(FIND_SOURCES_ACTIVE)
         if (source)
           this.processBasicHarvest(source)
+
         if (this.ticksToLive! < 120 && (this.store.energy || 0) <= 20)
           this.suicide()
       }
@@ -481,6 +570,43 @@ export default class CreepMissionActionExtension extends Creep {
     }
 
     this.memory.standed = mission.data.standed
+  }
+
+  /**
+   * 普通冲级
+   */
+  public processNormalRushMission(): void {
+    const missionData = this.memory.missionData
+    const id = missionData.id
+    const mission = Game.rooms[this.memory.belong].getMissionById(id)
+    if (!mission)
+      return
+
+    const belongRoom = Game.rooms[this.memory.belong]
+    if (!belongRoom)
+      return
+
+    const link = belongRoom.memory.structureIdData?.upgradeLink ? Game.getObjectById(belongRoom.memory.structureIdData.upgradeLink) : null
+    if (!link) {
+      this.say('找不到冲级link!')
+      return
+    }
+
+    // boost 检查
+    if (mission.labBind && !this.processBoost(['work']))
+      return
+
+    this.processBasicWorkState('energy')
+
+    if (this.memory.working) {
+      this.processBasicUpgrade()
+
+      if (this.store.getUsedCapacity('energy') < 35 && link.pos.isNearTo(this))
+        this.processBasicWithdraw(link, 'energy')
+    }
+    else {
+      this.processBasicWithdraw(link, 'energy')
+    }
   }
 
   /**
@@ -537,9 +663,35 @@ export default class CreepMissionActionExtension extends Creep {
         return
       }
 
+      if (Game.flags[`${this.memory.belong}/first_build`]) {
+        const fcon = Game.flags[`${this.memory.belong}/first_build`].pos.lookFor(LOOK_CONSTRUCTION_SITES)
+        if (fcon.length > 0)
+          this.processBasicBuild(fcon[0])
+        else
+          Game.flags[`${this.memory.belong}/first_build`].remove()
+
+        return
+      }
+
       const cons = this.pos.findClosestByRange(FIND_CONSTRUCTION_SITES)
-      if (cons)
+      if (cons) {
         this.processBasicBuild(cons)
+        return
+      }
+
+      const store = this.pos.findClosestByPath(
+        this.room.getStructureWithTypes([STRUCTURE_EXTENSION, STRUCTURE_SPAWN])
+          .filter(struct => struct.store.getFreeCapacity(RESOURCE_ENERGY) > 0))
+      if (store) {
+        this.processBasicTransfer(store, RESOURCE_ENERGY)
+        return
+      }
+
+      const tower = this.pos.findClosestByPath(
+        this.room.getStructureWithType(STRUCTURE_TOWER)
+          .filter(tower => tower.store.getFreeCapacity(RESOURCE_ENERGY) > 0))
+      if (tower)
+        this.processBasicTransfer(tower, RESOURCE_ENERGY)
     }
 
     else {
@@ -569,6 +721,16 @@ export default class CreepMissionActionExtension extends Creep {
             this.processBasicHarvest(source)
         }
 
+        return
+      }
+
+      const resources = this.pos.findClosestByPath(
+        this.room.find(FIND_DROPPED_RESOURCES)
+          .filter(res => res.resourceType === RESOURCE_ENERGY && res.amount > 200))
+      if (resources) {
+        if (!this.pos.isNearTo(resources))
+          this.goTo(resources.pos, 1)
+        else this.pickup(resources)
         return
       }
 

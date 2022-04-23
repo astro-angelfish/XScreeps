@@ -60,7 +60,7 @@ export default class CreepMissionTransportExtension extends Creep {
     const data = this.memory.missionData.Data
 
     // 数据不全拒绝执行任务
-    if (!data || Object.keys(data).length < 7) {
+    if (!data || data.num <= 0) {
       Game.rooms[this.memory.belong].removeMission(this.memory.missionData.id)
       return
     }

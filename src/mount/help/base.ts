@@ -1,30 +1,6 @@
 import { colorfyLog } from '@/utils'
 
 /**
- * 创建帮助信息
- * 给帮助的显示添加一点小细节
- *
- * @param modules 模块的描述
- */
-export function createHelp(...modules: ModuleDescribe[]): string {
-  return `${moduleStyle() + apiStyle()}<div class="module-help">${modules.map(createModule).join('')}</div>`
-}
-
-const createModule = function(module: ModuleDescribe): string {
-  const functionList = module.api.map(createApiHelp).join('')
-
-  const html = `<div class="module-container">
-        <div class="module-info">
-            <span class="module-title">${colorfyLog(module.name, 'yellow')}</span>
-            <span class="module-describe">${colorfyLog(module.describe, 'green')}</span>
-        </div>
-        <div class="module-api-list">${functionList}</div>
-    </div>`
-
-  return html.replace(/\n/g, '')
-}
-
-/**
  * 绘制单个 api 的帮助元素
  *
  * @param func api 的描述信息
@@ -56,20 +32,17 @@ const createApiHelp = function(func: FunctionDescribe): string {
 
   // return func.params ? `${title}\n${param}\n${functionName}\n` : `${title}\n${functionName}\n`
 
-  const result = `
-    <div class="api-container">
-        <label for="${checkboxId}">${func.title} ${colorfyLog(func.functionName, 'yellow', true)}</label>
-        <input id="${checkboxId}" type="checkbox" />
-        <div class="api-content">${content}</div>
-    </div>
-    `
+  const result = `<div class="api-container">
+    <label for="${checkboxId}">${func.title} ${colorfyLog(func.functionName, 'yellow', true)}</label>
+    <input id="${checkboxId}" type="checkbox" />
+    <div class="api-content">${content}</div>
+  </div>`
 
   return result.replace(/\n/g, '')
 }
 
 const moduleStyle = function() {
-  const style = `
-    <style>
+  const style = `<style>
     .module-help {
         display: flex;
         flex-flow: column nowrap;
@@ -94,14 +67,13 @@ const moduleStyle = function() {
         display: flex;
         flex-flow: row wrap;
     }
-    </style>`
+  </style>`
 
   return style.replace(/\n/g, '')
 }
 
 const apiStyle = function() {
-  const style = `
-    <style>
+  const style = `<style>
     .api-content-line {
         width: max-content;
         padding-right: 15px;
@@ -156,7 +128,31 @@ const apiStyle = function() {
         background-color: #1c1c1c;
         overflow-x: auto;
     }
-    </style>`
+  </style>`
 
   return style.replace(/\n/g, '')
+}
+
+const createModule = function(module: ModuleDescribe): string {
+  const functionList = module.api.map(createApiHelp).join('')
+
+  const html = `<div class="module-container">
+    <div class="module-info">
+      <span class="module-title">${colorfyLog(module.name, 'yellow')}</span>
+      <span class="module-describe">${colorfyLog(module.describe, 'green')}</span>
+    </div>
+    <div class="module-api-list">${functionList}</div>
+  </div>`
+
+  return html.replace(/\n/g, '')
+}
+
+/**
+ * 创建帮助信息
+ * 给帮助的显示添加一点小细节
+ *
+ * @param modules 模块的描述
+ */
+export function createHelp(...modules: ModuleDescribe[]): string {
+  return `${moduleStyle() + apiStyle()}<div class="module-help">${modules.map(createModule).join('')}</div>`
 }

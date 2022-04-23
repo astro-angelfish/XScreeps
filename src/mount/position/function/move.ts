@@ -29,7 +29,7 @@ export default class PositionFunctionMoveExtension extends RoomPosition {
    * 获取到另一 RoomPosition 的直线距离\
    * 注意只照顾同一房间的情况
    */
-  public straightDistanceTo(pos: RoomPosition): number {
+  public getStraightDistanceTo(pos: RoomPosition): number {
     return Math.sqrt((this.x - pos.x) ** 2 + (this.y - pos.y) ** 2)
   }
 }

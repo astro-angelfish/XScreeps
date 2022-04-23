@@ -13,5 +13,5 @@ interface RoomPosition {
   findPath(pos: RoomPosition, range: number): RoomPosition[] | null
   findRangeCreep(num: number): Creep[]
   calcTowerRangeData(target: StructureTower, tempData: ARH): void
-  straightDistanceTo(pos: RoomPosition): number
+  getStraightDistanceTo(pos: RoomPosition): number
 }

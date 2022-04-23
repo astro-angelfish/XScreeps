@@ -12,11 +12,11 @@ interface Creep {
   processDismantleMission(): void
   processQuickRushMission(): void
   processExpandMission(): void
-  handle_support(): void
+  handleSupportMission(): void
   processControlMission(): void
   processHelpBuildMission(): void
   processSignMission(): void
-  handle_aio(): void
+  processAioMission(): void
   processMineralMission(): void
   processOutineMission(): void
   processPowerMission(): void
@@ -24,8 +24,9 @@ interface Creep {
   processDefendAttackMission(): void
   processDefendRangeMission(): void
   processDefendDoubleMission(): void
-  handle_task_squard(): void
-  handle_double(): void
+  processSquadMission(): void
+  handleDoubleMission(): void
+  processNormalRushMission(): void
 }
 
 interface CreepMemory {

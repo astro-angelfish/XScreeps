@@ -235,7 +235,10 @@ export function havePart(creep: Creep, type: BodyPartConstant): boolean {
 /**
  * 爬虫攻击部件数据
  */
-export function calcCreepAttackDamage(creep: Creep): Record<string, number> {
+export function calcCreepAttackDamage(creep: Creep): {
+  attack: number
+  ranged_attack: number
+} {
   const result = { attack: 0, ranged_attack: 0 }
 
   for (const i of creep.body) {
@@ -268,7 +271,12 @@ export function calcCreepAttackDamage(creep: Creep): Record<string, number> {
 /**
  * 爬虫攻击数据
  */
-export function calcCreepWarStat(creep: Creep): Record<string, number> {
+export function calcCreepWarStat(creep: Creep): {
+  attack: number
+  ranged_attack: number
+  heal: number
+  tough: number
+} {
   // 其中 tough 是抵抗的伤害值
   const result = { attack: 0, ranged_attack: 0, heal: 0, tough: 0 }
 

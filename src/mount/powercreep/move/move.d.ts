@@ -16,8 +16,6 @@ interface PowerCreep{
   manageCross(direction: DirectionConstant, crossLevel: number): boolean
   // 单位移动
   go(direction: DirectionConstant): CreepMoveReturnCode | ERR_INVALID_TARGET
-  // 跨shard移动
-  arriveTo(target: RoomPosition, range: number, shard: string): void
   serializeFarPath(positions: RoomPosition[]): string
 }
 
