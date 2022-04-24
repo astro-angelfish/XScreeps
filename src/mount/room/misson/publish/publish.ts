@@ -571,6 +571,7 @@ export default class RoomMissonPublish extends Room {
             name: '红球防御',
             range: 'Creep',
             delayTick: 99999,
+            reserve: true,
             level: 10,
             Data: {},
         }
@@ -589,6 +590,7 @@ export default class RoomMissonPublish extends Room {
             name: '蓝球防御',
             range: 'Creep',
             delayTick: 99999,
+            reserve: true,
             level: 10,
             Data: {}
         }
@@ -607,6 +609,7 @@ export default class RoomMissonPublish extends Room {
             name: '双人防御',
             range: 'Creep',
             delayTick: 99999,
+            reserve: true,
             level: 10,
             Data: {}
         }
