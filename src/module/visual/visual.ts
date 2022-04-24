@@ -73,6 +73,11 @@ export function showTowerData():void{
                 if (Game.rooms[i] && Game.rooms[i].controller.level >= 8)
                 {
                     let observer_ = Game.getObjectById(Game.rooms[i].memory.StructureIdData.ObserverID) as StructureObserver
+                    if (!observer_)
+                    {
+                        delete Game.rooms[i].memory.StructureIdData.ObserverID
+                        return
+                    }
                     if (observer_ && observer_.observeRoom(roomName) == OK)
                     break
                 }

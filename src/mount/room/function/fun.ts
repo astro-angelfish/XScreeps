@@ -65,6 +65,38 @@ export default class RoomFunctionFindExtension extends Room {
         return result
     }
 
+    /* -----------------------lab优化区----------------------------(施工中) */
+    /* 任务过程中，实时更新占用lab 例如有lab被占用了或者其他情况  */
+    public Update_Lab(miss:MissionModel,rTypes:ResourceConstant[]):boolean{
+        for (let rtye of rTypes)
+        {
+
+        }
+        return
+    }
+
+    /* 任务过程中，实时解占lab */
+
+    /* 判断任务所需的某种资源类型强化的lab占用数据是否正常 false代表没有Lab强化数据或者相关lab不存在*/
+    public Check_Occupy(miss:MissionModel,rType:ResourceConstant):boolean{
+        if (!miss.LabBind) return false
+        for (let i in miss.LabBind)
+        {
+            if (miss.LabBind[i] == rType)
+            {
+                let lab_ = Game.getObjectById(i) as StructureLab
+                if (!lab_)
+                {
+                    return false
+                }
+                return true
+            }
+        }
+        return false
+    }
+
+    /* -----------------------lab优化区----------------------------(施工中) */
+    
     /* 获取指定列表中类型的hit最小的建筑 (比值) 返回值： Structure | undefined */
     public getListHitsleast(sc:StructureConstant[],mode?:number):Structure | undefined
     {

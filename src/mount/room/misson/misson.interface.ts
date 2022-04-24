@@ -74,6 +74,7 @@ interface MissionModel{
     state?:number       // 任务状态 0 (A 1) 1 (B 2 A 0) 2 
     maxTime?:number     // 最大重复任务数  默认1 例如我可以同时发布两个签名任务，1个去E1S1 一个去E1S2 物流运输( 3 )
     LabBind?:MissonLabBind        // 实验室绑定 # 
+    LabMessage?: LabMessageData   // 关于任务-实验室相关配置
     cooldownTick?:number // 冷却时间  默认10 A -A cooldownTick= 10 
     CreepBind?:BindData  // 爬虫绑定 {'A':{num:1,bind:[],interval?:100}}
     level?:number        // 任务等级，越小优先级越高 默认10
@@ -101,4 +102,8 @@ interface RoomLabBind{
 
 interface enemyAllotData{
     [myCreepName:string]:string[]   // 敌人分配
+}
+
+interface LabMessageData{
+    [res:string]:'boost' | 'unboost' | 'com' | 'raw'    // 资源类型 资源作用 raw是原料 com 是合成化合物 boost 和 unboost 字面意思
 }
