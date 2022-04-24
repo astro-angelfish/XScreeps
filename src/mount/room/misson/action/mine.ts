@@ -5,6 +5,7 @@ import { Colorful, isInArray, unzipPosition, zipPosition } from "@/utils"
 export default class RoomMissonMineExtension extends Room {
     /* 房间内矿资源采集发布任务 */
     public Task_monitorMineral():void{
+        if (!Game.cpu.generatePixel) return     // 私服不采矿
         if ((Game.time - global.Gtime[this.name] ) % 67) return
         if(this.controller.level < 6) return
         if (!this.memory.StructureIdData.mineralID) return

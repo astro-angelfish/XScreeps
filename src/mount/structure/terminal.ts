@@ -120,6 +120,16 @@ export default class terminalExtension extends StructureTerminal {
         // 能量一般少的情况下，下平均价格订单购买能量
         if (storeNum < 250000 && storeNum  >= 100000 )
         {
+            if (!Game.cpu.generatePixel)    // 私服
+            {
+                let list = Game.market.getAllOrders({type: 'sell', resourceType: 'energy'});
+                let newOrderList = list.sort(compare('price'))
+                if (newOrderList[0])
+                {
+                    Game.market.deal(newOrderList[0].id,newOrderList[0].amount<50000?newOrderList[0].amount:50000,this.room.name)
+                }
+                return
+            }
             let ave = avePrice('energy',1)
             let thisprice_ = ave * 1.1
             if (!haveOrder(this.room.name,'energy','buy',thisprice_,-0.2))
@@ -138,6 +148,16 @@ export default class terminalExtension extends StructureTerminal {
         // 能量极少的情况下，下市场合理范围内最高价格订单
         else if (storeNum < 100000)
         {
+            if (!Game.cpu.generatePixel)    // 私服
+            {
+                let list = Game.market.getAllOrders({type: 'sell', resourceType: 'energy'});
+                let newOrderList = list.sort(compare('price'))
+                if (newOrderList[0])
+                {
+                    Game.market.deal(newOrderList[0].id,newOrderList[0].amount<50000?newOrderList[0].amount:50000,this.room.name)
+                }
+                return
+            }
             let ave = avePrice('energy',2)
             let highest = highestPrice('energy','buy',ave+6)
             if (!haveOrder(this.room.name,'energy','buy',highest,-0.1))
@@ -400,6 +420,7 @@ export default class terminalExtension extends StructureTerminal {
      * 资源购买 (deal)
      */
     public ResourceDeal(task:MissionModel):void{
+        if (!Game.cpu.generatePixel) return     // 私服
         if((Game.time - global.Gtime[this.room.name] )% 10) return
         if (this.cooldown || this.store.getUsedCapacity('energy') < 45000) return
         if (!task.Data){this.room.DeleteMission(task.id);return}
