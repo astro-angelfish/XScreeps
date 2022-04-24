@@ -1,6 +1,6 @@
 import { getTowerData } from '@/creep/war/war'
-import { unzipXY } from '@/utils'
-import { compoundColor } from '@/structure/constant/resource'
+import { colors, unzipXY } from '@/utils'
+// import { compoundColor } from '@/structure/constant/resource'
 
 /* 可视化模块 */
 /**
@@ -133,100 +133,103 @@ export function showTowerData(): void {
   }
 }
 
+const normalTextStyle = { color: colors.zinc, opacity: 0.8, font: 0.7, align: 'left' } as const
+
+function box(visual: RoomVisual, x: number, y: number, w: number, h: number, style?: LineStyle) {
+  return visual
+    .line(x + 0.1, y + 0.05, x + w - 0.1, y + 0.05, style)
+    .line(x + w - 0.05, y, x + w - 0.05, y + h, style)
+    .line(x + w - 0.1, y + h - 0.05, x + 0.1, y + h - 0.05, style)
+    .line(x + 0.05, y + h, x + 0.05, y, style)
+}
+
+function labelBar(visual: RoomVisual, x: number, y: number, labelSpace: number, w: number, label: string, content: string, percent: number, color: string) {
+  visual.text(label, x, y, { color, opacity: 0.7, font: 0.7, align: 'left' })
+  box(visual, x + labelSpace, y - 0.7, x + 6.1, 0.9, { color, opacity: 0.2 })
+  visual.rect(x + labelSpace + 0.1, y - 0.6, percent * w, 0.7, { fill: color, opacity: 0.3 })
+  visual.text(content, x + labelSpace + w / 2, y - 0.05, { color, font: 0.5, align: 'center' })
+}
+
 /**
  * 房间日常数据可视化
  * 瞬时cpu 平均cpu 房间状态 任务数 bucket等
  */
 export function processRoomDataVisual(room: Room): void {
-  room.visual.rect(0, 0, 7, 10, { opacity: 0.1, stroke: '#696969', strokeWidth: 0.2 })
-  let row = 0
-  room.visual.text(
-    `全局实时CPU:${(global.usedCpu ? global.usedCpu : 0).toFixed(2)}`,
-    0, row += 1,
-    { color: 'black', font: 0.7, align: 'left' })
-  room.visual.text(
-    `全局平均CPU:${(global.aveCpu ? global.aveCpu : 0).toFixed(2)}`,
-    0, row += 1,
-    { color: 'black', font: 0.7, align: 'left' })
-  room.visual.text(
-    `测量基数:${(global.cpuData?.length || 0)}`,
-    0, row += 1,
-    { color: 'black', font: 0.7, align: 'left' })
-  room.visual.text(
-    `房间状态:${(room.memory.state === 'peace' ? '和平' : '战争')}`,
-    0, row += 1,
-    { color: room.memory.state === 'peace' ? '#006400' : 'red', font: 0.7, align: 'left' })
-  room.visual.text(
-    `cpu池:${Game.cpu.bucket}`,
-    0, row += 1,
-    { color: Game.cpu.bucket < 2000 ? 'red' : 'black', font: 0.7, align: 'left' })
+  // Room Status
+  let line = 0.7
+  const visual = room.visual
+  visual.text(`${room.name}`, 0.1, line, normalTextStyle)
+  visual.text(room.memory.state === 'peace' ? '和平' : '战争', room.name.length * 0.45 + 0.3, 0.7, { ...normalTextStyle, color: room.memory.state === 'peace' ? colors.zinc : colors.red })
+  const missionNum = Object.values(room.memory.mission).reduce((a, b) => a + b.length, 0)
+  visual.text(`共 ${missionNum} 任务`, room.name.length * 0.45 + 2, 0.7, { ...normalTextStyle, color: missionNum > 20 ? colors.amber : colors.zinc })
+
+  // CPU
+  const cpuUsed = global.usedCpu || 0
+  const usedCpuPercent = cpuUsed / Game.cpu.limit
+  const usedCpuPercentVisual = Math.min(usedCpuPercent, 1)
+  const cpuColor = usedCpuPercent > 0.8 ? colors.rose : usedCpuPercent > 0.5 ? colors.amber : colors.emerald
+  labelBar(visual, 0.1, line += 1.1, 1.6, 6, 'CPU', `${cpuUsed.toFixed(2)} - ${Math.round(usedCpuPercent * 100)}%`, usedCpuPercentVisual, cpuColor)
+
+  // Bucket
+  const bucket = Game.cpu.bucket
+  const bucketPercent = bucket / 10000
+  const bucketColor = bucketPercent < 0.1 ? colors.rose : bucketPercent < 0.3 ? colors.amber : colors.emerald
+  labelBar(visual, 0.1, line += 1.1, 1.6, 6, 'BKT', `${bucket}`, bucketPercent, bucketColor)
 
   // 控制器进度
   if (room.controller) {
-    const processController = room.controller.level >= 8 ? 100 : ((room.controller.progress / room.controller.progressTotal) * 100).toFixed(4)
-    room.visual.text(
-      `控制器进度:${processController}%`,
-      0, row += 1,
-      { color: 'black', font: 0.7, align: 'left' })
+    const controllerProgress = room.controller.level >= 8 ? 100 : room.controller.progress / room.controller.progressTotal
+    labelBar(visual, 0.1, line += 1.1, 1.6, 6, 'CTL', `${controllerProgress.toFixed(4)}%`, controllerProgress, colors.cyan)
   }
 
-  // 目前存在任务数
-  let MissionNum = 0
-  for (const range in room.memory.mission)
-    MissionNum += Object.keys(room.memory.mission[range]).length
-  room.visual.text(
-    `房间任务数:${MissionNum}`,
-    0, row += 1,
-    { color: MissionNum > 0 ? '#008B8B' : 'black', font: 0.7, align: 'left' })
-
-  // 仓库剩余容量
+  // 仓库
   const storage = room.memory.structureIdData?.storageID ? Game.getObjectById(room.memory.structureIdData.storageID) : null
   if (storage) {
-    const num = Math.ceil(storage.store.getFreeCapacity() / 1000)
-    let color: string
-    if (num <= 50)
-      color = '#B22222'
-    else if (num > 50 && num <= 200)
-      color = '#FF8C00'
-    else if (num > 200 && num <= 400)
-      color = '#006400'
-    else color = '#4682B4'
-    room.visual.text(
-      `仓库剩余容量:${num}K`,
-      0, row += 1,
-      { color, font: 0.7, align: 'left' })
+    const storageFree = Math.ceil(storage.store.getFreeCapacity() / 1000)
+    const storageUsedPercent = storage.store.getUsedCapacity() / storage.store.getCapacity()
+    const storageFreeColor = storageUsedPercent > 0.9 ? colors.rose : storageUsedPercent > 0.7 ? colors.amber : colors.cyan
+    labelBar(visual, 0.1, line += 1.1, 1.6, 6, '仓库', `${storageFree}K`, storageUsedPercent, storageFreeColor)
   }
 
+  // 工厂
+  // TODO 测试
+  let line2 = 1.8
   if (room.controller && room.controller.level >= 8) {
     if (room.memory.productData.producing) {
-      room.visual.text(
-        `工厂生产:${room.memory.productData.producing.com}`,
-        0, row += 1,
-        { color: 'black', font: 0.7, align: 'left' })
+      const producing = room.memory.productData.producing
+      if (producing.total) {
+        const producingNum = (producing.num || 0)
+        const producingPercent = producingNum / producing.total
+        const producingPercentVisual = Math.min(producingPercent, 1)
+        labelBar(visual, 10, line2 += 1.1, 1.6, 6, '工厂', `${producing.com} - ${producingPercent.toFixed(1)}%`, producingPercentVisual, colors.cyan)
+      }
+      else {
+        visual.text(`工厂生产 -> ${producing.com}`, 0.1, line += 1.1, normalTextStyle)
+      }
     }
     if (room.memory.comDispatchData && Object.keys(room.memory.comDispatchData).length > 0) {
-      room.visual.text(
-        `合成规划:${Object.keys(room.memory.comDispatchData)[Object.keys(room.memory.comDispatchData).length - 1]}`,
-        0, row += 1,
-        { color: 'black', font: 0.7, align: 'left' })
+      const ress = Object.keys(room.memory.comDispatchData) as ResourceConstant[]
+      const res = ress[ress.length - 1]
+      const resData = room.memory.comDispatchData[res]!
+      visual.text(`工厂规划 ${res} (${resData.dispatch_num})`, 0.1, line += 1.1, normalTextStyle)
     }
   }
 
-  // lab 资源可视化
-  if (room.memory.roomLabBind && Object.keys(room.memory.roomLabBind).length > 0) {
-    for (const i in room.memory.roomLabBind) {
-      const lab = Game.getObjectById(i as Id<StructureLab>)
-      if (!lab) {
-        delete room.memory.roomLabBind[i]
-        if (room.memory.structureIdData?.labs)
-          room.memory.structureIdData.labs.splice(room.memory.structureIdData.labs.indexOf(i as Id<StructureLab>), 1)
-        continue
-      }
+  // // lab 资源可视化
+  // if (room.memory.roomLabBind && Object.keys(room.memory.roomLabBind).length > 0) {
+  //   for (const i in room.memory.roomLabBind) {
+  //     const lab = Game.getObjectById(i as Id<StructureLab>)
+  //     if (!lab) {
+  //       delete room.memory.roomLabBind[i]
+  //       if (room.memory.structureIdData?.labs)
+  //         room.memory.structureIdData.labs.splice(room.memory.structureIdData.labs.indexOf(i as Id<StructureLab>), 1)
+  //       continue
+  //     }
 
-      room.visual.text(
-        `${room.memory.roomLabBind[i].rType}`,
-        lab.pos.x, lab.pos.y,
-        { color: compoundColor[room.memory.roomLabBind[i].rType as keyof typeof compoundColor], font: 0.3, align: 'center', strokeWidth: 0.2 })
-    }
-  }
+  //     room.visual.text(
+  //       `${room.memory.roomLabBind[i].rType}`,
+  //       lab.pos.x, lab.pos.y,
+  //       { color: compoundColor[room.memory.roomLabBind[i].rType as keyof typeof compoundColor], font: 0.3, align: 'center', strokeWidth: 0.2 })
+  //   }
+  // }
 }

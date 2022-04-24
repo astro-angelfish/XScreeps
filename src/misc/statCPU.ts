@@ -10,7 +10,7 @@ export function statCPU(): void {
 
   const maxLen = 200
 
-  if (global.cpuData.length > maxLen)
+  if (global.cpuData.length >= maxLen)
     global.cpuData.shift()
 
   global.cpuData.push(global.usedCpu)

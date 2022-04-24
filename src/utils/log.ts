@@ -1,4 +1,4 @@
-const colors = {
+export const colors = {
   slate: '#cbd5e1',
   gray: '#d1d5db',
   zinc: '#d4d4d8',

@@ -173,7 +173,7 @@ export default class RoomSpawnExtension extends Room {
       let reducedToEA = false
       let body = reduceBodyUntilFit(bodyParam, this.energyCapacityAvailable)
       // 对设置了自动适配到 energyAvailable 的爬虫进行二次自适应
-      if (body.cost > this.energyCapacityAvailable && roleMemData.reduceToEA) {
+      if (body.cost > this.energyAvailable && roleMemData.reduceToEA) {
         body = reduceBodyUntilFit(bodyParam, this.energyAvailable)
         reducedToEA = true
       }

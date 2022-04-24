@@ -31,7 +31,12 @@ interface factoryData {
   state: 'sleep' | 'flow' | 'base' // 3种状态 休眠、生产线（生产生产线所需商品）、基础（生产基础物资）
   flowCom?: CommodityConstant // 生产线要生产的物资种类 没有数量
   baseList: { [resource in CommodityConstant | MineralConstant | 'energy' | 'G']?: { num: number } } // 基础生产列表、数量
-  producing?: { com: CommodityConstant;num?: number } // 正在生产的材料
+  // 正在生产的材料
+  producing?: {
+    com: CommodityConstant
+    num?: number
+    total?: number
+  }
   balanceData: { [resource in CommodityConstant | MineralConstant | 'energy' | 'G']?: { num?: number; fill?: boolean } } // 平衡数据
   unzip?: { [resource in CommodityConstant | MineralConstant | 'energy' | 'G']?: { num: number } } // 解压
 }

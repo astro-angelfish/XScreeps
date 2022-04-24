@@ -12,7 +12,7 @@ const projectTitle = `
 /____/\\__,_/ .___/\\___/_/  /_____/_/\\__/\\___/_/ /_/  /_____/\\____/\\__/  
           /_/                                                           
 `
-const titleDOM = `<div style="line-height:1;">${colorfyLog(projectTitle.trimEnd(), 'green')}</div>`
+const titleDOM = `<div style="line-height:1;">${colorfyLog(projectTitle.trimEnd(), 'indigo')}</div>`
 
 /**
  * 全局拓展的别名

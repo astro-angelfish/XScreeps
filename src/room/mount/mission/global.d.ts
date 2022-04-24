@@ -88,7 +88,12 @@ interface RoomMemory {
   cooldownDic: Record<string, number> /* 冷却时间的哈希表 key为任务名 */
   nukeID?: string[]
   nukeData?: NukeData
-  comDispatchData?: { [re in ResourceConstant]?: { ok?: boolean;dispatch_num: number } }
+  comDispatchData?: {
+    [re in ResourceConstant]?: {
+      ok?: boolean
+      dispatch_num: number
+    }
+  }
   mineralType: ResourceConstant
   enemy?: enemyAllotData
 }

@@ -288,7 +288,7 @@ export class factoryExtension extends StructureFactory {
         if (storage.store.getUsedCapacity(b) < baseList[b]!.num - 3000) {
           console.log(`[factory] 房间 ${this.room.name} 转入 base 生产模式，目标商品为 ${b}`)
           this.room.memory.productData.state = 'base'
-          this.room.memory.productData.producing = { com: b, num: baseList[b]!.num }
+          this.room.memory.productData.producing = { com: b, num: baseList[b]!.num, total: baseList[b]!.num }
           return
         }
       }
@@ -311,7 +311,7 @@ export class factoryExtension extends StructureFactory {
 
           console.log(`[factory] 房间 ${this.room.name} 转入 base 生产模式，目标商品为 ${l}`)
           this.room.memory.productData.state = 'base'
-          this.room.memory.productData.producing = { com: l, num: baseList[l]!.num }
+          this.room.memory.productData.producing = { com: l, num: baseList[l]!.num, total: baseList[l]!.num }
           return
         }
       }
@@ -321,7 +321,7 @@ export class factoryExtension extends StructureFactory {
         if ((storage.store[h] || 0) < baseList[h]!.num - 300) {
           console.log(`[factory] 房间 ${this.room.name} 转入 base 生产模式，目标商品为 ${h}`)
           this.room.memory.productData.state = 'base'
-          this.room.memory.productData.producing = { com: h, num: baseList[h]!.num }
+          this.room.memory.productData.producing = { com: h, num: baseList[h]!.num, total: baseList[h]!.num }
           return
         }
       }
