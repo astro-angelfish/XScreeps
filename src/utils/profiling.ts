@@ -1,9 +1,25 @@
+import { colorfyLog } from './log'
+
+interface StackItem {
+  id: number
+  time: number
+}
+interface TableItem {
+  id: number
+  stackLength: number
+  time: number
+}
+
 class Profiler {
   startTime: number
-  currentStack: string[] = []
-  startTimes: Record<string, number> = {}
-  endTimes: Record<string, number> = {}
   profilerTime = 0
+
+  nameToIdMap: Map<string, number> = new Map()
+  idToNameMap: Map<number, string> = new Map()
+  maxId = 0
+
+  stack: StackItem[] = []
+  table: TableItem[][] = [[]]
 
   constructor() {
     this.startTime = Game.cpu.getUsed()
@@ -11,10 +27,26 @@ class Profiler {
 
   reset() {
     this.startTime = Game.cpu.getUsed()
-    this.currentStack = []
-    this.startTimes = {}
-    this.endTimes = {}
     this.profilerTime = 0
+
+    this.nameToIdMap.clear()
+    this.idToNameMap.clear()
+    this.maxId = 0
+
+    this.stack.length = 0
+    this.table = [[]]
+  }
+
+  private register(name: string) {
+    if (this.nameToIdMap.has(name)) {
+      return this.nameToIdMap.get(name)!
+    }
+    else {
+      this.maxId++
+      this.nameToIdMap.set(name, this.maxId)
+      this.idToNameMap.set(this.maxId, name)
+      return this.maxId
+    }
   }
 
   enter(name: string) {
@@ -22,29 +54,58 @@ class Profiler {
       return
     this.profilerTime -= Game.cpu.getUsed()
 
-    name = name.replace(/\./g, '_DOT_')
-    this.currentStack.push(name)
-    this.startTimes[this.currentStack.join('.')] = Game.cpu.getUsed()
+    const id = this.register(name)
+    const item = {
+      id,
+      time: Game.cpu.getUsed(),
+    }
+    this.stack.push(item)
+    this.table.push([])
 
     this.profilerTime += Game.cpu.getUsed()
+
+    return item
   }
 
-  exit(name?: string) {
-    if (!import.meta.env.PROFILER || !this.currentStack.length)
+  enterId(id: number) {
+    if (!import.meta.env.PROFILER)
       return
     this.profilerTime -= Game.cpu.getUsed()
 
-    if (name) {
-      name = name.replace(/\./g, '_DOT_')
-      if (this.currentStack[this.currentStack.length - 1] !== name) {
-        const index = this.currentStack.indexOf(name)
-        if (index !== -1)
-          this.currentStack.splice(index + 1)
-        else this.currentStack.push(name)
-      }
+    const item = {
+      id,
+      time: Game.cpu.getUsed(),
     }
-    this.endTimes[this.currentStack.join('.')] = Game.cpu.getUsed()
-    this.currentStack.pop()
+    this.stack.push(item)
+    this.table.push([])
+
+    this.profilerTime += Game.cpu.getUsed()
+
+    return item
+  }
+
+  exit(item?: StackItem) {
+    if (!import.meta.env.PROFILER || !this.stack.length || !this.table.length)
+      return
+    this.profilerTime -= Game.cpu.getUsed()
+
+    let tableItems: TableItem[]
+    if (item) {
+      const index = this.stack.lastIndexOf(item)
+      if (index === -1)
+        return
+      this.stack.splice(index)
+      tableItems = this.table.splice(index + 1)[0]
+    }
+    else {
+      item = this.stack.pop()!
+      tableItems = this.table.pop()!
+    }
+    this.table[this.table.length - 1].push({
+      id: item.id,
+      stackLength: this.stack.length + 1,
+      time: Game.cpu.getUsed() - item.time,
+    }, ...tableItems)
 
     this.profilerTime += Game.cpu.getUsed()
   }
@@ -53,53 +114,35 @@ class Profiler {
     if (!import.meta.env.PROFILER)
       return
 
+    const scriptUsed = Game.cpu.getUsed() - this.startTime
     const logTime = Game.cpu.getUsed()
 
-    if (this.currentStack.length)
-      for (let i = 0; i < this.currentStack.length; i++) this.exit()
+    if (this.stack.length)
+      for (let i = 0; i < this.stack.length; i++) this.exit()
+
+    const colorifyTime = (time: number) => {
+      const text = `${(time * 1000).toFixed(2)}μs ${((time / scriptUsed) * 100).toFixed(2)}%`
+      if (time < 0.2)
+        return colorfyLog(text, 'green')
+      else if (time < 0.5)
+        return colorfyLog(text, 'yellow')
+      else if (time < 1)
+        return colorfyLog(text, 'orange')
+      else
+        return colorfyLog(text, 'red')
+    }
 
     const logs = []
-    const iter = (keys: string[], prefix: string[]) => {
-      if (prefix.length) {
-        const spaceBefore = '  '.repeat(prefix.length)
-        const fullKey = prefix.join('.')
-        if (fullKey in this.endTimes) {
-          const start = this.startTimes[fullKey]
-          const end = this.endTimes[fullKey]
-          const duration = end - start
-          logs.push(`${spaceBefore}${prefix[prefix.length - 1]!.replace(/_DOT_/g, '.')} ${(duration * 1000).toFixed(2)}μs`)
-        }
-        else {
-          logs.push(`${spaceBefore}${prefix[prefix.length - 1]!.replace(/_DOT_/g, '.')}`)
-        }
-      }
-
-      const children: Record<string, string[]> = {}
-
-      for (const key of keys) {
-        const index = key.indexOf('.')
-        if (index === -1) {
-          if (!(key in children))
-            children[key] = []
-          continue
-        }
-
-        const name = key.slice(0, index)
-        const rest = key.slice(index + 1)
-
-        if (!(name in children))
-          children[name] = []
-        children[name].push(rest)
-      }
-
-      for (const name in children)
-        iter(children[name], prefix.concat(name))
+    for (const item of this.table[0]) {
+      const name = this.idToNameMap.get(item.id)
+      if (!name)
+        continue
+      logs.push(`${'  '.repeat(item.stackLength)}- ${name} ${colorifyTime(item.time)}`)
     }
-    iter(Object.keys(this.endTimes), [])
 
     const totalUsed = Game.cpu.getUsed() - this.startTime
     const totalLogTime = Game.cpu.getUsed() - logTime
-    logs.unshift(`[脚本性能数据] Shard:${Game.shard.name} Time:${Game.time} CPU:${(totalUsed * 1000).toFixed(2)}μs(${totalUsed.toFixed(2)}ms, ${(totalUsed / Game.cpu.limit * 100).toFixed(2)}%, profiling:${(this.profilerTime * 1000).toFixed(2)}μs, log:${(totalLogTime * 1000).toFixed(2)}μs)`)
+    logs.unshift(`[脚本性能数据] Shard:${Game.shard.name} Time:${Game.time} CPU:${(totalUsed * 1000).toFixed(2)}μs (${totalUsed.toFixed(2)}ms, ${(totalUsed / Game.cpu.limit * 100).toFixed(2)}%, profiling:${(this.profilerTime * 1000).toFixed(2)}μs, log:${(totalLogTime * 1000).toFixed(2)}μs)`)
     console.log(logs.join('\n'))
   }
 }
@@ -114,12 +157,12 @@ export function profileMethod(label?: string) {
   if (import.meta.env.PROFILER) {
     return function(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
       const className = 'className' in target && typeof target.className === 'string' ? target.className : target.constructor.name
+      const name = label ? `${label} (${className}.${propertyKey})` : `${className}.${propertyKey}`
       const originalMethod = descriptor.value
       descriptor.value = function(...args: any[]) {
-        const name = label ? `${label} (${className}.${propertyKey})` : `${className}.${propertyKey}`
-        profiler.enter(name)
+        const item = profiler.enter(name)
         const result = originalMethod.apply(this, args)
-        profiler.exit(name)
+        profiler.exit(item)
         return result
       }
       return descriptor
@@ -147,11 +190,11 @@ export function profileClass(label?: string) {
           continue
         if (descriptor.value) {
           const originalMethod = descriptor.value
+          const name = label ? `(${label})${className}.${propertyKey}` : `${className}.${propertyKey}`
           descriptor.value = function(...args: any[]) {
-            const name = label ? `(${label})${className}.${propertyKey}` : `${className}.${propertyKey}`
-            profiler.enter(name)
+            const item = profiler.enter(name)
             const result = originalMethod.apply(this, args)
-            profiler.exit(name)
+            profiler.exit(item)
             return result
           }
           Object.defineProperty(target.prototype, propertyKey, descriptor)
