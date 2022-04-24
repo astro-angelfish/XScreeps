@@ -44,28 +44,28 @@ const createApiHelp = function(func: FunctionDescribe): string {
 const moduleStyle = function() {
   const style = `<style>
     .module-help {
-        display: flex;
-        flex-flow: column nowrap;
+      display: flex;
+      flex-flow: column nowrap;
     }
     .module-container {
-        padding: 0px 10px 10px 10px;
-        display: flex;
-        flex-flow: column nowrap;
+      padding: 0px 10px 10px 10px;
+      display: flex;
+      flex-flow: column nowrap;
     }
     .module-info {
-        margin: 5px;
-        display: flex;
-        flex-flow: row nowrap;
-        align-items: baseline;
+      margin: 5px;
+      display: flex;
+      flex-flow: row nowrap;
+      align-items: baseline;
     }
     .module-title {
-        font-size: 19px;
-        font-weight: bolder;
-        margin-left: -15px;
+      font-size: 19px;
+      font-weight: bolder;
+      margin-left: -15px;
     }
     .module-api-list {
-        display: flex;
-        flex-flow: row wrap;
+      display: flex;
+      flex-flow: row wrap;
     }
   </style>`
 
@@ -75,58 +75,57 @@ const moduleStyle = function() {
 const apiStyle = function() {
   const style = `<style>
     .api-content-line {
-        width: max-content;
-        padding-right: 15px;
+      width: max-content;
+      padding-right: 15px;
     }
     .api-container {
-        margin: 5px;
-        width: 250px;
-        background-color: #2b2b2b;
-        overflow: hidden;
-        display: flex;
-        flex-flow: column;
+      margin: 5px;
+      width: 250px;
+      background-color: #2b2b2b;
+      overflow: hidden;
+      display: flex;
+      flex-flow: column;
     }
 
     .api-container label {
-        transition: all 0.1s;
-        min-width: 300px;
-        
+      transition: all 0.1s;
+      min-width: 300px;
     }
     
     /* 隐藏input */
     .api-container input {
-        display: none;
+      display: none;
     }
     
     .api-container label {
-        cursor: pointer;
-        display: block;
-        padding: 10px;
-        background-color: #3b3b3b;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+      cursor: pointer;
+      display: block;
+      padding: 10px;
+      background-color: #3b3b3b;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     
     .api-container label:hover, label:focus {
-        background-color: #525252;
+      background-color: #525252;
     }
     
     /* 清除所有展开的子菜单的 display */
     .api-container input + .api-content {
-        overflow: hidden;
-        transition: all 0.1s;
-        width: auto;
-        max-height: 0px;
-        padding: 0px 10px;
+      overflow: hidden;
+      transition: all 0.1s;
+      width: auto;
+      max-height: 0px;
+      padding: 0px 10px;
     }
     
     /* 当 input 被选中时，给所有展开的子菜单设置样式 */
     .api-container input:checked + .api-content {
-        max-height: 200px;
-        padding: 10px;
-        background-color: #1c1c1c;
-        overflow-x: auto;
+      max-height: 200px;
+      padding: 10px;
+      background-color: #1c1c1c;
+      overflow-x: auto;
     }
   </style>`
 

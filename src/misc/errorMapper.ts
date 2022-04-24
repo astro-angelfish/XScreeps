@@ -25,7 +25,7 @@ function colorful(content: string, colorName?: ErrorMapColors, bolder = false): 
   const colorStyle = colorName ? `color: ${errorMapcolors[colorName]};` : ''
   const bolderStyle = bolder ? 'font-weight: bolder;' : ''
 
-  return `<text style="${[colorStyle, bolderStyle].join(' ')}">${content}</text>`
+  return `<span style="${[colorStyle, bolderStyle].join(' ')}">${content}</span>`
 }
 
 export class ErrorMapper {

@@ -37,7 +37,7 @@ export default {
     },
   },
   store: {
-    ls(): string {
+    stat(): string {
       getStore()
       return '[store] 全局容量信息统计完毕!'
     },

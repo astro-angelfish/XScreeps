@@ -30,5 +30,5 @@ export function colorfyLog(content: string, colorName?: string, bolder = false):
   const colorStyle = colorName ? `color: ${colorName in colors ? colors[colorName as ColorifyLogColors] : colorName};` : ''
   const bolderStyle = bolder ? 'font-weight: bolder;' : ''
 
-  return `<text style="${[colorStyle, bolderStyle].join(' ')}">${content}</text>`
+  return `<span style="${[colorStyle, bolderStyle].join(' ')}">${content}</span>`
 }

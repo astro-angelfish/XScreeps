@@ -4,13 +4,15 @@ import { colorfyLog } from '@/utils'
 /**
  * 帮助文档中的标题
  */
-const projectTitle = [
-  '   ____                  ___  _ __      __     ___       __ ',
-  '  / __/_ _____  ___ ____/ _ )(_) /_____/ /    / _ )___  / /_',
-  ' _\ \/ // / _ \/ -_) __/ _  / / __/ __/ _ \  / _  / _ \/ __/',
-  '/___/\_,_/ .__/\__/_/ /____/_/\__/\__/_//_/ /____/\___/\__/ ',
-  '        /_/                                                 ',
-]
+const projectTitle = `
+   _____                       ____  _ __       __       ____        __ 
+  / ___/__  ______  ___  _____/ __ )(_) /______/ /_     / __ )____  / /_
+  \\__ \\/ / / / __ \\/ _ \\/ ___/ __  / / __/ ___/ __ \\   / __  / __ \\/ __/
+ ___/ / /_/ / /_/ /  __/ /  / /_/ / / /_/ /__/ / / /  / /_/ / /_/ / /_  
+/____/\\__,_/ .___/\\___/_/  /_____/_/\\__/\\___/_/ /_/  /_____/\\____/\\__/  
+          /_/                                                           
+`
+const titleDOM = `<div style="line-height:1;">${colorfyLog(projectTitle.trimEnd(), 'green')}</div>`
 
 /**
  * 全局拓展的别名
@@ -25,15 +27,14 @@ export default [
     alias: 'help',
     exec(): string {
       return [
-        ...projectTitle.map(line => colorfyLog(line, 'green', true)),
-        '\n',
+        titleDOM,
         '使用前请详细阅读如下规则:',
-        '1.使用frame.add时,如果布局为man,房间的中心点需要两格内有1个link和1个tower(如果刚开局，以后有就行了).',
-        '2.如果布局为dev,中心点在你第一个spawn往上两格.',
+        '1.使用 frame.add 时，如果布局为 man，房间的中心点需要两格内有 1 个 link 和 1 个 tower (如果刚开局，以后有就行了).',
+        '2.如果布局为 dev，中心点在你第一个 spawn 往上两格.',
         '3.能力越大责任越大，不要使用该框架欺负萌新!',
-        '4.急速冲级代码不了解使用方法不要使用,否则有宕机风险!',
-        '5.本框架攻击模块具备各类型攻击代码及多次跨shard打击能力(超时空军团),除非自保,否则不要滥用!',
-        '6.不保证该代码没有Bug,遇到bug欢迎QQ群里找Mikebraton交流报告.',
+        '4.急速冲级代码不了解使用方法不要使用，否则有宕机风险!',
+        '5.本框架攻击模块具备各类型攻击代码及多次跨 shard 打击能力(超时空军团)，除非自保，否则不要滥用!',
+        '6.不保证该代码没有 Bug，遇到 bug 欢迎QQ群里找 Mikebraton 交流报告.',
         '\n',
         colorfyLog('如果同意请控制台输入  manual', 'yellow', true),
       ].join('\n')
@@ -44,8 +45,7 @@ export default [
     alias: 'manual',
     exec(): string {
       return [
-        ...projectTitle.map(line => colorfyLog(line, 'blue', true)),
-        '\n',
+        titleDOM,
         createHelp(
           {
             name: '《帮助手册及使用指南》',
@@ -92,7 +92,7 @@ export default [
     alias: 'manual_global',
     exec(): string {
       return [
-        ...projectTitle.map(line => colorfyLog(line, 'blue', true)),
+        titleDOM,
         createHelp(
           {
             name: '名单相关',
@@ -206,7 +206,7 @@ export default [
     alias: 'manual_room',
     exec(): string {
       return [
-        ...projectTitle.map(line => colorfyLog(line, 'blue', true)),
+        titleDOM,
         createHelp(
           // 框架控制
           {
@@ -758,7 +758,7 @@ export default [
     alias: 'manual_creep',
     exec(): string {
       return [
-        ...projectTitle.map(line => colorfyLog(line, 'blue', true)),
+        titleDOM,
         createHelp(
           {
             name: '日常行为',
@@ -1088,7 +1088,7 @@ export default [
     alias: 'manual_stat',
     exec(): string {
       return [
-        ...projectTitle.map(line => colorfyLog(line, 'blue', true)),
+        titleDOM,
         createHelp(
           {
             name: '统计相关',
@@ -1097,7 +1097,7 @@ export default [
               {
                 title: '全局资源统计:',
                 describe: '全局资源数量统计',
-                functionName: 'resource.all',
+                functionName: 'resource.ls',
               },
               {
                 title: '商品资源名称打印:',
@@ -1107,7 +1107,7 @@ export default [
               {
                 title: '全局储量统计:',
                 describe: '全局储量统计',
-                functionName: 'store.all',
+                functionName: 'store.stat',
               },
             ],
           },
@@ -1119,7 +1119,7 @@ export default [
     alias: 'manual_flag',
     exec(): string {
       return [
-        ...projectTitle.map(line => colorfyLog(line, 'blue', true)),
+        titleDOM,
         `\n    ${colorfyLog('superbitch bot', 'yellow', true)}`,
         '这里列出一些可能用到的旗帜及其作用 统一规定xx为任何字符串 [xx]为房间名',
         '旗帜名: [xx]/repair 房间内所有防御塔参与维修',
