@@ -23,7 +23,7 @@ export default class RoomCoreEcosphereExtension extends Room {
                 case 'dev': { this.RoomRuleLayout(level, devPlanConstant); break; }
             }
 
-           
+
             if (level == 5)                 // 5级1个source的Link
             {
                 let sourceIDs = this.memory.StructureIdData.source
@@ -94,9 +94,9 @@ export default class RoomCoreEcosphereExtension extends Room {
                     }
                 }
             }
-             /* link */
+            /* link */
 
-             if (level == 3) {
+            if (level == 3) {
                 /*绘制到矿点的路径*/
                 let sourceIDs = this.memory.StructureIdData.source
                 if (sourceIDs.length <= 0) return
@@ -162,7 +162,7 @@ export default class RoomCoreEcosphereExtension extends Room {
             // console.log("memoryNum:", memoryNum)
             if (currentNum < memoryNum) {
                 /* 说明出问题了 */
-                this.controller.activateSafeMode()
+                if (Game.cpu.generatePixel) { this.controller.activateSafeMode() }
             }
         }
 
