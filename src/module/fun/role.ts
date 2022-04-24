@@ -292,32 +292,27 @@ export function build_(creep: Creep): void {
             return
         }
         /* 如果有storage就去storage里找，没有就自己采集 */
-        if (thisRoom.memory.StructureIdData.storageID || thisRoom.memory.StructureIdData.terminalID) {
-            var storage = Game.getObjectById(thisRoom.memory.StructureIdData.storageID) as StructureStorage
-            if (!storage) {
-                delete thisRoom.memory.StructureIdData.storageID
-            }
-            if (storage && storage.store.getUsedCapacity('energy') >= creep.store.getCapacity()) creep.withdraw_(storage, 'energy')
-            else {
-                let terminal_ = Game.getObjectById(Game.rooms[creep.memory.belong].memory.StructureIdData.terminalID) as StructureTerminal
-                if (terminal_ && terminal_.store.getUsedCapacity('energy') >= creep.store.getCapacity()) creep.withdraw_(terminal_, 'energy')
-            }
+        if (thisRoom.storage && thisRoom.storage.store.getUsedCapacity('energy') > creep.store.getFreeCapacity('energy'))
+        {
+            creep.withdraw_(thisRoom.storage, 'energy')
+            return
+        }
+        else if (thisRoom.terminal && thisRoom.terminal.store.getUsedCapacity('energy') > creep.store.getFreeCapacity('energy'))
+        {
+            creep.withdraw_(thisRoom.terminal, 'energy')
+            return
         }
         else {
             var container = creep.pos.findClosestByPath(FIND_STRUCTURES, { filter: (stru) => { return stru.structureType == 'container' && stru.store.getUsedCapacity('energy') > creep.store.getCapacity() } })
-            if (container) {
-                if (!creep.pos.isNearTo(container)) {
-                    creep.goTo(container.pos, 1)
-                }
-                else {
-                    creep.withdraw(container, 'energy')
-                }
-            } else {
+            if (container) 
+            {
+                creep.withdraw_(container, 'energy')
+            } 
+            else 
+            {
                 /*进行资源采集*/
                 const target = creep.pos.findClosestByPath(FIND_SOURCES);
-                if (creep.harvest(target) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(target);
-                }
+                creep.harvest_(target)
             }
         }
     }
