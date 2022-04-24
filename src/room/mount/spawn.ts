@@ -27,6 +27,7 @@ export default class RoomSpawnExtension extends Room {
   public spawnConfigInit(): void {
     if (this.memory.spawnConfigLastUpdate === import.meta.env.BUILD_TIME)
       return
+    this.memory.spawnConfigLastUpdate = import.meta.env.BUILD_TIME
 
     if (!this.memory.spawnConfig)
       this.memory.spawnConfig = {}
@@ -50,6 +51,7 @@ export default class RoomSpawnExtension extends Room {
         priority: data.priority,
         ignoreWar: data.ignoreWar,
         adaptive: !!data.adaption,
+        reduceToEA: data.reduceToEA,
       }
     }
   }
@@ -94,6 +96,7 @@ export default class RoomSpawnExtension extends Room {
   /**
    * 常驻爬虫孵化管理器 (任务爬虫是另外一个孵化函数)
    */
+  @profileMethod()
   public processNumSpawn(): void {
     for (const role in this.memory.spawnConfig) {
       const memData = this.memory.spawnConfig[role]
@@ -116,6 +119,7 @@ export default class RoomSpawnExtension extends Room {
       // 满足目标则跳过
       if (currentNum >= memData.num)
         continue
+
       // 统计孵化列队中任务的个数
       const spawnNum = this.getNumInSpawnListByRole(role)
       currentNum += spawnNum
@@ -237,16 +241,12 @@ export default class RoomSpawnExtension extends Room {
   /**
    * [功能函数]查看孵化队列内指定角色的爬的数目
    */
+  @profileMethod()
   public getNumInSpawnListByRole(role: string): number {
     if (!this.memory.spawnQueue)
       return 0
 
-    let num = 0
-    for (const mission of this.memory.spawnQueue) {
-      if (mission.role === role)
-        num++
-    }
-    return num
+    return this.memory.spawnQueue.reduce((p, c) => c.role === role ? p + 1 : p, 0)
   }
 
   /**
@@ -255,7 +255,7 @@ export default class RoomSpawnExtension extends Room {
    */
   public setSpawnNum(role: string, num: number, priority?: number): boolean {
     const memData = this.memory.spawnConfig[role]
-    if (memData.mission) {
+    if (memData?.mission) {
       console.log(`任务角色，不能进行自动孵化！role: ${role}`)
       return false
     }
@@ -276,7 +276,7 @@ export default class RoomSpawnExtension extends Room {
     if (!this.memory.spawnConfig[role]) {
       this.memory.spawnConfig[role] = {
         num,
-        body: this.memory.spawnConfig[role].body,
+        body,
         priority,
       }
     }

@@ -19,16 +19,11 @@ export default class RoomMissionBehaviourExtension extends Room {
    * 检查和配置建筑 creep
    */
   public checkBuilder(): void {
-    if (Game.time % 51)
-      return
     if (!this.controller || this.controller.level < 5)
       return
 
-    const [centerX, centerY] = Memory.roomControlData[this.name].center
-
-    const myConstrusion = new RoomPosition(centerX, centerY, this.name)
-      .findClosestByRange(FIND_MY_CONSTRUCTION_SITES)
-    if (myConstrusion) {
+    const myConstrusions = this.find(FIND_MY_CONSTRUCTION_SITES)
+    if (myConstrusions.length) {
       // 添加一个进孵化队列
       this.setSpawnNum('build', 1)
     }

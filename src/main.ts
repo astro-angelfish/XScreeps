@@ -12,7 +12,9 @@ import layoutVisual from '@/room/layoutVisual'
 import { processSquads } from '@/creep/squad'
 import { stateScanner } from '@/misc/stat'
 import { showTowerData } from '@/misc/visual'
-import { haveShards, profiler } from '@/utils'
+import { colorfyLog, haveShards, initialTick, profiler } from '@/utils'
+
+console.log(colorfyLog(`[${initialTick}] 脚本全局重置！构建时间：${import.meta.env.BUILD_TIME}`, 'sky'))
 
 /**
  * 主运行函数

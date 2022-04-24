@@ -1,13 +1,8 @@
 /* 房间统计  轮子-非自己开发! */
-/* 与room.memory相关的和getRooms()需要根据自己情况更改 */
-type Colors = 'red'|'blue'| 'green' | 'yellow'
-const colors: { [name in Colors]: string } = {
-  red: '#ef9a9a',
-  green: '#6b9955',
-  yellow: '#c5c599',
-  blue: '#8dc5e3',
-}
 
+import { colorfyLog } from '@/utils'
+
+/* 与room.memory相关的和getRooms()需要根据自己情况更改 */
 export function getColor(val: number) {
   if (val > 100)
     val = 100
@@ -68,13 +63,6 @@ export function colorHex(color: string) {
   }
 }
 
-export function Colorful(content: string, colorName?: Colors | string, bolder = false): string {
-  const colorStyle = colorName ? `color: ${colorName in colors ? colors[colorName as Colors] : colorName};` : ''
-  const bolderStyle = bolder ? 'font-weight: bolder;' : ''
-
-  return `<text style="${[colorStyle, bolderStyle].join(' ')}">${content}</text>`
-}
-
 function getRooms(): string[] {
   const rooms = []
   for (const name in Memory.roomControlData) {
@@ -101,10 +89,10 @@ export function getStore(roomName?: string) {
     const factoryCapacity = factory?.store.getCapacity() || 1
     const factoryProportion = `${(factoryUsed / factoryCapacity * 100).toFixed(2)}%`
     const factoryColor = colorHex(getColor(Math.ceil(factoryUsed / factoryCapacity * 100)))
-    console.log(Colorful(roomName, 'blue'),
-      'Storage:', Colorful(storageProportion, storageColor), ' ',
-      'Terminal', Colorful(terminalProportion, terminalColor), ' ',
-      'Factory', Colorful(factoryProportion, factoryColor))
+    console.log(colorfyLog(roomName, 'blue'),
+      'Storage:', colorfyLog(storageProportion, storageColor), ' ',
+      'Terminal', colorfyLog(terminalProportion, terminalColor), ' ',
+      'Factory', colorfyLog(factoryProportion, factoryColor))
   }
   else {
     const rooms = getRooms()
@@ -124,11 +112,11 @@ export function getStore(roomName?: string) {
       const factoryCapacity = factory?.store.getCapacity() || 1
       const factoryProportion = `${(factoryUsed / factoryCapacity * 100).toFixed(2)}%`
       const factoryColor = colorHex(getColor(Math.ceil(factoryUsed / factoryCapacity * 100)))
-      console.log(Colorful(rooms[i], 'blue'),
-        'Storage:', Colorful(storageProportion, storageColor), ' ',
-        'Terminal', Colorful(terminalProportion, terminalColor), ' ',
-        'Factory', Colorful(factoryProportion, factoryColor))
-      // Colorful(string, colorHex(getColor(Math.ceil(storageUsed / storeCapacity * 100))))
+      console.log(colorfyLog(rooms[i], 'blue'),
+        'Storage:', colorfyLog(storageProportion, storageColor), ' ',
+        'Terminal', colorfyLog(terminalProportion, terminalColor), ' ',
+        'Factory', colorfyLog(factoryProportion, factoryColor))
+      // colorfyLog(string, colorHex(getColor(Math.ceil(storageUsed / storeCapacity * 100))))
     }
   }
 }

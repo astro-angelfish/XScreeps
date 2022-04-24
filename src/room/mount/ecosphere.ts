@@ -15,6 +15,7 @@ export default class RoomEcosphereExtension extends Room {
   /**
    * 自动布局
    */
+  @profileMethod()
   public processRoomPlan(): void {
     if (!this.controller || !this.memory.structureIdData)
       return
@@ -47,12 +48,18 @@ export default class RoomEcosphereExtension extends Room {
         const sourceId = this.memory.structureIdData.source?.[0]
         if (sourceId && !this.memory.harvestData[sourceId].linkID) {
           const source = Game.getObjectById(sourceId)!
-          const points = source.pos.getSourceLinkVoid() || []
-          for (const i of points) {
-            if (i.lookFor(LOOK_CONSTRUCTION_SITES).length <= 0
+          const link = source.pos.findInRange(this.getStructureWithType(STRUCTURE_LINK), 2)[0]
+          if (link) {
+            this.memory.harvestData[sourceId].linkID = link.id
+          }
+          else {
+            const points = source.pos.getSourceLinkVoid() || []
+            for (const i of points) {
+              if (i.lookFor(LOOK_CONSTRUCTION_SITES).length <= 0
              && i.lookFor(LOOK_STRUCTURES).length <= 0) {
-              i.createConstructionSite(STRUCTURE_LINK)
-              break
+                i.createConstructionSite(STRUCTURE_LINK)
+                break
+              }
             }
           }
         }
@@ -76,12 +83,18 @@ export default class RoomEcosphereExtension extends Room {
         const sourceId = this.memory.structureIdData.source?.[1]
         if (sourceId && !this.memory.harvestData[sourceId].linkID) {
           const source = Game.getObjectById(sourceId)!
-          const points = source.pos.getSourceLinkVoid() || []
-          for (const i of points) {
-            if (i.lookFor(LOOK_CONSTRUCTION_SITES).length <= 0
+          const link = source.pos.findInRange(this.getStructureWithType(STRUCTURE_LINK), 2)[0]
+          if (link) {
+            this.memory.harvestData[sourceId].linkID = link.id
+          }
+          else {
+            const points = source.pos.getSourceLinkVoid() || []
+            for (const i of points) {
+              if (i.lookFor(LOOK_CONSTRUCTION_SITES).length <= 0
              && i.lookFor(LOOK_STRUCTURES).length <= 0) {
-              i.createConstructionSite(STRUCTURE_LINK)
-              break
+                i.createConstructionSite(STRUCTURE_LINK)
+                break
+              }
             }
           }
         }
@@ -143,6 +156,7 @@ export default class RoomEcosphereExtension extends Room {
    * 检测和调整房间状态\
    * 每 10tick 观察一次房间状态，如果发现敌人，房间状态变为 war，否则为 peace
    */
+  @profileMethod()
   public processRoomState(): void {
     if (Game.time % 10)
       return
@@ -166,6 +180,7 @@ export default class RoomEcosphereExtension extends Room {
   /**
    * 房间自动布局
    */
+  @profileMethod()
   public ruleRoomLayout(level: number, map: BluePrint): void {
     const centerList = Memory.roomControlData[this.name].center
     const centerPoint = new RoomPosition(centerList[0], centerList[1], this.name)
@@ -208,6 +223,7 @@ export default class RoomEcosphereExtension extends Room {
   /**
    * 获取房间 memory 中 distribution 总数量
    */
+  @profileMethod()
   public getDistributionNum(): number {
     if (!this.memory.distribution)
       return 0
@@ -219,6 +235,7 @@ export default class RoomEcosphereExtension extends Room {
   /**
    * 遍历该房间内所有的可以建造、维修的工地或建筑，将其添加进该房间的 memory 中
    */
+  @profileMethod()
   public addCurrentStructuresToMemory(): void {
     if (!this.memory.distribution)
       this.memory.distribution = {}
@@ -251,6 +268,7 @@ export default class RoomEcosphereExtension extends Room {
   /**
    * 修补函数，根据记忆将缺损的建筑进行自动工地规划
    */
+  @profileMethod()
   public patchFromDistribution(): void {
     if (!this.memory.distribution)
       return

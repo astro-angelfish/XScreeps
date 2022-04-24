@@ -175,7 +175,7 @@ export default class RoomFindExtension extends Room {
   public updateLevelCache(): void {
     if (!this.controller)
       return
-    if (this.controller.level > this.memory.originLevel)
+    if (this.controller.level !== this.memory.originLevel)
       this.memory.originLevel = this.controller.level
   }
 }

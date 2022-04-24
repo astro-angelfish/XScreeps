@@ -11,15 +11,11 @@ export default class RoomMissionTransportExtension extends Room {
     if (this.countCreepMissionByName('transport', '虫卵填充') > 0)
       return
 
-    const centerPos = new RoomPosition(Memory.roomControlData[this.name].center[0], Memory.roomControlData[this.name].center[1], this.name)
-    const emptyExtension = centerPos.findClosestByPath(FIND_MY_STRUCTURES, {
-      filter: structure =>
-        (structure.structureType === 'spawn' || structure.structureType === 'extension')
-          && structure.store.getFreeCapacity('energy') > 0,
-    })
+    const emptyExtensions = this.getStructureWithTypes([STRUCTURE_SPAWN, STRUCTURE_EXTENSION])
+      .filter(struct => struct.store.getFreeCapacity('energy') > 0)
 
     // 满足条件则触发虫卵填充任务
-    if (emptyExtension) {
+    if (emptyExtensions.length) {
       this.addMission({
         name: '虫卵填充',
         category: 'Creep',

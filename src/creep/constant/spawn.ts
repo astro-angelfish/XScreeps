@@ -1,4 +1,4 @@
-import { build_, carry_, harvest_, upgrade_ } from '@/creep/role'
+import { buildCreep, carryCreep, harvestCreep, upgradeCreep } from '@/creep/role'
 import type { BodyParam } from '@/utils'
 
 interface SpawnConstantDataBase {
@@ -59,7 +59,7 @@ export const roleData: Record<string, SpawnConstantData> = {
       7: { body: { work: 10, carry: 2, move: 5 }, num: 2 },
       8: { body: { work: 10, carry: 2, move: 5 }, num: 2 },
     },
-    init: true, func: harvest_,
+    init: true, func: harvestCreep,
   },
   // 矿点搬运工
   'carry': {
@@ -76,7 +76,7 @@ export const roleData: Record<string, SpawnConstantData> = {
       7: { body: { carry: 2, move: 2 } },
       8: { body: { carry: 2, move: 2 } },
     },
-    init: true, func: carry_,
+    init: true, func: carryCreep,
   },
   // 升级工
   'upgrade': {
@@ -93,7 +93,7 @@ export const roleData: Record<string, SpawnConstantData> = {
       7: { body: { work: 10, carry: 2, move: 10 }, num: 2 },
       8: { body: { work: 15, carry: 3, move: 15 }, num: 1 },
     },
-    init: true, func: upgrade_,
+    init: true, func: upgradeCreep,
   },
   // 建筑工
   'build': {
@@ -110,7 +110,7 @@ export const roleData: Record<string, SpawnConstantData> = {
       7: { body: { work: 10, carry: 10, move: 10 } },
       8: { body: { work: 15, carry: 15, move: 15 } },
     },
-    init: true, func: build_,
+    init: true, func: buildCreep,
   },
   // 中央搬运工
   'manage': {
