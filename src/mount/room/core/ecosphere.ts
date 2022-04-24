@@ -23,26 +23,7 @@ export default class RoomCoreEcosphereExtension extends Room {
                 case 'dev': { this.RoomRuleLayout(level, devPlanConstant); break; }
             }
 
-            /* link */
-
-            if (level == 3) {
-                /*绘制到矿点的路径*/
-                let sourceIDs = this.memory.StructureIdData.source
-                if (sourceIDs.length <= 0) return
-                let spawn: any = this.memory.StructureIdData.spawn
-                let spawn_d = Game.getObjectById(spawn[0]) as StructureSpawn;
-                for (var sourcei of sourceIDs) {
-                    let source = Game.getObjectById(sourcei) as Source
-                    // console.log(JSON.stringify(spawn_d.pos), JSON.stringify(source.pos), sourcei)
-                    let _path: any = this.findPath(spawn_d.pos, source.pos, { maxOps: 500, ignoreCreeps: true, plainCost: 1, swampCost: 1, maxRooms: 1 });
-                    for (let _id_path in _path) {
-                        let _data = _path[_id_path]
-                        if (_path.length - 1 > Number(_id_path)) {
-                            this.createConstructionSite(_data.x, _data.y, STRUCTURE_ROAD);
-                        }
-                    }
-                }
-            }
+           
             if (level == 5)                 // 5级1个source的Link
             {
                 let sourceIDs = this.memory.StructureIdData.source
@@ -110,6 +91,26 @@ export default class RoomCoreEcosphereExtension extends Room {
                     let _data = _path[_id_path]
                     if (_path.length - 1 > Number(_id_path)) {
                         this.createConstructionSite(_data.x, _data.y, STRUCTURE_ROAD);
+                    }
+                }
+            }
+             /* link */
+
+             if (level == 3) {
+                /*绘制到矿点的路径*/
+                let sourceIDs = this.memory.StructureIdData.source
+                if (sourceIDs.length <= 0) return
+                let spawn: any = this.memory.StructureIdData.spawn
+                let spawn_d = Game.getObjectById(spawn[0]) as StructureSpawn;
+                for (var sourcei of sourceIDs) {
+                    let source = Game.getObjectById(sourcei) as Source
+                    // console.log(JSON.stringify(spawn_d.pos), JSON.stringify(source.pos), sourcei)
+                    let _path: any = this.findPath(spawn_d.pos, source.pos, { maxOps: 500, ignoreCreeps: true, plainCost: 1, swampCost: 1, maxRooms: 1 });
+                    for (let _id_path in _path) {
+                        let _data = _path[_id_path]
+                        if (_path.length - 1 > Number(_id_path)) {
+                            this.createConstructionSite(_data.x, _data.y, STRUCTURE_ROAD);
+                        }
                     }
                 }
             }

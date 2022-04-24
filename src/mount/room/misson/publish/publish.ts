@@ -48,7 +48,7 @@ export default class RoomMissonPublish extends Room {
      * @param level     身体部件 分为 T0 T1 T2
      * @returns         任务对象
      */
-    public public_repair(Rtype: 'global' | 'special' | 'nuker', num: number, boostType: ResourceConstant, level?: 'T0' | 'T1' | 'T2'): MissionModel {
+    public public_repair(Rtype: 'global' | 'special' | 'nuker', num: number, boostType: ResourceConstant, level?: 'T0' | 'T1' | 'T2' | 'T3' | 'T4'): MissionModel {
         var thisTask: MissionModel = {
             name: '墙体维护',
             range: 'Creep',
@@ -78,6 +78,16 @@ export default class RoomMissonPublish extends Room {
             var labData = this.Bind_Lab(['XLH2O'])
             if (labData === null) return null
             thisTask.LabBind = labData
+        }
+
+        switch (level) {
+            case 'T3':
+                var labData = this.Bind_Lab(['XLH2O', 'XKH2O', 'XZHO2'])
+                if (labData === null) return null
+                thisTask.LabBind = labData
+                break;
+            case 'T4':
+                break;
         }
         thisTask.maxTime = 3
         return thisTask
@@ -274,9 +284,12 @@ export default class RoomMissonPublish extends Room {
             'Ebuild': { num: num, bind: [], interval: 500, MSB: defend ? defend : false },
             'Eupgrade': { num: num, bind: [], interval: 1000, MSB: defend ? defend : false }
         }
-        thisTask.LabBind = this.Bind_Lab(['XGH2O'])
-        if (thisTask.LabBind)
-            return thisTask
+        if (defend) {
+            thisTask.LabBind = this.Bind_Lab(['XGH2O'])
+            if (thisTask.LabBind)
+                return thisTask
+        }
+        return thisTask
     }
 
     public public_helpBuild(disRoom: string, num: number, shard?: string, time?: number, defend?: boolean): MissionModel {

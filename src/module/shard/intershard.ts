@@ -259,6 +259,7 @@ export function DeleteShard(): void {
  * 跨shard管理器
  */
 export function InterShardManager(): void {
+    if (!Game.cpu.generatePixel) return
     InitShard()
     CleanShard()
     ResponseShard()

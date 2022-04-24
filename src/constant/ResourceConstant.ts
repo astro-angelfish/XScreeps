@@ -192,3 +192,15 @@ export const CompoundColor = {
     'ZK':'#74787c',
     'UL':'#7c8577'
 }
+
+export const unzipMap = {
+    'battery':RESOURCE_ENERGY,
+    'lemergium_bar':RESOURCE_LEMERGIUM,
+    'zynthium_bar':RESOURCE_ZYNTHIUM,
+    'keanium_bar':RESOURCE_KEANIUM,
+    'utrium_bar':RESOURCE_UTRIUM,
+    'ghodium_melt':RESOURCE_GHODIUM,
+    'oxidant':RESOURCE_OXYGEN,
+    'reductant':RESOURCE_HYDROGEN,
+    'purifier':RESOURCE_CATALYST,
+}

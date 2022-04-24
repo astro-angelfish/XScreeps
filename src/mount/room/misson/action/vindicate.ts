@@ -7,13 +7,17 @@ export default class RoomMissonVindicateExtension extends Room {
         /* 根据level决定任务爬虫体型 */
         let level = mission.Data.level
         if (!level) mission.Data.level = 'T0'
-        if (level == 'T2')
+        if (level == 'T3')
+        {
+            global.MSB[mission.id] ={'repair':GenerateAbility(30,10,10,0,0,0,0,0)}
+        }
+        else if (level == 'T2')
         {
             global.MSB[mission.id] ={'repair':GenerateAbility(6,4,10,0,0,0,0,0)}
         }
         else if (level == 'T1')
         {
-            global.MSB[mission.id] ={'repair':GenerateAbility(10,10,10,0,0,0,0,0)}
+            global.MSB[mission.id] ={'repair':GenerateAbility(20,10,15,0,0,0,0,0)}
         }
         else if (level == 'T0')
         {

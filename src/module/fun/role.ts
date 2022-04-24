@@ -314,34 +314,35 @@ export function build_(creep: Creep): void {
             return
         }
         /* 如果有storage就去storage里找，没有就自己采集 */
-        if (thisRoom.memory.StructureIdData.storageID || thisRoom.memory.StructureIdData.terminalID) {
-            var storage = Game.getObjectById(thisRoom.memory.StructureIdData.storageID) as StructureStorage
-            if (!storage) {
-                delete thisRoom.memory.StructureIdData.storageID
+        if (creep.room.storage) {
+            if (creep.room.storage.store.getUsedCapacity('energy') >= creep.store.getCapacity()) {
+                creep.withdraw_(creep.room.storage, 'energy')
+                return;
             }
-            if (storage && storage.store.getUsedCapacity('energy') >= creep.store.getCapacity()) creep.withdraw_(storage, 'energy')
+        }
+        if (creep.room.terminal) {
+            if (creep.room.terminal.store.getUsedCapacity('energy') >= creep.store.getCapacity()) {
+                creep.withdraw_(creep.room.terminal, 'energy')
+                return;
+            }
+        }
+
+        var container = creep.pos.findClosestByPath(FIND_STRUCTURES, { filter: (stru) => { return stru.structureType == 'container' && stru.store.getUsedCapacity('energy') > creep.store.getCapacity() } })
+        if (container) {
+            if (!creep.pos.isNearTo(container)) {
+                creep.goTo(container.pos, 1)
+            }
             else {
-                let terminal_ = Game.getObjectById(Game.rooms[creep.memory.belong].memory.StructureIdData.terminalID) as StructureTerminal
-                if (terminal_ && terminal_.store.getUsedCapacity('energy') >= creep.store.getCapacity()) creep.withdraw_(terminal_, 'energy')
+                creep.withdraw(container, 'energy')
+            }
+        } else {
+            /*进行资源采集*/
+            const target = creep.pos.findClosestByPath(FIND_SOURCES);
+            if (creep.harvest(target) == ERR_NOT_IN_RANGE) {
+                creep.moveTo(target);
             }
         }
-        else {
-            var container = creep.pos.findClosestByPath(FIND_STRUCTURES, { filter: (stru) => { return stru.structureType == 'container' && stru.store.getUsedCapacity('energy') > creep.store.getCapacity() } })
-            if (container) {
-                if (!creep.pos.isNearTo(container)) {
-                    creep.goTo(container.pos, 1)
-                }
-                else {
-                    creep.withdraw(container, 'energy')
-                }
-            } else {
-                /*进行资源采集*/
-                const target = creep.pos.findClosestByPath(FIND_SOURCES);
-                if (creep.harvest(target) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(target);
-                }
-            }
-        }
+
     }
 
 }

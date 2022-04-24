@@ -53,6 +53,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
     SquadManager()
 
     /* 跨shardMemory提交 */
+    if (Game.cpu.generatePixel)
     InterShardMemory.setLocal(JSON.stringify(global.intershardData))
 
 

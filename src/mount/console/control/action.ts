@@ -6,7 +6,7 @@ import { Colorful, compare, isInArray, unzipPosition, zipPosition } from "@/util
 export default {
     /* 修墙 */
     repair: {
-        set(roomName: string, rtype: 'global' | 'special', num: number, boost: null | ResourceConstant, level?: 'T0' | 'T1' | 'T2'): string {
+        set(roomName: string, rtype: 'global' | 'special', num: number, boost: null | ResourceConstant, level?: 'T0' | 'T1' | 'T2' | 'T3'| 'T4'): string {
             let thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[repair] 不存在房间${roomName}`
             for (var i of thisRoom.memory.Misson['Creep'])

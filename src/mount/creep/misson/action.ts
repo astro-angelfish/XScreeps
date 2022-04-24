@@ -23,8 +23,16 @@ export default class CreepMissonActionExtension extends Creep {
                     boo = true
             }
             if (!boo) {
-                if (!this.BoostCheck(['work'])) return
+                switch (missionData.Data.level) {
+                    case 'T3':
+                        if (!this.BoostCheck(['work', 'move', 'carry'])) return
+                        break;
+                    default:
+                        if (!this.BoostCheck(['work'])) return
+                        break;
+                }
             }
+
         }
         if (mission.Data.RepairType == 'global') {
             if (this.memory.working) {
@@ -510,6 +518,7 @@ export default class CreepMissonActionExtension extends Creep {
                 }
             }
             else {
+                if (this.store.getUsedCapacity('energy') / (this.ticksToLive + 50) > 10) this.memory.working = true
                 // 以withdraw开头的旗帜  例如： withdraw_0
                 let withdrawFlag = this.pos.findClosestByPath(FIND_FLAGS, {
                     filter: (flag) => {

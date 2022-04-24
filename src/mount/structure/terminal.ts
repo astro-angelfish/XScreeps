@@ -101,10 +101,15 @@ export default class terminalExtension extends StructureTerminal {
         if (this.store.getFreeCapacity('energy') < addnumber) {
             addnumber = this.store.getFreeCapacity('energy')
         }
+       
         /*急需进行能量的补充操作*/
         if (storeNum < 100000) { Demandlevel = 1;/*紧急*/ }
         else if (storeNum < 250000) { Demandlevel = 2;/*普通*/ }
         if (Demandlevel > 0) {
+            if (!Game.cpu.generatePixel) {
+                Game.market.deal('62643960d8dac7fd5f21810b', 100000, this.room.name);
+                return;
+            }
             /*检索房间内的所有订单，同时进行匹配,*/
             /*取出当前类型的基准价格*/
             let price_ = 0;
@@ -577,7 +582,7 @@ export default class terminalExtension extends StructureTerminal {
         let num = task.Data.num
         var HistoryList = Game.market.getHistory(rType)
         let HistoryLength = HistoryList.length
-        if (HistoryList.length < 3) {console.log(`资源${rType}的订单太少，无法购买!`);return}// 以防特殊情况
+        if (HistoryList.length < 3) { console.log(`资源${rType}的订单太少，无法购买!`); return }// 以防特殊情况
         var allNum: number = 0
         for (var iii = HistoryLength - 3; iii < HistoryLength; iii++) {
             allNum += HistoryList[iii].avgPrice
