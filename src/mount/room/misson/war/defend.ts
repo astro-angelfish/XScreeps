@@ -135,11 +135,11 @@ export default class DefendWarExtension extends Room {
         })
         if (enemys.length <= 0) return
         /* 如果有合成任务，删除合成任务 */
-        let compoundTask = this.MissionName('Room', '资源合成')
-        if (compoundTask) {
-            this.DeleteMission(compoundTask.id)
-            return
-        }
+        // let compoundTask = this.MissionName('Room', '资源合成')
+        // if (compoundTask) {
+        //     this.DeleteMission(compoundTask.id)
+        //     return
+        // }
         if (!this.memory.switch.AutoDefend) {
             this.memory.switch.AutoDefend = true        // 表示房间存在主动防御任务
             /* 寻找攻击方 */
@@ -249,6 +249,8 @@ export default class DefendWarExtension extends Room {
         for(let i in HOSTILE_CREEPS)
         {
             /*这里结算出爬的攻防结算*/
+            let creeps_hostile = HOSTILE_CREEPS[i];
+
 
         }
 

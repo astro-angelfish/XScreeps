@@ -152,7 +152,7 @@ export default class CreepMissonMineExtension extends Creep {
             if (!this.memory.bindpoint) return
             var disPos = unzipPosition(this.memory.bindpoint)
             if (this.memory.working) {
-                var stroage_ = global.Stru[this.memory.belong]['storage'] as StructureStorage
+                var stroage_ = this.room.storage as StructureStorage
                 if (!stroage_) return
                 if (!this.pos.isNearTo(stroage_)) {
                     var construsions = this.pos.findClosestByPath(FIND_MY_CONSTRUCTION_SITES, {

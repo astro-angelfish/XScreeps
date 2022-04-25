@@ -9,8 +9,8 @@ import { avePrice, checkDispatch, checkLabBindResource, checkSend, DispatchNum, 
 export function ResourceDispatch(thisRoom: Room): void {
     if ((Game.time - global.Gtime[thisRoom.name]) % 15) return
     // 处理订单前检查
-    let storage_ = global.Stru[thisRoom.name]['storage'] as StructureStorage
-    let terminal_ = global.Stru[thisRoom.name]['terminal'] as StructureTerminal
+    let storage_ = thisRoom.storage as StructureStorage
+    let terminal_ = thisRoom.terminal as StructureTerminal
     if (thisRoom.controller.level < 6 || !storage_ || !terminal_) return
     if (thisRoom.MissionNum('Structure', '资源传送') >= 1) return    // 如果房间有资源传送任务，则不执行
     // ResourceLimit更新
@@ -268,7 +268,7 @@ export function ResourceCanDispatch(thisRoom: Room, resource_: ResourceConstant,
         if (i == thisRoom.name) continue
         if (Game.rooms[i] && Game.rooms[i].controller && Game.rooms[i].controller.my) {
             if (!global.Stru[i]) continue
-            let storage_ = global.Stru[i]['storage'] as StructureStorage
+            let storage_ = thisRoom.storage as StructureStorage
             if (!storage_) continue
             let limit = global.ResourceLimit[i][resource_] ? global.ResourceLimit[i][resource_] : 0
             if (storage_.store.getUsedCapacity(resource_) - limit > num) return "can"

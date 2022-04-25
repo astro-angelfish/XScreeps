@@ -82,7 +82,7 @@ export default class PowerCreepMissonBase extends PowerCreep {
                 if (this.powers[PWR_GENERATE_OPS] && !this.powers[PWR_GENERATE_OPS].cooldown) { this.usePower(PWR_GENERATE_OPS) }
                 // 如果ops过多，就转移ops
                 if (this.store.getUsedCapacity('ops') == this.store.getCapacity()) {
-                    var storage_ = global.Stru[this.memory.belong]['storage'] as StructureStorage
+                    var storage_ = this.room.storage as StructureStorage
                     if (!storage_) return
                     if (this.transfer(storage_, 'ops', Math.ceil(this.store.getUsedCapacity('ops') / 4)) == ERR_NOT_IN_RANGE)
                         this.goTo(storage_.pos, 1)
@@ -113,7 +113,7 @@ export default class PowerCreepMissonBase extends PowerCreep {
 
     // queen类型pc执行任务前执行的准备
     public OpsPrepare(): boolean {
-        var storage_ = global.Stru[this.memory.belong]['storage'] as StructureStorage
+        var storage_ = this.room.storage as StructureStorage
         if (!storage_) return false
         // 先去除杂质
         for (let i in this.store) {

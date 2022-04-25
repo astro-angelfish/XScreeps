@@ -80,8 +80,8 @@ export default class RoomMissonVindicateExtension extends Room {
     /* 资源转移任务 */
     public Task_Resource_transfer(mission: MissionModel): void {
         if ((Game.time - global.Gtime[this.name]) % 50) return
-        let storage_ = global.Stru[this.name]['storage'] as StructureStorage
-        let terminal_ = global.Stru[this.name]['terminal'] as StructureTerminal
+        let storage_ = this.storage as StructureStorage
+        let terminal_ = this.terminal as StructureTerminal
         if (!storage_ || !terminal_) {
             this.DeleteMission(mission.id)
             return

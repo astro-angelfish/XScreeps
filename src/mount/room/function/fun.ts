@@ -402,13 +402,13 @@ export default class RoomFunctionFindExtension extends Room {
         if (!global.Stru[this.name]) global.Stru[this.name] = {}
 
         if (this.memory.StructureIdData.storageID) {
-            global.Stru[this.name]['storage'] = Game.getObjectById(this.memory.StructureIdData.storageID) as StructureStorage
+            global.Stru[this.name]['storage'] = this.storage as StructureStorage
             if (!global.Stru[this.name]['storage']) {
                 delete this.memory.StructureIdData.storageID
             }
         }
         if (this.memory.StructureIdData.terminalID) {
-            global.Stru[this.name]['terminal'] = Game.getObjectById(this.memory.StructureIdData.terminalID) as StructureTerminal
+            global.Stru[this.name]['terminal'] = this.terminal as StructureTerminal
             if (!global.Stru[this.name]['terminal']) {
                 delete this.memory.StructureIdData.terminalID
             }

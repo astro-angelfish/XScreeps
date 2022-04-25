@@ -5,7 +5,7 @@ export default class PowerCreepMisson extends Room {
     /* Pc任务管理器 */
     public PowerCreep_TaskManager(): void {
         if (this.controller.level < 8) return
-        var storage_ = global.Stru[this.name]['storage'] as StructureStorage
+        var storage_ =this.storage  as StructureStorage
         if (!storage_) return
         var pc = Game.powerCreeps[`${this.name}/queen/${Game.shard.name}`]
         var pcspawn = global.Stru[this.name]['powerspawn'] as StructurePowerSpawn
@@ -31,7 +31,7 @@ export default class PowerCreepMisson extends Room {
     public enhance_storage(): void {
         if ((Game.time - global.Gtime[this.name]) % 7) return
         if (this.memory.switch.StopEnhanceStorage) return
-        var storage_ = global.Stru[this.name]['storage'] as StructureStorage
+        var storage_ = this.storage  as StructureStorage
         if (!storage_) return
         let pc = Game.powerCreeps[`${this.name}/queen/${Game.shard.name}`]
         if (!pc || !pc.powers[PWR_OPERATE_STORAGE] || pc.powers[PWR_OPERATE_STORAGE].cooldown) return
@@ -52,7 +52,7 @@ export default class PowerCreepMisson extends Room {
     public enhance_lab(): void {
         if ((Game.time - global.Gtime[this.name]) % 10) return
         if (this.memory.switch.StopEnhanceLab) return
-        var storage_ = global.Stru[this.name]['storage'] as StructureStorage
+        var storage_ = this.storage  as StructureStorage
         if (!storage_) return
         let pc = Game.powerCreeps[`${this.name}/queen/${Game.shard.name}`]
         if (!pc || !pc.powers[PWR_OPERATE_LAB] || pc.powers[PWR_OPERATE_LAB].cooldown) return
@@ -60,10 +60,14 @@ export default class PowerCreepMisson extends Room {
         if (!disTask) return
         if (this.MissionNum('PowerCreep', '合成加速') > 0) return
         let list = []
-        for (let id of disTask.Data.comData) {
-            var lab_ = Game.getObjectById(id) as StructureLab
-            if (lab_ && !isOPWR(lab_))
-                list.push(id)
+        for (let id in this.memory.RoomLabBind) {
+            let lab_data = this.memory.RoomLabBind[id];
+            if (lab_data.type == 'com') {
+                var lab_ = Game.getObjectById(id) as StructureLab
+                if (lab_ && !isOPWR(lab_))
+                    list.push(id)
+            }
+
         }
         if (list.length <= 0) return
         var thisTask: MissionModel = {
@@ -81,7 +85,7 @@ export default class PowerCreepMisson extends Room {
     public enhance_tower(): void {
         if ((Game.time - global.Gtime[this.name]) % 11) return
         if (this.memory.switch.StopEnhanceTower) return
-        var storage_ = global.Stru[this.name]['storage'] as StructureStorage
+        var storage_ = this.storage  as StructureStorage
         if (!storage_) return
         let pc = Game.powerCreeps[`${this.name}/queen/${Game.shard.name}`]
         if (!pc || !pc.powers[PWR_OPERATE_TOWER] || pc.powers[PWR_OPERATE_TOWER].cooldown) return
@@ -112,7 +116,7 @@ export default class PowerCreepMisson extends Room {
     public enhance_extension(): void {
         if ((Game.time - global.Gtime[this.name]) % 25) return
         if (this.memory.switch.StopEnhanceExtension) return
-        var storage_ = global.Stru[this.name]['storage'] as StructureStorage
+        var storage_ =this.storage  as StructureStorage
         if (!storage_ || storage_.store.getUsedCapacity('energy') < 20000) return
         let pc = Game.powerCreeps[`${this.name}/queen/${Game.shard.name}`]
         if (!pc || !pc.powers[PWR_OPERATE_EXTENSION] || pc.powers[PWR_OPERATE_EXTENSION].cooldown) return
@@ -133,7 +137,7 @@ export default class PowerCreepMisson extends Room {
     public enhance_spawn(): void {
         if ((Game.time - global.Gtime[this.name]) % 13) return
         if (this.memory.switch.StopEnhanceSpawn) return
-        var storage_ = global.Stru[this.name]['storage'] as StructureStorage
+        var storage_ = this.storage  as StructureStorage
         if (!storage_) return
         let pc = Game.powerCreeps[`${this.name}/queen/${Game.shard.name}`]
         if (!pc || !pc.powers[PWR_OPERATE_SPAWN] || pc.powers[PWR_OPERATE_SPAWN].cooldown) return
@@ -158,7 +162,7 @@ export default class PowerCreepMisson extends Room {
     public enhance_factory(): void {
         // if ((Game.time - global.Gtime[this.name]) % 14) return
         if (this.memory.switch.StopEnhanceFactory) return
-        var storage_ = global.Stru[this.name]['storage'] as StructureStorage
+        var storage_ = this.storage  as StructureStorage
         if (!storage_) return
         let pc = Game.powerCreeps[`${this.name}/queen/${Game.shard.name}`]
         if (!pc || !pc.powers[PWR_OPERATE_FACTORY] || pc.powers[PWR_OPERATE_FACTORY].cooldown) return
@@ -177,7 +181,7 @@ export default class PowerCreepMisson extends Room {
     public enhance_powerspawn(): void {
         if ((Game.time - global.Gtime[this.name]) % 13) return
         if (this.memory.switch.StopEnhancePowerSpawn) return
-        var storage_ = global.Stru[this.name]['storage'] as StructureStorage
+        var storage_ = this.storage as StructureStorage
         if (!storage_) return
         let pc = Game.powerCreeps[`${this.name}/queen/${Game.shard.name}`]
         if (!pc || !pc.powers[PWR_OPERATE_POWER] || pc.powers[PWR_OPERATE_POWER].cooldown) return
@@ -202,7 +206,7 @@ export default class PowerCreepMisson extends Room {
         if (this.MissionNum("PowerCreep", 'source强化') > 0) return
         for (let i in this.memory.StructureIdData.source) {
             let _source_data = Game.getObjectById(this.memory.StructureIdData.source[i]) as Source
-            if(!_source_data){continue}
+            if (!_source_data) { continue }
             if (_source_data.effects) {
                 if (_source_data.effects.length > 0) {
                     continue;
@@ -213,9 +217,9 @@ export default class PowerCreepMisson extends Room {
                 delayTick: 50,
                 range: 'PowerCreep',
                 Data: {
-                    source_id:_source_data.id
+                    source_id: _source_data.id
                 },
-                maxTime:2
+                maxTime: 2
             }
             thisTask.CreepBind = { 'queen': { num: 1, bind: [] } }
             this.AddMission(thisTask)

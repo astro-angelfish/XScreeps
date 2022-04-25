@@ -106,8 +106,9 @@ export default class RoomMissonBehaviourExtension extends Room {
     public Task_Compound(misson: MissionModel): void {
         if (Game.time % 5) return
         if (!this.memory.StructureIdData.labInspect || Object.keys(this.memory.StructureIdData.labInspect).length < 3) return
-        let storage_ = global.Stru[this.name]['storage'] as StructureStorage
-        let terminal_ = global.Stru[this.name]['terminal'] as StructureTerminal
+        let storage_ = this.storage as StructureStorage
+        let terminal_ = this.terminal as StructureTerminal
+        // console.log('LAB删除调试', global.Stru[this.name]['storage'])
         if (misson.Data.num <= -50 || !storage_ || !terminal_)  // -50 为误差允许值
         {
             this.DeleteMission(misson.id)
@@ -117,6 +118,16 @@ export default class RoomMissonBehaviourExtension extends Room {
         let raw2 = Game.getObjectById(this.memory.StructureIdData.labInspect.raw2) as StructureLab
         if (!raw1 || !raw2) {
             this.DeleteMission(misson.id)
+            return
+        }
+        if (raw1.mineralType && raw1.mineralType != misson.Data.raw1) {
+            var thisTask = this.public_Carry({ 'transport': { num: 1, bind: [] } }, 30, this.name, raw1.pos.x, raw1.pos.y, this.name, storage_.pos.x, storage_.pos.y, raw1.mineralType, raw1.store.getUsedCapacity(raw1.mineralType))
+            this.AddMission(thisTask)
+            return
+        }
+        if (raw2.mineralType && raw2.mineralType != misson.Data.raw2) {
+            var thisTask = this.public_Carry({ 'transport': { num: 1, bind: [] } }, 30, this.name, raw2.pos.x, raw2.pos.y, this.name, storage_.pos.x, storage_.pos.y, raw2.mineralType, raw2.store.getUsedCapacity(raw2.mineralType))
+            this.AddMission(thisTask)
             return
         }
         let re = false
@@ -167,6 +178,8 @@ export default class RoomMissonBehaviourExtension extends Room {
         var needResource: ResourceConstant[] = [misson.Data.raw1, misson.Data.raw2]
         if (this.MissionNum('Structure', '资源购买') > 0) return // 存在资源购买任务的情况下，不执行资源调度
         if (DispatchNum(this.name) >= 2) return // 资源调度数量过多则不执行资源调度
+        let buy = false
+        if (!Game.cpu.generatePixel){ buy = true}
         for (var resource_ of needResource) {
             // 原矿 资源调用
             if (storage_.store.getUsedCapacity(resource_) + terminal_.store.getUsedCapacity(resource_) < 10000 && isInArray(['H', 'O', 'K', 'L', 'X', 'U', 'Z'], resource_)) {
@@ -179,7 +192,7 @@ export default class RoomMissonBehaviourExtension extends Room {
                     num: 10000,
                     delayTick: 200,
                     conditionTick: 35,
-                    buy: false,
+                    buy: buy,
                     mtype: 'deal'
                 }
                 Memory.ResourceDispatchData.push(dispatchTask)
@@ -196,7 +209,7 @@ export default class RoomMissonBehaviourExtension extends Room {
                     num: 1000,
                     delayTick: 100,
                     conditionTick: 25,
-                    buy: false,
+                    buy: buy,
                     mtype: 'deal'
                 }
                 Memory.ResourceDispatchData.push(dispatchTask)
@@ -212,9 +225,9 @@ export default class RoomMissonBehaviourExtension extends Room {
         if (this.RoleMissionNum('transport', '物流运输') > 0) return
         if (Object.keys(this.memory.ComDispatchData).length <= 0) return //  没有合成规划情况
         if (this.MissionNum('Room', '资源合成') > 0) return  // 有合成任务情况
-        var storage_ = global.Stru[this.name]['storage'] as StructureStorage
+        var storage_ = this.storage as StructureStorage
         if (!storage_) return
-        var terminal_ = global.Stru[this.name]['terminal'] as StructureTerminal
+        var terminal_ = this.terminal as StructureTerminal
         if (!terminal_) return
         /* 没有房间合成实验室数据，不进行合成 */
         if (!this.memory.StructureIdData.labInspect.raw1) { console.log(`房间${this.name}不存在合成实验室数据！`); return }
@@ -296,7 +309,7 @@ export default class RoomMissonBehaviourExtension extends Room {
         if (!this.memory.switch.StartPower) return
         // 有任务了就不发布烧帕瓦的任务
         if (this.MissionNum('Room', 'power升级') > 0) return
-        let storage_ = global.Stru[this.name]['storage'] as StructureStorage
+        let storage_ = this.storage as StructureStorage
         //  powerspawn_ = global.Stru[this.name]['powerspawn'] as StructurePowerSpawn
         if (!storage_) return
         // SavePower 是节省能量的一种"熔断"机制 防止烧power致死
@@ -314,9 +327,9 @@ export default class RoomMissonBehaviourExtension extends Room {
 
     /* 烧Power执行函数 */
     public Task_ProcessPower(misson: MissionModel): void {
-        let storage_ = global.Stru[this.name]['storage'] as StructureStorage
+        let storage_ = this.storage as StructureStorage
         let powerspawn_ = global.Stru[this.name]['powerspawn'] as StructurePowerSpawn
-        let terminal_ = global.Stru[this.name]['terminal'] as StructureTerminal
+        let terminal_ = this.terminal as StructureTerminal
         if (!storage_ || !powerspawn_ || !terminal_) return
         if (misson.state == 1) {
             if (this.RoleMissionNum('manage', '物流运输') > 0) return

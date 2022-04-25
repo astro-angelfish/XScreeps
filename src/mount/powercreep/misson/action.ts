@@ -3,7 +3,7 @@ import { isOPWR } from "./constant"
 export default class PowerCreepMissonAction extends PowerCreep {
     // 操作仓库
     public handle_pwr_storage(): void {
-        var storage_ = global.Stru[this.memory.belong]['storage'] as StructureStorage
+        var storage_ = this.room.storage as StructureStorage
         if (!storage_) return
         if (isOPWR(storage_)) {
             Game.rooms[this.memory.belong].DeleteMission(this.memory.MissionData.id)
@@ -71,7 +71,7 @@ export default class PowerCreepMissonAction extends PowerCreep {
 
     // 操作拓展
     public handle_pwr_extension(): void {
-        var storage_ = global.Stru[this.memory.belong]['storage'] as StructureStorage
+        var storage_ = this.room.storage as StructureStorage
         if (!storage_) return
         if (this.powers[PWR_OPERATE_EXTENSION] && this.powers[PWR_OPERATE_EXTENSION].cooldown) {
             if (Game.rooms[this.memory.belong].GainMission(this.memory.MissionData.id)) {
