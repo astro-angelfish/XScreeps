@@ -144,10 +144,10 @@ function box(visual: RoomVisual, x: number, y: number, w: number, h: number, sty
 }
 
 function labelBar(visual: RoomVisual, x: number, y: number, labelSpace: number, w: number, label: string, content: string, percent: number, color: string) {
-  visual.text(label, x, y, { color, opacity: 0.7, font: 0.7, align: 'left' })
-  box(visual, x + labelSpace, y - 0.7, x + 6.1, 0.9, { color, opacity: 0.2 })
-  visual.rect(x + labelSpace + 0.1, y - 0.6, percent * w, 0.7, { fill: color, opacity: 0.3 })
-  visual.text(content, x + labelSpace + w / 2, y - 0.05, { color, font: 0.5, align: 'center' })
+  visual.text(label, x + labelSpace, y, { color, opacity: 0.7, font: 0.7, align: 'right' })
+  box(visual, x + labelSpace + 0.1, y - 0.7, x + 6.1, 0.9, { color, opacity: 0.2 })
+  visual.rect(x + labelSpace + 0.1 + 0.1, y - 0.6, percent * w, 0.7, { fill: color, opacity: 0.3 })
+  visual.text(content, x + labelSpace + 0.1 + w / 2, y - 0.05, { color, font: 0.5, align: 'center' })
 }
 
 /**
@@ -168,18 +168,18 @@ export function processRoomDataVisual(room: Room): void {
   const usedCpuPercent = cpuUsed / Game.cpu.limit
   const usedCpuPercentVisual = Math.min(usedCpuPercent, 1)
   const cpuColor = usedCpuPercent > 0.8 ? colors.rose : usedCpuPercent > 0.5 ? colors.amber : colors.emerald
-  labelBar(visual, 0.1, line += 1.1, 1.6, 6, 'CPU', `${cpuUsed.toFixed(2)} - ${Math.round(usedCpuPercent * 100)}%`, usedCpuPercentVisual, cpuColor)
+  labelBar(visual, 0.1, line += 1.1, 1.4, 6, 'CPU', `${cpuUsed.toFixed(2)} - ${Math.round(usedCpuPercent * 100)}%`, usedCpuPercentVisual, cpuColor)
 
   // Bucket
   const bucket = Game.cpu.bucket
   const bucketPercent = bucket / 10000
   const bucketColor = bucketPercent < 0.1 ? colors.rose : bucketPercent < 0.3 ? colors.amber : colors.emerald
-  labelBar(visual, 0.1, line += 1.1, 1.6, 6, 'BKT', `${bucket}`, bucketPercent, bucketColor)
+  labelBar(visual, 0.1, line += 1.1, 1.4, 6, 'BKT', `${bucket}`, bucketPercent, bucketColor)
 
   // 控制器进度
   if (room.controller) {
-    const controllerProgress = room.controller.level >= 8 ? 100 : room.controller.progress / room.controller.progressTotal
-    labelBar(visual, 0.1, line += 1.1, 1.6, 6, 'CTL', `${controllerProgress.toFixed(4)}%`, controllerProgress, colors.cyan)
+    const controllerProgress = room.controller.level >= 8 ? 1 : room.controller.progress / room.controller.progressTotal
+    labelBar(visual, 0.1, line += 1.1, 1.4, 6, '升级', `${(controllerProgress * 100).toFixed(4)}%`, controllerProgress, colors.cyan)
   }
 
   // 仓库
@@ -188,7 +188,7 @@ export function processRoomDataVisual(room: Room): void {
     const storageFree = Math.ceil(storage.store.getFreeCapacity() / 1000)
     const storageUsedPercent = storage.store.getUsedCapacity() / storage.store.getCapacity()
     const storageFreeColor = storageUsedPercent > 0.9 ? colors.rose : storageUsedPercent > 0.7 ? colors.amber : colors.cyan
-    labelBar(visual, 0.1, line += 1.1, 1.6, 6, '仓库', `${storageFree}K`, storageUsedPercent, storageFreeColor)
+    labelBar(visual, 0.1, line += 1.1, 1.4, 6, '仓库', `${storageFree}K`, storageUsedPercent, storageFreeColor)
   }
 
   // 工厂
@@ -201,7 +201,7 @@ export function processRoomDataVisual(room: Room): void {
         const producingNum = (producing.num || 0)
         const producingPercent = producingNum / producing.total
         const producingPercentVisual = Math.min(producingPercent, 1)
-        labelBar(visual, 10, line2 += 1.1, 1.6, 6, '工厂', `${producing.com} - ${producingPercent.toFixed(1)}%`, producingPercentVisual, colors.cyan)
+        labelBar(visual, 10, line2 += 1.1, 1.4, 6, '工厂', `${producing.com} - ${producingPercent.toFixed(1)}%`, producingPercentVisual, colors.cyan)
       }
       else {
         visual.text(`工厂生产 -> ${producing.com}`, 0.1, line += 1.1, normalTextStyle)

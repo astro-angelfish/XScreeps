@@ -72,23 +72,6 @@ export default class RoomInitExtension extends Room {
       this.memory.structureIdData = {}
     const structureData = this.memory.structureIdData
 
-    // 删掉记忆中所有丢失的建筑类型
-    // for (const type in structureData) {
-    //   const struct = structureData[type as keyof typeof structureData]
-
-    //   if (Array.isArray(struct)) {
-    //     for (const id of struct) {
-    //       if (Game.getObjectById(id) === null)
-    //         struct.splice(struct.indexOf(id as never), 1)
-    //     }
-    //   }
-
-    //   if (typeof struct === 'string') {
-    //     if (Game.getObjectById(struct) === null)
-    //       delete structureData[type as keyof typeof structureData]
-    //   }
-    // }
-
     // 验证有效性的函数
     const emptyOrHasInvalidStructure = <T extends _HasId>(arr: Id<T>[] | null | undefined) =>
       !arr || arr.length <= 0 || arr.some(s => Game.getObjectById(s) === null)
@@ -155,6 +138,9 @@ export default class RoomInitExtension extends Room {
             break
           }
         }
+      }
+      else {
+        delete structureData.upgradeLink
       }
     }
 
@@ -252,7 +238,7 @@ export default class RoomInitExtension extends Room {
         const id = id_ as Id<Source>
         const source = Game.getObjectById(id)!
 
-        if (level < 5 || isInvalidStructure(harvestData[id].linkID)) {
+        if (level < 5) {
           if (isInvalidStructure(harvestData[id].containerID)) {
             const containers = source.pos.getRangedStructure([STRUCTURE_CONTAINER], 1, 0)
             if (containers.length > 0)

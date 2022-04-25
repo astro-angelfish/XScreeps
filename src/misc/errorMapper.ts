@@ -7,7 +7,7 @@
  * @see https://github.com/screepers/screeps-typescript-starter/blob/master/src/utils/ErrorMapper.ts
  */
 
-import { SourceMapConsumer } from 'source-map'
+import { SourceMapConsumer } from 'source-map-js'
 import { escape } from 'lodash'
 
 type ErrorMapColors = 'red'
@@ -19,8 +19,8 @@ const errorMapcolors: { [name in ErrorMapColors]: string } = {
 }
 
 /**
-  * 控制台信息打印
-  */
+ * 控制台信息打印
+ */
 function colorful(content: string, colorName?: ErrorMapColors, bolder = false): string {
   const colorStyle = colorName ? `color: ${errorMapcolors[colorName]};` : ''
   const bolderStyle = bolder ? 'font-weight: bolder;' : ''
@@ -43,13 +43,13 @@ export class ErrorMapper {
   public static cache: Record<string, string> = {}
 
   /**
-      * 使用源映射生成堆栈跟踪，并生成原始标志位
-      * 警告 - global 重置之后的首次调用会产生很高的 cpu 消耗 (> 30 CPU)
-      * 之后的每次调用会产生较低的 cpu 消耗 (~ 0.1 CPU / 次)
-      *
-      * @param {Error | string} error 错误或原始追踪栈
-      * @returns {string} 映射之后的源代码追踪栈
-      */
+   * 使用源映射生成堆栈跟踪，并生成原始标志位
+   * 警告 - global 重置之后的首次调用会产生很高的 cpu 消耗 (> 30 CPU)
+   * 之后的每次调用会产生较低的 cpu 消耗 (~ 0.1 CPU / 次)
+   *
+   * @param {Error | string} error 错误或原始追踪栈
+   * @returns {string} 映射之后的源代码追踪栈
+   */
   public static sourceMappedStackTrace(error: Error | string): string {
     const stack: string = error instanceof Error ? (error.stack as string) : error
     // 有缓存直接用
@@ -81,7 +81,9 @@ export class ErrorMapper {
         break
 
       // 解析追踪栈
-      if (pos.name) { outStack += `\n    at ${pos.name} (${pos.source}:${pos.line}:${pos.column})` }
+      if (pos.name) {
+        outStack += `\n    at ${pos.name} (${pos.source}:${pos.line}:${pos.column})`
+      }
       else {
         // 源文件没找到对应文件名，采用原始追踪名
         if (match[1])
@@ -96,11 +98,11 @@ export class ErrorMapper {
   }
 
   /**
-      * 错误追踪包装器
-      * 用于把报错信息通过 source-map 解析成源代码的错误位置
-      *
-      * @param loop 玩家代码主循环
-      */
+   * 错误追踪包装器
+   * 用于把报错信息通过 source-map 解析成源代码的错误位置
+   *
+   * @param loop 玩家代码主循环
+   */
   public static wrapLoop(loop: () => void): () => void {
     return () => {
       if (Game.cpu.tickLimit < 500) {

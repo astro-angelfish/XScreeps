@@ -22,12 +22,12 @@ export const colors = {
   pink: '#f9a8d4',
   rose: '#fda4af',
 }
-export type ColorifyLogColors = keyof typeof colors
+export type ColorfyLogColors = keyof typeof colors
 
-export function colorfyLog(content: string, colorName?: ColorifyLogColors, bolder?: boolean): string
+export function colorfyLog(content: string, colorName?: ColorfyLogColors, bolder?: boolean): string
 export function colorfyLog(content: string, colorName?: string, bolder?: boolean): string
 export function colorfyLog(content: string, colorName?: string, bolder = false): string {
-  const colorStyle = colorName ? `color: ${colorName in colors ? colors[colorName as ColorifyLogColors] : colorName};` : ''
+  const colorStyle = colorName ? `color: ${colorName in colors ? colors[colorName as ColorfyLogColors] : colorName};` : ''
   const bolderStyle = bolder ? 'font-weight: bolder;' : ''
 
   return `<span style="${[colorStyle, bolderStyle].join(' ')}">${content}</span>`

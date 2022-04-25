@@ -225,19 +225,15 @@ export default class terminalExtension extends StructureTerminal {
           // 冷却模式下进行不了其他 deal 了
           if (this.cooldown)
             break
-          let a = 100
-          const b = 50000
-          if (COMMODITIES[rType]?.level)
-            a = 0
-          let price = 0.05
-          if (COMMODITIES[rType]?.level)
-            price = 10000
 
-          if (i.price)
-            price = i.price
+          let least = 100
+          if (COMMODITIES[rType]?.level)
+            least = 0
 
-          const orders = Game.market.getAllOrders({ type: rType })
-            .filter(order => order.type === ORDER_BUY && order.price <= price && order.amount > a && order.amount <= b)
+          const price = i.price ?? 0.05
+
+          const orders = Game.market.getAllOrders({ resourceType: rType })
+            .filter(order => order.type === ORDER_BUY && order.price >= price && order.amount > least)
           if (orders.length <= 0)
             continue
 
@@ -489,13 +485,13 @@ export default class terminalExtension extends StructureTerminal {
     const historyLength = historyList.length
     // 以防特殊情况
     if (historyList.length < 3) {
-      console.log(`资源${rType}的订单太少，无法购买!`)
+      console.log(`资源 ${rType} 的订单太少，无法购买!`)
       return
     }
 
     let allNum = 0
-    for (let iii = historyLength - 3; iii < historyLength; iii++)
-      allNum += historyList[iii].avgPrice
+    for (let i = historyLength - 3; i < historyLength; i++)
+      allNum += historyList[i].avgPrice
     // 平均价格 [近3天]
     const avePrice = allNum / 3
 
@@ -503,7 +499,7 @@ export default class terminalExtension extends StructureTerminal {
     const maxPrice = avePrice + (task.data.range || 50) // 范围
 
     // 在市场上寻找
-    const orders = Game.market.getAllOrders({ type: rType })
+    const orders = Game.market.getAllOrders({ resourceType: rType })
       .filter(o => o.price >= avePrice && o.price <= maxPrice)
     if (orders.length <= 0)
       return

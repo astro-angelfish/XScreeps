@@ -115,9 +115,9 @@ export default {
         if (shardData)
           task.data.shardData = shardData
         if (thisRoom.addMission(task))
-          return colorfyLog(`[expand] 房间${roomName}挂载扩张援建计划成功 -(${shard})-> ${disRoom}`, 'green')
+          return colorfyLog(`[expand] 房间 ${roomName} 挂载扩张援建计划成功 -(${shard})-> ${disRoom}`, 'green')
       }
-      return colorfyLog(`[expand] 房间${roomName}挂载扩张援建计划失败 -(${shard})-> ${disRoom}`, 'red')
+      return colorfyLog(`[expand] 房间 ${roomName} 挂载扩张援建计划失败 -(${shard})-> ${disRoom}`, 'red')
     },
     rm(roomName: string, disRoom: string, shard: string): string {
       const thisRoom = Game.rooms[roomName]

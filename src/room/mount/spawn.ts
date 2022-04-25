@@ -202,7 +202,7 @@ export default class RoomSpawnExtension extends Room {
       }
       else {
         const timestr = Game.time.toString().slice(Game.time.toString().length - 4)
-        const randomStr = Math.random().toString(36).slice(3)
+        const randomStr = Math.random().toString(36).slice(3, 7)
         name = `${label} ${randomStr}+${timestr}`
       }
 

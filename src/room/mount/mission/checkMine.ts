@@ -32,7 +32,7 @@ export default class RoomMissionMineExtension extends Room {
     }
 
     // 寻找 mineralContainerID
-    const container = mineral.pos.getStructure(STRUCTURE_CONTAINER)
+    const container = mineral.pos.getRangedStructure([STRUCTURE_CONTAINER], 1, 0)
     const containerSite = mineral.pos.lookFor(LOOK_CONSTRUCTION_SITES)
       .filter(s => s.structureType === STRUCTURE_CONTAINER)[0]
     if (!container && !containerSite) {

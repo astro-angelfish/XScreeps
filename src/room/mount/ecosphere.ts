@@ -48,11 +48,11 @@ export default class RoomEcosphereExtension extends Room {
         const sourceId = this.memory.structureIdData.source?.[0]
         if (sourceId && !this.memory.harvestData[sourceId].linkID) {
           const source = Game.getObjectById(sourceId)!
-          const link = source.pos.findInRange(this.getStructureWithType(STRUCTURE_LINK), 2)[0]
+          const link = source.pos.getRangedStructure([STRUCTURE_LINK], 2, 0)[0]
           if (link) {
             this.memory.harvestData[sourceId].linkID = link.id
           }
-          else {
+          else if (!source.pos.findInRange(FIND_CONSTRUCTION_SITES, 2).length) {
             const points = source.pos.getSourceLinkVoid() || []
             for (const i of points) {
               if (i.lookFor(LOOK_CONSTRUCTION_SITES).length <= 0
@@ -66,14 +66,18 @@ export default class RoomEcosphereExtension extends Room {
       }
       // 第二个出控制器 link 便于冲级
       if (linkCount-- > 0) {
-        if (!this.memory.structureIdData.centerLink) {
+        if (!this.memory.structureIdData.upgradeLink) {
           const controller = this.controller
-          const points = controller.pos.getSourceLinkVoid() || []
-          for (const i of points) {
-            if (i.lookFor(LOOK_CONSTRUCTION_SITES).length <= 0
+          const link = controller.pos.getRangedStructure([STRUCTURE_LINK], 4, 0)[0]
+          if (link) { this.memory.structureIdData.upgradeLink = link.id }
+          else if (!controller.pos.findInRange(FIND_CONSTRUCTION_SITES, 4).length) {
+            const points = controller.pos.getSourceLinkVoid() || []
+            for (const i of points) {
+              if (i.lookFor(LOOK_CONSTRUCTION_SITES).length <= 0
              && i.lookFor(LOOK_STRUCTURES).length <= 0) {
-              i.createConstructionSite(STRUCTURE_LINK)
-              break
+                i.createConstructionSite(STRUCTURE_LINK)
+                break
+              }
             }
           }
         }
@@ -83,11 +87,11 @@ export default class RoomEcosphereExtension extends Room {
         const sourceId = this.memory.structureIdData.source?.[1]
         if (sourceId && !this.memory.harvestData[sourceId].linkID) {
           const source = Game.getObjectById(sourceId)!
-          const link = source.pos.findInRange(this.getStructureWithType(STRUCTURE_LINK), 2)[0]
+          const link = source.pos.getRangedStructure([STRUCTURE_LINK], 2, 0)[0]
           if (link) {
             this.memory.harvestData[sourceId].linkID = link.id
           }
-          else {
+          else if (!source.pos.findInRange(FIND_CONSTRUCTION_SITES, 2).length) {
             const points = source.pos.getSourceLinkVoid() || []
             for (const i of points) {
               if (i.lookFor(LOOK_CONSTRUCTION_SITES).length <= 0

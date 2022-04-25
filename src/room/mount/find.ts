@@ -1,6 +1,6 @@
 import { flatten, zipObject } from 'lodash'
 import { allStructureTypes } from '@/structure/constant/structure'
-import { cacheMethodOHash, profileMethod } from '@/utils'
+import { profileMethod } from '@/utils'
 
 /* 房间原型拓展   --方法  --寻找 */
 export default class RoomFindExtension extends Room {
@@ -81,7 +81,6 @@ export default class RoomFindExtension extends Room {
    * @param mode 0: hits 最小, 1: hitsMax - hits 最小, 2: hits / hitsMax 最小
    */
   @profileMethod()
-  @cacheMethodOHash()
   public getStructureHitsLeast<T extends AnyStructure['structureType']>(types: T[], mode: 0 | 1 | 2 | 3 = 2): NarrowStructure<T> {
     const structures = this.getStructureWithTypes(types).filter(v => v.hits < v.hitsMax)
     switch (mode) {

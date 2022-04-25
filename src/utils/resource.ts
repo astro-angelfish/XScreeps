@@ -12,8 +12,8 @@ export function getAveragePrice(res: ResourceConstant, day: number): number {
   const history = Game.market.getHistory(res)
 
   let allprice = 0
-  for (let ii = 14 - day; ii < 14; ii++)
-    allprice += history[ii].avgPrice
+  for (let i = 14 - day; i < 14 && i < history.length; i++)
+    allprice += history[i].avgPrice
 
   const avePrice = allprice / day // 平均能量价格
   return avePrice
