@@ -152,13 +152,6 @@ export default class DefendWarExtension extends Room {
             return !isInArray(Memory.whitesheet,creep.owner.username) && (creep.owner.username != 'Invader') && deserveDefend(creep)
         }})
         if (enemys.length <= 0) return
-        /* 如果有合成任务，删除合成任务 */
-        let compoundTask = this.MissionName('Room','资源合成')
-        if (compoundTask)
-        {
-            this.DeleteMission(compoundTask.id)
-            return
-        }
         if (!this.memory.switch.AutoDefend)
         {
             this.memory.switch.AutoDefend = true        // 表示房间存在主动防御任务

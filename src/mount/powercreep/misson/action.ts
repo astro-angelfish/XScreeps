@@ -3,7 +3,7 @@ import { isOPWR } from "./constant"
 export default class PowerCreepMissonAction extends PowerCreep {
     // 操作仓库
     public handle_pwr_storage():void{
-        var storage_ = global.Stru[this.memory.belong]['storage'] as StructureStorage
+        var storage_ = Game.rooms[this.memory.belong].storage
         if (!storage_) return
         if (isOPWR(storage_))
         {
@@ -86,7 +86,7 @@ export default class PowerCreepMissonAction extends PowerCreep {
 
     // 操作拓展
     public handle_pwr_extension():void{
-        var storage_ = global.Stru[this.memory.belong]['storage'] as StructureStorage
+        var storage_ = Game.rooms[this.memory.belong].storage
         if (!storage_) return
         if (this.powers[PWR_OPERATE_EXTENSION] && this.powers[PWR_OPERATE_EXTENSION].cooldown)
         {
@@ -135,7 +135,7 @@ export default class PowerCreepMissonAction extends PowerCreep {
 
     /* 操作工厂 */
     public handle_pwr_factory():void{
-        var factory_ = global.Stru[this.memory.belong]['factory'] as StructureStorage
+        var factory_ = Game.rooms[this.memory.belong].storage
         if (!factory_) return
         if (this.powers[PWR_OPERATE_FACTORY] && this.powers[PWR_OPERATE_FACTORY].cooldown)
         {
@@ -159,7 +159,7 @@ export default class PowerCreepMissonAction extends PowerCreep {
 
     /* 操作powerspawn */
     public handle_pwr_powerspawn():void{
-        var powerspawn_ = global.Stru[this.memory.belong]['powerspawn'] as StructureStorage
+        var powerspawn_ = Game.rooms[this.memory.belong].storage
         if (!powerspawn_) return
         if (this.powers[PWR_OPERATE_POWER] && this.powers[PWR_OPERATE_POWER].cooldown)
         {

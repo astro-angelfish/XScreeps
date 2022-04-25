@@ -13,8 +13,8 @@ export class factoryExtension extends StructureFactory {
     // 资源平衡
     public ResourceBalance():void{
         if ((Game.time - global.Gtime[this.room.name]) % 7) return
-        let terminal_ = global.Stru[this.room.name]['terminal'] as StructureTerminal
-        let storage_ = global.Stru[this.room.name]['storage'] as StructureStorage
+        let terminal_ = this.room.terminal
+        let storage_ = this.room.storage
         if (!terminal_ || !storage_) return
         if (!this.room.memory.productData || !this.room.memory.productData.balanceData) return
         // 找到manage爬虫
@@ -115,8 +115,8 @@ export class factoryExtension extends StructureFactory {
         if (!this.room.memory.productData.state) this.room.memory.productData.state = 'sleep'
         if (!_.isEmpty(this.room.memory.productData.unzip)) return  // 优先资源解压
         let state = this.room.memory.productData.state
-        let terminal_ = global.Stru[this.room.name]['terminal'] as StructureTerminal
-        let storage_ = global.Stru[this.room.name]['storage'] as StructureStorage
+        let terminal_ = this.room.terminal
+        let storage_ = this.room.storage
         if (!terminal_ || !storage_) return
         if (state == 'sleep')
         {

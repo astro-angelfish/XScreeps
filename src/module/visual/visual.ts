@@ -146,7 +146,7 @@ export function RoomDataVisual(room:Room):void{
         MissonNum += Object.keys(room.memory.Misson[range]).length
     room.visual.text(`房间任务数:${MissonNum}`,0,row+=1,{color: MissonNum>0?'#008B8B':'black', font:0.7,align:'left'})
     /* 仓库剩余容量 */
-    let storage_ = global.Stru[room.name]['storage'] as StructureStorage
+    let storage_ = room.storage
     if (storage_)
     {
         let num = Math.ceil(storage_.store.getFreeCapacity()/1000)

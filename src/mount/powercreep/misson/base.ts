@@ -14,7 +14,7 @@ export default class PowerCreepMissonBase extends PowerCreep {
         if (!this.memory.role) this.memory.role = info[1]   // 角色
         if (!this.memory.shard) this.memory.shard = info[2] as shardName    // 所属shard
         if (!Game.rooms[this.memory.belong]) return
-        var thisSpawn = global.Stru[this.memory.belong]['powerspawn'] as StructurePowerSpawn
+        var thisSpawn = Game.getObjectById(Game.rooms[this.memory.belong].memory.StructureIdData.PowerSpawnID) as StructurePowerSpawn
         if (!thisSpawn) return
         if (!this.memory.spawn)
         {
@@ -76,7 +76,7 @@ export default class PowerCreepMissonBase extends PowerCreep {
                     // 如果ops过多，就转移ops
                     if (this.store.getUsedCapacity('ops') == this.store.getCapacity())
                     {
-                        var storage_ = global.Stru[this.memory.belong]['storage'] as StructureStorage
+                        var storage_ = Game.rooms[this.memory.belong].storage
                         if (!storage_) return
                         if (this.transfer(storage_,'ops',Math.ceil(this.store.getUsedCapacity('ops')/4)) == ERR_NOT_IN_RANGE)
                         this.goTo(storage_.pos,1)
@@ -109,7 +109,7 @@ export default class PowerCreepMissonBase extends PowerCreep {
 
     // queen类型pc执行任务前执行的准备
     public OpsPrepare(): boolean {
-        var storage_ = global.Stru[this.memory.belong]['storage'] as StructureStorage
+        var storage_ = Game.rooms[this.memory.belong].storage
         if (!storage_) return false
         // 先去除杂质
         for (let i in this.store)
@@ -125,7 +125,7 @@ export default class PowerCreepMissonBase extends PowerCreep {
         {
             this.usePower(PWR_GENERATE_OPS)
             // 过少就去提取ops资源
-            let terminal_ = global.Stru[this.memory.belong]['terminal'] as StructureTerminal
+            let terminal_ =  Game.rooms[this.memory.belong].terminal
             if (terminal_ && storage_.store.getUsedCapacity('ops') + terminal_.store.getUsedCapacity('ops')< 2500)
             {
                 // 资源调度

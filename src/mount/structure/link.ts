@@ -39,7 +39,7 @@ export default class linkExtension extends StructureLink {
             /* 如果有传送任务但是没有足够能量，只要是centerlink就下达搬运任务 */
             if (this.room.memory.StructureIdData.center_link == this.id)
             {
-                let storage = global.Stru[this.room.name].storage as StructureStorage
+                let storage = this.room.storage
                 if(!storage) return
                 if (this.room.Check_Carry('manage',storage.pos,this.pos,'energy'))
                 {

@@ -41,8 +41,8 @@ export default class terminalExtension extends StructureTerminal {
         this.RsourceMemory()
         // terminal资源平衡
         if ((Game.time - global.Gtime[this.room.name]) % 7) return
-        let storage_ = global.Stru[this.room.name]['storage'] as StructureStorage
-        if (!storage_) {console.log(`找不到global.Stru['${this.room.name}']['storage]!`);return}
+        let storage_ = this.room.storage
+        if (!storage_) {return}
         for (var i in this.store)
         {
             if (this.room.RoleMissionNum('manage','物流运输') >= 1) return
@@ -113,8 +113,8 @@ export default class terminalExtension extends StructureTerminal {
                 if (!order.remainingAmount) Game.market.cancelOrder(j);
             }
         }
-        let storage_ = global.Stru[this.room.name]['storage'] as StructureStorage
-        if (!storage_) {console.log(`找不到global.Stru['${this.room.name}']['storage]!`);return}
+        let storage_ = this.room.storage
+        if (!storage_) {return}
         // 能量购买函数
         let storeNum = storage_.store.getUsedCapacity('energy') + this.store.getUsedCapacity('energy')
         // 能量一般少的情况下，下平均价格订单购买能量
@@ -359,7 +359,12 @@ export default class terminalExtension extends StructureTerminal {
             // 路费
             var wastage = Game.market.calcTransactionCost(task.Data.num,this.room.name,task.Data.disRoom)
             /* 如果非能量资源且路费不够，发布资源搬运任务，优先寻找storage */
-            var storage_ = global.Stru[this.room.name]['storage'] as StructureStorage
+            var storage_ = this.room.storage
+            if (!storage_)
+            {
+                this.room.DeleteMission(task.id)
+                return
+            }
             // terminal的剩余资源
             var remain = this.store.getFreeCapacity()
             /* 路费判断 */

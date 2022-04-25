@@ -8,7 +8,7 @@ export default class RoomMissonManageExtension extends Room {
         if (!this.memory.StructureIdData.center_link) return
         var center_link = Game.getObjectById(this.memory.StructureIdData.center_link as string) as StructureLink
         if (!center_link) {delete this.memory.StructureIdData.center_link;return}
-        var storage_ =  global.Stru[this.name]['storage'] as StructureStorage
+        var storage_ =  this.storage
         if (!storage_) {return}
         if (storage_.store.getFreeCapacity() <= 10000) return   // storage满了就不挂载任务了
         for (var i of this.memory.Misson['Structure'])

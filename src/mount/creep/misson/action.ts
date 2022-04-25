@@ -439,7 +439,7 @@ export default class CreepMissonActionExtension extends Creep {
         // boost检查
         if (mission.LabBind && !this.BoostCheck(['work'])) return
         this.workstate('energy')
-        var terminal_ = global.Stru[this.memory.belong]['terminal'] as StructureTerminal
+        var terminal_ = Game.rooms[this.memory.belong].storage
         if (!terminal_){this.say("找不到terminal!");return}
         if (this.memory.working)
         {
@@ -488,7 +488,7 @@ export default class CreepMissonActionExtension extends Creep {
             if (!this.BoostCheck(['move','work','heal','tough','carry'])) return
             if (this.store.getUsedCapacity('energy') <= 0)
             {
-                let stroge_ = global.Stru[this.memory.belong]['storage'] as StructureStorage
+                let stroge_ = Game.rooms[this.memory.belong].storage
                 if (stroge_)
                 {
                     this.withdraw_(stroge_,'energy')
