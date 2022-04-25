@@ -97,7 +97,7 @@ interface MissonLabBind{
 
 /* 房间记忆实验室绑定数据格式  房间memory */
 interface RoomLabBind{
-    [id:string]:{missonID:string[],rType:ResourceConstant,occ?:boolean}     // occ为true时不允许新增占用lab
+    [id:string]:{missonID:string[],rType:ResourceConstant,occ?:boolean,type?:'boost' | 'com' | 'raw' | 'unboost'}     // occ为true时不允许新增占用lab type为占用类型
 }
 
 interface enemyAllotData{

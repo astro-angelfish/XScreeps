@@ -66,9 +66,10 @@ export default class RoomFunctionFindExtension extends Room {
     }
 
     /* -----------------------lab优化区----------------------------(施工中) */
+
     /* 任务过程中，实时更新占用lab 例如有lab被占用了或者其他情况  */
     public Update_Lab(miss:MissionModel,rTypes:ResourceConstant[]):boolean{
-        for (let rtye of rTypes)
+        for (let rtype of rTypes)
         {
 
         }
@@ -77,9 +78,10 @@ export default class RoomFunctionFindExtension extends Room {
 
     /* 任务过程中，实时解占lab */
 
-    /* 判断任务所需的某种资源类型强化的lab占用数据是否正常 false代表没有Lab强化数据或者相关lab不存在*/
-    public Check_Occupy(miss:MissionModel,rType:ResourceConstant):boolean{
-        if (!miss.LabBind) return false
+
+    /* 判断任务所需的某种资源类型强化的lab占用数据是否正常 只有返回normal才代表正常 */
+    public Check_Occupy(miss:MissionModel,rType:ResourceConstant):'normal' | 'damage' | 'unbind' | 'lost' {
+        if (!miss.LabBind) return 'unbind'
         for (let i in miss.LabBind)
         {
             if (miss.LabBind[i] == rType)
@@ -87,12 +89,124 @@ export default class RoomFunctionFindExtension extends Room {
                 let lab_ = Game.getObjectById(i) as StructureLab
                 if (!lab_)
                 {
-                    return false
+                    return 'damage' // 代表绑定的lab损坏
                 }
-                return true
+                if (this.memory.RoomLabBind[i] && miss.LabBind[i] == this.memory.RoomLabBind[i].rType)
+                    return 'normal' // 正常运转
+                else
+                    return 'lost'   // 被其他高优先级绑定占用了，需要重定向
             }
         }
-        return false
+        return 'unbind' // 代表未绑定
+    }
+
+    /* 分配lab 返回的是分配lab的数据，如果分配成功返回MissonLabBind对象 如果分配失败返回null */
+    public Allot_Occupy(miss:MissionModel):MissonLabBind | null{
+        if (!miss.LabMessage) return null          // 没有lab信息，分配失败
+        let result:MissonLabBind = {}      // 结果
+        let tempList = []           // 临时占用lab的列表
+        let rawLabList = []     // 底物lab列表
+        if (this.memory.StructureIdData.labInspect.raw1) // 合成用的底物lab1
+        {
+            let raw1Lab = Game.getObjectById(this.memory.StructureIdData.labInspect.raw1) as StructureLab
+            if (!raw1Lab) delete this.memory.StructureIdData.labInspect.raw1
+            else rawLabList.push(this.memory.StructureIdData.labInspect.raw1)
+            
+        }
+        if (this.memory.StructureIdData.labInspect.raw2) // 合成用的底物lab2
+        {
+            let raw2Lab = Game.getObjectById(this.memory.StructureIdData.labInspect.raw2) as StructureLab
+            if (!raw2Lab) delete this.memory.StructureIdData.labInspect.raw2
+            else rawLabList.push(this.memory.StructureIdData.labInspect.raw2)
+            
+        }
+        LoopA:
+        for (let i in miss.LabMessage)
+        {
+            /* 先判断一下是否已经有相关的lab占用了,当然，这只有LabMessage[i]为boost时才可用 */
+            if (miss.LabMessage[i] == 'boost')
+            {
+                for (let occ_lab_id in this.memory.RoomLabBind)
+                {
+                    if (this.memory.RoomLabBind[occ_lab_id].rType == i && !this.memory.RoomLabBind[occ_lab_id].occ) // !occ代表允许多任务占用该lab
+                    {
+                        result[occ_lab_id] = i
+                        continue LoopA
+                    }
+                }
+            }
+            /* 除了底物之外的lab */
+            if (isInArray(['boost','unboost','com'],miss.LabMessage[i]))
+            {
+                /* 寻找未占用的lab */
+                LoopB:
+                for (let lab_id of this.memory.StructureIdData.labs)
+                {
+                    let bind_labs = Object.keys(this.memory.RoomLabBind)
+                    if (!isInArray(bind_labs,lab_id) && !isInArray(tempList,lab_id) && !isInArray(rawLabList,lab_id))
+                    {
+                        let thisLab = Game.getObjectById(lab_id) as StructureLab
+                        if (!thisLab)   // lab损坏
+                        {
+                            var index = this.memory.StructureIdData.labs.indexOf(lab_id)
+                            this.memory.StructureIdData.labs.splice(index,1)
+                            continue LoopB
+                        }
+                        if (thisLab.mineralType)
+                        {
+                            if (thisLab.mineralType == i)   // 相同资源的未占用lab
+                            {
+                                result[lab_id] = i
+                                tempList.push(lab_id)
+                                continue LoopA
+                            }
+                            else continue LoopB
+                        }
+                        else        // 空lab
+                        {
+                            result[lab_id] = i
+                            tempList.push(lab_id)
+                            continue LoopA
+                        }
+                    }
+                }   
+            }
+            /* 根据优先级强制占用lab */
+            if (miss.LabMessage[i] == 'raw')
+            {
+                LoopRaw:
+                for (let rawID of rawLabList)
+                {
+                    let thisLab = Game.getObjectById(rawID) as StructureLab
+                    if (!thisLab) continue LoopRaw
+                    // 先检查是否被占用了，如果被占用，就夺回
+                    if (this.memory.RoomLabBind[rawID] && this.memory.RoomLabBind[rawID].type && this.memory.RoomLabBind[rawID].type != 'raw'  && !isInArray(tempList,rawID) )
+                    {
+                        result[rawID] = i
+                        tempList.push(rawID)
+                        continue LoopA
+                    }
+                }
+            }
+            else if (miss.LabMessage[i] == 'boost')
+            {
+                // 寻找性质为com的lab
+                for (let occ_lab_id in this.memory.RoomLabBind)
+                {
+                    // 只要lab存在，且其ID注册为com 就强制占用
+                    if (this.memory.RoomLabBind[occ_lab_id].type && this.memory.RoomLabBind[occ_lab_id].type == 'com' &&  !isInArray(tempList,occ_lab_id) && Game.getObjectById(occ_lab_id) )
+                    {
+                        result[occ_lab_id] = i
+                        tempList.push(occ_lab_id)
+                        continue LoopA
+                    }
+                }
+            }
+            return null // 代表未找到合适的lab
+        }
+        return result
+        
+
     }
 
     /* -----------------------lab优化区----------------------------(施工中) */
