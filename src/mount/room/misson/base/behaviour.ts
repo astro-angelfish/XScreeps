@@ -120,7 +120,11 @@ export default class RoomMissonBehaviourExtension extends Room {
             return
         }
         let re = false
-        for (let i of misson.Data.comData) {
+        let comData = []
+        for (let bindLab in misson.LabBind) {
+            if (!isInArray([misson.Data.raw1, misson.Data.raw2], misson.LabBind[bindLab])) comData.push(bindLab)
+        }
+        for (let i of comData) {
             var thisLab = Game.getObjectById(i) as StructureLab
             if (!thisLab) {
                 delete this.memory.RoomLabBind[i]
@@ -296,7 +300,7 @@ export default class RoomMissonBehaviourExtension extends Room {
         //  powerspawn_ = global.Stru[this.name]['powerspawn'] as StructurePowerSpawn
         if (!storage_) return
         // SavePower 是节省能量的一种"熔断"机制 防止烧power致死
-        if (storage_.store.getUsedCapacity('energy') > (this.memory.switch.SavePower?250000:150000)  && storage_.store.getUsedCapacity('power') > 100) {
+        if (storage_.store.getUsedCapacity('energy') > (this.memory.switch.SavePower ? 250000 : 150000) && storage_.store.getUsedCapacity('power') > 100) {
             /* 发布烧power任务 */
             var thisTask: MissionModel = {
                 name: 'power升级',

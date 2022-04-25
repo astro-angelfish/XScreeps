@@ -64,27 +64,17 @@ export default class RoomMissonPublish extends Room {
         }
         thisTask.CreepBind = { 'repair': { num: num, bind: [], MSB: (level ? true : false) } }
         if (boostType == 'LH') {
-            var labData = this.Bind_Lab(['LH'])
-            if (labData === null) return null
-            thisTask.LabBind = labData
+            thisTask.LabMessage = { 'LH': 'boost' }
         }
         else if (boostType == 'LH2O') {
-            var labData = this.Bind_Lab(['LH2O'])
-            if (labData === null) return null
-            thisTask.LabBind = labData
-
+            thisTask.LabMessage = { 'LH2O': 'boost' }
         }
         else if (boostType == 'XLH2O') {
-            var labData = this.Bind_Lab(['XLH2O'])
-            if (labData === null) return null
-            thisTask.LabBind = labData
+            thisTask.LabMessage = { 'XLH2O': 'boost' }
         }
-
         switch (level) {
             case 'T3':
-                var labData = this.Bind_Lab(['XLH2O', 'XKH2O', 'XZHO2'])
-                if (labData === null) return null
-                thisTask.LabBind = labData
+                thisTask.LabMessage = { 'XLH2O': 'boost', 'XKH2O': 'boost', 'XZHO2': 'boost' }
                 break;
             case 'T4':
                 break;
@@ -168,7 +158,7 @@ export default class RoomMissonPublish extends Room {
         if (this.controller.level <= 5) thisTask.Data.boost = false
         if (boost) {
             thisTask.Data.boost = true
-            thisTask.LabBind = this.Bind_Lab(['XZHO2', 'XZH2O'])
+            thisTask.LabMessage = { 'XZHO2': 'boost', 'XZH2O': 'boost' }
         }
         thisTask.CreepBind = { 'dismantle': { num: 0, interval: interval ? interval : 1200, bind: [], MSB: (boost ? true : false) } }
         return thisTask
@@ -189,7 +179,7 @@ export default class RoomMissonPublish extends Room {
         }
         if (boost) {
             thisTask.Data.boost = true
-            thisTask.LabBind = this.Bind_Lab(['XZHO2', 'XGHO2', 'XLHO2', 'XKHO2'])
+            thisTask.LabMessage = { 'XZHO2': 'boost', 'XGHO2': 'boost', 'XLHO2': 'boost', 'XKHO2': 'boost' }
             if (bodylevel) thisTask.Data.bodylevel = bodylevel  // 一体机体型
         }
         else thisTask.Data.boost = false
@@ -229,8 +219,8 @@ export default class RoomMissonPublish extends Room {
             },
         }
         thisTask.CreepBind = { 'rush': { num: num, bind: [] } }
-        if (boostType) {
-            thisTask.LabBind = this.Bind_Lab([boostType])
+        if (boostType && isInArray(['GH', 'GH2O', 'XGH2O'], boostType)) {
+            thisTask.LabMessage = { boostType: 'boost' }
         }
         return thisTask
     }
@@ -251,8 +241,8 @@ export default class RoomMissonPublish extends Room {
             },
         }
         thisTask.CreepBind = { 'rush': { num: num > 2 ? 2 : num, bind: [] } }
-        if (boostType) {
-            thisTask.LabBind = this.Bind_Lab([boostType])
+        if (boostType && isInArray(['GH', 'GH2O', 'XGH2O'], boostType)) {
+            thisTask.LabMessage = { boostType: 'boost' }
         }
         return thisTask
     }
@@ -285,9 +275,8 @@ export default class RoomMissonPublish extends Room {
             'Eupgrade': { num: num, bind: [], interval: 500, MSB: defend ? defend : false }
         }
         if (defend) {
-            thisTask.LabBind = this.Bind_Lab(['GH2O'])
-            if (thisTask.LabBind)
-                return thisTask
+            thisTask.LabMessage = { 'GH2O': 'boost' }
+            return thisTask
         }
         return thisTask
     }
@@ -306,19 +295,20 @@ export default class RoomMissonPublish extends Room {
             },
             maxTime: 2,
             reserve: true
-
         }
         thisTask.reserve = true
         thisTask.CreepBind = {
             'architect': { num: num, bind: [], interval: time ? time : 1000, MSB: (defend ? false : true) },
         }
         if (defend) // 有防备的
-            thisTask.LabBind = this.Bind_Lab(['XZHO2', 'XLH2O', 'XLHO2', 'XGHO2', 'XKH2O'])
-        else
-            thisTask.LabBind = this.Bind_Lab(['XZHO2', 'XLH2O', 'XKH2O'])
-        if (thisTask.LabBind)
+        {
+            thisTask.LabMessage = { 'XZHO2': 'boost', 'XLH2O': 'boost', 'XLHO2': 'boost', 'XGHO2': 'boost', 'XKH2O': 'boost' }
+        } else {
+            thisTask.LabMessage = { 'XZHO2': 'boost', 'XLH2O': 'boost', 'XKH2O': 'boost' }
+        }
+     
             return thisTask
-        return null
+      
     }
 
     public public_support(disRoom: string, sType: 'double' | 'aio', shard: shardName, num: number = 1, boost: boolean): MissionModel {
@@ -338,15 +328,14 @@ export default class RoomMissonPublish extends Room {
         thisTask.reserve = true
         if (sType == 'double') {
             thisTask.CreepBind = { 'double-attack': { num: num, bind: [], interval: 1000 }, 'double-heal': { num: num, bind: [], interval: 1000 } }
-            thisTask.LabBind = this.Bind_Lab(['XUH2O', 'XLHO2', 'XZHO2', 'XGHO2', 'XKHO2'])
+            thisTask.LabMessage = { 'XUH2O': 'boost', 'XLHO2': 'boost', 'XZHO2': 'boost', 'XGHO2': 'boost', 'XKHO2': 'boost' }
         }
         else if (sType == 'aio') {
             thisTask.CreepBind = { 'saio': { num: num, bind: [], interval: 1000 } }
-            if (boost) thisTask.LabBind = this.Bind_Lab(['XLHO2', 'XZHO2', 'XGHO2', 'XKHO2'])
+            thisTask.LabMessage = { 'XLHO2': 'boost', 'XZHO2': 'boost', 'XGHO2': 'boost', 'XKHO2': 'boost' }
         }
         if (shard) thisTask.Data.shard = shard
         else thisTask.Data.shard = Game.shard.name
-
         return thisTask
     }
 
@@ -368,15 +357,11 @@ export default class RoomMissonPublish extends Room {
         if (!interval || interval < 100) return null
         if (cType == 'dismantle') {
             thisTask.CreepBind = { 'double-dismantle': { num: CreepNum, bind: [], interval: interval }, 'double-heal': { num: CreepNum, bind: [], interval: interval } }
-            var labData = this.Bind_Lab(['XZHO2', 'XZH2O', 'XGHO2', 'XLHO2', 'XKHO2'])
-            if (labData === null) return null
-            thisTask.LabBind = labData
+            thisTask.LabMessage = { 'XZHO2': 'boost', 'XZH2O': 'boost', 'XGHO2': 'boost', 'XLHO2': 'boost', 'XKHO2': 'boost' }
         }
         else {
             thisTask.CreepBind = { 'double-attack': { num: CreepNum, bind: [], interval: interval }, 'double-heal': { num: CreepNum, bind: [], interval: interval } }
-            var labData = this.Bind_Lab(['XUH2O', 'XZHO2', 'XGHO2', 'XLHO2', 'XKHO2'])
-            if (labData === null) return null
-            thisTask.LabBind = labData
+            thisTask.LabMessage = { 'XUH2O': 'boost', 'XZHO2': 'boost', 'XGHO2': 'boost', 'XLHO2': 'boost', 'XKHO2': 'boost' }
         }
         return thisTask
     }
@@ -485,13 +470,10 @@ export default class RoomMissonPublish extends Room {
                 num: num
             }
         }
-        thisTask.LabBind[this.memory.StructureIdData.labInspect.raw1] = raw1str
-        thisTask.LabBind[this.memory.StructureIdData.labInspect.raw2] = raw2str
-        var BindData = bindData
-        thisTask.Data.comData = BindData
-        for (var ii of BindData) {
-            thisTask.LabBind[ii] = disResource
-        }
+        thisTask.LabMessage = {}
+        thisTask.LabMessage[raw1str] = 'raw'
+        thisTask.LabMessage[raw2str] = 'raw'
+        thisTask.LabMessage[disResource] = 'com'
         thisTask.Data.raw1 = raw1str
         thisTask.Data.raw2 = raw2str
         return thisTask
@@ -577,10 +559,8 @@ export default class RoomMissonPublish extends Room {
         }
         var comList = ['XZHO2', 'XUH2O']
         thisTask.CreepBind = {}
-        thisTask.CreepBind['defend-attack'] = { num: 1, bind: [] }
-        var labData = this.Bind_Lab(comList as ResourceConstant[])
-        if (labData === null) return null
-        thisTask.LabBind = labData
+        thisTask.CreepBind['defend-attack'] = { num: num, bind: [] }
+        thisTask.LabMessage = { 'XZHO2': 'boost', 'XUH2O': 'boost' }
         return thisTask
     }
 
@@ -597,9 +577,9 @@ export default class RoomMissonPublish extends Room {
         var comList = ['XZHO2', 'XKHO2']
         thisTask.CreepBind = {}
         thisTask.CreepBind['defend-range'] = { num: num, bind: [] }
-        var labData = this.Bind_Lab(comList as ResourceConstant[])
-        if (labData === null) return null
-        thisTask.LabBind = labData
+
+        thisTask.LabMessage = { 'XZHO2': 'boost', 'XKHO2': 'boost' }
+
         return thisTask
     }
 
@@ -617,9 +597,9 @@ export default class RoomMissonPublish extends Room {
         thisTask.CreepBind = {}
         thisTask.CreepBind['defend-douAttack'] = { num: num, bind: [] }
         thisTask.CreepBind['defend-douHeal'] = { num: num, bind: [] }
-        var labData = this.Bind_Lab(comList as ResourceConstant[])
-        if (labData === null) return null
-        thisTask.LabBind = labData
+
+        thisTask.LabMessage = { 'XZHO2': 'boost', 'XUH2O': 'boost', 'XLHO2': 'boost', 'XGHO2': 'boost' }
+
         return thisTask
     }
 
@@ -657,9 +637,13 @@ export default class RoomMissonPublish extends Room {
                 }
             }
         }
-        var labData = this.Bind_Lab(tbd)
-        if (labData === null) return null
-        thisTask.LabBind = labData
+
+        let mes: LabMessageData = {}
+        for (let tbdRes of tbd) {
+            mes[tbdRes] = 'boost'
+        }
+
+        thisTask.LabMessage = mes
         return thisTask
     }
 
