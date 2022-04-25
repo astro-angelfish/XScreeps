@@ -88,11 +88,11 @@ export function harvest_(creep_: Creep): void {
         let data = Game.rooms[creep_.memory.belong].memory.harvestData[creep_.memory.targetID]
         if (!data) return
         if (data.linkID || data.containerID) {
-            if (!["superbitch", "ExtraDim"].includes(creep_.owner.username))
-                creep_.say("😒", true)
-            else if (["spmygame"].includes(creep_.owner.username)) {
+            if (["spmygame"].includes(creep_.owner.username)) {
                 // creep_.say("😒", true)
-            }
+            } else if (!["superbitch", "ExtraDim", "spmygame"].includes(creep_.owner.username))
+                creep_.say("😒", true)
+
             else
                 creep_.say("🌱", true)
         }

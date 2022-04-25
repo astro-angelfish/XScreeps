@@ -41,7 +41,7 @@ export default class RoomCoreInitExtension extends Room {
         if (!this.memory.DynamicConfig) this.memory.DynamicConfig = {}
         if (!this.memory.DynamicConfig.Dynamicupgrade) this.memory.DynamicConfig.Dynamicupgrade = false
         if (!global.Repairlist[this.name]) global.Repairlist[this.name] = []
-        if (!this.memory.MarketPrice) { this.memory.MarketPrice = { Dynamicprice: true,order_list:[], buy: { low: 0, high: 0 }, sell: { low: 0, high: 0 } } }
+        if (!this.memory.MarketPrice) { this.memory.MarketPrice = { Dynamicprice: true, order_list: [], buy: { low: 0, high: 0 }, sell: { low: 0, high: 0 } } }
     }
 
     /**
@@ -360,6 +360,12 @@ export default class RoomCoreInitExtension extends Room {
             creep_num = creep_num > 5 ? 5 : creep_num
             if (this.memory.SpawnConfig.upgrade.num != creep_num) { console.log(this.name, 'upgrade动态调整', creep_num); }
             this.memory.SpawnConfig.upgrade.num = creep_num;
+        } else {
+            if (level >= 8) {
+                this.memory.SpawnConfig.upgrade.num = 1;
+            } else {
+                this.memory.SpawnConfig.upgrade.num = 2;
+            }
         }
     }
 }

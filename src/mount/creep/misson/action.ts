@@ -307,10 +307,12 @@ export default class CreepMissonActionExtension extends Creep {
                     this.transfer_(tower, 'energy')
                     return
                 }
-                let store = this.pos.getClosestStore()
-                if (store) {
-                    this.transfer_(store, 'energy')
-                    return
+                if (this.room.controller.level < 5) {
+                    let store = this.pos.getClosestStore()
+                    if (store) {
+                        this.transfer_(store, 'energy')
+                        return
+                    }
                 }
                 this.upgrade_()
 

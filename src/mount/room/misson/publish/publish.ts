@@ -281,11 +281,11 @@ export default class RoomMissonPublish extends Room {
         thisTask.reserve = true
         thisTask.CreepBind = {
             'claim': { num: cnum, bind: [], interval: 1000, MSB: defend ? defend : false },
-            'Ebuild': { num: num, bind: [], interval: 500, MSB: defend ? defend : false },
-            'Eupgrade': { num: num, bind: [], interval: 1000, MSB: defend ? defend : false }
+            'Ebuild': { num: num, bind: [], interval: 1000, MSB: defend ? defend : false },
+            'Eupgrade': { num: num, bind: [], interval: 500, MSB: defend ? defend : false }
         }
         if (defend) {
-            thisTask.LabBind = this.Bind_Lab(['XGH2O'])
+            thisTask.LabBind = this.Bind_Lab(['GH2O'])
             if (thisTask.LabBind)
                 return thisTask
         }

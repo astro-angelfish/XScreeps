@@ -149,6 +149,7 @@ export default class DefendWarExtension extends Room {
             Game.notify(`房间${this.name}激活主动防御! 目前检测到的攻击方为:${str},爬虫数为:${enemys.length},我们将抗战到底!`)
             console.log(`房间${this.name}激活主动防御! 目前检测到的攻击方为:${str},爬虫数为:${enemys.length},我们将抗战到底!`)
         }
+        // console.log(JSON.stringify(enemys))
         /* 分析敌对爬虫的数量,应用不同的主防任务应对 */
         let defend_plan = {}
         if (enemys.length < 2)      // 1
@@ -242,6 +243,17 @@ export default class DefendWarExtension extends Room {
         }
     }
 
+    public Task_Defend_Operation(HOSTILE_CREEPS){
+        /*检查对应的数量来检查匹配爬的数量信息*/
+        let creeps_data = {};
+        for(let i in HOSTILE_CREEPS)
+        {
+            /*这里结算出爬的攻防结算*/
+
+        }
+
+    }
+
     /* 红球防御 */
     public Task_Red_Defend(mission: MissionModel): void {
         if ((Game.time - global.Gtime[this.name]) % 10) return
@@ -286,4 +298,5 @@ export default class DefendWarExtension extends Room {
             this.DeleteMission(mission.id)
         }
     }
+    
 }
