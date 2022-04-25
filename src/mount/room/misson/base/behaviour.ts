@@ -109,6 +109,18 @@ export default class RoomMissonBehaviourExtension extends Room {
             this.DeleteMission(misson.id)
             return
         }
+        if (raw1.mineralType && raw1.mineralType != misson.Data.raw1)
+        {
+            var thisTask = this.public_Carry({'transport':{num:1,bind:[]}},30,this.name,raw1.pos.x,raw1.pos.y,this.name,storage_.pos.x,storage_.pos.y,raw1.mineralType,raw1.store.getUsedCapacity(raw1.mineralType))
+            this.AddMission(thisTask)
+            return
+        }
+        if (raw2.mineralType && raw2.mineralType != misson.Data.raw2)
+        {
+            var thisTask = this.public_Carry({'transport':{num:1,bind:[]}},30,this.name,raw2.pos.x,raw2.pos.y,this.name,storage_.pos.x,storage_.pos.y,raw2.mineralType,raw2.store.getUsedCapacity(raw2.mineralType))
+            this.AddMission(thisTask)
+            return
+        }
         let re = false
         let comData = []
         for (let bindLab in misson.LabBind)
