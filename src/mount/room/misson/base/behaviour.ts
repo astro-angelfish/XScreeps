@@ -110,7 +110,12 @@ export default class RoomMissonBehaviourExtension extends Room {
             return
         }
         let re = false
-        for (let i of misson.Data.comData)
+        let comData = []
+        for (let bindLab in misson.LabBind)
+        {
+            if (!isInArray([misson.Data.raw1,misson.Data.raw2],misson.LabBind[bindLab])) comData.push(bindLab)
+        }
+        for (let i of comData)
         {
             var thisLab = Game.getObjectById(i) as StructureLab
             if (!thisLab) {

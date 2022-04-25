@@ -14,6 +14,8 @@ export default class RoomMissonFrameExtension extends Room {
         this.UnbindMonitor()
         // 任务-爬虫 孵化
         this.MissonRoleSpawn()
+        // 任务相关lab绑定信息更新
+        this.Update_Lab()
         /* PC任务管理器 */
         this.PowerCreep_TaskManager()
 
@@ -104,18 +106,18 @@ export default class RoomMissonFrameExtension extends Room {
         }
         mis.id = tempID
         /* lab绑定相关，涉及lab的绑定和解绑 */
-        if (mis.LabBind && Object.keys(mis.LabBind).length > 0)
-        {
-            for (var l in mis.LabBind)
-            {
-                if (!this.CheckLabType(l,mis.LabBind[l] as ResourceConstant) || !this.CheckLabOcc(l))
-                {
-                    console.log(Colorful(`LabID:${l}绑定失败，请检查!`,'red',true))
-                    return false
-                }
-            }
-        }
-        if (mis.LabBind === null) return false
+        // if (mis.LabBind && Object.keys(mis.LabBind).length > 0)
+        // {
+        //     for (var l in mis.LabBind)
+        //     {
+        //         if (!this.CheckLabType(l,mis.LabBind[l] as ResourceConstant) || !this.CheckLabOcc(l))
+        //         {
+        //             console.log(Colorful(`LabID:${l}绑定失败，请检查!`,'red',true))
+        //             return false
+        //         }
+        //     }
+        // }
+        // if (mis.LabBind === null) return false
         /* 每种相同任务成功挂载一次，将有冷却时间 默认为10 */
         var coolTick = mis.cooldownTick?mis.cooldownTick:10
         if (!this.memory.CoolDownDic[mis.name])
@@ -127,13 +129,13 @@ export default class RoomMissonFrameExtension extends Room {
         if (!isInArray(Memory.ignoreMissonName,mis.name))
             console.log(Colorful(`${mis.name} 任务挂载 √√√ ID:${mis.id} Room:${this.name}`,'green'))
         /* 任务挂载成功才绑定实验室 */
-        if (mis.LabBind && Object.keys(mis.LabBind).length > 0)
-        {
-            for (var ll in mis.LabBind)
-            {
-                this.BindLabData(ll,mis.LabBind[ll] as ResourceConstant,mis.id)
-            }
-        }
+        // if (mis.LabBind && Object.keys(mis.LabBind).length > 0)
+        // {
+        //     for (var ll in mis.LabBind)
+        //     {
+        //         this.BindLabData(ll,mis.LabBind[ll] as ResourceConstant,mis.id)
+        //     }
+        // }
         return true
     }
 
@@ -499,6 +501,15 @@ export default class RoomMissonFrameExtension extends Room {
                 let index = this.memory.StructureIdData.labs.indexOf(i)
                 this.memory.StructureIdData.labs.splice(index,1)
                 return false
+            }
+            // 去除无关资源
+            if (disLab.mineralType  && disLab.mineralType != misson.LabBind[i])
+            {
+                var roleData:BindData = {}
+                roleData[role] = {num:1,bind:[]}
+                var carryTask = this.public_Carry(roleData,45,this.name,disLab.pos.x,disLab.pos.y,this.name,this.storage.pos.x,this.storage.pos.y,disLab.mineralType,disLab.store.getUsedCapacity(disLab.mineralType))
+                this.AddMission(carryTask)
+                return
             }
             if (disLab.store.getUsedCapacity(misson.LabBind[i] as ResourceConstant) < 1000 && this.Check_Carry('transport',tank_.pos,disLab.pos,misson.LabBind[i] as ResourceConstant))
             {
