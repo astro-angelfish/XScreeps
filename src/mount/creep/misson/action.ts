@@ -252,7 +252,7 @@ export default class CreepMissonActionExtension extends Creep {
             switch (this.memory.role) {
                 case 'Ebuild':
                 case 'Eupgrade':
-                    if (!this.BoostCheck(['work'])) return
+                    if (!this.BoostCheck(['work', 'move'])) return
                     break;
             }
         }
@@ -289,23 +289,27 @@ export default class CreepMissonActionExtension extends Creep {
                     this.build_(cons)
                     return
                 }
-                let roads = this.pos.findClosestByRange(FIND_STRUCTURES, {
-                    filter: (stru) => {
-                        return (stru.structureType == 'road' || stru.structureType == 'container') && stru.hits < stru.hitsMax * 0.8
+                if (this.room.controller.level < 5) {
+                    let roads = this.pos.findClosestByRange(FIND_STRUCTURES, {
+                        filter: (stru) => {
+                            return (stru.structureType == 'road' || stru.structureType == 'container') && stru.hits < stru.hitsMax * 0.8
+                        }
+                    })
+                    if (roads) {
+                        this.repair_(roads)
+                        return
                     }
-                })
-                if (roads) {
-                    this.repair_(roads)
-                    return
                 }
-                let tower = this.pos.findClosestByPath(FIND_MY_STRUCTURES, {
-                    filter: (stru) => {
-                        return stru.structureType == 'tower' && stru.store.getFreeCapacity('energy') > 0
+                if (this.room.controller.level < 6) {
+                    let tower = this.pos.findClosestByPath(FIND_MY_STRUCTURES, {
+                        filter: (stru) => {
+                            return stru.structureType == 'tower' && stru.store.getFreeCapacity('energy') > 0
+                        }
+                    })
+                    if (tower) {
+                        this.transfer_(tower, 'energy')
+                        return
                     }
-                })
-                if (tower) {
-                    this.transfer_(tower, 'energy')
-                    return
                 }
                 if (this.room.controller.level < 5) {
                     let store = this.pos.getClosestStore()
@@ -327,6 +331,11 @@ export default class CreepMissonActionExtension extends Creep {
                 if (withdrawFlag) {
                     let tank_ = withdrawFlag.pos.GetStructureList(['storage', 'terminal', 'container', 'tower'])
                     if (tank_.length > 0) { this.withdraw_(tank_[0], 'energy'); return }
+                }
+                if (this.room.storage) {
+                    if (this.room.storage.store.getUsedCapacity('energy') > this.store.getFreeCapacity('energy')) {
+                        this.withdraw_(this.room.storage, 'energy'); return
+                    }
                 }
                 let harvestFlag = Game.flags[`${this.memory.belong}/HB/harvest`]
                 if (harvestFlag) {
@@ -373,6 +382,11 @@ export default class CreepMissonActionExtension extends Creep {
                 if (withdrawFlag) {
                     let tank_ = withdrawFlag.pos.GetStructureList(['storage', 'terminal', 'container', 'tower'])
                     if (tank_.length > 0) { this.withdraw_(tank_[0], 'energy'); return }
+                }
+                if (this.room.storage) {
+                    if (this.room.storage.store.getUsedCapacity('energy') > this.store.getFreeCapacity('energy')) {
+                        this.withdraw_(this.room.storage, 'energy'); return
+                    }
                 }
                 let harvestFlag = Game.flags[`${this.memory.belong}/HB/harvest`]
                 if (harvestFlag) {

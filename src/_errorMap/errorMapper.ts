@@ -7,13 +7,13 @@
  * @see https://github.com/screepers/screeps-typescript-starter/blob/master/src/utils/ErrorMapper.ts
  */
 
-import { SourceMapConsumer } from "source-map"
+ import { SourceMapConsumer } from "source-map-js"
 
 type ErrorMapColors = 'red'
 /**
   * 在绘制控制台信息时使用的颜色
   */
- const errorMapcolors: { [name in ErrorMapColors]: string } = {
+const errorMapcolors: { [name in ErrorMapColors]: string } = {
     red: '#ef9a9a',
 }
 
@@ -24,11 +24,11 @@ function colorful(content: string, colorName: ErrorMapColors = null, bolder: boo
     const colorStyle = colorName ? `color: ${errorMapcolors[colorName]};` : ''
     const bolderStyle = bolder ? 'font-weight: bolder;' : ''
 
-    return `<text style="${[ colorStyle, bolderStyle ].join(' ')}">${content}</text>`
+    return `<text style="${[colorStyle, bolderStyle].join(' ')}">${content}</text>`
 }
 
 export class ErrorMapper {
-     // 进行缓存
+    // 进行缓存
     private static _consumer?: SourceMapConsumer;
 
     public static get consumer(): SourceMapConsumer {
@@ -36,7 +36,7 @@ export class ErrorMapper {
         return this._consumer
     }
 
-     // 缓存映射关系以提高性能
+    // 缓存映射关系以提高性能
     public static cache: { [key: string]: string } = {};
 
     /**
@@ -49,7 +49,7 @@ export class ErrorMapper {
       */
     public static sourceMappedStackTrace(error: Error | string): string {
         const stack: string = error instanceof Error ? (error.stack as string) : error
-         // 有缓存直接用
+        // 有缓存直接用
         if (this.cache.hasOwnProperty(stack)) return this.cache[stack]
 
         const re = /^\s+at\s+(.+?\s+)?\(?([0-z._\-\\\/]+):(\d+):(\d+)\)?$/gm
@@ -58,24 +58,24 @@ export class ErrorMapper {
         console.log("ErrorMapper -> sourceMappedStackTrace -> outStack", outStack)
 
         while ((match = re.exec(stack))) {
-             // 解析完成
+            // 解析完成
             if (match[2] !== "main") break
-            
-             // 获取追踪定位
+
+            // 获取追踪定位
             const pos = this.consumer.originalPositionFor({
                 column: parseInt(match[4], 10),
                 line: parseInt(match[3], 10)
             })
 
-             // 无法定位
+            // 无法定位
             if (!pos.line) break
-            
-             // 解析追踪栈
+
+            // 解析追踪栈
             if (pos.name) outStack += `\n    at ${pos.name} (${pos.source}:${pos.line}:${pos.column})`
             else {
-                 // 源文件没找到对应文件名，采用原始追踪名
+                // 源文件没找到对应文件名，采用原始追踪名
                 if (match[1]) outStack += `\n    at ${match[1]} (${pos.source}:${pos.line}:${pos.column})`
-                 // 源文件没找到对应文件名并且原始追踪栈里也没有，直接省略
+                // 源文件没找到对应文件名并且原始追踪栈里也没有，直接省略
                 else outStack += `\n    at ${pos.source}:${pos.line}:${pos.column}`
             }
         }
@@ -93,19 +93,19 @@ export class ErrorMapper {
     public static wrapLoop(loop: () => void): () => void {
         return () => {
             try {
-                 // 执行玩家代码
+                // 执行玩家代码
                 loop()
             }
             catch (e) {
                 if (e instanceof Error) {
-                     // 渲染报错调用栈，沙盒模式用不了这个
+                    // 渲染报错调用栈，沙盒模式用不了这个
                     const errorMessage = Game.rooms.sim ?
                         `沙盒模式无法使用 source-map - 显示原始追踪栈<br>${_.escape(e.stack)}` :
                         `${_.escape(this.sourceMappedStackTrace(e))}`
-                    
+
                     console.log(colorful(errorMessage, 'red'))
                 }
-                 // 处理不了，直接抛出
+                // 处理不了，直接抛出
                 else throw e
             }
         }

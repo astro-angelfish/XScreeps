@@ -211,7 +211,9 @@ export default class RoomCoreEcosphereExtension extends Room {
                 let posOcp: boolean = false
                 let new_point_structures = new_point.lookFor(LOOK_STRUCTURES)
                 if (new_point_structures.length > 0)
-                    for (let j of new_point_structures) { if (j.structureType != 'rampart') posOcp = true }
+                    for (let j of new_point_structures) {
+                        if (j.structureType == obj.structureType) posOcp = true
+                    }
                 if (new_point && new_point.lookFor(LOOK_CONSTRUCTION_SITES).length <= 0 && !posOcp) {
                     let result = new_point.createConstructionSite(obj.structureType)
                     if (result != 0) {

@@ -18,9 +18,9 @@ interface Room {
     public_OutMine(sourceRoom: string, x: number, y: number, disRoom: string): MissionModel
     public_PowerHarvest(disRoom: string, x: number, y: number, num: number): MissionModel
     public_DepositHarvest(disRoom: string, x: number, y: number, rType: DepositConstant): MissionModel
-    public_red_defend(num: number): MissionModel
-    public_blue_defend(num: number): MissionModel
-    public_double_defend(num: number): MissionModel
+    public_red_defend(num: number, bodylevel?: "T0" | "T1" | "T2" | "T3"): MissionModel
+    public_blue_defend(num: number, bodylevel?: "T0" | "T1" | "T2" | "T3"): MissionModel
+    public_double_defend(num: number, bodylevel?: "T0" | "T1" | "T2" | "T3"): MissionModel
     public_squad(disRoom: string, shard: shardName, interval: number, RNum: number, ANum: number, DNum: number, HNum: number, AIONum: number, flag: string): MissionModel
     public_Double(disRoom: string, shard: shardName, CreepNum: number, cType: 'dismantle' | 'attack', interval: number): MissionModel
     public_resource_transfer(disRoom: string, resource?: ResourceConstant, num?: number): MissionModel

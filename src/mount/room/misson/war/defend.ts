@@ -154,14 +154,14 @@ export default class DefendWarExtension extends Room {
         let defend_plan = {}
         if (enemys.length < 2)      // 1
         {
-            defend_plan = { 'attack': 0, 'range': 1 }
-        } else if (enemys.length <= 2)      // 1
+            defend_plan = { 'attack': 1 }
+        } else if (enemys.length <= 2)      // 2
         {
             defend_plan = { 'attack': 1, 'range': 1 }
         }
-        else if (enemys.length > 2 && enemys.length < 5)       // 2-4
+        else if (enemys.length > 2 && enemys.length < 5)       // 3-4
         {
-            defend_plan = { 'attack': 1, 'double': 1, 'range': 0 }
+            defend_plan = { 'attack': 1, 'double': 1 }
         }
         else if (enemys.length >= 5 && enemys.length < 8)   // 5-7
         {
@@ -172,60 +172,62 @@ export default class DefendWarExtension extends Room {
             defend_plan = { 'attack': 2, 'double': 2, 'range': 2 }
         }
         for (var plan in defend_plan) {
-            if (plan == 'attack') {
-                let num = this.MissionNum('Creep', '红球防御')
-                if (num <= 0) {
-                    let thisTask = this.public_red_defend(defend_plan[plan])
-                    if (thisTask) {
-                        this.AddMission(thisTask)
-                        console.log(`房间${this.name}红球防御任务激活!`)
+            switch (plan) {
+                case 'attack':
+                    var num = this.MissionNum('Creep', '红球防御')
+                    if (num <= 0) {
+                        let thisTask = this.public_red_defend(defend_plan[plan])
+                        if (thisTask) {
+                            this.AddMission(thisTask)
+                            console.log(`房间${this.name}红球防御任务激活!`)
+                        }
                     }
-                }
-                else {
-                    /* 已经存在的话查看数量是否正确 */
-                    let task = this.MissionName('Creep', '红球防御')
-                    if (task) {
-                        task.CreepBind['defend-attack'].num = defend_plan[plan]
-                        // console.log(Colorful(`房间${this.name}红球防御任务数量调整为${defend_plan[plan]}!`,'red'))
+                    else {
+                        /* 已经存在的话查看数量是否正确 */
+                        let task = this.MissionName('Creep', '红球防御')
+                        if (task) {
+                            task.CreepBind['defend-attack'].num = defend_plan[plan]
+                            // console.log(Colorful(`房间${this.name}红球防御任务数量调整为${defend_plan[plan]}!`,'red'))
+                        }
                     }
-                }
-            }
-            else if (plan == 'range') {
-                let num = this.MissionNum('Creep', '蓝球防御')
-                if (num <= 0) {
-                    let thisTask = this.public_blue_defend(defend_plan[plan])
-                    if (thisTask) {
-                        this.AddMission(thisTask)
-                        console.log(`房间${this.name}蓝球防御任务激活!`)
+                    break;
+                case 'range':
+                    var num = this.MissionNum('Creep', '蓝球防御')
+                    if (num <= 0) {
+                        let thisTask = this.public_blue_defend(defend_plan[plan])
+                        if (thisTask) {
+                            this.AddMission(thisTask)
+                            console.log(`房间${this.name}蓝球防御任务激活!`)
+                        }
                     }
-                }
-                else {
-                    /* 已经存在的话查看数量是否正确 */
-                    let task = this.MissionName('Creep', '蓝球防御')
-                    if (task) {
-                        task.CreepBind['defend-range'].num = defend_plan[plan]
-                        // console.log(Colorful(`房间${this.name}蓝球防御任务数量调整为${defend_plan[plan]}!`,'blue'))
+                    else {
+                        /* 已经存在的话查看数量是否正确 */
+                        let task = this.MissionName('Creep', '蓝球防御')
+                        if (task) {
+                            task.CreepBind['defend-range'].num = defend_plan[plan]
+                            // console.log(Colorful(`房间${this.name}蓝球防御任务数量调整为${defend_plan[plan]}!`,'blue'))
+                        }
                     }
-                }
-            }
-            else if (plan == 'double') {
-                let num = this.MissionNum('Creep', '双人防御')
-                if (num <= 0) {
-                    let thisTask = this.public_double_defend(defend_plan[plan])
-                    if (thisTask) {
-                        this.AddMission(thisTask)
-                        console.log(`房间${this.name}双人防御任务激活!`)
+                    break;
+                case 'double':
+                    var num = this.MissionNum('Creep', '双人防御')
+                    if (num <= 0) {
+                        let thisTask = this.public_double_defend(defend_plan[plan])
+                        if (thisTask) {
+                            this.AddMission(thisTask)
+                            console.log(`房间${this.name}双人防御任务激活!`)
+                        }
                     }
-                }
-                else {
-                    /* 已经存在的话查看数量是否正确 */
-                    let task = this.MissionName('Creep', '双人防御')
-                    if (task) {
-                        task.CreepBind['defend-douAttack'].num = defend_plan[plan]
-                        task.CreepBind['defend-douHeal'].num = defend_plan[plan]
-                        // console.log(Colorful(`房间${this.name}双人防御任务数量调整为${defend_plan[plan]}!`,'green'))
+                    else {
+                        /* 已经存在的话查看数量是否正确 */
+                        let task = this.MissionName('Creep', '双人防御')
+                        if (task) {
+                            task.CreepBind['defend-douAttack'].num = defend_plan[plan]
+                            task.CreepBind['defend-douHeal'].num = defend_plan[plan]
+                            // console.log(Colorful(`房间${this.name}双人防御任务数量调整为${defend_plan[plan]}!`,'green'))
+                        }
                     }
-                }
+                    break;
             }
         }
         /* 主动防御分配系统更新 删除过期敌对爬虫数据 */
@@ -243,17 +245,78 @@ export default class DefendWarExtension extends Room {
         }
     }
 
-    public Task_Defend_Operation(HOSTILE_CREEPS){
-        /*检查对应的数量来检查匹配爬的数量信息*/
-        let creeps_data = {};
-        for(let i in HOSTILE_CREEPS)
-        {
-            /*这里结算出爬的攻防结算*/
-            let creeps_hostile = HOSTILE_CREEPS[i];
-
+    /*敌人强度计算*/
+    public Task_Defend_Operation(HOSTILE_CREEPS) {
+        /*检查组队状态信息*/
+        for (let i in HOSTILE_CREEPS) {
 
         }
+        /*检查对应的数量来检查匹配爬的数量信息*/
+        for (let i in HOSTILE_CREEPS) {
+            /*这里结算出爬的攻防结算*/
+            let creeps_hostile = HOSTILE_CREEPS[i];
+            if (global.HostileCreeps[this.name][creeps_hostile.name]) { continue; }
+            var hit = creeps_hostile.body.length * 100;
+            var attack = 0;
+            var ranged_attack = 0;
+            var heal = 0;
+            var tough = 0;
+            var tough_boost = 0;
+            for (let boost_i in creeps_hostile.body) {
+                let body_data = creeps_hostile.body[boost_i]
+                switch (body_data.type) {
+                    case 'attack':
+                        attack += this.attack_number(body_data.type, body_data.boost)
+                        break;
+                    case 'ranged_attack':
+                        ranged_attack += this.attack_number(body_data.type, body_data.boost)
+                        break;
+                    case 'heal':
+                        heal += this.attack_number(body_data.type, body_data.boost)
+                        break;
+                    default:
+                        break;
+                }
+            }
+            let _creeps = {
+                'body': creeps_hostile.body,
+                'attack': attack,
+                'heal': heal,
+                'ranged_attack': ranged_attack
+            }
+            global.HostileCreeps[this.name][creeps_hostile.name] = _creeps
+        }
+    }
 
+    public attack_number(type, boost) {
+        let _boost_attack = {
+            'UH': 1,
+            'KO': 1,
+            'LO': 1,
+            'UH2O': 2,
+            'KHO2': 2,
+            'LHO2': 2,
+            'XUH2O': 3,
+            'XKHO2': 3,
+            'XLHO2': 3,
+        }
+        let _x = 1;
+        if (_boost_attack[boost]) {
+            _x += _boost_attack[boost]
+        }
+        let _number = 0;
+        switch (type) {
+            case 'attack':
+                _number = _x * 30;
+                break;
+            case 'ranged_attack':
+                _number = _x * 10;
+                break;
+            case 'heal':
+                _number = _x * 12;
+                break;
+        }
+        return _number;
     }
 
     /* 红球防御 */
@@ -300,5 +363,5 @@ export default class DefendWarExtension extends Room {
             this.DeleteMission(mission.id)
         }
     }
-    
+
 }

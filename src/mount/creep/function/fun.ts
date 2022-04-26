@@ -37,7 +37,7 @@ export default class CreepFunctionExtension extends Creep {
     public upgrade_(): void {
         if (this.room.controller) {
             if (this.upgradeController(this.room.controller) == ERR_NOT_IN_RANGE) {
-                this.goTo(this.room.controller.pos, 1)
+                this.goTo(this.room.controller.pos, 3)
                 this.memory.standed = false
             }
             else this.memory.standed = true
@@ -146,5 +146,52 @@ export default class CreepFunctionExtension extends Creep {
                 result = i
         }
         return result
+    }
+
+    public hostileCreep_atk(nearCreep): number {
+        let all_atk = 0;
+        for (let i in nearCreep) {
+            var creeps_hostile = nearCreep[i];
+            for (let boost_i in creeps_hostile.body) {
+                let body_data = creeps_hostile.body[boost_i]
+                switch (body_data.type) {
+                    case 'attack':
+                    case 'ranged_attack':
+                        all_atk += this.attack_number(body_data.type, body_data.boost)
+                        break;
+                }
+            }
+        }
+        return all_atk;
+    }
+    public attack_number(type, boost) {
+        let _boost_attack = {
+            'UH': 1,
+            'KO': 1,
+            'LO': 1,
+            'UH2O': 2,
+            'KHO2': 2,
+            'LHO2': 2,
+            'XUH2O': 3,
+            'XKHO2': 3,
+            'XLHO2': 3,
+        }
+        let _x = 1;
+        if (_boost_attack[boost]) {
+            _x += _boost_attack[boost]
+        }
+        let _number = 0;
+        switch (type) {
+            case 'attack':
+                _number = _x * 30;
+                break;
+            case 'ranged_attack':
+                _number = _x * 10;
+                break;
+            case 'heal':
+                _number = _x * 12;
+                break;
+        }
+        return _number;
     }
 }

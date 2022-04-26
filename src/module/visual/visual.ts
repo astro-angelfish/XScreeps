@@ -114,16 +114,19 @@ export function showTowerData(): void {
  * 瞬时cpu 平均cpu 房间状态 任务数 bucket等
  */
 export function RoomDataVisual(room: Room): void {
-    room.visual.rect(0, 0, 7, 10, { opacity: 0.1, stroke: '#696969', strokeWidth: 0.2 })
     let row = 0
-    room.visual.text(`全局实时CPU:${(global.UsedCpu ? global.UsedCpu : 0).toFixed(2)}`, 0, row += 1, { color: 'black', font: 0.7, align: 'left' })
-    room.visual.text(`全局平均CPU:${(global.AveCpu ? global.AveCpu : 0).toFixed(2)}`, 0, row += 1, { color: 'black', font: 0.7, align: 'left' })
-    room.visual.text(`测量基数:${(global.CpuData ? global.CpuData.length : 0)}`, 0, row += 1, { color: 'black', font: 0.7, align: 'left' })
-    room.visual.text(`房间状态:${(room.memory.state == "peace" ? "和平" : "战争")}`, 0, row += 1, { color: room.memory.state == 'peace' ? '#006400' : 'red', font: 0.7, align: 'left' })
-    room.visual.text(`cpu池:${Game.cpu.bucket}`, 0, row += 1, { color: Game.cpu.bucket < 2000 ? 'red' : 'black', font: 0.7, align: 'left' })
+    if (!global.RoomDataVisual) {
+        room.visual.rect(0, 0, 7, 10, { opacity: 0.1, stroke: '#696969', strokeWidth: 0.2 })
+        room.visual.text(`全局实时CPU:${(global.UsedCpu ? global.UsedCpu : 0).toFixed(2)}`, 0, row += 1, { color: 'black', font: 0.7, align: 'left' })
+        room.visual.text(`全局平均CPU:${(global.AveCpu ? global.AveCpu : 0).toFixed(2)}`, 0, row += 1, { color: 'black', font: 0.7, align: 'left' })
+        room.visual.text(`测量基数:${(global.CpuData ? global.CpuData.length : 0)}`, 0, row += 1, { color: 'black', font: 0.7, align: 'left' })
+        room.visual.text(`房间状态:${(room.memory.state == "peace" ? "和平" : "战争")}`, 0, row += 1, { color: room.memory.state == 'peace' ? '#006400' : 'red', font: 0.7, align: 'left' })
+        room.visual.text(`cpu池:${Game.cpu.bucket}`, 0, row += 1, { color: Game.cpu.bucket < 2000 ? 'red' : 'black', font: 0.7, align: 'left' })
+        global.RoomDataVisual = room.visual.export()
+    }
+    room.visual.import(global.RoomDataVisual)
+    row = 5
     /* 控制器进度 */
-    if (!global.controllerData) { global.controllerData = {} }
-    if (!global.controllerData[room.name]) { global.controllerData[room.name] = [] }
     if (room.controller.level < 8) {
         if (global.controllerData[room.name].length > 300) {
             global.controllerData[room.name].slice(1);

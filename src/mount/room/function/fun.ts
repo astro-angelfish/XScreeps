@@ -4,7 +4,17 @@ import { filter_structure, isInArray, LeastHit } from "@/utils"
 export default class RoomFunctionFindExtension extends Room {
     /* 获取指定structureType的建筑列表 */
     public getStructure(sc: StructureConstant): Structure[] {
-        return this.find(FIND_STRUCTURES, { filter: { structureType: sc } })
+        // global.getStructure[this.name]
+        if (Object.keys(global.getStructure[this.name]).length < 1) {
+            let find_list = this.find(FIND_MY_STRUCTURES)
+            for (let i in find_list) {
+                let structure = find_list[i];
+                if (!global.getStructure[this.name][structure.structureType]) global.getStructure[this.name][structure.structureType] = []
+                global.getStructure[this.name][structure.structureType].push(structure)
+            }
+        }
+       
+        return global.getStructure[this.name][sc] ? global.getStructure[this.name][sc] : [];
     }
 
     // /* 任务lab绑定数据生成便捷函数 */

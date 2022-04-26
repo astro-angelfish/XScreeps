@@ -33,7 +33,7 @@ export default class CreepMissonWarExtension extends Creep {
         if (!disFlag) {
             var clostStructure = this.pos.findClosestByPath(FIND_HOSTILE_STRUCTURES, {
                 filter: (struc) => {
-                    return !isInArray(['controller'],struc.structureType)
+                    return !isInArray(['controller'], struc.structureType)
                 }
             })
             if (clostStructure) {
@@ -80,6 +80,7 @@ export default class CreepMissonWarExtension extends Creep {
         }
     }
 
+
     // 红球防御
     public handle_defend_attack(): void {
         if (!this.BoostCheck(['move', 'attack'])) return
@@ -96,17 +97,30 @@ export default class CreepMissonWarExtension extends Creep {
             this.attack(nearCreep[0])
             this.optTower('attack', nearCreep[0])
         }
+
         /* 寻路去距离敌对爬虫最近的rampart */
         var hostileCreep = Game.rooms[this.memory.belong].find(FIND_HOSTILE_CREEPS, {
             filter: (creep) => {
                 return !isInArray(Memory.whitesheet, creep.name)
             }
         })
+
         if (hostileCreep.length > 0) {
-            for (var c of hostileCreep)
+            let hostileCreep_atk = this.hostileCreep_atk(hostileCreep)
+            for (var c of hostileCreep) {
                 /* 如果发现Hits/hitsMax低于百分之80的爬虫，直接防御塔攻击 */
                 if (c.hits / c.hitsMax <= 0.8)
                     this.optTower('attack', c)
+            }
+            if (Number(hostileCreep_atk) < 600) {
+                // this.goTo(hostileCreep[0], 0)
+                this.goTo_defend(hostileCreep[0].pos, 0)
+                let attack_state = this.attack(hostileCreep[0])
+                if (attack_state == OK) {
+                    this.optTower('attack', hostileCreep[0])
+                }
+                return
+            }
         }
         else return
         // 以gather_attack开头的旗帜  例如： defend_attack_0 优先前往该旗帜附近
@@ -1142,7 +1156,7 @@ export default class CreepMissonWarExtension extends Creep {
                     // 还找不到就直接找最近的wall或者rampart攻击
                     var walls = this.pos.findClosestByPath(FIND_STRUCTURES, {
                         filter: (stru) => {
-                            return isInArray([STRUCTURE_RAMPART],stru.structureType)
+                            return isInArray([STRUCTURE_RAMPART], stru.structureType)
                         }
                     })
                     if (walls) {

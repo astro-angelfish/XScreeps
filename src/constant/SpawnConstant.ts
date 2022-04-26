@@ -168,7 +168,7 @@ export const RoleLevelData = {
         5: { bodypart: [4, 4, 8, 0, 0, 0, 0, 0], num: 0 },
         6: { bodypart: [5, 5, 10, 0, 0, 0, 0, 0], num: 0 },
         7: { bodypart: [10, 10, 20, 0, 0, 0, 0, 0], num: 0 },
-        8: { bodypart: [20, 10, 20, 0, 0, 0, 0, 0], num: 0 },
+        8: { bodypart: [30, 10, 10, 0, 0, 0, 0, 0], num: 0 },
     },
     'Eupgrade': {
         1: { bodypart: [1, 1, 2, 0, 0, 0, 0, 0], num: 0 },
@@ -178,7 +178,7 @@ export const RoleLevelData = {
         5: { bodypart: [4, 4, 8, 0, 0, 0, 0, 0], num: 0 },
         6: { bodypart: [5, 5, 10, 0, 0, 0, 0, 0], num: 0 },
         7: { bodypart: [10, 10, 20, 0, 0, 0, 0, 0], num: 0 },
-        8: { bodypart: [20, 10, 20, 0, 0, 0, 0, 0], num: 0 },
+        8: { bodypart: [30, 10, 10, 0, 0, 0, 0, 0], num: 0 },
     },
     "out-harvest": {
         1: { bodypart: [1, 1, 1, 0, 0, 0, 0, 0], num: 0 },

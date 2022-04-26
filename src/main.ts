@@ -18,43 +18,45 @@ import { InterShardManager } from './module/shard/intershard'
  * 主运行函数
  */
 export const loop = ErrorMapper.wrapLoop(() => {
-    let a = Game.cpu.getUsed()
+    var cpu_test = false
+    if (cpu_test) var a = Game.cpu.getUsed()
 
     /* Memory初始化 */
     MemoryInit()
-    let a1 = Game.cpu.getUsed()
+    if (cpu_test) var a1 = Game.cpu.getUsed()
     /* 跨shard初始化 */
     // InitShardMemory()
 
     /* 跨shard记忆运行 */
     InterShardManager()
 
-    let b = Game.cpu.getUsed()
+    if (cpu_test) var b = Game.cpu.getUsed()
 
     /* 原型拓展挂载 */
     Mount()
 
-    let c = Game.cpu.getUsed()
+    if (cpu_test) var c = Game.cpu.getUsed()
 
     /* 爬虫数量统计及死亡Memory回收 */
     CreepNumStatistic()
+    if (cpu_test) var d_1 = Game.cpu.getUsed()
 
     /* 房间框架运行 */
     RoomWork()
 
-    let d = Game.cpu.getUsed()
+    if (cpu_test) var d = Game.cpu.getUsed()
 
     /* 爬虫运行 */
     CreepWork()
 
-    let e = Game.cpu.getUsed()
+    if (cpu_test) var e = Game.cpu.getUsed()
 
     /* 四人小队模块 */
     SquadManager()
 
     /* 跨shardMemory提交 */
     if (Game.cpu.generatePixel)
-    InterShardMemory.setLocal(JSON.stringify(global.intershardData))
+        InterShardMemory.setLocal(JSON.stringify(global.intershardData))
 
 
     /* 资源调度超时管理 */
@@ -75,17 +77,18 @@ export const loop = ErrorMapper.wrapLoop(() => {
     /* CPU计算 */
     statCPU()
 
-    let f = Game.cpu.getUsed()
-    // if (Game.shard.name == 'shard3')
-    // {
-    //     /* 分析cpu */
-    //     console.log("-----------------------------cpu消耗分析----------------------------------------")
-    //     console.log("Memory初始化:",a1-a)
-    //     console.log("shard初始化:",b-a1)
-    //     console.log("原型挂载:",c-b)
-    //     console.log("房间框架:",d-c)
-    //     console.log("爬虫:",e-d)
-    //     console.log("其他杂项:",f-e)
-    // }
-
+    if (cpu_test) {
+        var f = Game.cpu.getUsed()
+        if (Game.shard.name == 'shard3') {
+            /* 分析cpu */
+            console.log("-----------------------------cpu消耗分析----------------------------------------")
+            console.log("Memory初始化:", a1 - a)
+            console.log("shard初始化:", b - a1)
+            console.log("原型挂载:", c - b)
+            console.log("房间框架:", d - d_1)
+            console.log("爬虫管理:", d_1 - c)
+            console.log("爬虫:", e - d)
+            console.log("其他杂项:", f - e)
+        }
+    }
 })
