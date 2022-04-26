@@ -287,7 +287,7 @@ export class factoryExtension extends StructureFactory {
 
       // 检测基础商品是否满足
       for (const b of zip) {
-        if (storage.store.getUsedCapacity(b) < baseList[b]!.num - 3000) {
+        if (storage.store.getUsedCapacity(b) <= baseList[b]!.num - 3000) {
           console.log(`[factory] 房间 ${this.room.name} 转入 base 生产模式，目标商品为 ${b}`)
           this.room.memory.productData.state = 'base'
           this.room.memory.productData.producing = { com: b, num: baseList[b]!.num, total: baseList[b]!.num }
@@ -299,7 +299,7 @@ export class factoryExtension extends StructureFactory {
       for (const l_ of low) {
         const l = l_ as CommodityConstant
 
-        if ((storage.store[l] || 0) < baseList[l]!.num - 300) {
+        if ((storage.store[l] || 0) <= baseList[l]!.num - 300) {
           // 测试用
           if (this.owner.username === 'ExtraDim') {
             const minList = ['energy', 'L', 'O', 'H', 'U', 'K', 'Z', 'X', 'G']
@@ -320,7 +320,7 @@ export class factoryExtension extends StructureFactory {
 
       // 检测高级商品是否满足
       for (const h of high) {
-        if ((storage.store[h] || 0) < baseList[h]!.num - 300) {
+        if ((storage.store[h] || 0) <= baseList[h]!.num - 300) {
           console.log(`[factory] 房间 ${this.room.name} 转入 base 生产模式，目标商品为 ${h}`)
           this.room.memory.productData.state = 'base'
           this.room.memory.productData.producing = { com: h, num: baseList[h]!.num, total: baseList[h]!.num }

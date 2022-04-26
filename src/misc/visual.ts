@@ -1,6 +1,6 @@
 import { getTowerData } from '@/creep/war/war'
 import { colors, unzipXY } from '@/utils'
-// import { compoundColor } from '@/structure/constant/resource'
+import { compoundColor } from '@/structure/constant/resource'
 
 /* 可视化模块 */
 /**
@@ -145,7 +145,7 @@ function box(visual: RoomVisual, x: number, y: number, w: number, h: number, sty
 
 function labelBar(visual: RoomVisual, x: number, y: number, labelSpace: number, w: number, label: string, content: string, percent: number, color: string) {
   visual.text(label, x + labelSpace, y, { color, opacity: 0.7, font: 0.7, align: 'right' })
-  box(visual, x + labelSpace + 0.1, y - 0.7, x + 6.1, 0.9, { color, opacity: 0.2 })
+  box(visual, x + labelSpace + 0.1, y - 0.7, 6.2, 0.9, { color, opacity: 0.2 })
   visual.rect(x + labelSpace + 0.1 + 0.1, y - 0.6, percent * w, 0.7, { fill: color, opacity: 0.3 })
   visual.text(content, x + labelSpace + 0.1 + w / 2, y - 0.05, { color, font: 0.5, align: 'center' })
 }
@@ -194,44 +194,43 @@ export function processRoomDataVisual(room: Room): void {
   }
 
   // 工厂
-  // TODO 测试
-  let line2 = 1.8
+  let line2 = 0.7
   if (room.controller && room.controller.level >= 8) {
     if (room.memory.productData.producing) {
       const producing = room.memory.productData.producing
       if (producing.total) {
         const producingNum = (producing.num || 0)
-        const producingPercent = producingNum / producing.total
+        const producingPercent = (producing.total - producingNum) / producing.total
         const producingPercentVisual = Math.min(producingPercent, 1)
-        labelBar(visual, 10, line2 += 1.1, 1.4, 6, '工厂', `${producing.com} - ${producingPercent.toFixed(1)}%`, producingPercentVisual, colors.cyan)
+        labelBar(visual, 8, line2 += 1.1, 1.4, 6, '工厂', `${producing.com} - ${(producingPercent * 100).toFixed(1)}%`, producingPercentVisual, colors.cyan)
       }
       else {
-        visual.text(`工厂生产 -> ${producing.com}`, 0.1, line += 1.1, normalTextStyle)
+        visual.text(`工厂生产 -> ${producing.com}`, 8, line += 1.1, normalTextStyle)
       }
     }
     if (room.memory.comDispatchData && Object.keys(room.memory.comDispatchData).length > 0) {
       const ress = Object.keys(room.memory.comDispatchData) as ResourceConstant[]
       const res = ress[ress.length - 1]
       const resData = room.memory.comDispatchData[res]!
-      visual.text(`工厂规划 ${res} (${resData.dispatch_num})`, 0.1, line += 1.1, normalTextStyle)
+      visual.text(`工厂规划 ${res} (${resData.dispatch_num})`, 8, line += 1.1, normalTextStyle)
     }
   }
 
-  // // lab 资源可视化
-  // if (room.memory.roomLabBind && Object.keys(room.memory.roomLabBind).length > 0) {
-  //   for (const i in room.memory.roomLabBind) {
-  //     const lab = Game.getObjectById(i as Id<StructureLab>)
-  //     if (!lab) {
-  //       delete room.memory.roomLabBind[i]
-  //       if (room.memory.structureIdData?.labs)
-  //         room.memory.structureIdData.labs.splice(room.memory.structureIdData.labs.indexOf(i as Id<StructureLab>), 1)
-  //       continue
-  //     }
+  // lab 资源可视化
+  if (room.memory.roomLabBind && Object.keys(room.memory.roomLabBind).length > 0) {
+    for (const i in room.memory.roomLabBind) {
+      const lab = Game.getObjectById(i as Id<StructureLab>)
+      if (!lab) {
+        delete room.memory.roomLabBind[i]
+        if (room.memory.structureIdData?.labs)
+          room.memory.structureIdData.labs.splice(room.memory.structureIdData.labs.indexOf(i as Id<StructureLab>), 1)
+        continue
+      }
 
-  //     room.visual.text(
-  //       `${room.memory.roomLabBind[i].rType}`,
-  //       lab.pos.x, lab.pos.y,
-  //       { color: compoundColor[room.memory.roomLabBind[i].rType as keyof typeof compoundColor], font: 0.3, align: 'center', strokeWidth: 0.2 })
-  //   }
-  // }
+      room.visual.text(
+        `${room.memory.roomLabBind[i].rType}`,
+        lab.pos.x, lab.pos.y,
+        { color: compoundColor[room.memory.roomLabBind[i].rType as keyof typeof compoundColor], font: 0.3, align: 'center', strokeWidth: 0.2 })
+    }
+  }
 }
