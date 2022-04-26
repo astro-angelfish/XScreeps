@@ -8,7 +8,7 @@
     "push": "rollup -cw --environment DEST:main",
     "local": "rollup -cw --environment DEST:local",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "superbitch":"rollup -cw --environment DEST:superbitch"
+    "superbitch": "rollup -cw --environment DEST:superbitch"
   },
   "keywords": [],
   "author": "",
@@ -26,6 +26,6 @@
     "typescript": "^4.5.5"
   },
   "dependencies": {
-    "source-map": "^0.6.1"
+    "source-map-js": "^1.0.2"
   }
 }
