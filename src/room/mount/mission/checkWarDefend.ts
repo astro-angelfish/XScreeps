@@ -40,13 +40,13 @@ export default class RoomMissionDefendWarExtension extends Room {
           continue
 
         const strPos = zipPosition(n.pos)
-        if (n.pos.getStructureList(['spawn', 'rampart', 'terminal', 'powerSpawn', 'factory', 'nuker', 'lab', 'tower', 'storage']).length > 0) {
+        if (n.pos.getStructureWithTypes(['spawn', 'rampart', 'terminal', 'powerSpawn', 'factory', 'nuker', 'lab', 'tower', 'storage']).length > 0) {
           if (!data[strPos])
             data[strPos] = 10000000
           else data[strPos] += 10000000
 
           if (!ramparts[strPos]) {
-            const rampart = n.pos.getStructure('rampart')
+            const rampart = n.pos.getStructureWithType('rampart')
             if (rampart)
               ramparts[strPos] = rampart.hits
             else ramparts[strPos] = 0
@@ -59,7 +59,7 @@ export default class RoomMissionDefendWarExtension extends Room {
             if (nX === n.pos.x && nY === n.pos.y)
               continue
 
-            if (thisPos.getStructureList(['spawn', 'rampart', 'terminal', 'powerSpawn', 'factory', 'nuker', 'lab', 'tower']).length <= 0)
+            if (thisPos.getStructureWithTypes(['spawn', 'rampart', 'terminal', 'powerSpawn', 'factory', 'nuker', 'lab', 'tower']).length <= 0)
               continue
 
             if (nX > 0 && nY > 0 && nX < 49 && nY < 49) {
@@ -70,7 +70,7 @@ export default class RoomMissionDefendWarExtension extends Room {
               else data[strThisPos] += 5000000
 
               if (!ramparts[strThisPos]) {
-                const rampart = n.pos.getStructure('rampart')
+                const rampart = n.pos.getStructureWithType('rampart')
                 if (rampart)
                   ramparts[strThisPos] = rampart.hits
                 else ramparts[strThisPos] = 0
@@ -87,7 +87,7 @@ export default class RoomMissionDefendWarExtension extends Room {
         const thisPos = unzipPosition(i)
 
         if (data[i] === 0) {
-          const rampart = thisPos?.getStructure(STRUCTURE_RAMPART)
+          const rampart = thisPos?.getStructureWithType(STRUCTURE_RAMPART)
           if (rampart)
             ramparts[i] = rampart.hits
         }

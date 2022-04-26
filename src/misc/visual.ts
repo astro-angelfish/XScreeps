@@ -155,13 +155,15 @@ function labelBar(visual: RoomVisual, x: number, y: number, labelSpace: number, 
  * 瞬时cpu 平均cpu 房间状态 任务数 bucket等
  */
 export function processRoomDataVisual(room: Room): void {
+  const visual = room.visual
+
   // Room Status
   let line = 0.7
-  const visual = room.visual
   visual.text(`${room.name}`, 0.1, line, normalTextStyle)
   visual.text(room.memory.state === 'peace' ? '和平' : '战争', room.name.length * 0.45 + 0.3, 0.7, { ...normalTextStyle, color: room.memory.state === 'peace' ? colors.zinc : colors.red })
   const missionNum = Object.values(room.memory.mission).reduce((a, b) => a + b.length, 0)
   visual.text(`共 ${missionNum} 任务`, room.name.length * 0.45 + 2, 0.7, { ...normalTextStyle, color: missionNum > 20 ? colors.amber : colors.zinc })
+  visual.text(`${Object.values(global.creepNumData[room.name] || {}).reduce((a, b) => a + b, 0)} 爬虫`, room.name.length * 0.45 + missionNum.toString().length * 0.4 + 4.6, 0.7, normalTextStyle)
 
   // CPU
   const cpuUsed = global.usedCpu || 0

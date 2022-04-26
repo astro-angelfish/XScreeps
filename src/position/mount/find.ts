@@ -12,7 +12,7 @@ export default class PositionFunctionFindExtension extends RoomPosition {
     if (!room)
       return mode === 0 || mode === 1 ? [] : undefined
 
-    const structures = room.getStructureWithTypes(types).filter(s => this.inRangeTo(s, range)) as NarrowStructure<T>[]
+    const structures = room.getStructureWithTypes(types).filter(s => this.inRangeTo(s, range))
 
     switch (mode) {
       case 0: {
@@ -40,7 +40,7 @@ export default class PositionFunctionFindExtension extends RoomPosition {
     if (!room)
       return null
 
-    const structures = room.getStructureWithTypes(types) as NarrowStructure<T>[]
+    const structures = room.getStructureWithTypes(types)
 
     switch (mode) {
       case 0: {
@@ -61,10 +61,13 @@ export default class PositionFunctionFindExtension extends RoomPosition {
    * 获取最近的 store 能量有空的 spawn 或扩展
    */
   public getClosestStore(): StructureExtension | StructureSpawn | StructureLab | null {
-    return this.findClosestByPath(FIND_STRUCTURES, {
-      filter: s => (s.structureType === STRUCTURE_SPAWN || s.structureType === STRUCTURE_EXTENSION || s.structureType === STRUCTURE_LAB)
-        && s.store.getFreeCapacity(RESOURCE_ENERGY) > 0,
-    }) as StructureExtension | StructureSpawn | StructureLab | null
+    const room = Game.rooms[this.roomName]
+    if (!room)
+      return null
+
+    return this.findClosestByPath(
+      room.getStructureWithTypes([STRUCTURE_SPAWN, STRUCTURE_EXTENSION, STRUCTURE_LAB])
+        .filter(s => s.store.getFreeCapacity(RESOURCE_ENERGY) > 0))
   }
 
   /**
@@ -114,7 +117,7 @@ export default class PositionFunctionFindExtension extends RoomPosition {
   /**
    * 获取该位置上指定类型建筑
    */
-  public getStructure<T extends AnyStructure['structureType']>(type: T): NarrowStructure<T> | null {
+  public getStructureWithType<T extends AnyStructure['structureType']>(type: T): NarrowStructure<T> | null {
     const list = this.lookFor(LOOK_STRUCTURES)
     if (list.length <= 0)
       return null
@@ -130,7 +133,7 @@ export default class PositionFunctionFindExtension extends RoomPosition {
   /**
    * 获取该位置上指定类型建筑列表
    */
-  public getStructureList<T extends AnyStructure['structureType']>(types: T[]): NarrowStructure<T>[] {
+  public getStructureWithTypes<T extends AnyStructure['structureType']>(types: T[]): NarrowStructure<T>[] {
     return this.lookFor(LOOK_STRUCTURES)
       .filter(s => types.includes(s.structureType as T)) as NarrowStructure<T>[]
   }
@@ -205,8 +208,8 @@ export default class PositionFunctionFindExtension extends RoomPosition {
   /**
    * 获取该位置n格内的敌对爬虫
    */
-  public findRangeCreep(num: number): Creep[] {
-    return this.findInRange(FIND_CREEPS, num)
+  public findRangeCreep(range: number): Creep[] {
+    return this.findInRange(FIND_CREEPS, range)
       .filter(c => !Memory.whitelist?.includes(c.owner.username))
   }
 

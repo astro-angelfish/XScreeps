@@ -37,7 +37,7 @@ export default class CreepMissionMineExtension extends Creep {
           if (Memory.outMineData && Memory.outMineData[this.room.name]) {
             for (const i of Memory.outMineData[this.room.name].road) {
               const thisPos = unzipPosition(i)
-              if (thisPos && thisPos.roomName === this.name && !thisPos.getStructure('road'))
+              if (thisPos && thisPos.roomName === this.name && !thisPos.getStructureWithType('road'))
                 thisPos.createConstructionSite('road')
             }
           }
@@ -94,7 +94,7 @@ export default class CreepMissionMineExtension extends Creep {
               for (const i of Memory.outMineData[this.room.name].road) {
                 const thisPos = unzipPosition(i) as RoomPosition
 
-                if (thisPos.roomName === this.room.name && !thisPos.getStructure('road'))
+                if (thisPos.roomName === this.room.name && !thisPos.getStructureWithType('road'))
                   thisPos.createConstructionSite('road')
               }
             }
@@ -207,7 +207,7 @@ export default class CreepMissionMineExtension extends Creep {
             return
           }
 
-          const road = this.pos.getStructure('road')
+          const road = this.pos.getStructureWithType('road')
           if (road && road.hits < road.hitsMax) {
             this.repair(road)
             return
@@ -380,7 +380,7 @@ export default class CreepMissionMineExtension extends Creep {
             }
             else {
               if (Game.time % 10 === 0) {
-                const powerbank = missionPostion.getStructure('powerBank')
+                const powerbank = missionPostion.getStructureWithType('powerBank')
                 if (powerbank) {
                   const enemyCreeps = powerbank.pos.findInRange(FIND_HOSTILE_CREEPS, 3)
                   if (enemyCreeps.length > 0 && powerbank && powerbank.hits < 600000)
@@ -405,7 +405,7 @@ export default class CreepMissionMineExtension extends Creep {
           if (!this.memory.tick)
             this.memory.tick = this.ticksToLive!
 
-          const powerbank = missionPostion.getStructure('powerBank')
+          const powerbank = missionPostion.getStructureWithType('powerBank')
           if (powerbank) {
             this.attack(powerbank)
 
@@ -458,7 +458,7 @@ export default class CreepMissionMineExtension extends Creep {
         }
 
         // 没有 powerbank 说明已经打掉了
-        const powerbank = missionPostion.getStructure('powerBank')
+        const powerbank = missionPostion.getStructureWithType('powerBank')
         if (!powerbank) {
           this.suicide()
           return
@@ -508,7 +508,7 @@ export default class CreepMissionMineExtension extends Creep {
         }
 
         // 寻找 powerbank
-        const powerbank = missionPostion.getStructure('powerBank')
+        const powerbank = missionPostion.getStructureWithType('powerBank')
         if (powerbank) {
           this.goTo(missionPostion, 4)
           if (!this.memory.standed)

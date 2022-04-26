@@ -187,7 +187,7 @@ export default class CreepUtilsExtension extends Creep {
    */
   public calcRangedMassAttackDamage(target: Creep | PowerCreep | Structure): number {
     // 对 ram 下无伤害
-    if (target.pos.getStructure(STRUCTURE_RAMPART))
+    if (target.pos.getStructureWithType(STRUCTURE_RAMPART))
       return 0
 
     const distance = this.pos.getRangeTo(target)

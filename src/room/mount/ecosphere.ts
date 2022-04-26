@@ -232,8 +232,8 @@ export default class RoomEcosphereExtension extends Room {
     if (!this.memory.distribution)
       return 0
 
-    return Object.entries(this.memory.distribution)
-      .reduce((pv, [, v]) => pv + v.length, 0)
+    return Object.values(this.memory.distribution)
+      .reduce((pv, v) => pv + v.length, 0)
   }
 
   /**

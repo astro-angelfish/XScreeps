@@ -571,8 +571,8 @@ export default class RoomMissionCoreExtension extends Room {
    * 注：会在不存在 link 时返回 true
    */
   public linkMissionExist(source: RoomPosition, target: RoomPosition): boolean {
-    const sourceLink = source.getStructure('link')
-    const posLink = target.getStructure('link')
+    const sourceLink = source.getStructureWithType('link')
+    const posLink = target.getStructureWithType('link')
     if (!sourceLink || !posLink) {
       console.log(`${this.name} 在不存在 link 时调用了 linkMissionExist`)
       return true

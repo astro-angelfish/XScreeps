@@ -6,7 +6,7 @@ import { colorfyLog } from '@/utils'
  * @param func api 的描述信息
  * @returns 绘制完成的字符串
  */
-const createApiHelp = function(func: FunctionDescribe): string {
+const createApiHelp = function (func: FunctionDescribe): string {
   const contents: string[] = []
   // 介绍
   if (func.describe)
@@ -41,7 +41,7 @@ const createApiHelp = function(func: FunctionDescribe): string {
   return result.replace(/\n/g, '')
 }
 
-const moduleStyle = function() {
+const moduleStyle = function () {
   const style = `<style>
     .module-help {
       display: flex;
@@ -72,7 +72,7 @@ const moduleStyle = function() {
   return style.replace(/\n/g, '')
 }
 
-const apiStyle = function() {
+const apiStyle = function () {
   const style = `<style>
     .api-content-line {
       width: max-content;
@@ -132,7 +132,7 @@ const apiStyle = function() {
   return style.replace(/\n/g, '')
 }
 
-const createModule = function(module: ModuleDescribe): string {
+const createModule = function (module: ModuleDescribe): string {
   const functionList = module.api.map(createApiHelp).join('')
 
   const html = `<div class="module-container">

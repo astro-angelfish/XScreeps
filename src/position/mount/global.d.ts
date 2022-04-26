@@ -7,8 +7,8 @@ interface RoomPosition {
   getClosestStore(): StructureExtension | StructureSpawn | StructureLab | null
   getSourceVoid(): RoomPosition[]
   getSourceLinkVoid(): RoomPosition[] | null
-  getStructure<T extends AnyStructure['structureType']>(type: T): NarrowStructure<T> | null
-  getStructureList<T extends AnyStructure['structureType']>(types: T[]): NarrowStructure<T>[]
+  getStructureWithType<T extends AnyStructure['structureType']>(type: T): NarrowStructure<T> | null
+  getStructureWithTypes<T extends AnyStructure['structureType']>(types: T[]): NarrowStructure<T>[]
   getRuin(): Ruin | null
   findPath(pos: RoomPosition, range: number): RoomPosition[] | null
   findRangeCreep(num: number): Creep[]

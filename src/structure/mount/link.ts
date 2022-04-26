@@ -1,7 +1,8 @@
-import { sortByKey } from '@/utils'
+import { profileMethod, sortByKey } from '@/utils'
 
 // TODO 写严格一点，加个并任务
 export default class linkExtension extends StructureLink {
+  @profileMethod()
   public manageMission(): void {
     if (!this.room.memory.mission.Structure)
       this.room.memory.mission.Structure = []

@@ -1,9 +1,10 @@
-import { checkDispatch, checkSendMission, colorfyLog, getRoomDispatchNum, sortByKey } from '@/utils'
+import { checkDispatch, checkSendMission, colorfyLog, getRoomDispatchNum, profileMethod, sortByKey } from '@/utils'
 
 export default class PowerCreepMissionCoreExtension extends PowerCreep {
   /**
    * pc 处理任务专用函数
    */
+  @profileMethod()
   public manageMission(): void {
     // 获取名字
     const name = this.name

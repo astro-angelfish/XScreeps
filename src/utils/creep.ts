@@ -144,7 +144,7 @@ export function identifyGarrison(creep: Creep): boolean {
       if (thisPos.lookFor(LOOK_TERRAIN)[0] === 'wall')
         return false
 
-      if (thisPos.getStructureList(['spawn', 'constructedWall', 'rampart', 'observer', 'link', 'nuker', 'storage', 'tower', 'terminal', 'powerSpawn', 'extension']).length > 0)
+      if (thisPos.getStructureWithTypes(['spawn', 'constructedWall', 'rampart', 'observer', 'link', 'nuker', 'storage', 'tower', 'terminal', 'powerSpawn', 'extension']).length > 0)
         return false
     }
   }

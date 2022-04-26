@@ -13,7 +13,7 @@ function colorfyTime(time: number) {
 }
 
 function formatTime(ms: number) {
-  return colorfyLog(`${(ms * 1000).toFixed(2)}μs`, 'sky')
+  return colorfyLog(`${(ms * 1000).toFixed(1)}μs`, 'sky')
 }
 
 interface StackItem {
@@ -70,7 +70,7 @@ class Profiler {
   enter(name: string) {
     if (!import.meta.env.PROFILER)
       return
-    this.profilerTime -= Game.cpu.getUsed()
+    const beginTime = Game.cpu.getUsed()
 
     const id = this.register(name)
     const item = {
@@ -81,7 +81,9 @@ class Profiler {
     this.stack.push(item)
     this.table.push([])
 
-    this.profilerTime += Game.cpu.getUsed()
+    const time = Game.cpu.getUsed() - beginTime
+    this.profilerTime += time
+    item.time += time
 
     return item
   }
@@ -89,7 +91,7 @@ class Profiler {
   enterId(id: number) {
     if (!import.meta.env.PROFILER)
       return
-    this.profilerTime -= Game.cpu.getUsed()
+    const beginTime = Game.cpu.getUsed()
 
     const item = {
       id,
@@ -99,7 +101,9 @@ class Profiler {
     this.stack.push(item)
     this.table.push([])
 
-    this.profilerTime += Game.cpu.getUsed()
+    const time = Game.cpu.getUsed() - beginTime
+    this.profilerTime += time
+    item.time += time
 
     return item
   }
@@ -120,7 +124,7 @@ class Profiler {
   exit(item?: StackItem) {
     if (!import.meta.env.PROFILER || !this.stack.length || !this.table.length)
       return
-    this.profilerTime -= Game.cpu.getUsed()
+    const beginTime = Game.cpu.getUsed()
 
     let tableItems: TableItem[]
     if (item) {
@@ -135,14 +139,17 @@ class Profiler {
       tableItems = this.table.pop()!
     }
     const action = tableItems.reduce((sum, item) => item.stackLength === this.stack.length + 2 ? sum + item.action : sum, item.action)
-    this.table[this.table.length - 1].push({
+    const tableItem = {
       id: item.id,
       stackLength: this.stack.length + 1,
       time: Game.cpu.getUsed() - item.time - action * 0.2,
       action,
-    }, ...tableItems)
+    }
+    this.table[this.table.length - 1].push(tableItem, ...tableItems)
 
-    this.profilerTime += Game.cpu.getUsed()
+    const time = Game.cpu.getUsed() - beginTime
+    this.profilerTime += time
+    tableItem.time = Math.max(tableItem.time - time, 0)
   }
 
   log() {
@@ -191,7 +198,7 @@ function markAsActionMethod<T extends { constructor: Function }>(obj: { prototyp
   for (const key of keys) {
     const original = obj.prototype[key] as unknown as Function
     const name = `${objName}.${key}`
-    obj.prototype[key] = function(this: any, ...args: any[]) {
+    obj.prototype[key] = function (this: any, ...args: any[]) {
       const result = original.apply(this, args)
       if (result === OK)
         profiler.countAction(name)
@@ -200,27 +207,29 @@ function markAsActionMethod<T extends { constructor: Function }>(obj: { prototyp
   }
 }
 
-markAsActionMethod(ConstructionSite, 'ConstructionSite', ['remove'])
-markAsActionMethod(Creep, 'Creep', ['attack', 'attackController', 'build', 'claimController', 'dismantle', 'drop', 'generateSafeMode', 'harvest', 'heal', 'move', 'moveByPath', 'moveTo', 'notifyWhenAttacked', 'pickup', 'rangedAttack', 'rangedHeal', 'rangedMassAttack', 'repair', 'reserveController', 'signController', 'suicide', 'transfer', 'upgradeController', 'withdraw'])
-markAsActionMethod(Flag, 'Flag', ['remove', 'setColor', 'setPosition'])
-markAsActionMethod({ prototype: Game }, 'Game', ['notify'])
-markAsActionMethod({ prototype: Game.market }, 'Game.market', ['cancelOrder', 'changeOrderPrice', 'createOrder', 'deal', 'extendOrder'])
-markAsActionMethod(PowerCreep, 'PowerCreep', ['delete', 'drop', 'enableRoom', 'move', 'moveByPath', 'moveTo', 'notifyWhenAttacked', 'pickup', 'renew', 'spawn', 'suicide', 'transfer', 'upgrade', 'usePower', 'withdraw'])
-markAsActionMethod(Room, 'Room', ['createConstructionSite', 'createFlag'])
-markAsActionMethod(RoomPosition, 'RoomPosition', ['createConstructionSite', 'createFlag'])
-markAsActionMethod(Structure, 'Structure', ['destroy', 'notifyWhenAttacked'])
-markAsActionMethod(StructureController, 'StructureController', ['activateSafeMode', 'unclaim'])
-markAsActionMethod(StructureFactory, 'StructureFactory', ['produce'])
-markAsActionMethod(StructureLab, 'StructureLab', ['boostCreep', 'reverseReaction', 'runReaction', 'unboostCreep'])
-markAsActionMethod(StructureLink, 'StructureLink', ['transferEnergy'])
-markAsActionMethod(StructureNuker, 'StructureNuker', ['launchNuke'])
-markAsActionMethod(StructureObserver, 'StructureObserver', ['observeRoom'])
-markAsActionMethod(StructurePowerSpawn, 'StructurePowerSpawn', ['processPower'])
-markAsActionMethod(StructureRampart, 'StructureRampart', ['setPublic'])
-markAsActionMethod(StructureSpawn, 'StructureSpawn', ['spawnCreep', 'recycleCreep', 'renewCreep'])
-markAsActionMethod(StructureSpawn.Spawning, 'StructureSpawn.Spawning', ['cancel', 'setDirections'])
-markAsActionMethod(StructureTerminal, 'StructureTerminal', ['send'])
-markAsActionMethod(StructureTower, 'StructureTower', ['attack', 'heal', 'repair'])
+if (import.meta.env.PROFILER) {
+  markAsActionMethod(ConstructionSite, 'ConstructionSite', ['remove'])
+  markAsActionMethod(Creep, 'Creep', ['attack', 'attackController', 'build', 'claimController', 'dismantle', 'drop', 'generateSafeMode', 'harvest', 'heal', 'move', 'moveByPath', 'moveTo', 'notifyWhenAttacked', 'pickup', 'rangedAttack', 'rangedHeal', 'rangedMassAttack', 'repair', 'reserveController', 'signController', 'suicide', 'transfer', 'upgradeController', 'withdraw'])
+  markAsActionMethod(Flag, 'Flag', ['remove', 'setColor', 'setPosition'])
+  markAsActionMethod({ prototype: Game }, 'Game', ['notify'])
+  markAsActionMethod({ prototype: Game.market }, 'Game.market', ['cancelOrder', 'changeOrderPrice', 'createOrder', 'deal', 'extendOrder'])
+  markAsActionMethod(PowerCreep, 'PowerCreep', ['delete', 'drop', 'enableRoom', 'move', 'moveByPath', 'moveTo', 'notifyWhenAttacked', 'pickup', 'renew', 'spawn', 'suicide', 'transfer', 'upgrade', 'usePower', 'withdraw'])
+  markAsActionMethod(Room, 'Room', ['createConstructionSite', 'createFlag'])
+  markAsActionMethod(RoomPosition, 'RoomPosition', ['createConstructionSite', 'createFlag'])
+  markAsActionMethod(Structure, 'Structure', ['destroy', 'notifyWhenAttacked'])
+  markAsActionMethod(StructureController, 'StructureController', ['activateSafeMode', 'unclaim'])
+  markAsActionMethod(StructureFactory, 'StructureFactory', ['produce'])
+  markAsActionMethod(StructureLab, 'StructureLab', ['boostCreep', 'reverseReaction', 'runReaction', 'unboostCreep'])
+  markAsActionMethod(StructureLink, 'StructureLink', ['transferEnergy'])
+  markAsActionMethod(StructureNuker, 'StructureNuker', ['launchNuke'])
+  markAsActionMethod(StructureObserver, 'StructureObserver', ['observeRoom'])
+  markAsActionMethod(StructurePowerSpawn, 'StructurePowerSpawn', ['processPower'])
+  markAsActionMethod(StructureRampart, 'StructureRampart', ['setPublic'])
+  markAsActionMethod(StructureSpawn, 'StructureSpawn', ['spawnCreep', 'recycleCreep', 'renewCreep'])
+  markAsActionMethod(StructureSpawn.Spawning, 'StructureSpawn.Spawning', ['cancel', 'setDirections'])
+  markAsActionMethod(StructureTerminal, 'StructureTerminal', ['send'])
+  markAsActionMethod(StructureTower, 'StructureTower', ['attack', 'heal', 'repair'])
+}
 
 /**
  * 将一个函数加入 profiler\
@@ -228,11 +237,11 @@ markAsActionMethod(StructureTower, 'StructureTower', ['attack', 'heal', 'repair'
  */
 export function profileMethod(label?: string) {
   if (import.meta.env.PROFILER) {
-    return function(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+    return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
       const className = 'className' in target && typeof target.className === 'string' ? target.className : target.constructor.name
       const name = label ? `${label} (${className}.${propertyKey})` : `${className}.${propertyKey}`
       const originalMethod = descriptor.value
-      descriptor.value = function(...args: any[]) {
+      descriptor.value = function (...args: any[]) {
         const item = profiler.enter(name)
         const result = originalMethod.apply(this, args)
         profiler.exit(item)
@@ -242,7 +251,7 @@ export function profileMethod(label?: string) {
     }
   }
   else {
-    return function() {}
+    return function () {}
   }
 }
 
@@ -253,7 +262,7 @@ export function profileMethod(label?: string) {
  */
 export function profileClass(label?: string) {
   if (import.meta.env.PROFILER) {
-    return function(target: any) {
+    return function (target: any) {
       const className = 'className' in target && typeof target.className === 'string' ? target.className : target.constructor.name
       for (const propertyKey of Object.getOwnPropertyNames(target.prototype)) {
         if (propertyKey === 'constructor')
@@ -264,7 +273,7 @@ export function profileClass(label?: string) {
         if (descriptor.value) {
           const originalMethod = descriptor.value
           const name = label ? `(${label})${className}.${propertyKey}` : `${className}.${propertyKey}`
-          descriptor.value = function(...args: any[]) {
+          descriptor.value = function (...args: any[]) {
             const item = profiler.enter(name)
             const result = originalMethod.apply(this, args)
             profiler.exit(item)
@@ -277,6 +286,6 @@ export function profileClass(label?: string) {
     }
   }
   else {
-    return function() {}
+    return function () {}
   }
 }

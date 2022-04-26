@@ -1,16 +1,16 @@
-import { flatten, zipObject } from 'lodash'
+import { zipObject } from 'lodash'
 import { allStructureTypes } from '@/structure/constant/structure'
 import { profileMethod } from '@/utils'
+
+const structureByTypeTemplate = JSON.stringify(zipObject(allStructureTypes.map(v => [v, []])))
 
 /* 房间原型拓展   --方法  --寻找 */
 export default class RoomFindExtension extends Room {
   /* 获取指定 structureType 的建筑列表 */
   @profileMethod()
   public getStructureWithType<T extends AnyStructure['structureType']>(type: T): NarrowStructure<T>[] {
-    if (this._cacheStructuresByType && this._cacheSBTUpdated === Game.time)
-      return this._cacheStructuresByType[type]
-
-    this.cacheStructures()
+    if (this._cacheSBTUpdated !== Game.time)
+      this.cacheStructures()
 
     return this._cacheStructuresByType[type]
   }
@@ -20,7 +20,7 @@ export default class RoomFindExtension extends Room {
    */
   @profileMethod()
   public cacheStructures(): void {
-    this._cacheStructuresByType = zipObject(allStructureTypes.map(v => [v, []])) as unknown as CacheStructuresByType
+    this._cacheStructuresByType = JSON.parse(structureByTypeTemplate)
     for (const structure of this.find(FIND_STRUCTURES))
       this._cacheStructuresByType[structure.structureType].push(structure as never)
     this._cacheSBTUpdated = Game.time
@@ -102,12 +102,13 @@ export default class RoomFindExtension extends Room {
    */
   @profileMethod()
   public getStructureWithTypes<T extends AnyStructure['structureType']>(types: T[]): NarrowStructure<T>[] {
-    if (this._cacheStructuresByType && this._cacheSBTUpdated === Game.time)
-      return flatten(types.map(v => this._cacheStructuresByType[v]))
+    if (this._cacheSBTUpdated !== Game.time)
+      this.cacheStructures()
 
-    this.cacheStructures()
-
-    return flatten(types.map(v => this._cacheStructuresByType[v]))
+    const result = []
+    for (const type of types)
+      result.push(...this._cacheStructuresByType[type])
+    return result
   }
 
   /**

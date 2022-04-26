@@ -54,11 +54,11 @@ import { hash, murmurHash } from 'ohash'
 export function cacheMethod() {
   const cacheRand = Math.random().toString(36).slice(2)
 
-  return function(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+  return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
     const cacheKey = `__cache_${propertyKey}_${cacheRand}`
 
     const originalMethod = descriptor.value
-    descriptor.value = function(this: any, ...args: any[]) {
+    descriptor.value = function (this: any, ...args: any[]) {
       if (this[cacheKey])
         return this[cacheKey]
       return this[cacheKey] = originalMethod.apply(this, args)
@@ -78,9 +78,9 @@ export function cacheMethodJSON(limit = 0) {
   if (limit > 0)
     keys = []
 
-  return function(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+  return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
     const originalMethod = descriptor.value
-    descriptor.value = function(this: any, ...args: any[]) {
+    descriptor.value = function (this: any, ...args: any[]) {
       // 当参数内含有函数时跳过缓存
       if (args.some(arg => typeof arg === 'function'))
         return originalMethod.apply(this, args)
@@ -125,9 +125,9 @@ export function cacheMethodOHash(limit = 0) {
   if (limit > 0)
     keys = []
 
-  return function(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+  return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
     const originalMethod = descriptor.value
-    descriptor.value = function(this: any, ...args: any[]) {
+    descriptor.value = function (this: any, ...args: any[]) {
       // 计算 hash
       const hashedArgs = hash(args, {
         unorderedArrays: true,

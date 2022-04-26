@@ -198,7 +198,7 @@ export default class CreepMissionWarExtension extends Creep {
         // 寻找最近的爬距离最近的 rampart，去那里呆着
         const nearstRam = nstC.pos.findClosestByRange(
           this.room.getStructureWithType(STRUCTURE_RAMPART)
-            .filter(ram => ram.pos.getStructureList(['extension', 'link', 'observer', 'tower', 'controller', 'extractor']).length <= 0
+            .filter(ram => ram.pos.getStructureWithTypes(['extension', 'link', 'observer', 'tower', 'controller', 'extractor']).length <= 0
              && (ram.pos.lookFor(LOOK_CREEPS).length <= 0 || ram.pos.lookFor(LOOK_CREEPS)[0] === this)))
         if (nearstRam)
           this.goToWhenDefend(nearstRam.pos, 0)
@@ -217,7 +217,7 @@ export default class CreepMissionWarExtension extends Creep {
         // 找离虫子最近的 rampart
         const nearstRam = closestCreep.pos.findClosestByRange(
           this.room.getStructureWithType(STRUCTURE_RAMPART)
-            .filter(ram => ram.pos.getStructureList(['extension', 'link', 'observer', 'tower', 'controller', 'extractor']).length <= 0
+            .filter(ram => ram.pos.getStructureWithTypes(['extension', 'link', 'observer', 'tower', 'controller', 'extractor']).length <= 0
              && (ram.pos.lookFor(LOOK_CREEPS).length <= 0 || ram.pos.lookFor(LOOK_CREEPS)[0] === this)))
 
         if (nearstRam)
@@ -334,7 +334,7 @@ export default class CreepMissionWarExtension extends Creep {
         // 寻找最近的爬距离最近的 rampart，去那里呆着
         const nearstRam = nstC.pos.findClosestByRange(
           this.room.getStructureWithType(STRUCTURE_RAMPART)
-            .filter(ram => ram.pos.getStructureList(['extension', 'link', 'observer', 'tower', 'controller', 'extractor']).length <= 0
+            .filter(ram => ram.pos.getStructureWithTypes(['extension', 'link', 'observer', 'tower', 'controller', 'extractor']).length <= 0
              && (ram.pos.lookFor(LOOK_CREEPS).length <= 0 || ram.pos.lookFor(LOOK_CREEPS)[0] === this)))
         if (nearstRam)
           this.goToWhenDefend(nearstRam.pos, 0)
@@ -353,7 +353,7 @@ export default class CreepMissionWarExtension extends Creep {
         // 找离虫子最近的 rampart
         const nearstRam = closestCreep.pos.findClosestByRange(
           this.room.getStructureWithType(STRUCTURE_RAMPART)
-            .filter(ram => ram.pos.getStructureList(['extension', 'link', 'observer', 'tower', 'controller', 'extractor']).length <= 0
+            .filter(ram => ram.pos.getStructureWithTypes(['extension', 'link', 'observer', 'tower', 'controller', 'extractor']).length <= 0
              && (ram.pos.lookFor(LOOK_CREEPS).length <= 0 || ram.pos.lookFor(LOOK_CREEPS)[0] === this)))
 
         if (nearstRam)
@@ -1084,7 +1084,7 @@ export default class CreepMissionWarExtension extends Creep {
       const enemy = this.pos.findInRange(
         this.room.find(FIND_HOSTILE_CREEPS)
           .filter(creep => !Memory.whitelist?.includes(creep.owner.username)), 3)
-      const disenemy = enemy.find(creep => !creep.pos.getStructure(STRUCTURE_RAMPART))
+      const disenemy = enemy.find(creep => !creep.pos.getStructureWithType(STRUCTURE_RAMPART))
       if (disenemy) {
         if (this.pos.isNearTo(disenemy))
           this.rangedMassAttack()
@@ -1134,7 +1134,7 @@ export default class CreepMissionWarExtension extends Creep {
 
       // 寻找最近的敌人攻击
       const closestCreep = this.pos.findClosestByPath(this.room.find(FIND_HOSTILE_CREEPS)
-        .filter(creep => !Memory.whitelist?.includes(creep.owner.username) && !creep.pos.getStructure(STRUCTURE_RAMPART)))
+        .filter(creep => !Memory.whitelist?.includes(creep.owner.username) && !creep.pos.getStructureWithType(STRUCTURE_RAMPART)))
       if (closestCreep && !this.pos.isNearTo(closestCreep))
         this.goTo(closestCreep.pos, 3)
     }
@@ -1216,7 +1216,7 @@ export default class CreepMissionWarExtension extends Creep {
       // 攻击离四格内离自己最近的爬
       const enemy = this.pos.findClosestByPath(
         this.pos.findInRange(this.room.find(FIND_HOSTILE_CREEPS)
-          .filter(creep => !Memory.whitelist?.includes(creep.owner.username) && !creep.pos.getStructure(STRUCTURE_RAMPART)), 4))
+          .filter(creep => !Memory.whitelist?.includes(creep.owner.username) && !creep.pos.getStructureWithType(STRUCTURE_RAMPART)), 4))
       if (enemy) {
         this.goTo(enemy.pos, 1)
         this.attack(enemy)
@@ -1229,7 +1229,7 @@ export default class CreepMissionWarExtension extends Creep {
           .filter(flag => flag.name.startsWith('double_attack')))
       if (!attackFlag) {
         const structure = this.pos.findClosestByPath(this.room.find(FIND_HOSTILE_STRUCTURES)
-          .filter(struct => !struct.pos.getStructure(STRUCTURE_RAMPART)
+          .filter(struct => !struct.pos.getStructureWithType(STRUCTURE_RAMPART)
            && ['nuker', 'spawn', 'terminal', 'extension', 'tower', 'link', 'observer', 'lab', 'powerspawn', 'factory'].includes(struct.structureType)))
         if (structure) {
           const randomStr = Math.random().toString(36).slice(3)
@@ -1259,7 +1259,7 @@ export default class CreepMissionWarExtension extends Creep {
       // 还找不到就找重要的被 ram 覆盖的重要建筑攻击
       const coveredStruct = this.pos.findClosestByPath(
         this.room.getStructureWithType(STRUCTURE_RAMPART)
-          .filter(struct => !struct.my && struct.pos.getStructureList(['spawn', 'tower', 'storage', 'terminal']).length > 0))
+          .filter(struct => !struct.my && struct.pos.getStructureWithTypes(['spawn', 'tower', 'storage', 'terminal']).length > 0))
       if (coveredStruct) {
         this.say('⚔️', true)
 
@@ -1312,7 +1312,7 @@ export default class CreepMissionWarExtension extends Creep {
           .filter(flag => flag.name.startsWith('double_dismantle')))
       if (!attackFlag) {
         const structure = this.pos.findClosestByPath(this.room.find(FIND_HOSTILE_STRUCTURES)
-          .filter(struct => !struct.pos.getStructure(STRUCTURE_RAMPART)
+          .filter(struct => !struct.pos.getStructureWithType(STRUCTURE_RAMPART)
                && ['nuker', 'spawn', 'terminal', 'extension', 'tower', 'link', 'observer', 'lab', 'powerspawn', 'factory'].includes(struct.structureType)))
         if (structure) {
           const randomStr = Math.random().toString(36).slice(3)
@@ -1342,7 +1342,7 @@ export default class CreepMissionWarExtension extends Creep {
       // 还找不到就找重要的被 ram 覆盖的重要建筑攻击
       const coveredStruct = this.pos.findClosestByPath(
         this.room.getStructureWithType(STRUCTURE_RAMPART)
-          .filter(struct => !struct.my && struct.pos.getStructureList(['spawn', 'tower', 'storage', 'terminal']).length > 0))
+          .filter(struct => !struct.my && struct.pos.getStructureWithTypes(['spawn', 'tower', 'storage', 'terminal']).length > 0))
       if (coveredStruct) {
         this.say('⚔️', true)
 

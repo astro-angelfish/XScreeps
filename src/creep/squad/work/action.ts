@@ -172,7 +172,7 @@ export function squadNameFlagRange(SquadData: Squad, name: string): Flag | undef
     return
   const disFlag = pos_.findClosestByRange(FIND_FLAGS, {
     filter: (flag) => {
-      return flag.name.indexOf(name) == 0
+      return flag.name.indexOf(name) === 0
     },
   })
   if (disFlag)
@@ -222,7 +222,7 @@ export function squadAction(SquadData: Squad): void {
       if (creep.getActiveBodyparts('ranged_attack') > 0) {
         const enemy = creep.pos.findInRange(FIND_HOSTILE_CREEPS, 3, {
           filter: (creep) => {
-            return !Memory.whitelist?.includes(creep.owner.username) && !creep.pos.getStructure('rampart')
+            return !Memory.whitelist?.includes(creep.owner.username) && !creep.pos.getStructureWithType('rampart')
           },
         })
         let enemyCreep: Creep | undefined
@@ -259,7 +259,7 @@ export function squadAction(SquadData: Squad): void {
       if (creep.getActiveBodyparts('ranged_attack') > 0) {
         const enemy = creep.pos.findInRange(FIND_HOSTILE_CREEPS, 3, {
           filter: (creep) => {
-            return !Memory.whitelist?.includes(creep.owner.username) && !creep.pos.getStructure('rampart')
+            return !Memory.whitelist?.includes(creep.owner.username) && !creep.pos.getStructureWithType('rampart')
           },
         })
         let enemyCreep: Creep | undefined
@@ -284,7 +284,7 @@ export function squadAction(SquadData: Squad): void {
       if (creep.getActiveBodyparts('attack') > 0) {
         const enemy = creep.pos.findInRange(FIND_HOSTILE_CREEPS, 1, {
           filter: (creep) => {
-            return !Memory.whitelist?.includes(creep.owner.username) && !creep.pos.getStructure('rampart')
+            return !Memory.whitelist?.includes(creep.owner.username) && !creep.pos.getStructureWithType('rampart')
           },
         })
         if (enemy.length > 0) {
@@ -297,7 +297,7 @@ export function squadAction(SquadData: Squad): void {
             },
           })
           if (flag.length > 0) {
-            const stru = flag[0].pos.getStructureList(['rampart', 'extension', 'spawn', 'constructedWall', 'lab', 'nuker', 'powerSpawn', 'factory', 'terminal', 'storage', 'observer', 'extractor', 'tower'])
+            const stru = flag[0].pos.getStructureWithTypes(['rampart', 'extension', 'spawn', 'constructedWall', 'lab', 'nuker', 'powerSpawn', 'factory', 'terminal', 'storage', 'observer', 'extractor', 'tower'])
             if (stru.length > 0)
               creep.attack(stru[0])
 
@@ -313,7 +313,7 @@ export function squadAction(SquadData: Squad): void {
           },
         })
         if (flag.length > 0) {
-          const stru = flag[0].pos.getStructureList(['rampart', 'extension', 'spawn', 'constructedWall', 'lab', 'nuker', 'powerSpawn', 'factory', 'terminal', 'storage', 'observer', 'extractor', 'tower'])
+          const stru = flag[0].pos.getStructureWithTypes(['rampart', 'extension', 'spawn', 'constructedWall', 'lab', 'nuker', 'powerSpawn', 'factory', 'terminal', 'storage', 'observer', 'extractor', 'tower'])
           if (stru.length > 0)
             creep.dismantle(stru[0])
 

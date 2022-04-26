@@ -107,7 +107,7 @@ export default {
         return `[frame] 未找到房间 ${roomName}，请确认房间!`
 
       const thisPosition = new RoomPosition(x, y, roomName)
-      if (thisPosition.getStructure(type)) {
+      if (thisPosition.getStructureWithType(type)) {
         myRoom.unbindMemory(type, x, y)
         return `[frame] 房间 ${roomName} 已经执行 delStructure 命令!`
       }

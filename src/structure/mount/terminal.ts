@@ -1,7 +1,8 @@
-import { colorfyLog, getAveragePrice, getHighestPrice, haveMarketOrder, sortByKey } from '@/utils'
+import { colorfyLog, getAveragePrice, getHighestPrice, haveMarketOrder, profileMethod, sortByKey } from '@/utils'
 
 // terminal 扩展
 export default class terminalExtension extends StructureTerminal {
+  @profileMethod()
   public manageMission(): void {
     // 急速冲级状态下停止 terminal 功能
     if (this.room.countMissionByName('Creep', '急速冲级') > 0)

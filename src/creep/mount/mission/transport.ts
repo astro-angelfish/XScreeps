@@ -102,7 +102,7 @@ export default class CreepMissionTransportExtension extends Creep {
           }
           else {
             // 寻找
-            const targets = targetPos.getStructureList(['terminal', 'storage', 'tower', 'powerSpawn', 'container', 'factory', 'nuker', 'lab', 'link'])
+            const targets = targetPos.getStructureWithTypes(['terminal', 'storage', 'tower', 'powerSpawn', 'container', 'factory', 'nuker', 'lab', 'link'])
 
             if (targets.length > 0) {
               const target = targets[0]
@@ -141,7 +141,7 @@ export default class CreepMissionTransportExtension extends Creep {
             this.goTo(sourcePos, 1)
           }
           else {
-            const targets = sourcePos.getStructureList(['terminal', 'storage', 'tower', 'powerSpawn', 'container', 'factory', 'nuker', 'lab', 'link'])
+            const targets = sourcePos.getStructureWithTypes(['terminal', 'storage', 'tower', 'powerSpawn', 'container', 'factory', 'nuker', 'lab', 'link'])
             if (targets.length > 0) {
               const target = targets[0]
 
@@ -186,7 +186,7 @@ export default class CreepMissionTransportExtension extends Creep {
           }
           else {
             /* 寻找 */
-            const targets = targetPos.getStructureList(['terminal', 'storage', 'tower', 'powerSpawn', 'container', 'factory', 'nuker', 'lab', 'link'])
+            const targets = targetPos.getStructureWithTypes(['terminal', 'storage', 'tower', 'powerSpawn', 'container', 'factory', 'nuker', 'lab', 'link'])
             if (targets.length > 0) {
               const target = targets[0]
               // const capacity = this.store[rType]
@@ -232,7 +232,7 @@ export default class CreepMissionTransportExtension extends Creep {
             this.goTo(disPos, 1)
           }
           else {
-            const targets = disPos.getStructureList(['terminal', 'storage', 'tower', 'powerSpawn', 'container', 'factory', 'nuker', 'lab', 'link'])
+            const targets = disPos.getStructureWithTypes(['terminal', 'storage', 'tower', 'powerSpawn', 'container', 'factory', 'nuker', 'lab', 'link'])
             if (targets.length > 0) {
               const target = targets[0]
 
@@ -284,7 +284,7 @@ export default class CreepMissionTransportExtension extends Creep {
         }
         else {
           // 寻找
-          const targets = thisPos.getStructureList(['terminal', 'storage', 'tower', 'powerSpawn', 'container', 'factory', 'nuker', 'lab', 'link'])
+          const targets = thisPos.getStructureWithTypes(['terminal', 'storage', 'tower', 'powerSpawn', 'container', 'factory', 'nuker', 'lab', 'link'])
           if (targets.length > 0) {
             const target = targets[0]
             for (const i in this.store) {
@@ -312,7 +312,7 @@ export default class CreepMissionTransportExtension extends Creep {
           this.goTo(disPos, 1)
         }
         else {
-          const targets = disPos.getStructureList(['terminal', 'storage', 'tower', 'powerSpawn', 'container', 'factory', 'nuker', 'lab', 'link'])
+          const targets = disPos.getStructureWithTypes(['terminal', 'storage', 'tower', 'powerSpawn', 'container', 'factory', 'nuker', 'lab', 'link'])
           const ruin = disPos.getRuin()
           if (targets.length > 0 || ruin) {
             const target = targets[0]

@@ -25,7 +25,7 @@ export default class RoomMissionMineExtension extends Room {
 
     // 寻找矿物点 在其附近撒下建筑
     if (!this.memory.structureIdData.extractorID) {
-      if (!mineral.pos.getStructure('extractor')
+      if (!mineral.pos.getStructureWithType('extractor')
        && mineral.pos.lookFor(LOOK_CONSTRUCTION_SITES).length <= 0)
         mineral.pos.createConstructionSite('extractor')
       return
@@ -199,7 +199,7 @@ export default class RoomMissionMineExtension extends Room {
           if (!pos)
             continue
 
-          if (pos.getStructure(STRUCTURE_ROAD))
+          if (pos.getStructureWithType(STRUCTURE_ROAD))
             continue
 
           if (pos.roomName === this.name)

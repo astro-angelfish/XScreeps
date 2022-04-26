@@ -1,7 +1,9 @@
 import { unzipMap } from '../constant/resource'
 import { canResourceDispatch, identifyDispatch } from '@/room/dispatch/resource'
+import { profileMethod } from '@/utils'
 
 export class factoryExtension extends StructureFactory {
+  @profileMethod()
   public manageMission(): void {
     if (this.room.memory.toggles.StopFactory)
       return

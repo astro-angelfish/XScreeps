@@ -549,7 +549,7 @@ export default class CreepMoveExtension extends Creep {
               for (let j = creep.pos.y - 3; j < creep.pos.y + 4; j++) {
                 if (i > 0 && i < 49 && j > 0 && j < 49) {
                   const nearpos = new RoomPosition(i, j, creep.room.name)
-                  if (!nearpos.getStructure(STRUCTURE_RAMPART))
+                  if (!nearpos.getStructureWithType(STRUCTURE_RAMPART))
                     costs.set(i, j, 20)
                 }
               }

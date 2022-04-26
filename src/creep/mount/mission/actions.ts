@@ -125,7 +125,7 @@ export default class CreepMissionActionExtension extends Creep {
           if (!pos)
             continue
 
-          const ram = pos.getStructure('rampart')
+          const ram = pos.getStructureWithType('rampart')
           if (!ram) {
             pos.createConstructionSite('rampart')
 
@@ -208,7 +208,7 @@ export default class CreepMissionActionExtension extends Creep {
 
         let disWall = null
         for (const f of flags) {
-          const wall = f.pos.getStructureList(['rampart', 'constructedWall'])[0]
+          const wall = f.pos.getStructureWithTypes(['rampart', 'constructedWall'])[0]
           if (!wall) {
             f.remove()
           }
@@ -433,7 +433,7 @@ export default class CreepMissionActionExtension extends Creep {
           this.room.find(FIND_FLAGS)
             .filter(flag => flag.name.startsWith('withdraw')))
         if (withdrawFlag) {
-          const tank = withdrawFlag.pos.getStructureList(['storage', 'terminal', 'container', 'tower'])
+          const tank = withdrawFlag.pos.getStructureWithTypes(['storage', 'terminal', 'container', 'tower'])
           if (tank.length > 0) {
             this.processBasicWithdraw(tank[0], RESOURCE_ENERGY)
             return
@@ -488,7 +488,7 @@ export default class CreepMissionActionExtension extends Creep {
           this.room.find(FIND_FLAGS)
             .filter(flag => flag.name.startsWith('withdraw')))
         if (withdrawFlag) {
-          const tank = withdrawFlag.pos.getStructureList(['storage', 'terminal', 'container', 'tower'])
+          const tank = withdrawFlag.pos.getStructureWithTypes(['storage', 'terminal', 'container', 'tower'])
           if (tank.length > 0) {
             this.processBasicWithdraw(tank[0], RESOURCE_ENERGY)
             return
@@ -700,7 +700,7 @@ export default class CreepMissionActionExtension extends Creep {
         this.room.find(FIND_FLAGS)
           .filter(flag => flag.name.startsWith('withdraw')))
       if (withdrawFlag) {
-        const tank = withdrawFlag.pos.getStructureList(['storage', 'terminal', 'container', 'tower'])
+        const tank = withdrawFlag.pos.getStructureWithTypes(['storage', 'terminal', 'container', 'tower'])
         if (tank.length > 0) {
           this.processBasicWithdraw(tank[0], RESOURCE_ENERGY)
           return

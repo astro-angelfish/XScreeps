@@ -133,7 +133,10 @@ interface SpawnMission {
   priority: number
 }
 
-type SpawnMemory = Record<string, any>
+// eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
+interface SpawnMemory {
+  [key: string]: any
+}
 
 /**
  * 房间自动布局

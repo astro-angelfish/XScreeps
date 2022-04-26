@@ -4,7 +4,7 @@
  * name: 对象原型拓展
  * eg: asignPrototype(Creep,CreepMove)
  */
-export const assignPrototype = function(obj1: Record<string, any>, obj2: Record<string, any>) {
+export const assignPrototype = function (obj1: Record<string, any>, obj2: Record<string, any>) {
   Object.getOwnPropertyNames(obj2.prototype).forEach((key) => {
     if (key.includes('Getter')) {
       Object.defineProperty(obj1.prototype, key.split('Getter')[0], {

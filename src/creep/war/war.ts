@@ -185,7 +185,7 @@ export function initWarData(room: Room): void {
 export function findClosestCreepByPath(pos: RoomPosition, creeps: Creep[], attack?: boolean, ram?: boolean): Creep | null {
   return pos.findClosestByPath(
     creeps.filter(creep => (!attack || (creep.getActiveBodyparts('attack') || creep.getActiveBodyparts('ranged_attack')))
-     && (ram ? !creep.pos.getStructure('rampart') : true)
+     && (ram ? !creep.pos.getStructureWithType('rampart') : true)
      && !creep.my))
 }
 
@@ -195,7 +195,7 @@ export function findClosestCreepByPath(pos: RoomPosition, creeps: Creep[], attac
 export function findClosestCreepByRange(pos: RoomPosition, creeps: Creep[], attack?: boolean, ram?: boolean): Creep | null {
   return pos.findClosestByRange(
     creeps.filter(creep => (!attack || (creep.getActiveBodyparts('attack') || creep.getActiveBodyparts('ranged_attack')))
-     && (ram ? !creep.pos.getStructure('rampart') : true)
+     && (ram ? !creep.pos.getStructureWithType('rampart') : true)
      && !creep.my))
 }
 
@@ -205,7 +205,7 @@ export function findClosestCreepByRange(pos: RoomPosition, creeps: Creep[], atta
 export function findCreepsInRange(pos: RoomPosition, creeps: Creep[], range: number, attack?: boolean, ram?: boolean): Creep[] {
   return pos.findInRange(
     creeps.filter(creep => (!attack || (creep.getActiveBodyparts('attack') || creep.getActiveBodyparts('ranged_attack')))
-     && (ram ? !creep.pos.getStructure('rampart') : true)
+     && (ram ? !creep.pos.getStructureWithType('rampart') : true)
      && !creep.my), range)
 }
 
@@ -240,7 +240,7 @@ export function findClosestStructureByPath(pos: RoomPosition, wall?: boolean, ra
   if (wall)
     structures = structures.filter(struct => struct.structureType !== STRUCTURE_WALL)
   if (ram)
-    structures = structures.filter(struct => struct.structureType !== STRUCTURE_RAMPART && !struct.pos.getStructure(STRUCTURE_RAMPART))
+    structures = structures.filter(struct => struct.structureType !== STRUCTURE_RAMPART && !struct.pos.getStructureWithType(STRUCTURE_RAMPART))
 
   if (!attack)
     return pos.findClosestByPath(structures)

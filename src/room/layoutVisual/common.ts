@@ -1,7 +1,7 @@
 import dev from './dev'
 import RoomVisual from './roomVisual'
 
-export const drawByConfig = function(str: string) {
+export const drawByConfig = function (str: string) {
   let data: any
   let xx: number
   let yy: number

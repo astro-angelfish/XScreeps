@@ -1,5 +1,5 @@
 /**
- * Memory初始化
+ * Memory 初始化
  */
 export function initMemory(): void {
   if (!Memory.whitelist)

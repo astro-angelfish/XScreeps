@@ -227,7 +227,7 @@ export default {
       // 去除 road 记忆
       for (const i of Memory.outMineData[roomName].road) {
         const pos = unzipPosition(i)!
-        if (pos.roomName === roomName && !pos.getStructure('road')) {
+        if (pos.roomName === roomName && !pos.getStructureWithType('road')) {
           const index = Memory.outMineData[roomName].road.indexOf(i)
           Memory.outMineData[roomName].road.splice(index, 1)
         }
