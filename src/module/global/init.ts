@@ -1,12 +1,14 @@
 import { random, slice } from "lodash"
+import { AppLifecycleCallbacks } from "../framework/types"
 
 /**
  * Memory初始化
  */
-export function MemoryInit():void {
+export const MemoryInit = function(): void {
     if(!Memory.whitesheet) Memory.whitesheet = []
     if(!Memory.bypassRooms) Memory.bypassRooms = []
     if (!Memory.ignoreMissonName) Memory.ignoreMissonName = []
+    if (!Memory.RoomControlData) Memory.RoomControlData = {}
     if (!global.Gtime) global.Gtime = {}
     for (let i in Memory.RoomControlData) if (!global.Gtime[i])global.Gtime[i] = Game.time - random(1,20,false)
     if (!global.SpecialBodyData) global.SpecialBodyData = {}
@@ -21,4 +23,11 @@ export function MemoryInit():void {
     if (!global.MSB) global.MSB = {}
     if (!Memory.StopPixel) Memory.StopPixel = false
     if(!global.Repairlist)global.Repairlist={}
+    global.Adaption = {}
+}
+
+
+
+export const memoryInit: AppLifecycleCallbacks = {
+    tickStart:MemoryInit
 }

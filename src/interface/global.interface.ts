@@ -22,6 +22,7 @@ declare module NodeJS {
         CpuData?:number[]
         AveCpu?:number
         Repairlist?:{[roomName:string]:string[]}
+        Adaption?:any
     }
 }
 

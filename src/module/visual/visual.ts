@@ -1,4 +1,5 @@
 import { CompoundColor } from "@/constant/ResourceConstant"
+import { AppLifecycleCallbacks } from "../framework/types"
 import { unzipXandY } from "../fun/funtion"
 import { getTowerData } from "../war/war"
 
@@ -122,6 +123,10 @@ export function showTowerData():void{
         if (!global.warData.tower[roomName].data)
             global.warData.tower[roomName].data = getTowerData(Game.rooms[roomName])
     }
+}
+
+export const towerDataVisual:AppLifecycleCallbacks = {
+    tickEnd:showTowerData
 }
 
 

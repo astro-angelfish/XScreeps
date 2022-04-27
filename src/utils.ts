@@ -492,3 +492,5 @@ export const createElement = {
     return parts.join('')
   }
 }
+
+export const red = (content: string , bold?: boolean) => Colorful(content, 'red' ,bold)

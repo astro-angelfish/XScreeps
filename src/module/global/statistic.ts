@@ -1,3 +1,4 @@
+import { AppLifecycleCallbacks } from "../framework/types"
 /**
  * 统计所有爬虫归属，统计数目 【已测试】
  */
@@ -36,4 +37,8 @@ export function CreepNumStatistic():void {
         /* 添加统计数目 */
         global.CreepNumData[creep_.memory.belong][creep_.memory.role] += 1
     }
+}
+
+export const creepRecycleAndStatistic:AppLifecycleCallbacks = {
+    tickStart:CreepNumStatistic
 }

@@ -4,6 +4,7 @@ import { generateID, isInArray } from "@/utils"
 import { squadMove, squadNear } from "./move/move"
 import { initSquad, Squadaction, SquadAttackOrient, SquadColorFlagRange, SquadNameFlagPath, SquadSteady } from "./work/action"
 import { getStandCreep, SquadArrivedRoom, SquadAttackDirection, SquadPosDirection, SquadReady } from "./work/state"
+import { AppLifecycleCallbacks } from "../framework/types"
 
 /**
  * 只是壳子 由于比较懒，无限期延迟开发，不保证没有bug
@@ -44,11 +45,11 @@ export function SquadManager():void{
             }
         }
         /* 运行框架 */
-        squardFrameWork(squadID)
+        squadFrameWork(squadID)
     }
 }
 // 小队通用执行框架
-export function squardFrameWork(squardID:string):void{
+export function squadFrameWork(squardID:string):void{
     var Data = Memory.squadMemory[squardID]
     if (!Data) return
     /* 小队Memory中的爬虫数据 */
@@ -148,4 +149,8 @@ export function squardFrameWork(squardID:string):void{
         }
         if (!attack_flag) return
 
+}
+
+export const squadWarMoudle:AppLifecycleCallbacks = {
+    tickEnd:SquadManager
 }

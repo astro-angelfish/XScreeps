@@ -1,5 +1,6 @@
 import { ResourceMapData } from "@/constant/ResourceConstant"
 import { isInArray } from "@/utils"
+import { AppLifecycleCallbacks } from "../framework/types"
 
 /* 杂物堆 */
 
@@ -466,22 +467,4 @@ export function findFollowData(creep:Creep):string {
 export function unzipXandY(str:string):number[] | undefined{
     var info = str.split('/')
     return info.length == 2? [Number(info[0]),Number(info[1])]:undefined
-}
-
-/* 平均cpu统计相关 */
-export function statCPU(): void {
-    var mainEndCpu = Game.cpu.getUsed()
-    if (!global.CpuData) global.CpuData = []
-    global.UsedCpu = mainEndCpu
-    let length_i = 200;
-    if (global.CpuData.length > length_i) {
-        global.CpuData = global.CpuData.slice(1);
-    }    
-    global.CpuData.push(global.UsedCpu)
-    /* 计算平均cpu */
-    var AllCpu = 0
-    for (var cData of global.CpuData) {
-        AllCpu += cData
-    }
-    global.AveCpu = AllCpu / global.CpuData.length
 }
