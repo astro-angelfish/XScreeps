@@ -24,6 +24,7 @@ export const MemoryInit = function(): void {
     if (!Memory.StopPixel) Memory.StopPixel = false
     if(!global.Repairlist)global.Repairlist={}
     global.Adaption = {}
+    if (!Memory.VisualLevel) Memory.VisualLevel = 'high'    // 默认最高等级的画质显示
 }
 
 

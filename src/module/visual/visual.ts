@@ -193,16 +193,18 @@ export const towerDataVisual:AppLifecycleCallbacks = {
 const normalTextStyle = { color: colors.zinc, opacity: 0.8, font: 0.7, align: 'left' } as const
 
 function box(visual: RoomVisual, x: number, y: number, w: number, h: number, style?: LineStyle) {
-  return visual
-    .line(x + 0.1, y + 0.05, x + w - 0.1, y + 0.05, style)
-    .line(x + w - 0.05, y, x + w - 0.05, y + h, style)
-    .line(x + w - 0.1, y + h - 0.05, x + 0.1, y + h - 0.05, style)
-    .line(x + 0.05, y + h, x + 0.05, y, style)
+return visual
+.line(x + 0.1, y + 0.05, x + w - 0.1, y + 0.05, style)
+.line(x + w - 0.05, y, x + w - 0.05, y + h, style)
+.line(x + w - 0.1, y + h - 0.05, x + 0.1, y + h - 0.05, style)
+.line(x + 0.05, y + h, x + 0.05, y, style)
 }
 
-function labelBar(visual: RoomVisual, x: number, y: number, labelSpace: number, w: number, label: string, content: string, percent: number, color: string) {
+function labelBar(visual: RoomVisual, x: number, y: number, labelSpace: number, w: number, label: string, content: string, percent: number, color: string,quailty:'low' | 'medium' | 'high') {
   visual.text(label, x + labelSpace, y, { color, opacity: 0.7, font: 0.7, align: 'right' })
+  if (quailty == 'high')
   box(visual, x + labelSpace + 0.1, y - 0.7, 6.2, 0.9, { color, opacity: 0.2 })
+  if (quailty != 'low')
   visual.rect(x + labelSpace + 0.1 + 0.1, y - 0.6, percent * w, 0.7, { fill: color, opacity: 0.3 })
   visual.text(content, x + labelSpace + 0.1 + w / 2, y - 0.05, { color, font: 0.5, align: 'center' })
 }
@@ -212,14 +214,22 @@ function labelBar(visual: RoomVisual, x: number, y: number, labelSpace: number, 
  * 瞬时cpu 平均cpu 房间状态 任务数 bucket等
  */
 export function processRoomDataVisual(room: Room): void {
+  if (room.memory.banVisual) return
   const visual = room.visual
-
+  if (Memory.VisualLevel == 'blank')
+  {
+      visual.text(`CPU:${(global.UsedCpu?global.UsedCpu:0).toFixed(2)}`,1,0.7,{color: 'white', font:1,align:'left'})
+      visual.text(`APU:${ (global.AveCpu?global.AveCpu:0).toFixed(2)}`,1,1.8,{color: 'white', font:1,align:'left'})
+      visual.text(`BKT:${Game.cpu.bucket}`,1,2.9,{color: 'white', font:1,align:'left'})
+    return
+  }
   // Room Status
   let line = 0.7
   visual.text(`${room.name}`, 0.1, line, normalTextStyle)
   visual.text(room.memory.state === 'peace' ? '和平' : '战争', room.name.length * 0.45 + 0.3, 0.7, { ...normalTextStyle, color: room.memory.state === 'peace' ? colors.zinc : colors.red })
   const missionNum = Object.values(room.memory.Misson).reduce((a, b) => a + b.length, 0)
   visual.text(`共 ${missionNum} 任务`, room.name.length * 0.45 + 2, 0.7, { ...normalTextStyle, color: missionNum > 20 ? colors.amber : colors.zinc })
+  if (Memory.VisualLevel != 'low')
   visual.text(`${Object.values(global.CreepNumData[room.name] || {}).reduce((a, b) => a + b, 0)} 爬虫`, room.name.length * 0.45 + missionNum.toString().length * 0.4 + 4.6, 0.7, normalTextStyle)
 
   // CPU
@@ -227,25 +237,31 @@ export function processRoomDataVisual(room: Room): void {
   const usedCpuPercent = cpuUsed / Game.cpu.limit
   const usedCpuPercentVisual = Math.min(usedCpuPercent, 1)
   const cpuColor = usedCpuPercent > 0.8 ? colors.rose : usedCpuPercent > 0.5 ? colors.amber : colors.emerald
-  labelBar(visual, 0.1, line += 1.1, 1.4, 6, 'CPU', `${cpuUsed.toFixed(2)} - ${Math.round(usedCpuPercent * 100)}%`, usedCpuPercentVisual, cpuColor)
+  labelBar(visual, 0.1, line += 1.1, 1.4, 6, 'CPU', `${cpuUsed.toFixed(2)} - ${Math.round(usedCpuPercent * 100)}%`, usedCpuPercentVisual, cpuColor,Memory.VisualLevel)
 
   // 平均CPU
   const ave_cpuUsed = (global.AveCpu?global.AveCpu:0)
   const ave_usedCpuPercent = ave_cpuUsed / Game.cpu.limit
-  const ave_usedCpuPercentVisual = Math.min(usedCpuPercent, 1)
-  const ave_cpuColor = ave_usedCpuPercent > 0.8 ?  colors.rose : usedCpuPercent > 0.5 ? colors.amber : colors.emerald
-  labelBar(visual, 0.1, line += 1.1, 1.4, 6, 'APU', `${ave_cpuUsed.toFixed(2)} - ${Math.round(ave_usedCpuPercent * 100)}%-<${(global.CpuData?global.CpuData.length:0)}>`, ave_usedCpuPercentVisual, ave_cpuColor)
+  const ave_usedCpuPercentVisual = Math.min(ave_usedCpuPercent, 1)
+  const ave_cpuColor = ave_usedCpuPercent > 0.8 ?  colors.rose : ave_usedCpuPercent > 0.5 ? colors.amber : colors.emerald
+  labelBar(visual, 0.1, line += 1.1, 1.4, 6, 'APU', `${ave_cpuUsed.toFixed(2)} - ${Math.round(ave_usedCpuPercent * 100)}%-<${(global.CpuData?global.CpuData.length:0)}>`, ave_usedCpuPercentVisual, ave_cpuColor,Memory.VisualLevel)
   
   // Bucket
   const bucket = Game.cpu.bucket
-  const bucketPercent = bucket / 10000
-  const bucketColor = bucketPercent < 0.1 ? colors.rose : bucketPercent < 0.3 ? colors.amber : colors.emerald
-  labelBar(visual, 0.1, line += 1.1, 1.4, 6, 'BKT', `${bucket}`, bucketPercent, bucketColor)
+  if (Memory.VisualLevel != 'low' || bucket < 10000)
+  {
+    const bucketPercent = bucket / 10000
+    const bucketColor = bucketPercent < 0.1 ? colors.rose : bucketPercent < 0.3 ? colors.amber : colors.emerald
+    labelBar(visual, 0.1, line += 1.1, 1.4, 6, 'BKT', `${bucket}`, bucketPercent, bucketColor,Memory.VisualLevel)
+  }
 
   // 控制器进度
-  if (room.controller) {
-    const controllerProgress = room.controller.level >= 8 ? 1 : room.controller.progress / room.controller.progressTotal
-    labelBar(visual, 0.1, line += 1.1, 1.4, 6, '升级', `${controllerProgress >= 1?100:((controllerProgress * 100).toFixed(4))}%`, controllerProgress, colors.cyan)
+  if (Memory.VisualLevel != 'low' && room.controller.level != 8)
+  {
+    if (room.controller) {
+        const controllerProgress = room.controller.level >= 8 ? 1 : room.controller.progress / room.controller.progressTotal
+        labelBar(visual, 0.1, line += 1.1, 1.4, 6, '升级', `${controllerProgress >= 1?100:((controllerProgress * 100).toFixed(4))}%`, controllerProgress, colors.cyan,Memory.VisualLevel)
+      }
   }
 
   // 仓库
@@ -254,29 +270,24 @@ export function processRoomDataVisual(room: Room): void {
     const storageFree = Math.ceil(storage.store.getFreeCapacity() / 1000)
     const storageUsedPercent = storage.store.getUsedCapacity() / storage.store.getCapacity()
     const storageFreeColor = storageUsedPercent > 0.9 ? colors.rose : storageUsedPercent > 0.7 ? colors.amber : colors.cyan
-    labelBar(visual, 0.1, line += 1.1, 1.4, 6, '仓库', `${storageFree}K`, storageUsedPercent, storageFreeColor)
+    labelBar(visual, 0.1, line += 1.1, 1.4, 6, '仓库', `${storageFree}K`, storageUsedPercent, storageFreeColor,Memory.VisualLevel)
   }
 
   // 工厂
   let line2 = 0.7
   if (room.controller && room.controller.level >= 8) {
-    if (room.memory.productData.producing) {
+    if (room.memory.productData.producing && room.memory.productData.producing.com) {
       const producing = room.memory.productData.producing
-      if (producing.num) {
-        const producingNum = (producing.num || 0)
-        const producingPercent = (producing.num - producingNum) / producing.num
-        const producingPercentVisual = Math.min(producingPercent, 1)
-        labelBar(visual, 8, line2 += 1.1, 1.4, 6, '工厂', `${producing.com} - ${(producingPercent * 100).toFixed(1)}%`, producingPercentVisual, colors.cyan)
-      }
-      else {
-        visual.text(`工厂生产 -> ${producing.com}`, 8, line2 += 1.1, normalTextStyle)
-      }
+      if (producing.num)
+        visual.text(`工厂生产 -> ${producing.com} (${producing.num})`, 8, line2 += 1.1, normalTextStyle)
+      else
+        visual.text(`工厂生产 -> ${producing.com} `, 8, line2 += 1.1, normalTextStyle)
     }
     if (room.memory.ComDispatchData && !_.isEmpty(room.memory.ComDispatchData)) {
       const ress = Object.keys(room.memory.ComDispatchData) as ResourceConstant[]
       const res = ress[ress.length - 1]
       const resData = room.memory.ComDispatchData[res]!
-      visual.text(`合成规划 ${res} (${resData.dispatch_num})`, 8, line2 += 1.1, normalTextStyle)
+      visual.text(`合成规划 -> ${res} (${resData.dispatch_num})`, 8, line2 += 1.1, normalTextStyle)
     }
   }
 

@@ -8,6 +8,7 @@ interface Memory {
     outMineData:{[roomName:string]:OutMineData}
     stats :any
     StopPixel :boolean
+    VisualLevel: 'blank' | 'low' | 'medium' | 'high'
 }
 
 interface RDData{

@@ -1,3 +1,4 @@
+import room from "@/mount/room"
 import { Colorful, isInArray } from "@/utils"
 import { result } from "lodash"
 import { allResource, roomResource } from "../control/local/resource"
@@ -64,4 +65,20 @@ export default {
             
         },
     },
+
+    /* 房间可视化 */
+    panel:{
+        switch(roomName:string):string{
+            if (!Game.rooms[roomName]) return `[RoomVisual] 房间${roomName}无视野`
+            if (!Game.rooms[roomName].controller || !Game.rooms[roomName].controller.my) return `[RoomVisual] 房间${roomName}非受控房间`
+            if (Game.rooms[roomName].memory.banVisual) delete Game.rooms[roomName].memory.banVisual
+            else Game.rooms[roomName].memory.banVisual = true
+            return `[RoomVisual] 房间${roomName}的可视化设置为${Game.rooms[roomName].memory.banVisual?'false':'true'}`
+        },
+        level(lev:'low'|'medium'|'high'|'blank'):string{
+            if (!isInArray(['low','medium','high','blank'],lev)) return `[RoomVisual] 非法参数`
+            Memory.VisualLevel = lev
+            return `[RoomVisual] 可视化画质设置为${lev}`
+        },
+    }
 }
