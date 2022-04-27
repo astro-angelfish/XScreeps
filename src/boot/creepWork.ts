@@ -1,11 +1,11 @@
 import { RoleData, RoleLevelData } from "@/constant/SpawnConstant"
-import { CalculateEnergy, GenerateAbility } from "@/utils"
+import { CalculateEnergy, colors, GenerateAbility } from "@/utils"
 
 export const creepRunner = function (creep: Creep): void {
   if (creep.spawning)
   {
     /* 爬虫出生角色可视化 */
-    creep.room.visual.text(`${creep.memory.role}`,creep.pos.x,creep.pos.y,{color: '#ffffff', font:0.4,align:'center',backgroundColor:'#696969',opacity:0.3})
+    creep.room.visual.text(`${creep.memory.role}`,creep.pos.x,creep.pos.y,{color: Game.time%2?colors.emerald:colors.red, font:0.4,align:'center',opacity:0.3})
   }
   /* 跨shard找回记忆 */
   if (!creep.memory.role)

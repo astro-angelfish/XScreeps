@@ -1,5 +1,5 @@
 import { ResourceDispatch } from "@/module/dispatch/resource"
-import { RoomDataVisual } from "@/module/visual/visual"
+import { processRoomDataVisual } from "@/module/visual/visual"
 
 export const roomRunner = function (room: Room): void {
     if (!room?.controller?.my) return
@@ -20,7 +20,7 @@ export const roomRunner = function (room: Room): void {
     
     ResourceDispatch(room)      // 资源调度
 
-    RoomDataVisual(room)        // 房间可视化
+    processRoomDataVisual(room)        // 房间可视化
 
     room.LevelMessageUpdate()        // 房间等级Memory信息更新
 }

@@ -1,7 +1,5 @@
-/* error map */
 import { createApp } from './module/framework'
 import { memoryInit } from './module/global/init'
-/* 原型挂载 */
 import {createGlobalExtension} from '@/mount'
 import {roomRunner} from '@/boot/roomWork'
 import {creepRunner} from '@/boot/creepWork'
