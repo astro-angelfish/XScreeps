@@ -10,7 +10,7 @@ export const roomRunner = function (room: Room): void {
     room.RoomEcosphere()    // 房间状态、布局
     room.SpawnMain()        // 常驻爬虫的孵化管理 [不涉及任务相关爬虫的孵化]
 
-    /* 房间运维 */ 
+    /* 房间运维 */
     room.MissionManager()   // 任务管理器
 
     room.SpawnExecution()   // 孵化爬虫
@@ -18,10 +18,12 @@ export const roomRunner = function (room: Room): void {
     room.TowerWork()        // 防御塔工作
 
     room.StructureMission() // terminal link factory 工作
-    
-    ResourceDispatch(room)      // 资源调度
 
+    ResourceDispatch(room)      // 资源调度
+ 
     processRoomDataVisual(room)        // 房间可视化
 
     room.LevelMessageUpdate()        // 房间等级Memory信息更新
 }
+
+

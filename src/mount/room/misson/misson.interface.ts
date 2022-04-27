@@ -53,6 +53,7 @@ interface RoomMemory {
     Misson: { [range: string]: MissionModel[] }  // 任务
     RoomLabBind?: RoomLabBind
     CoolDownDic: { [Name: string]: number }      /* 冷却时间的哈希表 key为任务名 */
+    Visualdisplay:boolean
     nukeID?: string[]
     nukeData?: NukeData
     ComDispatchData?: { [re in ResourceConstant]?: { ok?: boolean, dispatch_num: number } }

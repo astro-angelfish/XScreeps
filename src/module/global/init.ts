@@ -3,7 +3,7 @@ import { AppLifecycleCallbacks } from "../framework/types"
 /**
  * Memory初始化
  */
- export const MemoryInit = function(): void {
+export const MemoryInit = function (): void {
     if (!Memory.whitesheet) Memory.whitesheet = []
     if (!Memory.bypassRooms) Memory.bypassRooms = []
     if (!Memory.ignoreMissonName) Memory.ignoreMissonName = []
@@ -25,13 +25,16 @@ import { AppLifecycleCallbacks } from "../framework/types"
     if (!Memory.StopPixel) Memory.StopPixel = false
     if (!global.Repairlist) global.Repairlist = {}
     if (!Memory.creepscpu) { Memory.creepscpu = {} }
-    global.Marketorder = {};/*tick重置已有的订单列表信息*/
     if (!global.getStructure) global.getStructure = {}
     if (!global.controllerData) { global.controllerData = {} }
+    global.Marketorder = {};/*tick重置已有的订单列表信息*/
     global.RoomDataVisual = null
     global.Adaption = {}
 }
+export const MemoryTickStart = function (): void {
+    
+}
 
 export const memoryInit: AppLifecycleCallbacks = {
-    tickStart:MemoryInit
+    tickStart: MemoryInit
 }

@@ -13,121 +13,105 @@ import { getTowerData } from "../war/war"
  * 较消耗cpu，仅做短暂统计用，请及时截图及销毁旗帜
  * @returns void
  */
-export function showTowerData():void{
-    if (Game.flags['TowerVisualAttack'])
-    {
-        let roomName = Game.flags['TowerVisualAttack'].pos.roomName
-        if (!global.warData) global.warData = {}
-        if (!global.warData.tower) global.warData.tower = {}
-        if (!global.warData.tower[roomName]) global.warData.tower[roomName] = {count:0}
-        if (global.warData.tower[roomName].data)
-        {
-            for (var posData in global.warData.tower[roomName].data)
-            {
-                /* 数据 */
-                let posXY = unzipXandY(posData)
-                let tx = posXY[0]
-                let ty = posXY[1]
-                var Data = global.warData.tower[roomName].data[posData]
-                new RoomVisual(roomName).text(`${Data.attack}`,tx,ty,{color: 'red', font:0.4,align:'center'})
-            }
-            return
-        }
-        if (!Game.rooms[roomName]) {
-            /* 如果没有房间视野，采用observe观察 */
-            for (let i in Memory.RoomControlData)
-            {
-                if (Game.rooms[i] && Game.rooms[i].controller.level >= 8)
-                {
-                    let observer_ = Game.getObjectById(Game.rooms[i].memory.StructureIdData.ObserverID) as StructureObserver
-                    if (observer_ && observer_.observeRoom(roomName) == OK)
-                    break
-                }
-            }
-            return
-        }
-        if (!global.warData.tower[roomName].data)
-            global.warData.tower[roomName].data = getTowerData(Game.rooms[roomName])
+export function showTowerData(): void {
+  if (Game.flags['TowerVisualAttack']) {
+    let roomName = Game.flags['TowerVisualAttack'].pos.roomName
+    if (!global.warData) global.warData = {}
+    if (!global.warData.tower) global.warData.tower = {}
+    if (!global.warData.tower[roomName]) global.warData.tower[roomName] = { count: 0 }
+    if (global.warData.tower[roomName].data) {
+      for (var posData in global.warData.tower[roomName].data) {
+        /* 数据 */
+        let posXY = unzipXandY(posData)
+        let tx = posXY[0]
+        let ty = posXY[1]
+        var Data = global.warData.tower[roomName].data[posData]
+        new RoomVisual(roomName).text(`${Data.attack}`, tx, ty, { color: 'red', font: 0.4, align: 'center' })
+      }
+      return
     }
-    if (Game.flags['TowerVisualHeal'])
-    {
-        let roomName = Game.flags['TowerVisualHeal'].pos.roomName
-        if (!global.warData) global.warData = {}
-        if (!global.warData.tower) global.warData.tower = {}
-        if (!global.warData.tower[roomName]) global.warData.tower[roomName] = {count:0}
-        if (global.warData.tower[roomName].data)
-        {
-            for (var posData in global.warData.tower[roomName].data)
-            {
-                /* 数据 */
-                let posXY = unzipXandY(posData)
-                let tx = posXY[0]
-                let ty = posXY[1]
-                var Data = global.warData.tower[roomName].data[posData]
-                new RoomVisual(roomName).text(`${Data.heal}`,tx,ty,{color: 'green', font:0.4,align:'center'})
-            }
-            return
+    if (!Game.rooms[roomName]) {
+      /* 如果没有房间视野，采用observe观察 */
+      for (let i in Memory.RoomControlData) {
+        if (Game.rooms[i] && Game.rooms[i].controller.level >= 8) {
+          let observer_ = Game.getObjectById(Game.rooms[i].memory.StructureIdData.ObserverID) as StructureObserver
+          if (observer_ && observer_.observeRoom(roomName) == OK)
+            break
         }
-        if (!Game.rooms[roomName]) {
-            /* 如果没有房间视野，采用observe观察 */
-            for (let i in Memory.RoomControlData)
-            {
-                if (Game.rooms[i] && Game.rooms[i].controller.level >= 8)
-                {
-                    let observer_ = Game.getObjectById(Game.rooms[i].memory.StructureIdData.ObserverID) as StructureObserver
-                    if (!observer_)
-                    {
-                        delete Game.rooms[i].memory.StructureIdData.ObserverID
-                        return
-                    }
-                    if (observer_ && observer_.observeRoom(roomName) == OK)
-                    break
-                }
-            }
-            return
-        }
-        if (!global.warData.tower[roomName].data)
-            global.warData.tower[roomName].data = getTowerData(Game.rooms[roomName])
+      }
+      return
     }
-    if (Game.flags['TowerVisualRepair'])
-    {
-        let roomName = Game.flags['TowerVisualRepair'].pos.roomName
-        if (!global.warData) global.warData = {}
-        if (!global.warData.tower) global.warData.tower = {}
-        if (!global.warData.tower[roomName]) global.warData.tower[roomName] = {count:0}
-        if (global.warData.tower[roomName].data)
-        {
-            for (var posData in global.warData.tower[roomName].data)
-            {
-                /* 数据 */
-                let posXY = unzipXandY(posData)
-                let tx = posXY[0]
-                let ty = posXY[1]
-                var Data = global.warData.tower[roomName].data[posData]
-                new RoomVisual(roomName).text(`${Data.repair}`,tx,ty,{color: 'yellow', font:0.4,align:'center'})
-            }
-            return
-        }
-        if (!Game.rooms[roomName]) {
-            /* 如果没有房间视野，采用observe观察 */
-            for (let i in Memory.RoomControlData)
-            {
-                if (Game.rooms[i] && Game.rooms[i].controller.level >= 8)
-                {
-                    let observer_ = Game.getObjectById(Game.rooms[i].memory.StructureIdData.ObserverID) as StructureObserver
-                    if (observer_ && observer_.observeRoom(roomName) == OK)
-                    break
-                }
-            }
-            return
-        }
-        if (!global.warData.tower[roomName].data)
-            global.warData.tower[roomName].data = getTowerData(Game.rooms[roomName])
+    if (!global.warData.tower[roomName].data)
+      global.warData.tower[roomName].data = getTowerData(Game.rooms[roomName])
+  }
+  if (Game.flags['TowerVisualHeal']) {
+    let roomName = Game.flags['TowerVisualHeal'].pos.roomName
+    if (!global.warData) global.warData = {}
+    if (!global.warData.tower) global.warData.tower = {}
+    if (!global.warData.tower[roomName]) global.warData.tower[roomName] = { count: 0 }
+    if (global.warData.tower[roomName].data) {
+      for (var posData in global.warData.tower[roomName].data) {
+        /* 数据 */
+        let posXY = unzipXandY(posData)
+        let tx = posXY[0]
+        let ty = posXY[1]
+        var Data = global.warData.tower[roomName].data[posData]
+        new RoomVisual(roomName).text(`${Data.heal}`, tx, ty, { color: 'green', font: 0.4, align: 'center' })
+      }
+      return
     }
+    if (!Game.rooms[roomName]) {
+      /* 如果没有房间视野，采用observe观察 */
+      for (let i in Memory.RoomControlData) {
+        if (Game.rooms[i] && Game.rooms[i].controller.level >= 8) {
+          let observer_ = Game.getObjectById(Game.rooms[i].memory.StructureIdData.ObserverID) as StructureObserver
+          if (!observer_) {
+            delete Game.rooms[i].memory.StructureIdData.ObserverID
+            return
+          }
+          if (observer_ && observer_.observeRoom(roomName) == OK)
+            break
+        }
+      }
+      return
+    }
+    if (!global.warData.tower[roomName].data)
+      global.warData.tower[roomName].data = getTowerData(Game.rooms[roomName])
+  }
+  if (Game.flags['TowerVisualRepair']) {
+    let roomName = Game.flags['TowerVisualRepair'].pos.roomName
+    if (!global.warData) global.warData = {}
+    if (!global.warData.tower) global.warData.tower = {}
+    if (!global.warData.tower[roomName]) global.warData.tower[roomName] = { count: 0 }
+    if (global.warData.tower[roomName].data) {
+      for (var posData in global.warData.tower[roomName].data) {
+        /* 数据 */
+        let posXY = unzipXandY(posData)
+        let tx = posXY[0]
+        let ty = posXY[1]
+        var Data = global.warData.tower[roomName].data[posData]
+        new RoomVisual(roomName).text(`${Data.repair}`, tx, ty, { color: 'yellow', font: 0.4, align: 'center' })
+      }
+      return
+    }
+    if (!Game.rooms[roomName]) {
+      /* 如果没有房间视野，采用observe观察 */
+      for (let i in Memory.RoomControlData) {
+        if (Game.rooms[i] && Game.rooms[i].controller.level >= 8) {
+          let observer_ = Game.getObjectById(Game.rooms[i].memory.StructureIdData.ObserverID) as StructureObserver
+          if (observer_ && observer_.observeRoom(roomName) == OK)
+            break
+        }
+      }
+      return
+    }
+    if (!global.warData.tower[roomName].data)
+      global.warData.tower[roomName].data = getTowerData(Game.rooms[roomName])
+  }
 }
 
-export const towerDataVisual:AppLifecycleCallbacks = {
-    tickEnd:showTowerData
+export const towerDataVisual: AppLifecycleCallbacks = {
+  tickEnd: showTowerData
 }
 
 
@@ -212,16 +196,16 @@ function labelBar(visual: RoomVisual, x: number, y: number, labelSpace: number, 
  * 瞬时cpu 平均cpu 房间状态 任务数 bucket等
  */
 export function processRoomDataVisual(room: Room): void {
+  if (!room.memory.Visualdisplay) return;
   const visual = room.visual
-
   // Room Status
-  let line = 0.7
+  var line = 0.7
   visual.text(`${room.name}`, 0.1, line, normalTextStyle)
   visual.text(room.memory.state === 'peace' ? '和平' : '战争', room.name.length * 0.45 + 0.3, 0.7, { ...normalTextStyle, color: room.memory.state === 'peace' ? colors.zinc : colors.red })
   const missionNum = Object.values(room.memory.Misson).reduce((a, b) => a + b.length, 0)
   visual.text(`共 ${missionNum} 任务`, room.name.length * 0.45 + 2, 0.7, { ...normalTextStyle, color: missionNum > 20 ? colors.amber : colors.zinc })
   visual.text(`${Object.values(global.CreepNumData[room.name] || {}).reduce((a, b) => a + b, 0)} 爬虫`, room.name.length * 0.45 + missionNum.toString().length * 0.4 + 4.6, 0.7, normalTextStyle)
-
+  // if (!global.RoomDataVisual || !Game.cpu.generatePixel) {
   // CPU
   const cpuUsed = global.UsedCpu || 0
   const usedCpuPercent = cpuUsed / Game.cpu.limit
@@ -229,30 +213,40 @@ export function processRoomDataVisual(room: Room): void {
   const cpuColor = usedCpuPercent > 0.8 ? colors.rose : usedCpuPercent > 0.5 ? colors.amber : colors.emerald
   labelBar(visual, 0.1, line += 1.1, 1.4, 6, 'CPU', `${cpuUsed.toFixed(2)} - ${Math.round(usedCpuPercent * 100)}%`, usedCpuPercentVisual, cpuColor)
 
+
   // 平均CPU
-  const ave_cpuUsed = (global.AveCpu?global.AveCpu:0)
+  const ave_cpuUsed = (global.AveCpu ? global.AveCpu : 0)
   const ave_usedCpuPercent = ave_cpuUsed / Game.cpu.limit
-  const ave_usedCpuPercentVisual = Math.min(usedCpuPercent, 1)
-  const ave_cpuColor = ave_usedCpuPercent > 0.8 ?  colors.rose : usedCpuPercent > 0.5 ? colors.amber : colors.emerald
-  labelBar(visual, 0.1, line += 1.1, 1.4, 6, 'APU', `${ave_cpuUsed.toFixed(2)} - ${Math.round(ave_usedCpuPercent * 100)}%-<${(global.CpuData?global.CpuData.length:0)}>`, ave_usedCpuPercentVisual, ave_cpuColor)
-  
+  const ave_usedCpuPercentVisual = Math.min(ave_usedCpuPercent, 1)
+  const ave_cpuColor = ave_usedCpuPercent > 0.8 ? colors.rose : usedCpuPercent > 0.5 ? colors.amber : colors.emerald
+  labelBar(visual, 0.1, line += 1.1, 1.4, 6, 'APU', `${ave_cpuUsed.toFixed(2)} - ${Math.round(ave_usedCpuPercent * 100)}%-<${(global.CpuData ? global.CpuData.length : 0)}>`, ave_usedCpuPercentVisual, ave_cpuColor)
+
   // Bucket
   const bucket = Game.cpu.bucket
   const bucketPercent = bucket / 10000
   const bucketColor = bucketPercent < 0.1 ? colors.rose : bucketPercent < 0.3 ? colors.amber : colors.emerald
   labelBar(visual, 0.1, line += 1.1, 1.4, 6, 'BKT', `${bucket}`, bucketPercent, bucketColor)
+  // if (Game.cpu.generatePixel) global.RoomDataVisual = Game.map.visual.export();
+  // } else {
+  //   if (Game.cpu.generatePixel) Game.map.visual.import(global.RoomDataVisual);
+  //   line += 3.3;
+  // }
 
+
+  //   
   // 控制器进度
-  if (room.controller) {
+  if (room.controller.level < 8) {
     const controllerProgress = room.controller.level >= 8 ? 1 : room.controller.progress / room.controller.progressTotal
-    labelBar(visual, 0.1, line += 1.1, 1.4, 6, '升级', `${controllerProgress >= 1?100:((controllerProgress * 100).toFixed(4))}%`, controllerProgress, colors.cyan)
+    labelBar(visual, 0.1, line += 1.1, 1.4, 6, '升级', `${controllerProgress >= 1 ? 100 : ((controllerProgress * 100).toFixed(4))}%`, controllerProgress, colors.cyan)
   }
 
   // 仓库
   let storage = room.storage as StructureStorage
   if (storage) {
-    const storageFree = Math.ceil(storage.store.getFreeCapacity() / 1000)
-    const storageUsedPercent = storage.store.getUsedCapacity() / storage.store.getCapacity()
+    let storage_all = storage.store.getCapacity();
+    let storage_use = storage.store.getUsedCapacity();
+    const storageFree = Math.ceil(storage_use / 1000)
+    const storageUsedPercent = storage_use / storage_all
     const storageFreeColor = storageUsedPercent > 0.9 ? colors.rose : storageUsedPercent > 0.7 ? colors.amber : colors.cyan
     labelBar(visual, 0.1, line += 1.1, 1.4, 6, '仓库', `${storageFree}K`, storageUsedPercent, storageFreeColor)
   }
@@ -290,7 +284,6 @@ export function processRoomDataVisual(room: Room): void {
           room.memory.StructureIdData.labs.splice(room.memory.StructureIdData.labs.indexOf(i as Id<StructureLab>), 1)
         continue
       }
-
       room.visual.text(
         `${room.memory.RoomLabBind[i].rType}`,
         lab.pos.x, lab.pos.y,
