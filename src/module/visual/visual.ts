@@ -269,14 +269,14 @@ export function processRoomDataVisual(room: Room): void {
         labelBar(visual, 8, line2 += 1.1, 1.4, 6, '工厂', `${producing.com} - ${(producingPercent * 100).toFixed(1)}%`, producingPercentVisual, colors.cyan)
       }
       else {
-        visual.text(`工厂生产 -> ${producing.com}`, 8, line += 1.1, normalTextStyle)
+        visual.text(`工厂生产 -> ${producing.com}`, 8, line2 += 1.1, normalTextStyle)
       }
     }
     if (room.memory.ComDispatchData && !_.isEmpty(room.memory.ComDispatchData)) {
       const ress = Object.keys(room.memory.ComDispatchData) as ResourceConstant[]
       const res = ress[ress.length - 1]
       const resData = room.memory.ComDispatchData[res]!
-      visual.text(`合成规划 ${res} (${resData.dispatch_num})`, 8, line += 1.1, normalTextStyle)
+      visual.text(`合成规划 ${res} (${resData.dispatch_num})`, 8, line2 += 1.1, normalTextStyle)
     }
   }
 
