@@ -7,7 +7,7 @@
  * @see https://github.com/screepers/screeps-typescript-starter/blob/master/src/utils/ErrorMapper.ts
  */
 
-import { Colorful } from '@/utils'
+import { colorful } from '@/utils'
 import { SourceMapConsumer } from 'source-map'
 // import { red } from '@/utils'
 import { ErrorCatcher } from './types'
@@ -91,7 +91,7 @@ export const errorMapper: ErrorCatcher = function (next, ...args) {
                 ? `沙盒模式无法使用 source-map - 显示原始追踪栈<br>${_.escape(e.stack)}`
                 : `${_.escape(sourceMappedStackTrace(e))}`
 
-            console.log(Colorful(errorMessage,'red',true))
+            console.log(colorful(errorMessage,'red',true))
         }
         // 处理不了，直接抛出
         else throw e
