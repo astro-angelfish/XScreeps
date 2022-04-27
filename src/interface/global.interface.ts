@@ -35,6 +35,7 @@ declare module NodeJS {
         Marketorder?: { [roomName: string]: string[] },
         controllerData?: { [roomName: string]: number[] },
         RoomDataVisual?: string
+        Adaption?:any
     }
 }
 

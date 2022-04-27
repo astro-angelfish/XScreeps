@@ -7,7 +7,7 @@
  * @see https://github.com/screepers/screeps-typescript-starter/blob/master/src/utils/ErrorMapper.ts
  */
 
- import { SourceMapConsumer } from "source-map-js"
+import { SourceMapConsumer } from "source-map"
 
 type ErrorMapColors = 'red'
 /**

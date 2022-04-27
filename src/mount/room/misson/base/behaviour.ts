@@ -16,7 +16,7 @@ export default class RoomMissonBehaviourExtension extends Room {
     public Constru_Build(): void {
         if (Game.time % 51) return
         if (this.controller.level < 5) return
-        var myConstrusion = new RoomPosition(Memory.RoomControlData[this.name].center[0], Memory.RoomControlData[this.name].center[1], this.name).findClosestByRange(FIND_MY_CONSTRUCTION_SITES)
+        var myConstrusion = this.find(FIND_MY_CONSTRUCTION_SITES)
         if (myConstrusion) {
             /* 添加一个进孵化队列 */
             this.NumSpawn('build', 1)
@@ -179,7 +179,7 @@ export default class RoomMissonBehaviourExtension extends Room {
         if (this.MissionNum('Structure', '资源购买') > 0) return // 存在资源购买任务的情况下，不执行资源调度
         if (DispatchNum(this.name) >= 2) return // 资源调度数量过多则不执行资源调度
         let buy = false
-        if (!Game.cpu.generatePixel){ buy = true}
+        if (!Game.cpu.generatePixel) { buy = true }
         for (var resource_ of needResource) {
             // 原矿 资源调用
             if (storage_.store.getUsedCapacity(resource_) + terminal_.store.getUsedCapacity(resource_) < 10000 && isInArray(['H', 'O', 'K', 'L', 'X', 'U', 'Z'], resource_)) {

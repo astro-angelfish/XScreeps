@@ -54,7 +54,7 @@
  */
 import { isInArray } from "@/utils"
 import { object } from "lodash"
-
+import { AppLifecycleCallbacks } from "../framework/types"
 
 /**
  * 跨shard初始化
@@ -258,7 +258,7 @@ export function DeleteShard(): void {
 /**
  * 跨shard管理器
  */
-export function InterShardManager(): void {
+ export const InterShardManager = function() :void {
     if (!Game.cpu.generatePixel) return
     InitShard()
     CleanShard()
@@ -267,4 +267,17 @@ export function InterShardManager(): void {
     ConfirmShard()
     DeleteShard()
     InterShardMemory.setLocal(JSON.stringify(global.intershardData))
+}
+
+/* 保存跨shard信息 */
+export const SaveShardMessage = function() : void{
+    if (!Game.cpu.generatePixel) return
+    let Data = JSON.parse(InterShardMemory.getLocal()) || {}
+    InterShardMemory.setLocal(JSON.stringify(global.intershardData?global.intershardData:Data))
+    delete global.intershardData    // 删除global数据
+}
+
+export const crossShardAppPlugin: AppLifecycleCallbacks = {
+    tickStart: InterShardManager,
+    tickEnd: SaveShardMessage
 }

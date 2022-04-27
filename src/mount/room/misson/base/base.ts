@@ -175,7 +175,6 @@ export default class RoomMissonFrameExtension extends Room {
 
     /* 冷却计时器 */
     public CoolDownCaculator(): void {
-        if (!this.memory.CoolDownDic) this.memory.CoolDownDic = {}
         for (var i in this.memory.CoolDownDic) {
             if (this.memory.CoolDownDic[i] > 0)
                 this.memory.CoolDownDic[i] -= 1

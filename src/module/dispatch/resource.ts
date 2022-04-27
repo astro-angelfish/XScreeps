@@ -2,6 +2,7 @@
 
 import { t1, t2, t3 } from "@/constant/ResourceConstant"
 import { Colorful, isInArray } from "@/utils"
+import { AppLifecycleCallbacks } from "../framework/types"
 import { avePrice, checkDispatch, checkLabBindResource, checkSend, DispatchNum, haveOrder, highestPrice } from "../fun/funtion"
 
 
@@ -142,6 +143,9 @@ export function ResourceDispatchTick(): void {
         }
     }
 }
+export const ResourceDispatchDelayManager:AppLifecycleCallbacks ={
+    tickEnd:ResourceDispatchTick
+}
 
 // 调度信息更新器  ResourceLimit 建议放global里
 export function ResourceLimitUpdate(thisRoom: Room): void {
@@ -268,7 +272,7 @@ export function ResourceCanDispatch(thisRoom: Room, resource_: ResourceConstant,
         if (i == thisRoom.name) continue
         if (Game.rooms[i] && Game.rooms[i].controller && Game.rooms[i].controller.my) {
             if (!global.Stru[i]) continue
-            let storage_ = thisRoom.storage as StructureStorage
+            let storage_ = Game.rooms[i].storage as StructureStorage
             if (!storage_) continue
             let limit = global.ResourceLimit[i][resource_] ? global.ResourceLimit[i][resource_] : 0
             if (storage_.store.getUsedCapacity(resource_) - limit > num) return "can"

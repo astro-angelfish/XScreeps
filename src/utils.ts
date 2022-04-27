@@ -259,13 +259,7 @@ export function getOppositeDirection(direction: DirectionConstant): DirectionCon
 
 /* 打印指定颜色 */
 type Colors = 'red'|'blue'| 'green' | 'yellow' | 'orange'
-const colors: { [name in Colors]: string } = {
-	red: '#ef9a9a',
-	green: '#6b9955',
-	yellow: '#c5c599',
-	blue: '#8dc5e3',
-  orange:'#ff9d00',
-}
+
 export function Colorful(content: string, colorName: Colors | string = null, bolder: boolean = false): string {
 	const colorStyle = colorName ? `color: ${colors[colorName] ? colors[colorName] : colorName};` : ''
 	const bolderStyle = bolder ? 'font-weight: bolder;' : ''
@@ -489,4 +483,30 @@ export const createElement = {
     // 压缩成一行
     return parts.join('')
   }
+}
+export const red = (content: string , bold?: boolean) => Colorful(content, 'red' ,bold)
+
+export const colors = {
+  slate: '#cbd5e1',
+  gray: '#d1d5db',
+  zinc: '#d4d4d8',
+  neutral: '#d4d4d4',
+  stone: '#d6d3d1',
+  red: '#fca5a5',
+  orange: '#fdba74',
+  amber: '#fcd34d',
+  yellow: '#fde047',
+  lime: '#bef264',
+  green: '#86efac',
+  emerald: '#6ee7b7',
+  teal: '#5eead4',
+  cyan: '#67e8f9',
+  sky: '#7dd3fc',
+  blue: '#93c5fd',
+  indigo: '#a5b4fc',
+  violet: '#c4b5fd',
+  purple: '#d8b4fe',
+  fuchsia: '#f0abfc',
+  pink: '#f9a8d4',
+  rose: '#fda4af',
 }

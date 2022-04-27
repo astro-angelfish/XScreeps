@@ -151,8 +151,9 @@ export default class DefendWarExtension extends Room {
         }
         // console.log(JSON.stringify(enemys))
         /* 分析敌对爬虫的数量,应用不同的主防任务应对 */
+        let hostileCreep = this.hostileCreep_atk(enemys)
         let defend_plan = {}
-        if (enemys.length < 2)      // 1
+        if (enemys.length < 2 || hostileCreep < 600)      // 1
         {
             defend_plan = { 'attack': 1 }
         } else if (enemys.length <= 2)      // 2
@@ -243,6 +244,22 @@ export default class DefendWarExtension extends Room {
                 }
             }
         }
+    }
+    public hostileCreep_atk(nearCreep): number {
+        let all_atk = 0;
+        for (let i in nearCreep) {
+            var creeps_hostile = nearCreep[i];
+            for (let boost_i in creeps_hostile.body) {
+                let body_data = creeps_hostile.body[boost_i]
+                switch (body_data.type) {
+                    case 'attack':
+                    case 'ranged_attack':
+                        all_atk += this.attack_number(body_data.type, body_data.boost)
+                        break;
+                }
+            }
+        }
+        return all_atk;
     }
 
     /*敌人强度计算*/

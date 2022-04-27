@@ -65,6 +65,7 @@ export default class RoomCoreInitExtension extends Room {
             if (!global.Repairlist[this.name]) global.Repairlist[this.name] = []
             if (!this.memory.MarketPrice) { this.memory.MarketPrice = { Dynamicprice: true, order_list: [], buy: { low: 0, high: 0 }, sell: { low: 0, high: 0 } } }
             if (!global.controllerData[this.name]) { global.controllerData[this.name] = [] }
+            if (!this.memory.CoolDownDic) this.memory.CoolDownDic = {}
         }
         global.getStructure[this.name] = {};
     }
