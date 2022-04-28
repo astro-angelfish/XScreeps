@@ -186,7 +186,7 @@ function box(visual: RoomVisual, x: number, y: number, w: number, h: number, sty
 
 function labelBar(visual: RoomVisual, x: number, y: number, labelSpace: number, w: number, label: string, content: string, percent: number, color: string) {
   visual.text(label, x + labelSpace, y, { color, opacity: 0.7, font: 0.7, align: 'right' })
-  box(visual, x + labelSpace + 0.1, y - 0.7, 6.2, 0.9, { color, opacity: 0.2 })
+  // box(visual, x + labelSpace + 0.1, y - 0.7, 6.2, 0.9, { color, opacity: 0.2 })
   visual.rect(x + labelSpace + 0.1 + 0.1, y - 0.6, percent * w, 0.7, { fill: color, opacity: 0.3 })
   visual.text(content, x + labelSpace + 0.1 + w / 2, y - 0.05, { color, font: 0.5, align: 'center' })
 }
@@ -218,7 +218,7 @@ export function processRoomDataVisual(room: Room): void {
   const ave_cpuUsed = (global.AveCpu ? global.AveCpu : 0)
   const ave_usedCpuPercent = ave_cpuUsed / Game.cpu.limit
   const ave_usedCpuPercentVisual = Math.min(ave_usedCpuPercent, 1)
-  const ave_cpuColor = ave_usedCpuPercent > 0.8 ? colors.rose : usedCpuPercent > 0.5 ? colors.amber : colors.emerald
+  const ave_cpuColor = ave_usedCpuPercent > 0.8 ? colors.rose : ave_usedCpuPercent > 0.5 ? colors.amber : colors.emerald
   labelBar(visual, 0.1, line += 1.1, 1.4, 6, 'APU', `${ave_cpuUsed.toFixed(2)} - ${Math.round(ave_usedCpuPercent * 100)}%-<${(global.CpuData ? global.CpuData.length : 0)}>`, ave_usedCpuPercentVisual, ave_cpuColor)
 
   // Bucket

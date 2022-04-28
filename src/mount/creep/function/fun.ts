@@ -104,6 +104,7 @@ export default class CreepFunctionExtension extends Creep {
                 return false
             }
         }
+        this.memory.boostState = true
         return true
     }
 

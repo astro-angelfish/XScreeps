@@ -10,11 +10,13 @@ export default class CreepMissonActionExtension extends Creep {
         let id = missionData.id
         let mission = Game.rooms[this.memory.belong].GainMission(id)
         if (!id) return
-        let storage_ = Game.getObjectById(Game.rooms[this.memory.belong].memory.StructureIdData.storageID) as StructureStorage
+        let storage_ = Game.rooms[this.memory.belong].storage as StructureStorage
         this.workstate('energy')
         /* boost检查 */
-        if (mission.LabBind) {
+        // var a = Game.cpu.getUsed();
+        if (mission.LabBind && !this.memory.boostState) {
             if (!storage_) return   // 如果是boost的，没有仓库就不刷了
+            // console.log('检查boost',this.name)
             // 需要boost检查，必要情况下可以不检查
             let boo = false
             for (var ids in mission.LabBind) {
@@ -32,9 +34,11 @@ export default class CreepMissonActionExtension extends Creep {
                         break;
                 }
             }
-
         }
+        // var b = Game.cpu.getUsed();
+        // console.log(this.name, '刷墙', b - a)
         if (mission.Data.RepairType == 'global') {
+            var a = Game.cpu.getUsed();
             if (this.memory.working) {
                 if (this.memory.targetID) {
                     this.say("🛠️")
@@ -51,27 +55,33 @@ export default class CreepMissonActionExtension extends Creep {
             }
             else {
                 /* 寻找hits最小的墙 */
-                var leastRam = this.room.getListHitsleast([STRUCTURE_RAMPART, STRUCTURE_WALL], 3)
-                if (!leastRam) return
-                this.memory.targetID = leastRam.id
-                if (!this.memory.containerID) {
-                    var tank = this.pos.findClosestByPath(FIND_MY_STRUCTURES, {
-                        filter: (stru) => {
-                            return stru.structureType == 'storage' ||
-                                (stru.structureType == 'link' && isInArray(Game.rooms[this.memory.belong].memory.StructureIdData.comsume_link, stru.id) && stru.store.getUsedCapacity('energy') > this.store.getCapacity())
+                // var leastRam = this.room.getListHitsleast([STRUCTURE_RAMPART, STRUCTURE_WALL], 3)
+                // if (!leastRam) return
+                if (this.memory.targetID) delete this.memory.targetID
+                if (storage_ && storage_.store.getUsedCapacity('energy') >= this.store.getCapacity()) {
+                    var tank_ = storage_;
+                } else {
+                    if (!this.memory.containerID) {
+                        var tank = this.pos.findClosestByPath(FIND_MY_STRUCTURES, {
+                            filter: (stru) => {
+                                return stru.structureType == 'storage' ||
+                                    (stru.structureType == 'link' && isInArray(Game.rooms[this.memory.belong].memory.StructureIdData.comsume_link, stru.id) && stru.store.getUsedCapacity('energy') > this.store.getCapacity())
+                            }
+                        })
+                        if (tank) this.memory.containerID = tank.id
+                        else {
+                            let closestStore = this.pos.findClosestByRange(FIND_STRUCTURES, { filter: (stru) => { return (stru.structureType == 'container' || stru.structureType == 'tower') && stru.store.getUsedCapacity('energy') >= this.store.getFreeCapacity() } })
+                            if (closestStore) this.withdraw_(closestStore, 'energy')
+                            return
                         }
-                    })
-                    if (tank) this.memory.containerID = tank.id
-                    else {
-                        let closestStore = this.pos.findClosestByRange(FIND_STRUCTURES, { filter: (stru) => { return (stru.structureType == 'container' || stru.structureType == 'tower') && stru.store.getUsedCapacity('energy') >= this.store.getFreeCapacity() } })
-                        if (closestStore) this.withdraw_(closestStore, 'energy')
-                        return
-                    }
 
+                    }
+                    var tank_ = Game.getObjectById(this.memory.containerID) as StructureStorage
                 }
-                let tank_ = Game.getObjectById(this.memory.containerID) as StructureStorage
                 this.withdraw_(tank_, 'energy')
             }
+            var b = Game.cpu.getUsed();
+            console.log(this.name, '刷墙', this.memory.working, b - a)
         }
         else if (mission.Data.RepairType == 'nuker') {
             // 没有仓库和终端就不防了

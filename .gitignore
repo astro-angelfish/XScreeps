@@ -5,3 +5,4 @@ dist/
 .secret.json
 
 *.tmp.txt
+copypath

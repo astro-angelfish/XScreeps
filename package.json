@@ -8,6 +8,7 @@
     "push": "rollup -cw --environment DEST:somygame",
     "peasantry": "rollup -cw --environment DEST:peasantry",
     "local": "rollup -cw --environment DEST:local",
+    "localsf": "rollup -cw --environment DEST:localsf",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

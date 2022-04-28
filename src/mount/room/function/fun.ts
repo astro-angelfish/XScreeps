@@ -13,7 +13,7 @@ export default class RoomFunctionFindExtension extends Room {
                 global.getStructure[this.name][structure.structureType].push(structure)
             }
         }
-       
+
         return global.getStructure[this.name][sc] ? global.getStructure[this.name][sc] : [];
     }
 
@@ -327,13 +327,25 @@ export default class RoomFunctionFindExtension extends Room {
         if (!mode) mode = 2
         /* 3 */
         if (mode == 3) mode = 0
-        let s_l = this.find(FIND_STRUCTURES, {
-            filter: (structure) => {
-                return filter_structure(structure, sc) && structure.hits < structure.hitsMax
-            }
-        })
-        let least_ = LeastHit(s_l, mode,)
-        return least_
+        // let s_l = this.find(FIND_STRUCTURES, {
+        //     filter: (structure) => {
+        //         return filter_structure(structure, sc) && structure.hits < structure.hitsMax
+        //     }
+        // })
+        let s_l = this.find(FIND_STRUCTURES)
+        let s_list = [];
+        for (let structure of s_l) {
+            if (!isInArray(sc, structure.structureType)) continue
+            if (structure.hits >= structure.hitsMax) continue
+            s_list.push(structure)
+        }
+        if (s_list.length > 0) {
+            s_list.sort(compare('hits'))
+            return s_list[0]
+        }
+        return null;
+        // let least_ = LeastHit(s_l, mode,)
+        // return least_
     }
 
     /* 获取指定类型的建筑 */
@@ -461,5 +473,13 @@ export default class RoomFunctionFindExtension extends Room {
     public LevelMessageUpdate(): void {
         if (this.controller.level > this.memory.originLevel)
             this.memory.originLevel = this.controller.level
+    }
+}
+/* 按照列表中某个属性进行排序 配合sort使用 */
+export function compare(property) {
+    return function (a, b) {
+        var value1 = a[property]
+        var value2 = b[property]
+        return value1 - value2
     }
 }

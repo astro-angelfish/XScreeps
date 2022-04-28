@@ -60,6 +60,12 @@ export function LeastHit(arr:Structure[],mode:number = 0,radio?:number):Structur
   return undefined
 }
 
+export function getSortFun(order, sortBy:string):any {
+  var ordAlpah = (order == 'asc') ? '&gt;' : '&lt;';
+  var sortFun = new Function('a', 'b', 'return a.' + sortBy + ordAlpah + 'b.' + sortBy + '?1:-1');
+  return sortFun;
+}
+
 /* 获取两点间距离(勾股定理) */
 export function getDistance(po1:RoomPosition,po2:RoomPosition):number{
     return Math.sqrt((po1.x-po2.x)**2 + (po1.y-po2.y)**2 )
