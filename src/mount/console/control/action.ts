@@ -1,7 +1,5 @@
 import { randomSign } from "@/constant/rockyou"
-import { avePrice, haveOrder, highestPrice } from "@/module/fun/funtion"
-import room from "@/mount/room"
-import { Colorful, compare, isInArray, unzipPosition, zipPosition } from "@/utils"
+import { colorful } from "@/utils"
 
 export default {
     /* 修墙 */
@@ -39,8 +37,8 @@ export default {
             if (!thisRoom) return `[plan] 不存在房间${roomName}`
             let task = thisRoom.public_planC(disRoom,Cnum,Unum,shard)
             if (thisRoom.AddMission(task))
-            return Colorful(`[plan] 房间${roomName}挂载C计划成功 -> ${disRoom}`,'green')
-            return Colorful(`[plan] 房间${roomName}挂载C计划失败 -> ${disRoom}`,'red')
+            return colorful(`[plan] 房间${roomName}挂载C计划成功 -> ${disRoom}`,'green')
+            return colorful(`[plan] 房间${roomName}挂载C计划失败 -> ${disRoom}`,'red')
         },
         CC(roomName:string):string
         {
@@ -50,9 +48,9 @@ export default {
             if (i.name == 'C计划' )
             {
                 if (thisRoom.DeleteMission(i.id))
-                return Colorful(`[plan] 房间${roomName}删除C计划成功`,'green')
+                return colorful(`[plan] 房间${roomName}删除C计划成功`,'green')
             }
-            return Colorful(`[plan] 房间${roomName}删除C计划失败`,'red')
+            return colorful(`[plan] 房间${roomName}删除C计划失败`,'red')
         },
         // Z计划 
         Z(roomName:string,disRoom:string,num:number):string{
@@ -63,7 +61,7 @@ export default {
             var terminal_ = Game.getObjectById(thisRoom.memory.StructureIdData.terminalID) as StructureTerminal
             var storage_ = Game.getObjectById(thisRoom.memory.StructureIdData.storageID) as StructureStorage
             if (!terminal_ || !storage_) 
-            {delete thisRoom.memory.StructureIdData.terminalID;delete thisRoom.memory.StructureIdData.storageID;return Colorful( `[terminal] 房间${roomName}不存在终端/仓房或记忆未更新！`,'red',true)}
+            {delete thisRoom.memory.StructureIdData.terminalID;delete thisRoom.memory.StructureIdData.storageID;return colorful( `[terminal] 房间${roomName}不存在终端/仓房或记忆未更新！`,'red',true)}
             /* 查询其他资源传送任务中是否有一样的资源 */
             var Num = 0
             if (!thisRoom.memory.Misson['Structure']) thisRoom.memory.Misson['Structure'] = []
@@ -73,14 +71,14 @@ export default {
             }
             /* 计算资源是否满足 */
             if (terminal_.store.getUsedCapacity('Z') + storage_.store.getUsedCapacity('Z') - Num < num)
-            return Colorful(`[plan] 房间${roomName} 资源${'Z'} 数量总合少于 ${num},Z计划挂载失败!`,'yellow',true)
+            return colorful(`[plan] 房间${roomName} 资源${'Z'} 数量总合少于 ${num},Z计划挂载失败!`,'yellow',true)
             /* 计算路费 */
             var cost = Game.market.calcTransactionCost(num,roomName,disRoom)
             if (terminal_.store.getUsedCapacity('energy') + storage_.store.getUsedCapacity('energy') < cost || cost > 150000)
-            return Colorful(`[plan] 房间${roomName}-->${disRoom}资源${'Z'}所需路费少于 ${cost}或大于150000，传送任务挂载失败！`,'yellow',true)
+            return colorful(`[plan] 房间${roomName}-->${disRoom}资源${'Z'}所需路费少于 ${cost}或大于150000，传送任务挂载失败！`,'yellow',true)
             if(thisRoom.AddMission(thisTask))
-                return Colorful(`[plan] 房间${roomName}-->${disRoom}资源${'Z'}传送挂载成功！数量：${num}；路费：${cost}`,'green',true)
-            return Colorful(`[plan] 房间${roomName}-->${disRoom}资源${'Z'}传送 不明原因挂载失败！`,'red',true)
+                return colorful(`[plan] 房间${roomName}-->${disRoom}资源${'Z'}传送挂载成功！数量：${num}；路费：${cost}`,'green',true)
+            return colorful(`[plan] 房间${roomName}-->${disRoom}资源${'Z'}传送 不明原因挂载失败！`,'red',true)
         }
     },
     /* 扩张 */
@@ -93,9 +91,9 @@ export default {
             {
                 if (shardData) task.Data.shardData = shardData
                 if (thisRoom.AddMission(task))
-                return Colorful(`[expand] 房间${roomName}挂载扩张援建计划成功 -(${shard})-> ${disRoom}`,'green')
+                return colorful(`[expand] 房间${roomName}挂载扩张援建计划成功 -(${shard})-> ${disRoom}`,'green')
             }
-            return Colorful(`[expand] 房间${roomName}挂载扩张援建计划失败 -(${shard})-> ${disRoom}`,'red')
+            return colorful(`[expand] 房间${roomName}挂载扩张援建计划失败 -(${shard})-> ${disRoom}`,'red')
         },
         remove(roomName:string,disRoom:string,shard:shardName):string{
             var thisRoom = Game.rooms[roomName]
@@ -104,9 +102,9 @@ export default {
             if (i.name == '扩张援建' && i.Data.disRoom == disRoom )
             {
                 if (thisRoom.DeleteMission(i.id))
-                return Colorful(`[expand] 房间${roomName}删除去往${disRoom}(${shard})的扩张援建任务成功`,'green')
+                return colorful(`[expand] 房间${roomName}删除去往${disRoom}(${shard})的扩张援建任务成功`,'green')
             }
-            return Colorful(`[expand] 房间${roomName}删除去往${disRoom}(${shard})的扩张援建任务失败`,'red')
+            return colorful(`[expand] 房间${roomName}删除去往${disRoom}(${shard})的扩张援建任务失败`,'red')
         },
     },
     /* 战争 */
@@ -125,9 +123,9 @@ export default {
             {
                 if (shardData) task.Data.shardData = shardData
                 if (thisRoom.AddMission(task))
-                return Colorful(`[war] 房间${roomName}挂载拆迁任务成功 -> ${disRoom}`,'green')
+                return colorful(`[war] 房间${roomName}挂载拆迁任务成功 -> ${disRoom}`,'green')
             }
-            return Colorful(`[war] 房间${roomName}挂载拆迁任务失败 -> ${disRoom}`,'red')
+            return colorful(`[war] 房间${roomName}挂载拆迁任务失败 -> ${disRoom}`,'red')
         },
         Cdismantle(roomName:string,disRoom:string,shard:shardName = Game.shard.name as shardName):string{
             var thisRoom = Game.rooms[roomName]
@@ -137,10 +135,10 @@ export default {
                 if (i.name =='黄球拆迁' && i.Data.disRoom ==disRoom && i.Data.shard == shard)
                 {
                     if (thisRoom.DeleteMission(i.id))
-                    return Colorful(`[plan] 房间${roomName}删除拆迁任务成功`,'green')
+                    return colorful(`[plan] 房间${roomName}删除拆迁任务成功`,'green')
                 }
             }
-            return Colorful(`[war] 房间${roomName}删除拆迁任务失败`,'red')
+            return colorful(`[war] 房间${roomName}删除拆迁任务失败`,'red')
         },
         support(roomName:string,disRoom:string,shard:shardName,sType:'double'|'aio',num:number,interval:number = 1000,boost:boolean = true,shardData?:shardRoomData[]):string{
             var thisRoom = Game.rooms[roomName]
@@ -158,8 +156,8 @@ export default {
                     task.CreepBind[i].interval = interval
             }
             if (thisRoom.AddMission(task))
-            return Colorful(`[war] 房间${roomName}挂载紧急支援任务成功 -(${shard})-> ${disRoom},类型为${sType},数量为${num},间隔时间${interval}`,'green')
-            return Colorful(`[war] 房间${roomName}挂载紧急支援任务失败 -(${shard})-> ${disRoom}`,'red')
+            return colorful(`[war] 房间${roomName}挂载紧急支援任务成功 -(${shard})-> ${disRoom},类型为${sType},数量为${num},间隔时间${interval}`,'green')
+            return colorful(`[war] 房间${roomName}挂载紧急支援任务失败 -(${shard})-> ${disRoom}`,'red')
         },
         Csupport(roomName:string,disRoom:string,shard:shardName,rType:string):string{
             var thisRoom = Game.rooms[roomName]
@@ -169,10 +167,10 @@ export default {
                 if (i.name =='紧急支援' && i.Data.disRoom ==disRoom && i.Data.sType == rType && i.Data.shard == shard)
                 {
                     if (thisRoom.DeleteMission(i.id))
-                    return Colorful(`[war] 房间${roomName}-(${shard})->${disRoom}|[${rType}]紧急支援任务删除成功`,'green')
+                    return colorful(`[war] 房间${roomName}-(${shard})->${disRoom}|[${rType}]紧急支援任务删除成功`,'green')
                 }
             }
-            return Colorful(`[war] 房间${roomName}-(${shard})->${disRoom}|[${rType}]紧急支援任务删除失败`,'red')
+            return colorful(`[war] 房间${roomName}-(${shard})->${disRoom}|[${rType}]紧急支援任务删除失败`,'red')
         },
         control(roomName:string,disRoom:string,shard:shardName = Game.shard.name as shardName,interval:number,shardData?:shardRoomData[]):string{
             var thisRoom = Game.rooms[roomName]
@@ -187,9 +185,9 @@ export default {
             {
                 if (shardData) task.Data.shardData = shardData
                 if (thisRoom.AddMission(task))
-                return Colorful(`[war] 房间${roomName}挂载控制攻击任务成功 -> ${disRoom}`,'green')
+                return colorful(`[war] 房间${roomName}挂载控制攻击任务成功 -> ${disRoom}`,'green')
             }
-            return Colorful(`[war] 房间${roomName}挂载控制攻击任务失败 -> ${disRoom}`,'red')
+            return colorful(`[war] 房间${roomName}挂载控制攻击任务失败 -> ${disRoom}`,'red')
         },
         Ccontrol(roomName:string,disRoom:string,shard:shardName = Game.shard.name as shardName):string{
             var thisRoom = Game.rooms[roomName]
@@ -199,10 +197,10 @@ export default {
                 if (i.name =='控制攻击' && i.Data.disRoom ==disRoom && i.Data.shard == shard)
                 {
                     if (thisRoom.DeleteMission(i.id))
-                    return Colorful(`[war] 房间${roomName}控制攻击任务成功`,'green')
+                    return colorful(`[war] 房间${roomName}控制攻击任务成功`,'green')
                 }
             }
-            return Colorful(`[war] 房间${roomName}控制攻击任务失败`,'red')
+            return colorful(`[war] 房间${roomName}控制攻击任务失败`,'red')
         },
         aio(roomName:string,disRoom:string,shard:shardName,CreepNum:number,time:number = 1000,boost:boolean = true,bodylevel:"T0" | "T0" | "T2" = "T0",shardData?:shardRoomData[]):string{
             var myRoom = Game.rooms[roomName]
@@ -402,7 +400,7 @@ export default {
             let thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[carry] 不存在房间${roomName}`
             for (var i of thisRoom.memory.Misson['Creep'])
-            if (i.name == '物流运输' && i.CreepBind['truck'] && i.Data.rType)
+            if (i.name == '物流运输' && i.CreepBind['truck'])
             {
                 if(thisRoom.DeleteMission(i.id))
                 return `[carry] 房间${roomName}删除搬运任务成功`
@@ -421,9 +419,9 @@ export default {
             {
                 if (shardData) task.Data.shardData = shardData
                 if (thisRoom.AddMission(task))
-                return Colorful(`[support] 房间${roomName}挂载紧急援建任务成功 -> ${disRoom}`,'green')
+                return colorful(`[support] 房间${roomName}挂载紧急援建任务成功 -> ${disRoom}`,'green')
             }
-            return Colorful(`[support] 房间${roomName}挂载紧急援建任务失败 -> ${disRoom}`,'red')
+            return colorful(`[support] 房间${roomName}挂载紧急援建任务失败 -> ${disRoom}`,'red')
         },
         Cbuild(roomName:string,disRoom:string,shard:shardName = Game.shard.name as shardName):string{
             var thisRoom = Game.rooms[roomName]
@@ -433,10 +431,10 @@ export default {
                 if (i.name =='紧急援建' && i.Data.disRoom ==disRoom && i.Data.shard == shard)
                 {
                     if (thisRoom.DeleteMission(i.id))
-                    return Colorful(`[support] 房间${roomName}紧急援建任务成功`,'green')
+                    return colorful(`[support] 房间${roomName}紧急援建任务成功`,'green')
                 }
             }
-            return Colorful(`[support] 房间${roomName}紧急援建任务失败`,'red')
+            return colorful(`[support] 房间${roomName}紧急援建任务失败`,'red')
         },
     },
     /* 核弹相关 */
@@ -448,9 +446,9 @@ export default {
             var nuke_ = Game.getObjectById(myRoom.memory.StructureIdData.NukerID as string) as StructureNuker
             if (!nuke_) return `[nuke]核弹查询错误!`
             if (nuke_.launchNuke(new RoomPosition(x_,y_,disRoom)) == OK)
-                return Colorful(`[nuke]${roomName}->${disRoom}的核弹发射成功!预计---500000---ticks后着陆!`,'yellow',true)
+                return colorful(`[nuke]${roomName}->${disRoom}的核弹发射成功!预计---500000---ticks后着陆!`,'yellow',true)
             else
-                return Colorful(`[nuke]${roomName}->${disRoom}的核弹发射失败!`,'yellow',true)
+                return colorful(`[nuke]${roomName}->${disRoom}的核弹发射失败!`,'yellow',true)
         },
         /* 自动填充核弹开关 */
         switch(roomName:string):string{
@@ -471,8 +469,8 @@ export default {
             if (shardData) task.Data.shardData = shardData
             if (!task) return '[scout] 任务对象生成失败'
             if (thisRoom.AddMission(task))
-            return Colorful(`[scout] 房间${roomName}挂载房间签名任务成功 -> ${disRoom}`,'green')
-            return Colorful(`[scout] 房间${roomName}挂载房间签名任务失败 -> ${disRoom}`,'red')
+            return colorful(`[scout] 房间${roomName}挂载房间签名任务成功 -> ${disRoom}`,'green')
+            return colorful(`[scout] 房间${roomName}挂载房间签名任务失败 -> ${disRoom}`,'red')
         },
         Csign(roomName:string,disRoom:string,shard:shardName):string{
             var thisRoom = Game.rooms[roomName]
@@ -482,10 +480,10 @@ export default {
                 if (i.name =='房间签名' && i.Data.disRoom ==disRoom && i.Data.shard == shard)
                 {
                     if (thisRoom.DeleteMission(i.id))
-                    return Colorful(`[scout] 房间${roomName}房间签名任务成功`,'green')
+                    return colorful(`[scout] 房间${roomName}房间签名任务成功`,'green')
                 }
             }
-            return Colorful(`[scout] 房间${roomName}房间签名任务失败`,'red')
+            return colorful(`[scout] 房间${roomName}房间签名任务失败`,'red')
         },
         // 随机签名 手册不收录
         Rsign(roomName:string,disRoom:string,shard:shardName,shardData?:shardRoomData[]):string{
@@ -495,8 +493,8 @@ export default {
             if (shardData) task.Data.shardData = shardData
             if (!task) return '[scout] 任务对象生成失败'
             if (thisRoom.AddMission(task))
-            return Colorful(`[scout] 房间${roomName}挂载房间签名任务成功 -> ${disRoom}`,'green')
-            return Colorful(`[scout] 房间${roomName}挂载房间签名任务失败 -> ${disRoom}`,'red')
+            return colorful(`[scout] 房间${roomName}挂载房间签名任务成功 -> ${disRoom}`,'green')
+            return colorful(`[scout] 房间${roomName}挂载房间签名任务失败 -> ${disRoom}`,'red')
         },
     },
 

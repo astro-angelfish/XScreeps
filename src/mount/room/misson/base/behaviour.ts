@@ -1,5 +1,5 @@
 import { ResourceCanDispatch } from "@/module/dispatch/resource"
-import { checkBuy, checkDispatch, checkSend, DispatchNum, resourceMap } from "@/module/fun/funtion"
+import { checkDispatch, checkSend, DispatchNum, resourceMap } from "@/module/fun/funtion"
 import { Colorful, isInArray } from "@/utils"
 
 /* 房间原型拓展   --任务  --基本功能 */
@@ -97,7 +97,7 @@ export default class RoomMissonBehaviourExtension extends Room {
         if (!this.memory.StructureIdData.labInspect || Object.keys(this.memory.StructureIdData.labInspect).length < 3) return
         let storage_ = this.storage
         let terminal_ = this.terminal
-        if (misson.Data.num <= 0 || !storage_ || !terminal_)
+        if (misson.Data.num <= -50 || !storage_ || !terminal_)
         {
             this.DeleteMission(misson.id)
             return
