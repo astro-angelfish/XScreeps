@@ -157,6 +157,20 @@ export default [
                                 title: '开启/关闭自动搓像素(默认开启):',
                                 functionName: 'pixel'
                             },
+                            {
+                                title: '设置全局房间可视化面板画质:',
+                                params: [
+                                    { name: 'level', desc: '画质 low/medium/high/blank' },
+                                ],
+                                functionName: 'panel.level'
+                            },
+                            {
+                                title: '开/关具体房间的可视化面板:',
+                                params: [
+                                    { name: 'name', desc: '房间' },
+                                ],
+                                functionName: 'panel.switch'
+                            },
                         ]
                     },
                     {
