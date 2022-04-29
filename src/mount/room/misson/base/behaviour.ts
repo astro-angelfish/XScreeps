@@ -109,13 +109,13 @@ export default class RoomMissonBehaviourExtension extends Room {
             this.DeleteMission(misson.id)
             return
         }
-        if (raw1.mineralType && raw1.mineralType != misson.Data.raw1)
+        if (raw1.mineralType && raw1.mineralType != misson.Data.raw1 &&  this.Check_Carry('transport',raw1.pos,storage_.pos,raw1.mineralType))
         {
             var thisTask = this.public_Carry({'transport':{num:1,bind:[]}},30,this.name,raw1.pos.x,raw1.pos.y,this.name,storage_.pos.x,storage_.pos.y,raw1.mineralType,raw1.store.getUsedCapacity(raw1.mineralType))
             this.AddMission(thisTask)
             return
         }
-        if (raw2.mineralType && raw2.mineralType != misson.Data.raw2)
+        if (raw2.mineralType && raw2.mineralType != misson.Data.raw2 && this.Check_Carry('transport',raw2.pos,storage_.pos,raw2.mineralType))
         {
             var thisTask = this.public_Carry({'transport':{num:1,bind:[]}},30,this.name,raw2.pos.x,raw2.pos.y,this.name,storage_.pos.x,storage_.pos.y,raw2.mineralType,raw2.store.getUsedCapacity(raw2.mineralType))
             this.AddMission(thisTask)
@@ -131,7 +131,16 @@ export default class RoomMissonBehaviourExtension extends Room {
         {
             var thisLab = Game.getObjectById(i) as StructureLab
             if (!thisLab) {
+                let index = this.memory.StructureIdData.labs.indexOf(i)
+                this.memory.StructureIdData.labs.splice(index,1)
                 continue
+            }
+            if (thisLab.mineralType && thisLab.mineralType != misson.LabBind[i] && this.Check_Carry('transport',thisLab.pos,storage_.pos,thisLab.mineralType))
+            {
+                // 说明该lab内有异物
+                var thisTask = this.public_Carry({'transport':{num:1,bind:[]}},30,this.name,thisLab.pos.x,thisLab.pos.y,this.name,storage_.pos.x,storage_.pos.y,thisLab.mineralType,thisLab.store.getUsedCapacity(thisLab.mineralType))
+                this.AddMission(thisTask)
+                return
             }
             if (thisLab.cooldown) continue
             let comNum = 5
@@ -228,22 +237,6 @@ export default class RoomMissonBehaviourExtension extends Room {
         if (!terminal_) return
         /* 没有房间合成实验室数据，不进行合成 */
         if (!this.memory.StructureIdData.labInspect.raw1){console.log(`房间${this.name}不存在合成实验室数据！`);return}
-        /* 查看合成实验室的被占用状态 */
-        if (this.memory.RoomLabBind[this.memory.StructureIdData.labInspect.raw1] || this.memory.RoomLabBind[this.memory.StructureIdData.labInspect.raw2])
-        {console.log(`房间${this.name}的源lab被占用!`);return}
-        var comLabs = []
-        for (var otLab of this.memory.StructureIdData.labInspect.com)
-        {
-            if (!this.memory.RoomLabBind[otLab]) comLabs.push(otLab)
-        }
-        if (comLabs.length <=0) {console.log(`房间${this.name}的合成lab全被占用!`);return}
-        /* 确认所有目标lab里都没有其他资源 */
-        for (var i of this.memory.StructureIdData.labs)
-        {
-            var thisLab = Game.getObjectById(i) as StructureLab
-            if (!thisLab) continue
-            if (thisLab.mineralType && !this.memory.RoomLabBind[i]) return
-        }
         /**
          * 正式开始合成规划
          *  */ 
@@ -289,7 +282,7 @@ export default class RoomMissonBehaviourExtension extends Room {
                 // 如果存在manage搬运任务 就 return
                 if (!this.Check_Carry("manage",terminal_.pos,storage_.pos,disType as ResourceConstant)) return
                 // 下达合成命令
-                var thisTask = this.public_Compound(diff,disType as ResourceConstant,comLabs)
+                var thisTask = this.public_Compound(diff,disType as ResourceConstant)
                 if (this.AddMission(thisTask))
                 {
                     data[disType].ok = true
@@ -300,7 +293,7 @@ export default class RoomMissonBehaviourExtension extends Room {
             if (Object.keys(data)[Object.keys(data).length - 1] == disType)
             {
                 // 下达合成命令
-                var thisTask = this.public_Compound(data[disType].dispatch_num,disType as ResourceConstant,comLabs)
+                var thisTask = this.public_Compound(data[disType].dispatch_num,disType as ResourceConstant)
                 if (this.AddMission(thisTask)) this.memory.ComDispatchData = {}
                 return
             }

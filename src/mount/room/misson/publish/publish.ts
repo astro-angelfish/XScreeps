@@ -451,7 +451,7 @@ export default class RoomMissonPublish extends Room {
         return thisTask
     }
 
-    public public_Compound(num:number,disResource:ResourceConstant,bindData:string[]):MissionModel{
+    public public_Compound(num:number,disResource:ResourceConstant):MissionModel{
         // 检验阶段
         if (!this.memory.StructureIdData.labInspect || Object.keys(this.memory.StructureIdData.labInspect).length < 3) return null
         var raw1 = Game.getObjectById(this.memory.StructureIdData.labInspect.raw1) as StructureLab
