@@ -281,7 +281,7 @@ export default class RoomMissonBehaviourExtension extends Room {
             }
             /*如果超出数量则自动暂停*/
             if (use_number >= automaticData.Num) {
-                console.log(this.name,'自动规划','已满足合成要求')
+                // console.log(this.name, '自动规划', '已满足合成要求')
                 this.DeleteMission(MissionName.id)
                 return;
             }
@@ -292,7 +292,7 @@ export default class RoomMissonBehaviourExtension extends Room {
             if (!RawState) { return }
             if (!LabMap[Type]) {
                 /*无法检测合成配方-自动终止*/
-                console.log(this.name,'自动规划','无法检测合成配方-自动终止')
+                // console.log(this.name, '自动规划', '无法检测合成配方-自动终止')
                 this.DeleteMission(MissionName.id)
                 return;
             }
@@ -301,21 +301,37 @@ export default class RoomMissonBehaviourExtension extends Room {
             /*检查其他库存资源的情况*/
             if (!this.Check_ResourceType(raw1str, 1000) || !this.Check_ResourceType(raw2str, 1000)) {
                 /*已有的资源数量不足终止任务*/
-                console.log(this.name,'自动规划','任务不足自动取消')
+                // console.log(this.name, '自动规划', '任务不足自动取消')
                 this.DeleteMission(MissionName.id)
                 return;
             }
-            console.log(this.name,'自动规划','检测完成')
+            // console.log(this.name, '自动规划', '检测完成')
         } else {
             /*没有任务的情况下进行任务规划*/
-            console.log(this.name,'自动规划')
+            // console.log(this.name, '自动规划')
+            /*先对Lab进行一次检查*/
+            let LabTypeList = {};
+            for (let lab_id of this.memory.StructureIdData.labs) {
+                let lab_data = Game.getObjectById(lab_id) as StructureLab;
+                if (!lab_data) continue;
+                if (!lab_data.mineralType) continue;
+                if (!LabTypeList[lab_data.mineralType]) {
+                    LabTypeList[lab_data.mineralType] = 0;
+                }
+                LabTypeList[lab_data.mineralType] += lab_data.store.getUsedCapacity(lab_data.mineralType);
+            }
             for (let i in this.memory.Labautomatic.automaticData) {
                 let _Data = this.memory.Labautomatic.automaticData[i];
-                console.log(this.name,'自动规划',_Data.Type)
+                // console.log(this.name, '自动规划', _Data.Type)
                 /*检查资源是否已经满足要求*/
                 let use_number = storage_.store.getUsedCapacity(_Data.Type) + terminal_.store.getUsedCapacity(_Data.Type)
                 let defect_numer = _Data.Num - use_number
                 if (defect_numer >= 5000) {
+                    /*检查Lab的信息*/
+                    if (LabTypeList[_Data.Type]) {
+                        defect_numer -= LabTypeList[_Data.Type];
+                        if (defect_numer <= 0) continue;
+                    }
                     /**
                      * 当库存缺损超过5000的情况下执行合成操作
                      * 检查合成所需材料的信息
