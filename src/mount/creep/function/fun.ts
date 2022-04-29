@@ -97,7 +97,10 @@ export default class CreepFunctionExtension extends Creep {
                 if (!this.pos.isNearTo(disLab)) this.goTo(disLab.pos, 1)
                 else {
                     for (var i of this.body) {
-                        if (i.type == body && i.boost != thisRoomMisson.LabBind[tempID]) { disLab.boostCreep(this); return false }
+                        if (i.type == body && i.boost != thisRoomMisson.LabBind[tempID]) {
+                            disLab.boostCreep(this);
+                            return false
+                        }
                     }
                     this.memory.boostData[body] = { boosted: true, num: s, type: thisRoomMisson.LabBind[tempID] as ResourceConstant }
                 }

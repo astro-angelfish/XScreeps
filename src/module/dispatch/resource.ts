@@ -56,12 +56,12 @@ export function ResourceDispatch(thisRoom: Room): void {
                     }
                     // 原矿 中间化合物
                     else if (isInArray(['X', 'L', 'H', 'O', 'Z', 'K', 'U', 'G', 'OH', 'ZK', 'UL'], i.rType)) {
-                        let task = thisRoom.public_Buy(i.rType, i.num, 10, 30);
+                        let task = thisRoom.public_Buy(i.rType, i.num, 10, 20);
                         if (task) { thisRoom.AddMission(task); i.delayTick = 0 }; continue
                     }
                     // t3
                     else if (isInArray(t3, i.rType)) {
-                        let task = thisRoom.public_Buy(i.rType, i.num, 50, 150);
+                        let task = thisRoom.public_Buy(i.rType, i.num, 50, 100);
                         if (task) { thisRoom.AddMission(task); i.delayTick = 0 }; continue
                     }
                     // power
@@ -76,7 +76,7 @@ export function ResourceDispatch(thisRoom: Room): void {
                     }
                     // 其他商品类资源 bar类资源
                     else {
-                        let task = thisRoom.public_Buy(i.rType, i.num, 50, 200);
+                        let task = thisRoom.public_Buy(i.rType, i.num, 5, 20);
                         if (task) { thisRoom.AddMission(task); i.delayTick = 0 }; continue
                     }
                 }
@@ -143,8 +143,8 @@ export function ResourceDispatchTick(): void {
         }
     }
 }
-export const ResourceDispatchDelayManager:AppLifecycleCallbacks ={
-    tickEnd:ResourceDispatchTick
+export const ResourceDispatchDelayManager: AppLifecycleCallbacks = {
+    tickEnd: ResourceDispatchTick
 }
 
 // 调度信息更新器  ResourceLimit 建议放global里

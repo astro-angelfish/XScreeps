@@ -10,7 +10,9 @@ interface Room {
     Check_Lab(misson: MissionModel, role: string, tankType: 'storage' | 'terminal' | 'complex'): boolean
     Check_Link(source: RoomPosition, pos: RoomPosition): boolean
     Check_Buy(resource: ResourceConstant): boolean
+    Check_ResourceType(rType:ResourceConstant,Num:number):boolean
     MissionName(range: string, name: string): MissionModel | null
+    
     // 主动任务
     Spawn_Feed(): void
     Constru_Build(): void
@@ -22,6 +24,7 @@ interface Room {
     Task_ComsumeLink(): void
     Nuke_Defend(): void
     Task_CompoundDispatch(): void
+    Task_LabAutomatic():void
     Task_monitorMineral(): void
     Task_montitorPower(): void
     Task_Auto_Defend(): void
@@ -53,7 +56,7 @@ interface RoomMemory {
     Misson: { [range: string]: MissionModel[] }  // 任务
     RoomLabBind?: RoomLabBind
     CoolDownDic: { [Name: string]: number }      /* 冷却时间的哈希表 key为任务名 */
-    Visualdisplay:boolean
+    Visualdisplay: boolean
     nukeID?: string[]
     nukeData?: NukeData
     ComDispatchData?: { [re in ResourceConstant]?: { ok?: boolean, dispatch_num: number } }
@@ -61,6 +64,7 @@ interface RoomMemory {
     enemy?: enemyAllotData,
     DynamicConfig: { Dynamicupgrade?: boolean }/*动态配置*/
     MarketPrice: { Dynamicprice?: boolean, order_list: any, buy: { low: number, high: number }, sell: { low: number, high: number } }/*智能价格调度*/
+    Labautomatic: { automaticData?: [{ Type: ResourceConstant, Num: number, Level: number }?], automaticState?: boolean }
 }
 
 interface NukeData {
@@ -100,7 +104,7 @@ interface MissonLabBind {
 
 /* 房间记忆实验室绑定数据格式  房间memory */
 interface RoomLabBind {
-    [id:string]:{missonID:string[],rType:ResourceConstant,occ?:boolean,type?:'boost' | 'com' | 'raw' | 'unboost'}     // occ为true时不允许新增占用lab type为占用类型
+    [id: string]: { missonID: string[], rType: ResourceConstant, occ?: boolean, type?: 'boost' | 'com' | 'raw' | 'unboost' }     // occ为true时不允许新增占用lab type为占用类型
 }
 
 interface enemyAllotData {

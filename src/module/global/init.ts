@@ -30,6 +30,7 @@ export const MemoryInit = function (): void {
     global.Marketorder = {};/*tick重置已有的订单列表信息*/
     global.RoomDataVisual = null
     global.Adaption = {}
+    global.RoomResource = {}
 }
 export const MemoryTickStart = function (): void {
     

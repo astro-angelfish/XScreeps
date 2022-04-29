@@ -67,6 +67,7 @@ export default class RoomCoreInitExtension extends Room {
             if (!global.controllerData[this.name]) { global.controllerData[this.name] = [] }
             if (!this.memory.CoolDownDic) this.memory.CoolDownDic = {}
             if (!this.memory.Visualdisplay) this.memory.Visualdisplay = false
+            if (!this.memory.Labautomatic) this.memory.Labautomatic = { 'automaticData': [], 'automaticState': false }
         }
         global.getStructure[this.name] = {};
     }

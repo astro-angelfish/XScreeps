@@ -300,6 +300,13 @@ export function build_(creep: Creep): void {
     }
     else {
         creep.memory.standed = false
+        if (Game.flags[`${creep.memory.belong}/withdraw`]) {
+            let tank_ = Game.flags[`${creep.memory.belong}/withdraw`].pos.GetStructureList(['storage', 'terminal', 'container', 'tower'])
+            if (tank_.length > 0) {
+                creep.withdraw_(tank_[0], 'energy')
+                return
+            }
+        }
         if (Game.flags[`${creep.memory.belong}/ruin`]) {
             if (!creep.pos.isNearTo(Game.flags[`${creep.memory.belong}/ruin`]))
                 creep.goTo(Game.flags[`${creep.memory.belong}/ruin`].pos, 1)

@@ -529,7 +529,7 @@ export default class terminalExtension extends StructureTerminal {
             // 路费
             var wastage = Game.market.calcTransactionCost(task.Data.num, this.room.name, task.Data.disRoom)
             /* 如果非能量资源且路费不够，发布资源搬运任务，优先寻找storage */
-            var storage_ =this.room.storage  as StructureStorage
+            var storage_ = this.room.storage as StructureStorage
             // terminal的剩余资源
             var remain = this.store.getFreeCapacity()
             /* 路费判断 */
@@ -601,6 +601,8 @@ export default class terminalExtension extends StructureTerminal {
         // 获取该资源的平均价格
         var maxPrice = avePrice + (task.Data.range ? task.Data.range : 50)  // 范围
         maxPrice = maxPrice < 1 ? 1 : maxPrice;
+        if (task.Data.maxPrice) { maxPrice = maxPrice > task.Data.maxPrice ? task.Data.maxPrice : maxPrice }
+        // console.log(rType, '最大价格', maxPrice, task.Data.maxPrice)
         /* 在市场上寻找 */
         var orders = Game.market.getAllOrders(order => order.resourceType == rType &&
             order.type == ORDER_SELL && order.price <= maxPrice)

@@ -1,6 +1,7 @@
 import { ResourceCanDispatch } from "@/module/dispatch/resource"
 import { checkBuy, checkDispatch, checkSend, DispatchNum, resourceMap } from "@/module/fun/funtion"
 import { Colorful, isInArray } from "@/utils"
+import { LabMap } from "@/constant/ResourceConstant"
 
 /* 房间原型拓展   --任务  --基本功能 */
 export default class RoomMissonBehaviourExtension extends Room {
@@ -19,7 +20,13 @@ export default class RoomMissonBehaviourExtension extends Room {
         var myConstrusion = this.find(FIND_MY_CONSTRUCTION_SITES)
         if (myConstrusion) {
             /* 添加一个进孵化队列 */
-            this.NumSpawn('build', 1)
+            if (myConstrusion.length > 10) {
+                let _number = Math.ceil(myConstrusion.length / 10);
+                _number = _number > 3 ? 3 : _number;
+                this.NumSpawn('build', _number)
+            } else {
+                this.NumSpawn('build', 1)
+            }
         }
         else {
             delete this.memory.SpawnConfig['build']
@@ -178,7 +185,7 @@ export default class RoomMissonBehaviourExtension extends Room {
         var needResource: ResourceConstant[] = [misson.Data.raw1, misson.Data.raw2]
         if (this.MissionNum('Structure', '资源购买') > 0) return // 存在资源购买任务的情况下，不执行资源调度
         if (DispatchNum(this.name) >= 2) return // 资源调度数量过多则不执行资源调度
-        let buy = false
+        let buy = true
         if (!Game.cpu.generatePixel) { buy = true }
         for (var resource_ of needResource) {
             // 原矿 资源调用
@@ -218,9 +225,125 @@ export default class RoomMissonBehaviourExtension extends Room {
         }
     }
 
+    // Lab自动合成 根据预想设定在目标房间中保持固定数量的对应资源
+    public Task_LabAutomatic(): void {
+        if ((Game.time - global.Gtime[this.name]) % 50) return
+        if (!this.memory.Labautomatic.automaticState) return
+        if (this.memory.Labautomatic.automaticData.length < 1) { this.memory.Labautomatic.automaticState = false; return }
+        /*进行自动合成操作*/
+        var storage_ = this.storage as StructureStorage
+        if (!storage_) return
+        var terminal_ = this.terminal as StructureTerminal
+        if (!terminal_) return
+        let MissionName = this.MissionName('Room', '资源合成')
+        if (MissionName) {
+            /*有任务的情况下检查是否满足继续合成的要求*/
+            /*进行任务规则匹配操作-首先获取任务目标信息*/
+            let Type = null;
+            let Raw = [];
+            let RawState = false;
+            for (let Message in MissionName.LabMessage) {
+
+                switch (MissionName.LabMessage[Message]) {
+                    case 'com':
+                        Type = Message;
+                        break;
+                    case 'raw':
+                        Raw.push(Message)
+                        break;
+                }
+            }
+            if (!Type) {/*获取合成产物失败,取消任务同时终止*/this.DeleteMission(MissionName.id); return }
+            let automaticData = null;
+            for (let i_Data of this.memory.Labautomatic.automaticData) {
+                if (i_Data.Type == Type) {
+                    automaticData = i_Data;
+                }
+            }
+            if (!automaticData) {/*获取自动规划失败,取消任务同时终止*/this.DeleteMission(MissionName.id); return }
+            /*检查仓库 以及终端的库存信息*/
+            let use_number = storage_.store.getUsedCapacity(Type) + terminal_.store.getUsedCapacity(Type)
+            if (use_number < automaticData.Num) {
+                /*继续进行Lab数量的检查*/
+                for (let lab_id in MissionName.LabBind) {
+                    var lab_data = Game.getObjectById(lab_id) as StructureLab;
+                    if (!lab_data) continue;
+                    if (MissionName.LabBind[lab_id] == Type) {
+                        use_number += lab_data.store.getUsedCapacity(Type)
+                    } else {
+                        /*原材料的容器*/
+                        if (lab_data.store.getUsedCapacity(Type) < 100) {
+                            /*原料容器资源过少-检查仓库的资源情况*/
+                            RawState = true
+                        }
+                    }
+                }
+            }
+            /*如果超出数量则自动暂停*/
+            if (use_number >= automaticData.Num) {
+                console.log(this.name,'自动规划','已满足合成要求')
+                this.DeleteMission(MissionName.id)
+                return;
+            }
+            /**
+             * 如果尚未完成自动合成操作那么检查备用材料是否足够，以及是否存在其他房间调度的可能
+             * 会跨房检索两种资源信息
+             * */
+            if (!RawState) { return }
+            if (!LabMap[Type]) {
+                /*无法检测合成配方-自动终止*/
+                console.log(this.name,'自动规划','无法检测合成配方-自动终止')
+                this.DeleteMission(MissionName.id)
+                return;
+            }
+            var raw1str = LabMap[Type].raw1
+            var raw2str = LabMap[Type].raw2
+            /*检查其他库存资源的情况*/
+            if (!this.Check_ResourceType(raw1str, 1000) || !this.Check_ResourceType(raw2str, 1000)) {
+                /*已有的资源数量不足终止任务*/
+                console.log(this.name,'自动规划','任务不足自动取消')
+                this.DeleteMission(MissionName.id)
+                return;
+            }
+            console.log(this.name,'自动规划','检测完成')
+        } else {
+            /*没有任务的情况下进行任务规划*/
+            console.log(this.name,'自动规划')
+            for (let i in this.memory.Labautomatic.automaticData) {
+                let _Data = this.memory.Labautomatic.automaticData[i];
+                console.log(this.name,'自动规划',_Data.Type)
+                /*检查资源是否已经满足要求*/
+                let use_number = storage_.store.getUsedCapacity(_Data.Type) + terminal_.store.getUsedCapacity(_Data.Type)
+                let defect_numer = _Data.Num - use_number
+                if (defect_numer >= 5000) {
+                    /**
+                     * 当库存缺损超过5000的情况下执行合成操作
+                     * 检查合成所需材料的信息
+                     * */
+                    if (!LabMap[_Data.Type]) { continue; }
+                    var raw1str = LabMap[_Data.Type].raw1
+                    var raw2str = LabMap[_Data.Type].raw2
+                    if (this.Check_ResourceType(raw1str, 5000) && this.Check_ResourceType(raw2str, 5000)) {
+                        /*有足够的资源-执行合成操作*/
+                        var thisTask = this.public_Compound(defect_numer, _Data.Type)
+                        if (thisTask) {
+                            /*进行任务发布*/
+                            if (this.AddMission(thisTask)) {
+                                /*任务发布成功终止筛选*/
+                                return
+                            }
+                        }
+                    }
+                }
+            }
+
+        }
+    }
+
     // 合成规划     (中层)    目标化合物 --> 安排一系列合成
     public Task_CompoundDispatch(): void {
         if ((Game.time - global.Gtime[this.name]) % 50) return
+        if (this.memory.Labautomatic.automaticState) return
         if (this.memory.switch.AutoDefend) return
         if (this.RoleMissionNum('transport', '物流运输') > 0) return
         if (Object.keys(this.memory.ComDispatchData).length <= 0) return //  没有合成规划情况

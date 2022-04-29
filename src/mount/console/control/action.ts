@@ -369,11 +369,11 @@ export default {
             let thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[carry] 不存在房间${roomName}`
             for (var i of thisRoom.memory.Misson['Creep'])
-                if (i.name == '物流运输' && i.CreepBind['truck'] && i.Data.rType) {
+                if (i.name == '物流运输' && i.CreepBind['truck'] ) {
                     if (thisRoom.DeleteMission(i.id))
                         return `[carry] 房间${roomName}删除搬运任务成功`
                 }
-            return `[carry] 房间${roomName}删除搬运任务成功`
+            return `[carry] 房间${roomName}删除搬运任务失败`
         },
     },
     /* 支援 */

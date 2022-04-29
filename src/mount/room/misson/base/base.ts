@@ -30,6 +30,7 @@ export default class RoomMissonFrameExtension extends Room {
         this.Nuker_Feed()   // 核弹填充任务      
         this.Nuke_Defend()  // 核弹防御
         this.Task_CompoundDispatch()    // 合成规划 （中级）
+        this.Task_LabAutomatic()    // Lab 自动合成规划
         this.Task_monitorMineral()  // 挖矿
         this.Task_montitorPower()   // 烧power任务监控
         this.Task_Auto_Defend()     // 主动防御任务发布
@@ -37,6 +38,7 @@ export default class RoomMissonFrameExtension extends Room {
         /* 基本任务监控区域 */
         for (var index in this.memory.Misson) {
             for (var misson of this.memory.Misson[index]) {
+                // var a = Game.cpu.getUsed()
                 A:
                 switch (misson.name) {
                     case "物流运输": { this.Task_Carry(misson); break A; }
@@ -60,6 +62,11 @@ export default class RoomMissonFrameExtension extends Room {
                     case '普通冲级': { this.Task_Normal_upgrade(misson); break A; }
                     case '扩张援建': { this.Task_Expand(misson); break A; }
                 }
+                // return
+                // var b = Game.cpu.getUsed()
+                // if (b - a > 0.005) {
+                //     console.log(misson.name, b - a, this.name)
+                // }
             }
         }
     }
@@ -396,14 +403,14 @@ export default class RoomMissonFrameExtension extends Room {
         var tank_ = Game.getObjectById(id) as StructureStorage | StructureTerminal
         if (!tank_ && id) return false
         /* 负责lab的填充 */
+        var terminal = this.terminal as StructureTerminal
+        var storage = this.storage as StructureStorage
         for (var i in misson.LabBind) {
             var All_i_Num: number
             if (tankType == 'complex') {
-                var terminal = Game.getObjectById(this.memory.StructureIdData.terminalID) as StructureTerminal
-                var storage = Game.getObjectById(this.memory.StructureIdData.storageID) as StructureStorage
                 if (!terminal || !storage) {
-                    if (!terminal && storage) tank_ = storage
-                    else if (terminal && !storage) tank_ = terminal
+                    if (storage) tank_ = storage
+                    else if (terminal) tank_ = terminal
                     else return false
                 }
                 else {
@@ -492,5 +499,26 @@ export default class RoomMissonFrameExtension extends Room {
             if (i.name == '资源购买' && i.Data.rType == resource) return true
         }
         return false
+    }
+
+    public Check_ResourceType(rType: ResourceConstant, Num: number): boolean {
+        if (Object.keys(global.RoomResource).length < 1) {
+            for (let Roomname in Game.rooms) {
+                let _RoomData = Game.rooms[Roomname]
+                if (!global.RoomResource[_RoomData.name]) { global.RoomResource[_RoomData.name] = {} }
+                if (_RoomData.storage) {
+                    global.RoomResource[_RoomData.name] = _RoomData.storage.store
+                }
+            }
+        }
+        /*开始类型检索操作*/
+        for (let Roomname in global.RoomResource) {
+            let _RoomData = global.RoomResource[Roomname]
+            let rTypeNum = _RoomData[rType];
+            if (rTypeNum && rTypeNum >= Num) {
+                return true
+            }
+        }
+        return false;
     }
 }

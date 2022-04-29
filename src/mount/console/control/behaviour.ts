@@ -1,6 +1,7 @@
 import { resourceComDispatch } from "@/constant/ResourceConstant"
 import { avePrice, haveOrder, highestPrice, RecognizeLab } from "@/module/fun/funtion"
 import { Colorful, compare, isInArray, unzipPosition, zipPosition } from "@/utils"
+import { LabLevel } from "@/constant/ResourceConstant"
 import { result } from "lodash"
 export default {
     /* 终端行为 */
@@ -284,7 +285,7 @@ export default {
                         bR = false
                 }
                 if (bR) {
-                    thisRoom.memory.market['order'].push({rType:rType,num:num,unit:unit,price:price})
+                    thisRoom.memory.market['order'].push({ rType: rType, num: num, unit: unit, price: price })
                     return `[market] 房间${roomName}成功下达order的资源卖出指令,type:sell,rType:${rType},num:${num},unit:${unit},price:${price}`
                 }
                 else return `[market] 房间${roomName}已经存在${rType}的sell订单了`
@@ -406,6 +407,52 @@ export default {
             myRoom.memory.ComDispatchData = {}
             return `[lab] 已经修改房间${roomName}的合成规划数据，为{}.本房见现已无资源合成调度`
         },
+        /*增加lab合成保持任务*/
+        Addautomatic(roomName: string, res: ResourceConstant, num: number): string {
+            if (num < 10000) return `[lab] 自动任务挂载不少于10000,请重新确认数量!`
+            var myRoom = Game.rooms[roomName]
+            if (!myRoom) return `[lab] 未找到房间${roomName},请确认房间!`
+            for (var i in myRoom.memory.Labautomatic.automaticData) {
+                let Data = myRoom.memory.Labautomatic.automaticData[i];
+                if (Data.Type == res) {
+                    if (Data.Num != num) {
+                        myRoom.memory.Labautomatic.automaticData[i].Num = num;
+                        return `[lab] 房间${roomName}的自动合成调整，已调整${res}自动合成，数量：${num}`
+                    }
+                    return `[lab] 房间${roomName}的自动合成调整，已有${res}自动合成`
+                }
+            }
+            let Level = LabLevel[res];
+            if (!Level) return `不存在资源${res} Level!`
+            myRoom.memory.Labautomatic.automaticData.push({ Type: res, Num: num, Level: Level })
+            myRoom.memory.Labautomatic.automaticData.sort(compare('Level'))
+            myRoom.memory.Labautomatic.automaticState = true;
+            /*清空自动规划任务*/
+            myRoom.memory.ComDispatchData = {}
+            return `[lab] 房间${roomName}的自动合成调整，新增${res}自动合成`
+        },
+        /*删除lab合成保持任务*/
+        Delautomatic(roomName: string, res: ResourceConstant): string {
+            var myRoom = Game.rooms[roomName]
+            if (!myRoom) return `[lab] 未找到房间${roomName},请确认房间!`
+            for (var i in myRoom.memory.Labautomatic.automaticData) {
+                let Data = myRoom.memory.Labautomatic.automaticData[i];
+                if (Data.Type == res) {
+                    delete myRoom.memory.Labautomatic.automaticData[i]
+                    return `[lab] 房间${roomName}的自动合成调整，已删除${res}自动合成`
+                }
+            }
+            return `[lab] 房间${roomName}的自动合成调整失败`
+        },
+        /*清空lab合成保持任务*/
+        Cautomatic(roomName: string): string {
+            var myRoom = Game.rooms[roomName]
+            if (!myRoom) return `[lab] 未找到房间${roomName},请确认房间!`
+            myRoom.memory.Labautomatic.automaticData = [];
+            myRoom.memory.Labautomatic.automaticState = false
+            return `[lab] 已经清空房间${roomName}的自动合成数据，已关闭Lab自动合成`
+        }
+
     },
 
     /* power */
@@ -514,12 +561,12 @@ export default {
             if (thisRoom.AddMission(thisTask)) return `[cross] 房间${roomName}初始化过道采集任务成功！ 房间：${relateRoom}`
             else return `[cross] 房间${roomName}初始化过道采集任务失败！请检查房间内是否已经存在该任务！`
         },
-        switch(roomName):string{
+        switch(roomName): string {
             var thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[cross] 不存在房间${roomName}`
             thisRoom.memory.switch.StopCross = !thisRoom.memory.switch.StopCross
             if (thisRoom.memory.switch.StopCross)
-            return `[cross] 房间${roomName}关闭过道!`
+                return `[cross] 房间${roomName}关闭过道!`
             return `[cross] 房间${roomName}开启过道!`
         },
         // active power

@@ -20,8 +20,10 @@ export default class RoomMissonVindicateExtension extends Room {
             // 默认配置
         }
         if ((Game.time - global.Gtime[this.name]) % 8) return
-        if (mission.LabBind) {
-            if (!this.Check_Lab(mission, 'transport', 'complex')) return
+        if (mission.LabBind) { 
+          
+            if (!this.Check_Lab(mission, 'transport', 'complex')) {}
+           
         }
     }
 

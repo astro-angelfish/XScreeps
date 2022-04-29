@@ -38,7 +38,7 @@ export default class CreepMissonActionExtension extends Creep {
         // var b = Game.cpu.getUsed();
         // console.log(this.name, '刷墙', b - a)
         if (mission.Data.RepairType == 'global') {
-            var a = Game.cpu.getUsed();
+            // var a = Game.cpu.getUsed();
             if (this.memory.working) {
                 if (this.memory.targetID) {
                     this.say("🛠️")
@@ -80,8 +80,8 @@ export default class CreepMissonActionExtension extends Creep {
                 }
                 this.withdraw_(tank_, 'energy')
             }
-            var b = Game.cpu.getUsed();
-            console.log(this.name, '刷墙', this.memory.working, b - a)
+            // var b = Game.cpu.getUsed();
+            // console.log(this.name, '刷墙', this.memory.working, b - a)
         }
         else if (mission.Data.RepairType == 'nuker') {
             // 没有仓库和终端就不防了
