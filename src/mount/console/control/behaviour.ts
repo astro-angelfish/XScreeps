@@ -366,11 +366,7 @@ export default {
         compound(roomName: string, res: ResourceConstant, num: number): string {
             var myRoom = Game.rooms[roomName]
             if (!myRoom) return `[lab] 未找到房间${roomName},请确认房间`
-            let str = []
-            for (var i of myRoom.memory.StructureIdData.labInspect.com) {
-                if (!myRoom.memory.RoomLabBind[i]) str.push(i)
-            }
-            var thisTask = myRoom.public_Compound(num, res, str)
+            var thisTask = myRoom.public_Compound(num, res)
             if (thisTask === null) return `[lab] 挂载合成任务失败!`
             if (myRoom.AddMission(thisTask))
                 return `[lab] 房间${roomName}合成${res}任务挂载成功! ${thisTask.Data.raw1} + ${thisTask.Data.raw2} = ${res}`
@@ -439,6 +435,11 @@ export default {
                 let Data = myRoom.memory.Labautomatic.automaticData[i];
                 if (Data.Type == res) {
                     delete myRoom.memory.Labautomatic.automaticData[i]
+                    var filtered = myRoom.memory.Labautomatic.automaticData.filter(function (el) {
+                        return el != null;
+                    });
+
+                    myRoom.memory.Labautomatic.automaticData = filtered
                     return `[lab] 房间${roomName}的自动合成调整，已删除${res}自动合成`
                 }
             }

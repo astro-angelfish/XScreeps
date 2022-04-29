@@ -237,6 +237,7 @@ export default class RoomMissonBehaviourExtension extends Room {
         if (!terminal_) return
         let MissionName = this.MissionName('Room', '资源合成')
         if (MissionName) {
+
             /*有任务的情况下检查是否满足继续合成的要求*/
             /*进行任务规则匹配操作-首先获取任务目标信息*/
             let Type = null;
@@ -253,7 +254,18 @@ export default class RoomMissonBehaviourExtension extends Room {
                         break;
                 }
             }
+
             if (!Type) {/*获取合成产物失败,取消任务同时终止*/this.DeleteMission(MissionName.id); return }
+            /*检查是否完整占用任务*/
+            if (Object.keys(this.memory.RoomLabBind).length < 10) {
+                this.DeleteMission(MissionName.id)
+                var thisTask = this.public_Compound(MissionName.Data.num, Type)
+                if (thisTask) {
+                    /*进行任务发布*/
+                    this.AddMission(thisTask)
+                }
+                return;
+            }
             let automaticData = null;
             for (let i_Data of this.memory.Labautomatic.automaticData) {
                 if (i_Data.Type == Type) {
@@ -322,7 +334,7 @@ export default class RoomMissonBehaviourExtension extends Room {
             }
             for (let i in this.memory.Labautomatic.automaticData) {
                 let _Data = this.memory.Labautomatic.automaticData[i];
-                // console.log(this.name, '自动规划', _Data.Type)
+                console.log(this.name, '自动规划', _Data.Type)
                 /*检查资源是否已经满足要求*/
                 let use_number = storage_.store.getUsedCapacity(_Data.Type) + terminal_.store.getUsedCapacity(_Data.Type)
                 let defect_numer = _Data.Num - use_number

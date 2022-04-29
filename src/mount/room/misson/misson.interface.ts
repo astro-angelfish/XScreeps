@@ -10,9 +10,9 @@ interface Room {
     Check_Lab(misson: MissionModel, role: string, tankType: 'storage' | 'terminal' | 'complex'): boolean
     Check_Link(source: RoomPosition, pos: RoomPosition): boolean
     Check_Buy(resource: ResourceConstant): boolean
-    Check_ResourceType(rType:ResourceConstant,Num:number):boolean
+    Check_ResourceType(rType: ResourceConstant, Num: number): boolean
     MissionName(range: string, name: string): MissionModel | null
-    
+
     // 主动任务
     Spawn_Feed(): void
     Constru_Build(): void
@@ -24,7 +24,7 @@ interface Room {
     Task_ComsumeLink(): void
     Nuke_Defend(): void
     Task_CompoundDispatch(): void
-    Task_LabAutomatic():void
+    Task_LabAutomatic(): void
     Task_monitorMineral(): void
     Task_montitorPower(): void
     Task_Auto_Defend(): void
@@ -64,7 +64,13 @@ interface RoomMemory {
     enemy?: enemyAllotData,
     DynamicConfig: { Dynamicupgrade?: boolean }/*动态配置*/
     MarketPrice: { Dynamicprice?: boolean, order_list: any, buy: { low: number, high: number }, sell: { low: number, high: number } }/*智能价格调度*/
-    Labautomatic: { automaticData?: [{ Type: ResourceConstant, Num: number, Level: number }?], automaticState?: boolean }
+    Labautomatic: { automaticData?: AutomaticData[], automaticState?: boolean }
+}
+
+interface AutomaticData {
+    Type: ResourceConstant,
+    Num: number,
+    Level: number
 }
 
 interface NukeData {
