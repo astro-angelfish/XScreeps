@@ -6,7 +6,7 @@ import { Colorful, compare, isInArray, unzipPosition, zipPosition } from "@/util
 export default {
     /* 修墙 */
     repair: {
-        set(roomName: string, rtype: 'global' | 'special', num: number, boost: null | ResourceConstant, level?: 'T0' | 'T1' | 'T2' | 'T3'| 'T4'): string {
+        set(roomName: string, rtype: 'global' | 'special', num: number, boost: null | ResourceConstant, level?: 'T0' | 'T1' | 'T2' | 'T3' | 'T4'): string {
             let thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[repair] 不存在房间${roomName}`
             for (var i of thisRoom.memory.Misson['Creep'])
@@ -79,10 +79,10 @@ export default {
     },
     /* 扩张 */
     expand: {
-        set(roomName: string, disRoom: string, shard: shardName, num: number, Cnum: number = 1, defend: boolean = false, shardData?: shardRoomData[]): string {
+        set(roomName: string, disRoom: string, shard: shardName, num: number, Cnum: number = 1, level?: 'T0' | 'T1' | 'T2' | 'T3' | 'T4', shardData?: shardRoomData[]): string {
             var thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[expand] 不存在房间${roomName}`
-            let task = thisRoom.public_expand(disRoom, shard, num, Cnum, defend)
+            let task = thisRoom.public_expand(disRoom, shard, num, Cnum, level)
             if (task) {
                 if (shardData) task.Data.shardData = shardData
                 if (thisRoom.AddMission(task))
@@ -339,6 +339,15 @@ export default {
                 return `[upgrade] 房间${roomName}启用动态升级!`
             }
             return `[upgrade] 房间${roomName}关闭动态升级!`
+        },
+        Dynamictransport(roomName: string, num: number | null = null): string {
+            var thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[repair] 不存在房间${roomName}`
+            thisRoom.memory.DynamicConfig.Dynamictransport = num
+            if (num) {
+                return `[upgrade] 房间${roomName}启用额外transport,数量${num}!`
+            }
+            return `[upgrade] 房间${roomName}关闭额外transport!`
         }
     },
     /* 搬运 */
@@ -369,7 +378,7 @@ export default {
             let thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[carry] 不存在房间${roomName}`
             for (var i of thisRoom.memory.Misson['Creep'])
-                if (i.name == '物流运输' && i.CreepBind['truck'] ) {
+                if (i.name == '物流运输' && i.CreepBind['truck']) {
                     if (thisRoom.DeleteMission(i.id))
                         return `[carry] 房间${roomName}删除搬运任务成功`
                 }

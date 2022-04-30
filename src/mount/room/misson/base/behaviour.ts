@@ -18,7 +18,7 @@ export default class RoomMissonBehaviourExtension extends Room {
         if (Game.time % 51) return
         if (this.controller.level < 5) return
         var myConstrusion = this.find(FIND_MY_CONSTRUCTION_SITES)
-        if (myConstrusion) {
+        if (myConstrusion.length > 0) {
             /* 添加一个进孵化队列 */
             if (myConstrusion.length > 10) {
                 let _number = Math.ceil(myConstrusion.length / 10);
@@ -99,7 +99,7 @@ export default class RoomMissonBehaviourExtension extends Room {
                         this.memory.StructureIdData.comsume_link.splice(index, 1)
                         return
                     }
-                    if (l.store.getUsedCapacity('energy') < 500) {
+                    if (l.store.getUsedCapacity('energy') > 500) {
                         var thisTask = this.public_link([center_link.id], l.id, 35)
                         this.AddMission(thisTask)
                         return
@@ -127,12 +127,12 @@ export default class RoomMissonBehaviourExtension extends Room {
             this.DeleteMission(misson.id)
             return
         }
-        if (raw1.mineralType && raw1.mineralType != misson.Data.raw1) {
+        if (raw1.mineralType && raw1.mineralType != misson.Data.raw1 &&  this.Check_Carry('transport',raw1.pos,storage_.pos,raw1.mineralType)) {
             var thisTask = this.public_Carry({ 'transport': { num: 1, bind: [] } }, 30, this.name, raw1.pos.x, raw1.pos.y, this.name, storage_.pos.x, storage_.pos.y, raw1.mineralType, raw1.store.getUsedCapacity(raw1.mineralType))
             this.AddMission(thisTask)
             return
         }
-        if (raw2.mineralType && raw2.mineralType != misson.Data.raw2) {
+        if (raw2.mineralType && raw2.mineralType != misson.Data.raw2 && this.Check_Carry('transport',raw2.pos,storage_.pos,raw2.mineralType)) {
             var thisTask = this.public_Carry({ 'transport': { num: 1, bind: [] } }, 30, this.name, raw2.pos.x, raw2.pos.y, this.name, storage_.pos.x, storage_.pos.y, raw2.mineralType, raw2.store.getUsedCapacity(raw2.mineralType))
             this.AddMission(thisTask)
             return
@@ -145,10 +145,16 @@ export default class RoomMissonBehaviourExtension extends Room {
         for (let i of comData) {
             var thisLab = Game.getObjectById(i) as StructureLab
             if (!thisLab) {
-                delete this.memory.RoomLabBind[i]
                 let index = this.memory.StructureIdData.labs.indexOf(i)
-                this.memory.StructureIdData.labs.splice(index, 1)
+                this.memory.StructureIdData.labs.splice(index,1)
                 continue
+            }
+            if (thisLab.mineralType && thisLab.mineralType != misson.LabBind[i] && this.Check_Carry('transport',thisLab.pos,storage_.pos,thisLab.mineralType))
+            {
+                // 说明该lab内有异物
+                var thisTask = this.public_Carry({'transport':{num:1,bind:[]}},30,this.name,thisLab.pos.x,thisLab.pos.y,this.name,storage_.pos.x,storage_.pos.y,thisLab.mineralType,thisLab.store.getUsedCapacity(thisLab.mineralType))
+                this.AddMission(thisTask)
+                return
             }
             if (thisLab.cooldown) continue
             let comNum = 5
@@ -334,7 +340,7 @@ export default class RoomMissonBehaviourExtension extends Room {
             }
             for (let i in this.memory.Labautomatic.automaticData) {
                 let _Data = this.memory.Labautomatic.automaticData[i];
-                console.log(this.name, '自动规划', _Data.Type)
+                // console.log(this.name, '自动规划', _Data.Type)
                 /*检查资源是否已经满足要求*/
                 let use_number = storage_.store.getUsedCapacity(_Data.Type) + terminal_.store.getUsedCapacity(_Data.Type)
                 let defect_numer = _Data.Num - use_number
@@ -382,76 +388,82 @@ export default class RoomMissonBehaviourExtension extends Room {
         if (!terminal_) return
         /* 没有房间合成实验室数据，不进行合成 */
         if (!this.memory.StructureIdData.labInspect.raw1) { console.log(`房间${this.name}不存在合成实验室数据！`); return }
-        /* 查看合成实验室的被占用状态 */
-        if (this.memory.RoomLabBind[this.memory.StructureIdData.labInspect.raw1] || this.memory.RoomLabBind[this.memory.StructureIdData.labInspect.raw2]) { console.log(`房间${this.name}的源lab被占用!`); return }
-        var comLabs = []
-        for (var otLab of this.memory.StructureIdData.labInspect.com) {
-            if (!this.memory.RoomLabBind[otLab]) comLabs.push(otLab)
-        }
-        if (comLabs.length <= 0) { console.log(`房间${this.name}的合成lab全被占用!`); return }
-        /* 确认所有目标lab里都没有其他资源 */
-        for (var i of this.memory.StructureIdData.labs) {
-            var thisLab = Game.getObjectById(i) as StructureLab
-            if (!thisLab) continue
-            if (thisLab.mineralType && !this.memory.RoomLabBind[i]) return
-        }
+        // /* 查看合成实验室的被占用状态 */
+        // if (this.memory.RoomLabBind[this.memory.StructureIdData.labInspect.raw1] || this.memory.RoomLabBind[this.memory.StructureIdData.labInspect.raw2]) { console.log(`房间${this.name}的源lab被占用!`); return }
+        // var comLabs = []
+        // for (var otLab of this.memory.StructureIdData.labInspect.com) {
+        //     if (!this.memory.RoomLabBind[otLab]) comLabs.push(otLab)
+        // }
+        // if (comLabs.length <= 0) { console.log(`房间${this.name}的合成lab全被占用!`); return }
+        // /* 确认所有目标lab里都没有其他资源 */
+        // for (var i of this.memory.StructureIdData.labs) {
+        //     var thisLab = Game.getObjectById(i) as StructureLab
+        //     if (!thisLab) continue
+        //     if (thisLab.mineralType && !this.memory.RoomLabBind[i]) return
+        // }
         /**
          * 正式开始合成规划
          *  */
-        var data = this.memory.ComDispatchData
-        LoopA:
-        for (var disType in data) {
-            let storeNum = storage_.store.getUsedCapacity(disType as ResourceConstant)
-            let dispatchNum = this.memory.ComDispatchData[disType].dispatch_num
-            // 不是最终目标资源的情况下
-            if (Object.keys(data)[Object.keys(data).length - 1] != disType)
-                if (storeNum + 50 < dispatchNum)    // +50 是误差容许
-                {
-                    let diff = dispatchNum - storeNum
-                    /* 先判定一下是否已经覆盖，如果已经覆盖就不合成 例如：ZK 和 G的关系，只要G数量满足了就不考虑 */
-                    var mapResource = resourceMap(disType as ResourceConstant, Object.keys(data)[Object.keys(data).length - 1] as ResourceConstant)
-                    if (mapResource.length > 0) {
-                        for (var mR of mapResource) {
-                            if (storage_.store.getUsedCapacity(mR) >= data[disType].dispatch_num)
-                                continue LoopA
-                        }
-                    }
-                    // 先判断能不能调度，如果能调度，就暂时 return
-                    let identify = ResourceCanDispatch(this, disType as ResourceConstant, dispatchNum - storeNum)
-                    if (identify == 'can') {
-                        console.log(`[dispatch]<lab> 房间${this.name}将进行资源为${i}的资源调度!`)
-                        let dispatchTask: RDData = {
-                            sourceRoom: this.name,
-                            rType: i as ResourceConstant,
-                            num: dispatchNum - storeNum,
-                            delayTick: 220,
-                            conditionTick: 35,
-                            buy: false,
-                        }
-                        Memory.ResourceDispatchData.push(dispatchTask)
-                    }
-                    else if (identify == 'running') return
-                    // 如果terminal存在该类型资源，就暂时return
-                    if (terminal_.store.getUsedCapacity(disType as ResourceConstant) > (this.memory.TerminalData[disType] ? this.memory.TerminalData[disType].num : 0)) return
-                    // 如果存在manage搬运任务 就 return
-                    if (!this.Check_Carry("manage", terminal_.pos, storage_.pos, disType as ResourceConstant)) return
-                    // 下达合成命令
-                    var thisTask = this.public_Compound(diff, disType as ResourceConstant, comLabs)
-                    if (this.AddMission(thisTask)) {
-                        data[disType].ok = true
-                    }
-                    return
-                }
-            // 是最终目标资源的情况下
-            if (Object.keys(data)[Object.keys(data).length - 1] == disType) {
-                // 下达合成命令
-                var thisTask = this.public_Compound(data[disType].dispatch_num, disType as ResourceConstant, comLabs)
-                if (this.AddMission(thisTask)) this.memory.ComDispatchData = {}
-                return
-            }
-
-        }
-    }
+         var data = this.memory.ComDispatchData
+         LoopA:
+         for (var disType in data)
+         {
+             let storeNum = storage_.store.getUsedCapacity(disType as ResourceConstant)
+             let dispatchNum = this.memory.ComDispatchData[disType].dispatch_num
+             // 不是最终目标资源的情况下
+             if (Object.keys(data)[Object.keys(data).length - 1] != disType)
+             if (storeNum +50  < dispatchNum)    // +50 是误差容许
+             {
+                 let diff = dispatchNum - storeNum
+                  /* 先判定一下是否已经覆盖，如果已经覆盖就不合成 例如：ZK 和 G的关系，只要G数量满足了就不考虑 */
+                 var mapResource = resourceMap(disType as ResourceConstant,Object.keys(data)[Object.keys(data).length - 1] as ResourceConstant)
+                 if (mapResource.length > 0)
+                 {
+                     for (var mR of mapResource)
+                     {
+                         if (storage_.store.getUsedCapacity(mR) >= data[disType].dispatch_num)
+                             continue LoopA 
+                     }
+                 }
+                 // 先判断能不能调度，如果能调度，就暂时 return
+                 let identify = ResourceCanDispatch(this,disType as ResourceConstant,dispatchNum - storeNum)
+                 if (identify == 'can')
+                 {
+                     console.log(`[dispatch]<lab> 房间${this.name}将进行资源为${disType}的资源调度!`)
+                     let dispatchTask:RDData = {
+                         sourceRoom:this.name,
+                         rType:disType as ResourceConstant,
+                         num:dispatchNum - storeNum,
+                         delayTick:220,
+                         conditionTick:35,
+                         buy:false,
+                     }
+                     Memory.ResourceDispatchData.push(dispatchTask)
+                 }
+                 else if (identify == 'running') return
+                 // 如果terminal存在该类型资源，就暂时return
+                 if (terminal_.store.getUsedCapacity(disType as ResourceConstant) > (this.memory.TerminalData[disType]?this.memory.TerminalData[disType].num:0)) return
+                 // 如果存在manage搬运任务 就 return
+                 if (!this.Check_Carry("manage",terminal_.pos,storage_.pos,disType as ResourceConstant)) return
+                 // 下达合成命令
+                 var thisTask = this.public_Compound(diff,disType as ResourceConstant)
+                 if (this.AddMission(thisTask))
+                 {
+                     data[disType].ok = true
+                 }
+                 return
+             }
+             // 是最终目标资源的情况下
+             if (Object.keys(data)[Object.keys(data).length - 1] == disType)
+             {
+                 // 下达合成命令
+                 var thisTask = this.public_Compound(data[disType].dispatch_num,disType as ResourceConstant)
+                 if (this.AddMission(thisTask)) this.memory.ComDispatchData = {}
+                 return
+             }
+             
+         }
+     }
 
     /* 烧Power发布函数任务 */
     public Task_montitorPower(): void {

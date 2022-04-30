@@ -20,10 +20,10 @@ export default class RoomMissonVindicateExtension extends Room {
             // 默认配置
         }
         if ((Game.time - global.Gtime[this.name]) % 8) return
-        if (mission.LabBind) { 
-          
-            if (!this.Check_Lab(mission, 'transport', 'complex')) {}
-           
+        if (mission.LabBind) {
+
+            if (!this.Check_Lab(mission, 'transport', 'complex')) { }
+
         }
     }
 
@@ -123,12 +123,33 @@ export default class RoomMissonVindicateExtension extends Room {
 
     /* 扩张援建任务 */
     public Task_Expand(mission: MissionModel): void {
-        if (mission.Data.defend) {
-            global.MSB[mission.id] = {
-                'claim': GenerateAbility(0, 0, 10, 0, 0, 5, 1, 4),
-                'Ebuild': GenerateAbility(10, 4, 20, 0, 0, 6, 0, 0),
-                'Eupgrade': GenerateAbility(10, 4, 20, 0, 0, 6, 0, 0)
+        if (mission.Data.defend && mission.Data.level) {
+            switch (mission.Data.level) {
+                case 'T1':
+                    global.MSB[mission.id] = {
+                        'claim': GenerateAbility(0, 0, 1, 0, 0, 0, 1, 0),
+                        'Ebuild': GenerateAbility(15, 15, 15, 0, 0, 6, 0, 0),
+                        'Eupgrade': GenerateAbility(15, 15, 15, 0, 0, 6, 0, 0)
+                    }
+                    break;
+                case 'T2':
+                    global.MSB[mission.id] = {
+                        'claim': GenerateAbility(0, 0, 1, 0, 0, 0, 1, 0),
+                        'Ebuild': GenerateAbility(18, 18, 12, 0, 0, 6, 0, 0),
+                        'Eupgrade': GenerateAbility(18, 18, 12, 0, 0, 6, 0, 0)
+                    }
+                    break;
+                case 'T3':
+                    break;
+                default:
+                    break;
+
             }
+            // global.MSB[mission.id] = {
+            //     'claim': GenerateAbility(0, 0, 10, 0, 0, 5, 1, 4),
+            //     'Ebuild': GenerateAbility(10, 4, 20, 0, 0, 6, 0, 0),
+            //     'Eupgrade': GenerateAbility(10, 4, 20, 0, 0, 6, 0, 0)
+            // }
         }
     }
 

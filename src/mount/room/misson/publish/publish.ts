@@ -256,7 +256,8 @@ export default class RoomMissonPublish extends Room {
      * @param defend 是否需要能抵抗一定攻击的能力
      * @returns 任务模型
      */
-    public public_expand(disRoom: string, shard: shardName, num: number, cnum: number, defend?: boolean): MissionModel {
+    public public_expand(disRoom: string, shard: shardName, num: number, cnum: number, level?: string): MissionModel {
+        let defend = true;
         var thisTask: MissionModel = {
             name: '扩张援建',
             range: 'Creep',
@@ -265,7 +266,8 @@ export default class RoomMissonPublish extends Room {
             Data: {
                 disRoom: disRoom,
                 shard: shard,
-                defend: defend
+                defend: defend,
+                level: level
             },
         }
         thisTask.reserve = true
@@ -275,8 +277,18 @@ export default class RoomMissonPublish extends Room {
             'Eupgrade': { num: num, bind: [], interval: 500, MSB: defend ? defend : false }
         }
         if (defend) {
-            thisTask.LabMessage = { 'GH2O': 'boost' }
-            return thisTask
+            switch (level) {
+                case 'T1':
+                    thisTask.LabMessage = { 'GH': 'boost', 'ZO': 'boost' }
+                    break;
+                case 'T2':
+                    thisTask.LabMessage = { 'GH2O': 'boost', 'ZHO2': 'boost' }
+                    break;
+                case 'T3':
+                    break;
+                case 'T4':
+                    break;
+            }
         }
         return thisTask
     }
@@ -306,9 +318,9 @@ export default class RoomMissonPublish extends Room {
         } else {
             thisTask.LabMessage = { 'XZHO2': 'boost', 'XLH2O': 'boost', 'XKH2O': 'boost' }
         }
-     
-            return thisTask
-      
+
+        return thisTask
+
     }
 
     public public_support(disRoom: string, sType: 'double' | 'aio', shard: shardName, num: number = 1, boost: boolean): MissionModel {

@@ -80,7 +80,12 @@ export default class RoomFunctionFindExtension extends Room {
                     if (state == 'normal') continue LoopC
                     else if (state == 'unbind') {
                         let id = this.Allot_Occupy(missObj, rType as ResourceConstant)
-                        if (!id) { if (Game.time % 5 == 0) console.log(`房间${this.name}的lab分配存在问题,找不到合适的lab!材料为:${rType}`); return } // 说明没lab了直接截止整个函数
+                        if (!id) {
+                            if (Game.time % 5 == 0) {
+                                // console.log(`房间${this.name}的lab分配存在问题,找不到合适的lab!材料为:${rType}`);
+                                return
+                            }
+                        } // 说明没lab了直接截止整个函数
                         if (_.isArray(id)) {
                             for (var str_ of id) {
                                 missObj.LabBind[str_ as string] = rType
@@ -136,6 +141,15 @@ export default class RoomFunctionFindExtension extends Room {
      */
     public Check_Occupy(miss: MissionModel, rType: ResourceConstant): 'normal' | 'damage' | 'unbind' | 'lost' | 'occupy' {
         if (!miss.LabBind) return 'unbind'
+        if (miss.LabMessage && miss.LabMessage[rType] == 'com')
+        {
+            // com类型判断有没有空闲的lab 有的话就占用lab
+            for (let lab of this.memory.StructureIdData.labs)
+            {
+                if (!isInArray(Object.keys(this.memory.RoomLabBind),lab))
+                    return 'unbind'
+            }
+        }
         for (let i in miss.LabBind) {
             if (miss.LabBind[i] == rType) {
                 let lab_ = Game.getObjectById(i) as StructureLab
@@ -193,7 +207,7 @@ export default class RoomFunctionFindExtension extends Room {
                 }
             }
         }
-        console.log(rType)
+        // console.log(rType)
         return 'unbind' // 代表未绑定
     }
 
@@ -233,7 +247,7 @@ export default class RoomFunctionFindExtension extends Room {
                 }
             }
         }
-        /* 除了底物之外的lab */
+        /* boost unboost的lab */
         if (isInArray(['boost', 'unboost'], miss.LabMessage[rType])) {
             /* 寻找未占用的lab */
             LoopB:
@@ -283,6 +297,12 @@ export default class RoomFunctionFindExtension extends Room {
             let strList = []
             LoopB:
             for (let lab_id of this.memory.StructureIdData.labs) {
+                 // 如果roomLabBind[lab_id].missonID中已经存在该任务, 直接push
+                 if (this.memory.RoomLabBind[lab_id] && isInArray(this.memory.RoomLabBind[lab_id].missonID,miss.id) && this.memory.RoomLabBind[lab_id].rType == rType)
+                 {
+                     strList.push(lab_id)
+                     continue
+                 }
                 let bind_labs = Object.keys(this.memory.RoomLabBind)
                 if (!isInArray(bind_labs, lab_id) && !isInArray(rawLabList, lab_id)) {
                     let thisLab = Game.getObjectById(lab_id) as StructureLab

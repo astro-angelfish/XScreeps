@@ -119,8 +119,7 @@ export default class RoomCoreEcosphereExtension extends Room {
         if (Game.shard.name == 'shard3') { if (Game.time % 25) return }
         else { if (Game.time % 5) return }
         if (this.memory.state == 'peace' || Game.time % 100 == 0) {
-            /*调整物流人员的数量*/
-            this.memory.SpawnConfig.transport.num = 1;
+           
             /* cpu过少就不进行自动重建 */
             if (Game.cpu.bucket < 4000) return
             /* 仅仅在和平情况下才会打开自动重建 */
@@ -161,8 +160,6 @@ export default class RoomCoreEcosphereExtension extends Room {
                     memoryNum += this.memory.distribution[index].length
                 }
             }
-            /*调整物流人员的数量*/
-            this.memory.SpawnConfig.transport.num = 2;
             // console.log("memoryNum:", memoryNum)
             if (currentNum < memoryNum) {
                 /* 说明出问题了 */

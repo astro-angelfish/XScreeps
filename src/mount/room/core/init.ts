@@ -431,6 +431,17 @@ export default class RoomCoreInitExtension extends Room {
             } else {
                 this.memory.SpawnConfig.upgrade.num = 2;
             }
+
+        }
+        let transport_num = this.memory.SpawnConfig.transport.num;
+        if (this.memory.state == 'peace') {
+            /*调整物流人员的数量*/
+            transport_num = 1;
+        } else if (this.memory.state == 'war') {
+            transport_num = 2;
+        }
+        if (this.memory.DynamicConfig.Dynamictransport) {
+            transport_num += this.memory.DynamicConfig.Dynamictransport;
         }
     }
 }

@@ -62,7 +62,7 @@ interface RoomMemory {
     ComDispatchData?: { [re in ResourceConstant]?: { ok?: boolean, dispatch_num: number } }
     mineralType: ResourceConstant
     enemy?: enemyAllotData,
-    DynamicConfig: { Dynamicupgrade?: boolean }/*动态配置*/
+    DynamicConfig: { Dynamicupgrade?: boolean, Dynamictransport?: number | null }/*动态配置*/
     MarketPrice: { Dynamicprice?: boolean, order_list: any, buy: { low: number, high: number }, sell: { low: number, high: number } }/*智能价格调度*/
     Labautomatic: { automaticData?: AutomaticData[], automaticState?: boolean }
 }
