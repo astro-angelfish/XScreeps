@@ -1,6 +1,7 @@
 import { assignPrototype } from "../base"
 import frameExtension from './control/frame'
 import actionExtension from './control/action'
+import aiwarExtension from './control/aiwar'
 import staticExtension from './static/static'
 import behaviourExtension from "./control/behaviour"
 
@@ -10,6 +11,7 @@ const plugins = [
     actionExtension,
     staticExtension,
     behaviourExtension,
+    aiwarExtension,
     ]
 
 /**

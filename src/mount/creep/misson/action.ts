@@ -375,6 +375,17 @@ export default class CreepMissonActionExtension extends Creep {
                     if (!this.pos.isNearTo(resources)) this.goTo(resources.pos, 1)
                     else this.pickup(resources)
                     return
+                } else {
+                    let tombstones = this.pos.findClosestByPath(FIND_TOMBSTONES, {
+                        filter: (res) => {
+                            return res.store.getUsedCapacity('energy') > 100
+                        }
+                    })
+                    if (tombstones) {
+                        if (!this.pos.isNearTo(tombstones)) this.goTo(tombstones.pos, 1)
+                        else this.withdraw(tombstones, 'energy')
+                        return
+                    }
                 }
 
                 let source = this.pos.findClosestByPath(FIND_SOURCES_ACTIVE)

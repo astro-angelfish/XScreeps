@@ -237,7 +237,7 @@ export default class terminalExtension extends StructureTerminal {
                 let Gatorder = global.Marketorder[this.room.name][order_data.order_id] as any;
                 if (!Gatorder) {
                     /*错误的订单信息，移除当前信息*/
-                    console.log(JSON.stringify(order_data))
+                    console.log(JSON.stringify)
                     console.log(Colorful(`[订单异常]房间${this.room.name}订单异常,异常完结`, 'red', true))
                     delete this.room.memory.MarketPrice.order_list[j];
                     continue;/*当前订单解除*/

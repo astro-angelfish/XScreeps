@@ -1,4 +1,5 @@
 import { RoleData } from "@/constant/SpawnConstant"
+import { t1, t2, t3 } from "@/constant/ResourceConstant"
 import { checkDispatch, checkSend, DispatchNum } from "@/module/fun/funtion"
 import { Colorful, compare, generateID, isInArray } from "@/utils"
 
@@ -515,7 +516,14 @@ export default class RoomMissonFrameExtension extends Room {
         for (let Roomname in global.RoomResource) {
             let _RoomData = global.RoomResource[Roomname]
             let rTypeNum = _RoomData[rType];
-            if (rTypeNum && rTypeNum >= Num) {
+            /*标记rType 查询保存量*/
+            var basic_num = 0;
+            if (this.name != Roomname) {
+                basic_num = 8000;
+                if (isInArray(t3, rType)) { basic_num = 8000 }
+                else if (isInArray(['X', 'L', 'Z', 'U', 'K', 'O', 'H', 'ops'], rType)) { basic_num = 15000 }
+            }
+            if (rTypeNum && rTypeNum >= Num - basic_num) {
                 return true
             }
         }

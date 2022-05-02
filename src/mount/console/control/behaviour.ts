@@ -766,6 +766,24 @@ export default {
             if (!factory_) return Colorful(`[factory] 未找到房间${roomName}的工厂!`, 'red', true)
             return factory_.del(cType)
         },
+        unzip(roomName:string,cType:CommodityConstant,num:number):string{
+            var myRoom = Game.rooms[roomName]
+            if (!myRoom) return `[factory] 未找到房间${roomName},请确认房间!`
+            let factory_ = Game.getObjectById(myRoom.memory.StructureIdData.FactoryId) as StructureFactory
+            if (!factory_) return Colorful(`[factory] 未找到房间${roomName}的工厂!`,'red',true)
+            if (myRoom.memory.productData.unzip[cType]) return Colorful(`[factory] 房间${roomName}已经存在${cType}的解压缩任务!`,'red',true) 
+            myRoom.memory.productData.unzip[cType] = {num:num}
+            return Colorful(`[factory] 房间${roomName}已经设置${cType}的解压缩任务，数量:${num}!`,'blue',true) 
+        },
+        Cunzip(roomName:string,cType:CommodityConstant):string{
+            var myRoom = Game.rooms[roomName]
+            if (!myRoom) return `[factory] 未找到房间${roomName},请确认房间!`
+            let factory_ = Game.getObjectById(myRoom.memory.StructureIdData.FactoryId) as StructureFactory
+            if (!factory_) return Colorful(`[factory] 未找到房间${roomName}的工厂!`,'red',true)
+            if (!myRoom.memory.productData.unzip[cType]) return Colorful(`[factory] 房间${roomName}不存在${cType}的解压缩任务!`,'red',true) 
+            delete myRoom.memory.productData.unzip[cType]
+            return Colorful(`[factory] 房间${roomName} ${cType}的解压缩任务已经删除!`,'blue',true) 
+        }
     },
 
     pixel(): string {
