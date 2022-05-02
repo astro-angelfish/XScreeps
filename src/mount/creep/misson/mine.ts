@@ -60,7 +60,9 @@ export default class CreepMissonMineExtension extends Creep {
                 if (!this.pos.isNearTo(this.room.controller))
                 {
                     var controllerPos = unzipPosition(this.memory.disPos)
-                    this.goTo(controllerPos,1)
+                    if (controllerPos.roomName == this.room.name)
+                    this.goTo(controllerPos,1,5000)
+                    else this.goTo(controllerPos,1,8000)
                 }
                 else
                 {
@@ -157,7 +159,24 @@ export default class CreepMissonMineExtension extends Creep {
             }
             else
             {
-                if (!this.pos.isNearTo(disPos)) this.goTo(disPos,1)
+                if (!this.pos.isNearTo(disPos))
+                {
+                    this.goTo(disPos,1)
+                    if (Game.time % 91 == 0 && this.room.name != this.memory.belong && this.room.name != creepMisson.disRoom)
+                    {
+                        if (Memory.outMineData && Memory.outMineData[creepMisson.disRoom])
+                        {
+                            for (var i of Memory.outMineData[creepMisson.disRoom].road)
+                            {
+                                var thisPos = unzipPosition(i) as RoomPosition
+                                if (thisPos.roomName == creepMisson.disRoom && !thisPos.GetStructure('road'))
+                                {
+                                    thisPos.createConstructionSite('road')
+                                }
+                            }
+                        }
+                    }
+                }
                 else this.harvest(source)
             }
 
