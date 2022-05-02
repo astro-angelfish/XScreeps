@@ -458,7 +458,17 @@ export default class CreepMissonWarExtension extends Creep {
         let data = missionData.Data
         if (!missionData) return
         if (this.room.name == this.memory.belong && Game.shard.name == this.memory.shard) {
-            if (data.boost && !this.BoostCheck(['move', 'heal', 'tough', 'ranged_attack'])) return
+            if (data.boost) {
+
+                switch (data.bodylevel) {
+                    case 'T8':
+                        if (!this.BoostCheck(['move', 'heal', 'ranged_attack'])) return
+                        break;
+                    default:
+                        if (!this.BoostCheck(['move', 'heal', 'tough', 'ranged_attack'])) return
+                        break;
+                }
+            }
         }
         if ((this.room.name != data.disRoom || Game.shard.name != data.shard)) {
             this.heal(this)
@@ -466,7 +476,7 @@ export default class CreepMissonWarExtension extends Creep {
         }
         else {
             // 对方开安全模式情况下 删除任务
-            if (this.room.controller && this.room.controller.safeMode) {
+            if (this.room.controller && this.room.controller.safeMode && !this.room.controller.my) {
                 if (Game.shard.name == this.memory.shard) {
                     Game.rooms[this.memory.belong].DeleteMission(id)
                 }
@@ -475,7 +485,7 @@ export default class CreepMissonWarExtension extends Creep {
             warDataInit(Game.rooms[data.disRoom])
             let creeps = global.warData.enemy[data.disRoom].data
             let flags = global.warData.flag[data.disRoom].data
-            if (!this.memory.targetFlag)    // 没有目标旗帜Memory的情况下，先查找有没有最近的周围没有攻击爬的旗帜
+            if (!this.memory.targetFlag && (!this.room.controller || (this.room.controller && !this.room.controller.my)))    // 没有目标旗帜Memory的情况下，先查找有没有最近的周围没有攻击爬的旗帜
             {
                 this.heal(this)
                 let flag_attack = pathClosestFlag(this.pos, flags, 'aio', true, 4) // 最近的攻击旗帜
@@ -529,6 +539,7 @@ export default class CreepMissonWarExtension extends Creep {
                         }
                     }
                 }
+                /*检查是否有对方的爬进行攻击*/
             }
             else {
                 if (!Game.flags[this.memory.targetFlag]) {
@@ -628,6 +639,25 @@ export default class CreepMissonWarExtension extends Creep {
                     else this.rangedHeal(ally_)
                 }
                 else this.heal(this)
+            }
+            // 寻找最近的敌人攻击
+            let closestCreep = this.pos.findClosestByPath(FIND_HOSTILE_CREEPS, {
+                filter: (creep) => {
+                    return !isInArray(Memory.whitesheet, creep.owner.username) && !creep.pos.GetStructure('rampart')
+                }
+            })
+            if (closestCreep && !this.pos.isNearTo(closestCreep)) {
+                this.goTo(closestCreep.pos, 3)
+            } else {
+                /*寻找移动旗帜待命*/
+                let withdrawFlag = this.pos.findClosestByPath(FIND_FLAGS, {
+                    filter: (flag) => {
+                        return flag.name.indexOf('automove') == 0
+                    }
+                })
+                if (withdrawFlag && !this.pos.inRangeTo(withdrawFlag.pos, 2)) {
+                    this.goTo(withdrawFlag.pos, 1)
+                }
             }
         }
     }

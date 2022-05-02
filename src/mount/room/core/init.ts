@@ -443,5 +443,6 @@ export default class RoomCoreInitExtension extends Room {
         if (this.memory.DynamicConfig.Dynamictransport) {
             transport_num += this.memory.DynamicConfig.Dynamictransport;
         }
+        this.NumSpawn('transport', transport_num)
     }
 }

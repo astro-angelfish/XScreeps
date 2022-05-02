@@ -293,6 +293,17 @@ export default class CreepMissonActionExtension extends Creep {
         }
         else if (this.memory.role == 'Ebuild') {
             if (this.memory.working) {
+                if (this.room.controller.level < 6) {
+                    let tower = this.pos.findClosestByPath(FIND_MY_STRUCTURES, {
+                        filter: (stru) => {
+                            return stru.structureType == 'tower' && stru.store.getFreeCapacity('energy') > 100
+                        }
+                    })
+                    if (tower) {
+                        this.transfer_(tower, 'energy')
+                        return
+                    }
+                }
                 /* 优先遭建筑 */
                 let cons = this.pos.findClosestByRange(FIND_MY_CONSTRUCTION_SITES)
                 if (cons) {
@@ -302,7 +313,8 @@ export default class CreepMissonActionExtension extends Creep {
                 if (this.room.controller.level < 5) {
                     let roads = this.pos.findClosestByRange(FIND_STRUCTURES, {
                         filter: (stru) => {
-                            return (stru.structureType == 'road' || stru.structureType == 'container') && stru.hits < stru.hitsMax * 0.8
+                            return ((stru.structureType == 'road' || stru.structureType == 'container') && stru.hits < stru.hitsMax * 0.8) ||
+                                (stru.structureType == 'rampart' && stru.hits < 100000)
                         }
                     })
                     if (roads) {
@@ -310,18 +322,9 @@ export default class CreepMissonActionExtension extends Creep {
                         return
                     }
                 }
+
+
                 if (this.room.controller.level < 6) {
-                    let tower = this.pos.findClosestByPath(FIND_MY_STRUCTURES, {
-                        filter: (stru) => {
-                            return stru.structureType == 'tower' && stru.store.getFreeCapacity('energy') > 0
-                        }
-                    })
-                    if (tower) {
-                        this.transfer_(tower, 'energy')
-                        return
-                    }
-                }
-                if (this.room.controller.level < 5) {
                     let store = this.pos.getClosestStore()
                     if (store) {
                         this.transfer_(store, 'energy')
@@ -329,7 +332,6 @@ export default class CreepMissonActionExtension extends Creep {
                     }
                 }
                 this.upgrade_()
-
             }
             else {
                 // 以withdraw开头的旗帜  例如： withdraw_0
@@ -361,9 +363,12 @@ export default class CreepMissonActionExtension extends Creep {
                     }
                     return
                 }
+
+
+
                 let resources = this.pos.findClosestByPath(FIND_DROPPED_RESOURCES, {
                     filter: (res) => {
-                        return res.amount > 200 && res.resourceType == 'energy'
+                        return res.amount > 100 && res.resourceType == 'energy'
                     }
                 })
                 if (resources) {
@@ -371,8 +376,17 @@ export default class CreepMissonActionExtension extends Creep {
                     else this.pickup(resources)
                     return
                 }
+
                 let source = this.pos.findClosestByPath(FIND_SOURCES_ACTIVE)
-                if (source) this.harvest_(source)
+                if (source) {
+                    this.harvest_(source)
+                }
+                // let tombstones = this.pos.findClosestByPath(FIND_DROPPED_RESOURCES)
+                // if (tombstones) {
+                //     if (!this.pos.isNearTo(tombstones)) this.goTo(resources.pos, 1)
+                //     else this.pickup(tombstones)
+                //     return
+                // }
                 // if (this.ticksToLive < 120 && this.store.getUsedCapacity('energy') <= 20) this.suicide()
                 if (this.store.getUsedCapacity('energy') / (this.ticksToLive + 50) > 10) this.memory.working = true
             }

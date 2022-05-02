@@ -164,7 +164,7 @@ export default class RoomMissonPublish extends Room {
         return thisTask
     }
 
-    public public_aio(disRoom: string, disShard: shardName, num: number, interval: number, boost: boolean, bodylevel?: "T0" | "T1" | "T2") {
+    public public_aio(disRoom: string, disShard: shardName, num: number, interval: number, boost: boolean, bodylevel?: "T0" | "T1" | "T2" | "T9" | "T8") {
         var thisTask: MissionModel = {
             name: '攻防一体',
             range: 'Creep',
@@ -178,8 +178,22 @@ export default class RoomMissonPublish extends Room {
             maxTime: 5
         }
         if (boost) {
-            thisTask.Data.boost = true
-            thisTask.LabMessage = { 'XZHO2': 'boost', 'XGHO2': 'boost', 'XLHO2': 'boost', 'XKHO2': 'boost' }
+            switch (bodylevel) {
+                case 'T9':
+                    break;
+                case 'T8':
+                    thisTask.Data.boost = true
+                    thisTask.LabMessage = { 'ZO': 'boost', 'LO': 'boost', 'KO': 'boost' }
+                    break;
+                case 'T0':
+                    thisTask.Data.boost = true
+                    thisTask.LabMessage = { 'XZHO2': 'boost', 'XGHO2': 'boost', 'XLHO2': 'boost', 'XUH2O': 'boost' }
+                    break;
+                default:
+                    thisTask.Data.boost = true
+                    thisTask.LabMessage = { 'XZHO2': 'boost', 'XGHO2': 'boost', 'XLHO2': 'boost', 'XKHO2': 'boost' }
+                    break;
+            }
             if (bodylevel) thisTask.Data.bodylevel = bodylevel  // 一体机体型
         }
         else thisTask.Data.boost = false
