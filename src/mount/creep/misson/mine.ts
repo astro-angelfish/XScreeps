@@ -162,20 +162,6 @@ export default class CreepMissonMineExtension extends Creep {
                 if (!this.pos.isNearTo(disPos))
                 {
                     this.goTo(disPos,1)
-                    if (Game.time % 91 == 0 && this.room.name != this.memory.belong && this.room.name != creepMisson.disRoom)
-                    {
-                        if (Memory.outMineData && Memory.outMineData[creepMisson.disRoom])
-                        {
-                            for (var i of Memory.outMineData[creepMisson.disRoom].road)
-                            {
-                                var thisPos = unzipPosition(i) as RoomPosition
-                                if (thisPos.roomName == creepMisson.disRoom && !thisPos.GetStructure('road'))
-                                {
-                                    thisPos.createConstructionSite('road')
-                                }
-                            }
-                        }
-                    }
                 }
                 else this.harvest(source)
             }
@@ -196,6 +182,20 @@ export default class CreepMissonMineExtension extends Creep {
             }
             if (!this.memory.bindpoint) return
             var disPos = unzipPosition(this.memory.bindpoint)
+            if (Game.time % 91 == 0 && this.room.name != this.memory.belong && this.room.name != disPos.roomName)
+            {
+                if (Memory.outMineData && Memory.outMineData[disPos.roomName])
+                {
+                    for (var i of Memory.outMineData[disPos.roomName].road)
+                    {
+                        var thisPos = unzipPosition(i) as RoomPosition
+                        if (!thisPos.GetStructure('road'))
+                        {
+                            thisPos.createConstructionSite('road')
+                        }
+                    }
+                }
+            }
             if (this.memory.working)
             {
                 var stroage_ = Game.rooms[this.memory.belong].storage
