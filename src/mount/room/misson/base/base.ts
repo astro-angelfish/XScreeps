@@ -469,8 +469,8 @@ export default class RoomMissonFrameExtension extends Room {
                 }
                 else
                 {
-                    var terminalNum = terminal.store.getUsedCapacity(misson.LabBind[i] as ResourceConstant)
-                    var storageNum = storage.store.getUsedCapacity(misson.LabBind[i] as ResourceConstant)
+                    var terminalNum =terminal? terminal.store.getUsedCapacity(misson.LabBind[i] as ResourceConstant):0
+                    var storageNum =storage? storage.store.getUsedCapacity(misson.LabBind[i] as ResourceConstant):0
                     tank_ = terminalNum>storageNum?terminal:storage
                 }
             }

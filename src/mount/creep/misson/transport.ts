@@ -2,9 +2,9 @@
 
 export default class CreepMissonTransportExtension extends Creep {
     public handle_feed():void{
-        if (!this.room.memory.StructureIdData.storageID) return
-        var storage_ = Game.getObjectById(this.room.memory.StructureIdData.storageID as string) as StructureStorage
-        if (! storage_) return
+        let storage_ = Game.rooms[this.memory.belong].storage
+        let terminal_ = Game.rooms[this.memory.belong].terminal
+        if (!storage_ && !terminal_) return
         this.workstate('energy')
         for (var r in this.store)
         {
@@ -16,7 +16,7 @@ export default class CreepMissonTransportExtension extends Creep {
                 {
                     if (!this.room.memory.StructureIdData.storageID) return
                     var storage = Game.getObjectById(this.room.memory.StructureIdData.storageID) as StructureStorage
-                    if (!storage) return
+                    if (!storage) {this.drop(r as ResourceConstant);return;}
                     if (storage.store.getUsedCapacity() > this.store.getUsedCapacity())
                     {
                         this.transfer_(storage,r as ResourceConstant)
@@ -47,7 +47,7 @@ export default class CreepMissonTransportExtension extends Creep {
         else
         {
             // 优先提取storage里的能量 不够提取terminal里的
-            if (storage_.store['energy'] >= this.store.getCapacity())
+            if (storage && storage_.store['energy'] >= this.store.getCapacity())
             this.withdraw_(storage_,'energy')
             else
             {

@@ -43,10 +43,13 @@ export default class CreepMissonActionExtension extends Creep {
                     var target_ = Game.getObjectById(this.memory.targetID) as StructureRampart
                     if (!target_) {delete this.memory.targetID;return}
                     this.repair_(target_)
-                    let hostileCreep = this.pos.findInRange(FIND_HOSTILE_CREEPS,3,{filter:(creep)=>{
-                        return creep.getActiveBodyparts('ranged_attack') > 0
-                    }})
-                    if (hostileCreep.length > 0) this.Flee(hostileCreep[0].pos,4)
+                    if (!this.pos.GetStructure('rampart'))
+                    {
+                        let hostileCreep = this.pos.findInRange(FIND_HOSTILE_CREEPS,3,{filter:(creep)=>{
+                            return creep.getActiveBodyparts('ranged_attack') > 0
+                        }})
+                        if (hostileCreep.length > 0) this.Flee(hostileCreep[0].pos,4)
+                    }
                 }
                 else
                 {
@@ -136,10 +139,13 @@ export default class CreepMissonActionExtension extends Creep {
                         return
                     }
                     this.repair_(wall_)
-                    let hostileCreep = this.pos.findInRange(FIND_HOSTILE_CREEPS,3,{filter:(creep)=>{
-                        return creep.getActiveBodyparts('ranged_attack') > 0
-                    }})
-                    if (hostileCreep.length > 0) this.Flee(hostileCreep[0].pos,4)
+                    if (!this.pos.GetStructure('rampart'))
+                    {
+                        let hostileCreep = this.pos.findInRange(FIND_HOSTILE_CREEPS,3,{filter:(creep)=>{
+                            return creep.getActiveBodyparts('ranged_attack') > 0
+                        }})
+                        if (hostileCreep.length > 0) this.Flee(hostileCreep[0].pos,4)
+                    }
                     
                 }
                 return
@@ -155,10 +161,13 @@ export default class CreepMissonActionExtension extends Creep {
                     var target_ = Game.getObjectById(this.memory.targetID) as StructureRampart
                     if (!target_) {delete this.memory.targetID;return}
                     this.repair_(target_)
-                    let hostileCreep = this.pos.findInRange(FIND_HOSTILE_CREEPS,3,{filter:(creep)=>{
-                        return creep.getActiveBodyparts('ranged_attack') > 0
-                    }})
-                    if (hostileCreep.length > 0) this.Flee(hostileCreep[0].pos,4)
+                    if (!this.pos.GetStructure('rampart'))
+                    {
+                        let hostileCreep = this.pos.findInRange(FIND_HOSTILE_CREEPS,3,{filter:(creep)=>{
+                            return creep.getActiveBodyparts('ranged_attack') > 0
+                        }})
+                        if (hostileCreep.length > 0) this.Flee(hostileCreep[0].pos,4)
+                    }
                 }
                 else
                 {
