@@ -413,6 +413,10 @@ export default class CreepMissonWarExtension extends Creep {
                 if (creeps && !isInArray([0,49],creeps.pos.x) && !isInArray([0,49],creeps.pos.y))
                 {
                     if (this.attack(creeps) == ERR_NOT_IN_RANGE) this.goTo(creeps.pos,1)
+                    else if (this.attack(creeps) == OK)
+                    {
+                        this.optTower('attack',creeps)
+                    }
                 }
                 if (this.pos.x >= 48 || this.pos.x <= 1 || this.pos.y >= 48 || this.pos.y <= 1)
                 {
@@ -689,7 +693,7 @@ export default class CreepMissonWarExtension extends Creep {
             /* 说明到达指定房间，并到达合适位置了 */
             /* 添加战争框架控制信息 */
             if (!Memory.squadMemory) Memory.squadMemory = {}
-            if (!squadID) {this.say("找不到squardID!");return}
+            if (!squadID) {return}
             if (!Memory.squadMemory[squadID])
             {
                 Memory.squadMemory[squadID] = {
