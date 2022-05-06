@@ -50,6 +50,8 @@ interface Room {
     Task_double(mission: MissionModel): void
     Task_Resource_transfer(mission: MissionModel): void
     Task_Expand(mission: MissionModel): void
+    Task_Aiwar(mission: MissionModel): void
+    Task_Aisentry(mission:MissionModel):void
 }
 
 interface RoomMemory {

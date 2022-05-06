@@ -223,23 +223,27 @@ export function upgrade_(creep_: Creep): void {
         }
         if (!creep_.memory.targetID) {
             let target = null
-            if (Game.rooms[creep_.memory.belong].memory.StructureIdData.upgrade_link)       // 优先Link
-            {
-                target = Game.getObjectById(Game.rooms[creep_.memory.belong].memory.StructureIdData.upgrade_link) as StructureLink
-                if (!target) delete Game.rooms[creep_.memory.belong].memory.StructureIdData.upgrade_link
-            }
-            else if (Game.rooms[creep_.memory.belong].memory.StructureIdData.storageID)  // 优先仓库
-            {
-                target = Game.getObjectById(Game.rooms[creep_.memory.belong].memory.StructureIdData.storageID) as StructureStorage
-                if (!target) delete Game.rooms[creep_.memory.belong].memory.StructureIdData.storageID
-            }
-            if (!target)    // 其次container
-            {
-                target = creep_.pos.findClosestByRange(FIND_STRUCTURES, {
-                    filter: (stru) => {
-                        return stru.structureType == 'container' && stru.store.getUsedCapacity('energy') > creep_.store.getFreeCapacity()
-                    }
-                })
+            if (creep_.room.controller.level < 8 && creep_.room.terminal) {
+                target = creep_.room.terminal
+            } else {
+                if (Game.rooms[creep_.memory.belong].memory.StructureIdData.upgrade_link)       // 优先Link
+                {
+                    target = Game.getObjectById(Game.rooms[creep_.memory.belong].memory.StructureIdData.upgrade_link) as StructureLink
+                    if (!target) delete Game.rooms[creep_.memory.belong].memory.StructureIdData.upgrade_link
+                }
+                else if (Game.rooms[creep_.memory.belong].memory.StructureIdData.storageID)  // 优先仓库
+                {
+                    target = Game.getObjectById(Game.rooms[creep_.memory.belong].memory.StructureIdData.storageID) as StructureStorage
+                    if (!target) delete Game.rooms[creep_.memory.belong].memory.StructureIdData.storageID
+                }
+                if (!target)    // 其次container
+                {
+                    target = creep_.pos.findClosestByRange(FIND_STRUCTURES, {
+                        filter: (stru) => {
+                            return stru.structureType == 'container' && stru.store.getUsedCapacity('energy') > creep_.store.getFreeCapacity()
+                        }
+                    })
+                }
             }
             if (!target) { return }
             else { creep_.memory.targetID = target.id }

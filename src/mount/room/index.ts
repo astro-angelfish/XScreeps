@@ -10,9 +10,11 @@ import RoomMissonTransportExtension from "./misson/base/transport"
 import RoomMissonVindicateExtension from "./misson/action/vindicate"
 import RoomFunctionTowerExtension from "./function/tower"
 import NormalWarExtension from "./misson/war/normal"
+import AIWarExtension from "./misson/war/aiwar"
 import RoomMissonManageExtension from "./misson/base/manage"
 import RoomMissonDefendExtension from "./misson/action/defend"
 import RoomMissonMineExtension from "./misson/action/mine"
+import RoomMissonAiwarExtension from "./misson/action/aiwar"
 import DefendWarExtension from "./misson/war/defend"
 import PowerCreepMisson from "./misson/powerCreep/base"
 // 定义好挂载顺序
@@ -28,12 +30,14 @@ const plugins = [
     RoomMissonTransportExtension,
     RoomMissonVindicateExtension,
     NormalWarExtension,
+    AIWarExtension,
     RoomMissonManageExtension,
     RoomMissonDefendExtension,
     RoomMissonMineExtension,
+    RoomMissonAiwarExtension,
     DefendWarExtension,
     PowerCreepMisson,
-    ]
+]
 
 /**
 * 依次挂载所有的拓展

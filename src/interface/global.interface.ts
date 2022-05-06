@@ -61,6 +61,10 @@ interface TowerRangeMapData {
     [strpos: string]: ARH
 }
 
+interface HurtRangeMapData {
+    [strpos: string]: ARH
+}
+
 interface ARH {
     attack: number
     repair: number

@@ -88,11 +88,6 @@ export default class NormalWarExtension extends Room {
             if (!this.Check_Lab(mission, 'transport', 'complex')) return
         }
     }
-    // 扩张援建
-    public Task_Expand(mission: MissionModel): void {
-        if ((Game.time - global.Gtime[this.name]) % 11) return
-        if (!this.Check_Lab(mission, 'transport', 'complex')) return
-    }
-
+  
 
 }

@@ -217,13 +217,14 @@ export default class RoomMissonPublish extends Room {
         thisTask.CreepBind = { 'claim-attack': { num: 1, interval: interval, bind: [] } }
         return thisTask
     }
+
     /**
      *                  急速冲级任务发布函数
      * @param num       冲级爬数量
      * @param boostType boost类型
      * @returns         任务对象
      */
-    public public_quick(num: number, boostType: ResourceConstant | null): MissionModel {
+    public public_quick(num: number, Type: ResourceConstant | null): MissionModel {
         var thisTask: MissionModel = {
             name: '急速冲级',
             range: 'Creep',
@@ -233,8 +234,10 @@ export default class RoomMissonPublish extends Room {
             },
         }
         thisTask.CreepBind = { 'rush': { num: num, bind: [] } }
-        if (boostType && isInArray(['GH', 'GH2O', 'XGH2O'], boostType)) {
-            thisTask.LabMessage = { boostType: 'boost' }
+        if (Type && isInArray(['GH', 'GH2O', 'XGH2O'], Type)) {
+            // console.log('极速冲级化合物',)
+            thisTask.LabMessage = {}
+            thisTask.LabMessage[Type] = 'boost'
         }
         return thisTask
     }
@@ -299,6 +302,7 @@ export default class RoomMissonPublish extends Room {
                     thisTask.LabMessage = { 'GH2O': 'boost', 'ZHO2': 'boost' }
                     break;
                 case 'T3':
+                    thisTask.LabMessage = { 'XGH2O': 'boost', 'XZHO2': 'boost', 'XKH2O': 'boost' }
                     break;
                 case 'T4':
                     break;
@@ -579,7 +583,7 @@ export default class RoomMissonPublish extends Room {
             name: '红球防御',
             range: 'Creep',
             delayTick: 99999,
-            reserve: true,
+            reserve: false,
             level: 10,
             Data: {},
         }
@@ -596,7 +600,7 @@ export default class RoomMissonPublish extends Room {
             name: '蓝球防御',
             range: 'Creep',
             delayTick: 99999,
-            reserve: true,
+            reserve: false,
             level: 10,
             Data: {}
         }
@@ -692,4 +696,34 @@ export default class RoomMissonPublish extends Room {
     }
 
     /* 资源链任务发布函数 */
+
+    /**
+     * 智能战争发布引擎
+     * @param disRoom 目标房间
+     * @param shard 目标房间shard
+     * @param boost  是否进行boost
+     * @returns 任务模型
+     */
+    public public_Aidestroy(disRoom: string, shard: shardName, boost?: boolean, bodylevel?: "T0" | "T1" | "T2" | "T3"): MissionModel {
+        var thisTask: MissionModel = {
+            name: '智能战争',
+            range: 'Room',
+            delayTick: 99999,
+            level: 10,
+            Data: {
+                disRoom: disRoom,
+                shard: shard
+            },
+        }
+        if (boost) {
+            thisTask.Data.boost = boost;
+        }
+        if (bodylevel) {
+            thisTask.Data.bodylevel = bodylevel;
+        }
+        // thisTask.reserve = true
+        // thisTask.CreepBind = { 'ai-sentry': { num: 1, interval: 1000, bind: [] } }
+        // thisTask.LabMessage = { 'XZHO2': 'boost', 'XLHO2': 'boost', 'XGHO2': 'boost' }
+        return thisTask
+    }
 }

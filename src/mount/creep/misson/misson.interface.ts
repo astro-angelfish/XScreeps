@@ -26,6 +26,7 @@ interface Creep{
     handle_defend_double():void
     handle_task_squard():void
     handle_double():void
+    handle_aisentry():void
 }
 
 interface CreepMemory{

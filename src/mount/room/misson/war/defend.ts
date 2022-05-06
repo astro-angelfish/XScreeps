@@ -12,6 +12,7 @@ export default class DefendWarExtension extends Room {
 
             }
         if (Game.time % 41) return
+        if (this.memory.switch.Stopnukeprotect) return
         var nuke_ = this.find(FIND_NUKES)
         if (this.controller.level < 6) return
         // var nuke_ = this.find(FIND_FLAGS,{filter:(flag_)=>{return flag_.color == COLOR_ORANGE}})
@@ -124,6 +125,7 @@ export default class DefendWarExtension extends Room {
     /* 主动防御任务发布 */
     public Task_Auto_Defend(): void {
         if (Game.time % 5) return
+        if (!Game.rooms[this.name].terminal) return
         if (this.controller.level < 6) return
         if (!this.memory.state) return
         if (this.memory.state != 'war') { this.memory.switch.AutoDefend = false; this.memory.enemy = {}; return }
@@ -133,7 +135,7 @@ export default class DefendWarExtension extends Room {
                 return !isInArray(Memory.whitesheet, creep.owner.username) && (creep.owner.username != 'Invader') && deserveDefend(creep)
             }
         })
-        if (enemys.length <= 0) return
+        if (enemys.length <= 0) { this.memory.switch.AutoDefend = false; this.memory.enemy = {}; return }
         /* 如果有合成任务，删除合成任务 */
         // let compoundTask = this.MissionName('Room', '资源合成')
         // if (compoundTask) {
@@ -146,23 +148,30 @@ export default class DefendWarExtension extends Room {
             let users = []
             for (let c of enemys) if (!isInArray(users, c.owner.username)) users.push(c.owner.username)
             let str = ''; for (let s of users) str += ` ${s}`
-            Game.notify(`房间${this.name}激活主动防御! 目前检测到的攻击方为:${str},爬虫数为:${enemys.length},我们将抗战到底!`)
-            console.log(`房间${this.name}激活主动防御! 目前检测到的攻击方为:${str},爬虫数为:${enemys.length},我们将抗战到底!`)
+
+            if (str == 'Bulletproof' && enemys.length < 2) {
+                this.memory.switch.AutoDefend = false        // 表示房间存在主动防御任务
+                return;
+            } else {
+                Game.notify(`房间${this.name}激活主动防御! 目前检测到的攻击方为:${str},爬虫数为:${enemys.length},我们将抗战到底!`)
+                console.log(`房间${this.name}激活主动防御! 目前检测到的攻击方为:${str},爬虫数为:${enemys.length},我们将抗战到底!`)
+            }
         }
         // console.log(JSON.stringify(enemys))
         /* 分析敌对爬虫的数量,应用不同的主防任务应对 */
         let hostileCreep = this.hostileCreep_atk(enemys)
         let defend_plan = {}
+
         if (enemys.length < 2 || hostileCreep < 600)      // 1
         {
             defend_plan = { 'attack': 1 }
         } else if (enemys.length <= 2)      // 2
         {
-            defend_plan = { 'attack': 1, 'range': 1 }
+            defend_plan = { 'attack': 1 }
         }
         else if (enemys.length > 2 && enemys.length < 5)       // 3-4
         {
-            defend_plan = { 'attack': 1, 'double': 1 }
+            defend_plan = { 'attack': 2, 'double': 1 }
         }
         else if (enemys.length >= 5 && enemys.length < 8)   // 5-7
         {
@@ -173,6 +182,7 @@ export default class DefendWarExtension extends Room {
             defend_plan = { 'attack': 2, 'double': 2, 'range': 2 }
         }
         for (var plan in defend_plan) {
+
             switch (plan) {
                 case 'attack':
                     var num = this.MissionNum('Creep', '红球防御')
@@ -211,6 +221,7 @@ export default class DefendWarExtension extends Room {
                     }
                     break;
                 case 'double':
+                    if (this.controller.level < 8) { break; }
                     var num = this.MissionNum('Creep', '双人防御')
                     if (num <= 0) {
                         let thisTask = this.public_double_defend(defend_plan[plan])

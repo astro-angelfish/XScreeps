@@ -8,7 +8,7 @@ export default class RoomMissonVindicateExtension extends Room {
         let level = mission.Data.level
         if (!level) mission.Data.level = 'T0'
         if (level == 'T3') {
-            global.MSB[mission.id] = { 'repair': GenerateAbility(20, 20, 10, 0, 0, 0, 0, 0) }
+            global.MSB[mission.id] = { 'repair': GenerateAbility(30, 10, 10, 0, 0, 0, 0, 0) }
         }
         else if (level == 'T2') {
             global.MSB[mission.id] = { 'repair': GenerateAbility(6, 4, 10, 0, 0, 0, 0, 0) }
@@ -120,26 +120,34 @@ export default class RoomMissonVindicateExtension extends Room {
             }
         }
     }
-
-    /* 扩张援建任务 */
+    // 扩张援建
     public Task_Expand(mission: MissionModel): void {
+        if ((Game.time - global.Gtime[this.name]) % 11) return
+        // console.log('扩张援助体型检测',mission.Data.level)
         if (mission.Data.defend && mission.Data.level) {
+            // console.log('扩张援助体型3',mission.Data.level)
             switch (mission.Data.level) {
                 case 'T1':
                     global.MSB[mission.id] = {
                         'claim': GenerateAbility(0, 0, 1, 0, 0, 0, 1, 0),
-                        'Ebuild': GenerateAbility(15, 15, 15, 0, 0, 6, 0, 0),
-                        'Eupgrade': GenerateAbility(15, 15, 15, 0, 0, 6, 0, 0)
+                        'Ebuild': GenerateAbility(15, 15, 15, 0, 0, 0, 0, 0),
+                        'Eupgrade': GenerateAbility(15, 15, 15, 0, 0, 0, 0, 0)
                     }
                     break;
                 case 'T2':
                     global.MSB[mission.id] = {
                         'claim': GenerateAbility(0, 0, 1, 0, 0, 0, 1, 0),
-                        'Ebuild': GenerateAbility(18, 18, 12, 0, 0, 6, 0, 0),
-                        'Eupgrade': GenerateAbility(18, 18, 12, 0, 0, 6, 0, 0)
+                        'Ebuild': GenerateAbility(18, 18, 12, 0, 0, 0, 0, 0),
+                        'Eupgrade': GenerateAbility(18, 18, 12, 0, 0, 0, 0, 0)
                     }
                     break;
                 case 'T3':
+                    // console.log('扩张援助体型3')
+                    global.MSB[mission.id] = {
+                        'claim': GenerateAbility(0, 0, 1, 0, 0, 0, 1, 0),
+                        'Ebuild': GenerateAbility(30, 10, 10, 0, 0, 0, 0, 0),
+                        'Eupgrade': GenerateAbility(30, 10, 10, 0, 0, 0, 0, 0)
+                    }
                     break;
                 default:
                     break;
@@ -151,6 +159,9 @@ export default class RoomMissonVindicateExtension extends Room {
             //     'Eupgrade': GenerateAbility(10, 4, 20, 0, 0, 6, 0, 0)
             // }
         }
+        if (!this.Check_Lab(mission, 'transport', 'complex')) return
     }
+
+
 
 }

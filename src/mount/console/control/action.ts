@@ -432,6 +432,14 @@ export default {
             else myRoom.memory.switch.StopFillNuker = true
             if (myRoom.memory.switch.StopFillNuker) return `[nuke] 房间${roomName}停止自动核弹填充!`
             return `[nuke] 房间${roomName}开启自动核弹填充!`
+        },
+        switchprotect(roomName: string): string {
+            var myRoom = Game.rooms[roomName]
+            if (!myRoom) return `[nuke]房间错误，请确认房间${roomName}！`
+            if (myRoom.memory.switch.Stopnukeprotect) myRoom.memory.switch.Stopnukeprotect = false
+            else myRoom.memory.switch.Stopnukeprotect = true
+            if (myRoom.memory.switch.Stopnukeprotect) return `[nuke] 房间${roomName}停止自动核弹防护!`
+            return `[nuke] 房间${roomName}开启自动核弹防护!`
         }
     },
     /* 斥候 签名 侦察 */

@@ -61,7 +61,7 @@ export function ResourceDispatch(thisRoom: Room): void {
                     }
                     // t3
                     else if (isInArray(t3, i.rType)) {
-                        let task = thisRoom.public_Buy(i.rType, i.num, 50, 100);
+                        let task = thisRoom.public_Buy(i.rType, i.num, 50, 150);
                         if (task) { thisRoom.AddMission(task); i.delayTick = 0 }; continue
                     }
                     // power

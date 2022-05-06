@@ -40,28 +40,29 @@ export default class RoomMissonFrameExtension extends Room {
         for (var index in this.memory.Misson) {
             for (var misson of this.memory.Misson[index]) {
                 // var a = Game.cpu.getUsed()
-                A:
                 switch (misson.name) {
-                    case "物流运输": { this.Task_Carry(misson); break A; }
-                    case "墙体维护": { this.Task_Repair(misson); break A; }
-                    case '黄球拆迁': { this.Task_dismantle(misson); break A; }
-                    case '急速冲级': { this.Task_Quick_upgrade(misson); break A; }
-                    case '紧急援建': { this.Task_HelpBuild(misson); break A; }
-                    case '紧急支援': { this.Task_HelpDefend(misson); break A; }
-                    case '资源合成': { this.Task_Compound(misson); break A; }
-                    case '攻防一体': { this.Task_aio(misson); break A; }
-                    case '外矿开采': { this.Task_OutMine(misson); break A; }
-                    case "power升级": { this.Task_ProcessPower(misson); break A; }
-                    case '过道采集': { this.Task_Cross(misson); break A; }
-                    case '资源转移': { this.Task_Resource_transfer(misson); break A; }
-                    case 'power采集': { this.Task_PowerHarvest(misson); break A; }
-                    case '红球防御': { this.Task_Red_Defend(misson); break A; }
-                    case '蓝球防御': { this.Task_Blue_Defend(misson); break A; }
-                    case '双人防御': { this.Task_Double_Defend(misson); break A; }
-                    case '四人小队': { this.Task_squad(misson); break A; }
-                    case '双人小队': { this.Task_double(misson); break A; }
-                    case '普通冲级': { this.Task_Normal_upgrade(misson); break A; }
-                    case '扩张援建': { this.Task_Expand(misson); break A; }
+                    case "物流运输": this.Task_Carry(misson); break;
+                    case "墙体维护": this.Task_Repair(misson); break;
+                    case '黄球拆迁': this.Task_dismantle(misson); break;
+                    case '急速冲级': this.Task_Quick_upgrade(misson); break;
+                    case '紧急援建': this.Task_HelpBuild(misson); break;
+                    case '紧急支援': this.Task_HelpDefend(misson); break;
+                    case '资源合成': this.Task_Compound(misson); break;
+                    case '攻防一体': this.Task_aio(misson); break;
+                    case '外矿开采': this.Task_OutMine(misson); break;
+                    case "power升级": this.Task_ProcessPower(misson); break;
+                    case '过道采集': this.Task_Cross(misson); break;
+                    case '资源转移': this.Task_Resource_transfer(misson); break;
+                    case 'power采集': this.Task_PowerHarvest(misson); break;
+                    case '红球防御': this.Task_Red_Defend(misson); break;
+                    case '蓝球防御': this.Task_Blue_Defend(misson); break;
+                    case '双人防御': this.Task_Double_Defend(misson); break;
+                    case '四人小队': this.Task_squad(misson); break;
+                    case '双人小队': this.Task_double(misson); break;
+                    case '普通冲级': this.Task_Normal_upgrade(misson); break;
+                    case '扩张援建': this.Task_Expand(misson); break;
+                    case '智能战争': this.Task_Aiwar(misson); break;
+                    case '智能哨兵': this.Task_Aisentry(misson); break;
                 }
                 // return
                 // var b = Game.cpu.getUsed()
@@ -523,7 +524,7 @@ export default class RoomMissonFrameExtension extends Room {
                 if (isInArray(t3, rType)) { basic_num = 8000 }
                 else if (isInArray(['X', 'L', 'Z', 'U', 'K', 'O', 'H', 'ops'], rType)) { basic_num = 15000 }
             }
-            if (rTypeNum && rTypeNum >= Num - basic_num) {
+            if (rTypeNum && rTypeNum - basic_num >= Num) {
                 return true
             }
         }

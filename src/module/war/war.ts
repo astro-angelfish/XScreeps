@@ -73,6 +73,115 @@ export function getTowerData(room: Room): TowerRangeMapData {
         }
     return tempData
 }
+export function cloneObj(obj) {
+    var newObj = {};
+    if (obj instanceof Array) {
+        newObj = [];
+    }
+    for (var key in obj) {
+        var val = obj[key];
+        newObj[key] = typeof val === 'object' ? cloneObj(val) : val;
+    }
+    return newObj;
+}
+
+
+// 整合房间内的所有伤害数据和塔数据获得一个总伤害
+export function getAllhurt(room: Room): HurtRangeMapData {
+    if (!room) return {}
+    var enemy = cloneObj(global.warData.tower[room.name].data)
+    // for (let pos in global.warData.tower[room.name].data) {
+    //     enemy[pos] = global.warData.tower[room.name].data[pos]
+    // }
+    // var enemy = global.warData.tower[room.name].data.fillter(function (item, index, arr) {
+    //     return arr.indexOf(item) != -1
+    // })
+
+    let system_boost = {
+        'UH': 1,
+        'KO': 1,
+        'UH2O': 2,
+        'KHO2': 2,
+        'XUH2O': 3,
+        'XKHO2': 3
+    };
+    for (let i in global.warData.enemy[room.name].data) {
+
+        /*检查爬的部位信息*/
+        let creep = global.warData.enemy[room.name].data[i];
+        // console.log('开始检查', creep.name)
+        let attcak_body = 0
+        let ranged_attcak_body = 0
+        for (let body of creep.body) {
+            let boost_num = 1;
+            if (body.boost) {
+                boost_num += system_boost[body.boost]
+            }
+            switch (body.type) {
+                case 'attack':
+                    attcak_body += boost_num
+                    break;
+                case 'ranged_attack':
+                    ranged_attcak_body += boost_num
+                    break;
+            }
+        }
+        /*完成部位统计进行具体伤害的结算*/
+        if (attcak_body > 0) {
+            // console.log('搜索到attcak')
+            /*获取有效范围同时进行伤害标记*/
+            let get_Updatehurt = Updatehurt(creep.pos, 1, attcak_body * 30)
+            for (let key in get_Updatehurt) {
+                if (enemy[key]) {
+                    // console.log('数据更新', key, enemy[key]['attack'], global.warData.tower[room.name].data[key]['attack'], get_Updatehurt[key])
+                    enemy[key]['attack'] += get_Updatehurt[key]
+                }
+            }
+        }
+        if (ranged_attcak_body > 0) {
+            // console.log('搜索到ranged_attcak')
+            let get_Updatehurt = Updatehurt(creep.pos, 3, attcak_body * 10)
+            for (let key in get_Updatehurt) {
+                if (enemy[key]) {
+                    enemy[key]['attack'] += get_Updatehurt[key]
+                }
+            }
+        }
+    }
+    return enemy
+}
+
+export function Updatehurt(pos, range, hurt) {
+    var a = -range;
+    let _roomlist = {};
+    for (var i = a; i <= range; i++) {
+        for (var ii = a; ii <= range; ii++) {
+            // console.log(i, ii)
+            /*检查具体的距离*/
+            let m_range = Math.max(Math.abs(i), Math.abs(ii))
+            /*出坐标信息*/
+            let x = pos.x + i;
+            let y = pos.y + ii;
+            let pos_ = `${x}/${y}`
+            if (!global.warData.tower[pos.roomName].data[pos_]) { continue; }
+            // console.log(pos_, '更新伤害', JSON.stringify(this[pos_]))
+            switch (m_range) {
+                case 1:
+                    _roomlist[pos_] = hurt;
+                    break;
+                case 2:
+                    _roomlist[pos_] = hurt * 0.4;
+                    break;
+                case 3:
+                    _roomlist[pos_] = hurt * 0.1;
+                    break;
+            }
+        }
+    }
+    return _roomlist;
+}
+
+
 
 /* 更新敌对爬虫列表 每tick更新1次 */
 export function warUpdateEnemy(room: Room): void {
@@ -127,17 +236,32 @@ export function warUpdateTowerData(room: Room): void {
     }
     return
 }
+/*更新塔伤以及爬的合并伤害  每tick更新1次 */
+export function warUpdateatkData(room: Room): void {
+    if (!room) return
+    if (!global.warData.allhurt) global.warData.allhurt = {}
+    if (!global.warData.allhurt[room.name]) global.warData.allhurt[room.name] = { time: Game.time, data: getAllhurt(room) }
+    if (Game.time == global.warData.allhurt[room.name].time) return // 跳过
+    else    // 说明数据过时了，更新数据
+    {
+        global.warData.allhurt[room.name].time = Game.time
+        global.warData.allhurt[room.name].data = getAllhurt(room)
+    }
+}
+
 
 /**
  * 战争信息初始化及更新
  * 所有参与战争的爬虫，在进入目标房间后，应该运行该函数
  * */
 export function warDataInit(room: Room): void {
+    // console.log('战争初始化更新')
     if (!global.warData) global.warData = {}
     warUpdateEnemy(room)
     warUpdateStructure(room)
     warUpdateFlag(room)
     warUpdateTowerData(room)
+    warUpdateatkData(room)
 }
 
 /* -------------------------------战争信息二次加工区------------------------------------ */

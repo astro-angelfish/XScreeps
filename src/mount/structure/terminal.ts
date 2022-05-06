@@ -4,7 +4,7 @@ import { Colorful, compare, isInArray } from "@/utils"
 // terminal 扩展
 export default class terminalExtension extends StructureTerminal {
     public ManageMission(): void {
-        if (this.room.MissionNum('Creep', '急速冲级') > 0) return   // 急速冲级状态下停止terminal功能
+        // if (this.room.MissionNum('Creep', '急速冲级') > 0) return   // 急速冲级状态下停止terminal功能
         var allmyTask = []
         for (var task of this.room.memory.Misson['Structure']) {
             if (!task.structure) continue

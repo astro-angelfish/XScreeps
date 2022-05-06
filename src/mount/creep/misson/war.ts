@@ -112,7 +112,7 @@ export default class CreepMissonWarExtension extends Creep {
                 if (c.hits / c.hitsMax <= 0.8)
                     this.optTower('attack', c)
             }
-            if (Number(hostileCreep_atk) < 600) {
+            if (Number(hostileCreep_atk) < 600 && this.room.controller.level >= 8) {
                 // this.goTo(hostileCreep[0], 0)
                 this.goTo_defend(hostileCreep[0].pos, 0)
                 let attack_state = this.attack(hostileCreep[0])
@@ -195,6 +195,15 @@ export default class CreepMissonWarExtension extends Creep {
                 if (nearstram)
                     this.goTo_defend(nearstram.pos, 0)
                 else this.moveTo(nstC.pos)
+            } else {
+                var ramp = this.pos.findClosestByRange(FIND_MY_STRUCTURES, {
+                    filter: (stru) => {
+                        return stru.structureType == 'rampart' && stru.pos.GetStructureList(['extension', 'link', 'observer', 'tower', 'controller', 'extractor']).length <= 0 && (stru.pos.lookFor(LOOK_CREEPS).length <= 0 || stru.pos.lookFor(LOOK_CREEPS)[0] == this)
+                    }
+                })
+                if (this.pos.inRangeTo(ramp, 3) && !this.pos.isEqualTo(ramp)) {
+                    this.moveTo(ramp.pos)
+                }
             }
         }
         // 仍然没有说明主动防御已经饱和
@@ -327,6 +336,15 @@ export default class CreepMissonWarExtension extends Creep {
                 if (nearstram)
                     this.goTo_defend(nearstram.pos, 0)
                 else this.moveTo(nstC.pos)
+            } else {
+                var ramp = this.pos.findClosestByRange(FIND_MY_STRUCTURES, {
+                    filter: (stru) => {
+                        return stru.structureType == 'rampart' && stru.pos.GetStructureList(['extension', 'link', 'observer', 'tower', 'controller', 'extractor']).length <= 0 && (stru.pos.lookFor(LOOK_CREEPS).length <= 0 || stru.pos.lookFor(LOOK_CREEPS)[0] == this)
+                    }
+                })
+                if (this.pos.inRangeTo(ramp, 3) && !this.pos.isEqualTo(ramp)) {
+                    this.moveTo(ramp.pos)
+                }
             }
         }
         // 仍然没有说明主动防御已经饱和

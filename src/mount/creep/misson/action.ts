@@ -14,8 +14,8 @@ export default class CreepMissonActionExtension extends Creep {
         this.workstate('energy')
         /* boost检查 */
         // var a = Game.cpu.getUsed();
-        if (mission.LabBind && !this.memory.boostState) {
-            if (!storage_) return   // 如果是boost的，没有仓库就不刷了
+        if (mission.LabBind) {
+            // if (!storage_) return   // 如果是boost的，没有仓库就不刷了
             // console.log('检查boost',this.name)
             // 需要boost检查，必要情况下可以不检查
             let boo = false
@@ -62,19 +62,26 @@ export default class CreepMissonActionExtension extends Creep {
                     var tank_ = storage_;
                 } else {
                     if (!this.memory.containerID) {
-                        var tank = this.pos.findClosestByPath(FIND_MY_STRUCTURES, {
-                            filter: (stru) => {
-                                return stru.structureType == 'storage' ||
-                                    (stru.structureType == 'link' && isInArray(Game.rooms[this.memory.belong].memory.StructureIdData.comsume_link, stru.id) && stru.store.getUsedCapacity('energy') > this.store.getCapacity())
+                        if (this.room.terminal && this.room.controller.level < 8) {
+                            this.memory.containerID = this.room.terminal.id
+                        } else {
+                            var tank = this.pos.findClosestByPath(FIND_MY_STRUCTURES, {
+                                filter: (stru) => {
+                                    return (
+                                        stru.structureType == 'storage' || stru.structureType == 'terminal' ||
+                                        (stru.structureType == 'link' && isInArray(Game.rooms[this.memory.belong].memory.StructureIdData.comsume_link, stru.id))
+                                    ) && stru.store.getUsedCapacity('energy') > this.store.getCapacity()
+                                }
+                            })
+                            if (tank) {
+                                this.memory.containerID = tank.id
                             }
-                        })
-                        if (tank) this.memory.containerID = tank.id
-                        else {
-                            let closestStore = this.pos.findClosestByRange(FIND_STRUCTURES, { filter: (stru) => { return (stru.structureType == 'container' || stru.structureType == 'tower') && stru.store.getUsedCapacity('energy') >= this.store.getFreeCapacity() } })
-                            if (closestStore) this.withdraw_(closestStore, 'energy')
-                            return
+                            else {
+                                let closestStore = this.pos.findClosestByRange(FIND_STRUCTURES, { filter: (stru) => { return (stru.structureType == 'container' || stru.structureType == 'tower') && stru.store.getUsedCapacity('energy') >= this.store.getFreeCapacity() } })
+                                if (closestStore) this.withdraw_(closestStore, 'energy')
+                                return
+                            }
                         }
-
                     }
                     var tank_ = Game.getObjectById(this.memory.containerID) as StructureStorage
                 }
@@ -118,7 +125,11 @@ export default class CreepMissonActionExtension extends Creep {
             else {
                 if (!this.memory.working) {
                     this.memory.standed = false
-                    this.withdraw_(storage_, 'energy')
+                    if (this.room.terminal && this.room.controller.level < 8) {
+                        this.withdraw_(this.room.terminal, 'energy')
+                    } else {
+                        this.withdraw_(storage_, 'energy')
+                    }
                 }
                 else {
                     this.memory.standed = false
@@ -189,9 +200,13 @@ export default class CreepMissonActionExtension extends Creep {
                         if (closestStore) this.withdraw_(closestStore, 'energy')
                         return
                     }
-
+                    if (this.room.terminal && this.room.controller.level < 8) {
+                        // this.withdraw_(this.room.terminal, 'energy')
+                        this.memory.containerID = this.room.terminal.id
+                    }
                 }
                 let tank_ = Game.getObjectById(this.memory.containerID) as StructureStorage
+
                 this.withdraw_(tank_, 'energy')
             }
         }
@@ -262,7 +277,15 @@ export default class CreepMissonActionExtension extends Creep {
             switch (this.memory.role) {
                 case 'Ebuild':
                 case 'Eupgrade':
-                    if (!this.BoostCheck(['work', 'move'])) return
+                    switch (missionData.Data.level) {
+                        case 'T3':
+                            if (!this.BoostCheck(['work', 'move', 'carry'])) return
+                            break;
+                        default:
+                            if (!this.BoostCheck(['work', 'move'])) return
+                            break;
+
+                    }
                     break;
             }
         }
@@ -274,6 +297,11 @@ export default class CreepMissonActionExtension extends Creep {
             if (!this.pos.isEqualTo(Game.flags[`${this.memory.belong}/expand`])) this.goTo(Game.flags[`${this.memory.belong}/expand`].pos, 0)
             else this.memory.arrived = true
             return
+        }
+        if (this.room.memory.state == 'peace') {
+            if (this.hits < this.hitsMax) {
+                this.optTower('heal', this, true)
+            }
         }
         this.workstate('energy')
         if (this.memory.role == 'claim') {
@@ -293,10 +321,16 @@ export default class CreepMissonActionExtension extends Creep {
         }
         else if (this.memory.role == 'Ebuild') {
             if (this.memory.working) {
+                /* 优先遭建筑 */
+                let cons = this.pos.findClosestByRange(FIND_MY_CONSTRUCTION_SITES)
+                if (cons) {
+                    this.build_(cons)
+                    return
+                }
                 if (this.room.controller.level < 6) {
                     let tower = this.pos.findClosestByPath(FIND_MY_STRUCTURES, {
                         filter: (stru) => {
-                            return stru.structureType == 'tower' && stru.store.getFreeCapacity('energy') > 100
+                            return stru.structureType == 'tower' && stru.store.getFreeCapacity('energy') > 400
                         }
                     })
                     if (tower) {
@@ -304,13 +338,14 @@ export default class CreepMissonActionExtension extends Creep {
                         return
                     }
                 }
-                /* 优先遭建筑 */
-                let cons = this.pos.findClosestByRange(FIND_MY_CONSTRUCTION_SITES)
-                if (cons) {
-                    this.build_(cons)
-                    return
+                if (this.room.controller.level < 6) {
+                    let store = this.pos.getClosestStore()
+                    if (store) {
+                        this.transfer_(store, 'energy')
+                        return
+                    }
                 }
-                if (this.room.controller.level < 5) {
+                if (this.room.controller.level < 6) {
                     let roads = this.pos.findClosestByRange(FIND_STRUCTURES, {
                         filter: (stru) => {
                             return ((stru.structureType == 'road' || stru.structureType == 'container') && stru.hits < stru.hitsMax * 0.8) ||
@@ -322,27 +357,56 @@ export default class CreepMissonActionExtension extends Creep {
                         return
                     }
                 }
-
-
-                if (this.room.controller.level < 6) {
-                    let store = this.pos.getClosestStore()
-                    if (store) {
-                        this.transfer_(store, 'energy')
+                if (this.room.controller.level > 6) {
+                    if (this.memory.targetID) {
+                        this.say("🛠️")
+                        var target_ = Game.getObjectById(this.memory.targetID) as StructureRampart
+                        if (!target_) { delete this.memory.targetID; return }
+                        if (target_.hits > 1000000) { delete this.memory.targetID; }
+                        this.repair_(target_)
                         return
+                    }
+                    else {
+                        var leastRam = this.room.getListHitsleast([STRUCTURE_RAMPART, STRUCTURE_WALL], 3, 1000000)
+                        if (leastRam) {
+                            this.memory.targetID = leastRam.id
+                        }
+
                     }
                 }
                 this.upgrade_()
             }
             else {
+                delete this.memory.targetID;
                 // 以withdraw开头的旗帜  例如： withdraw_0
-                let withdrawFlag = this.pos.findClosestByPath(FIND_FLAGS, {
+                let withdrawFlag = this.room.find(FIND_FLAGS, {
                     filter: (flag) => {
                         return flag.name.indexOf('withdraw') == 0
                     }
                 })
-                if (withdrawFlag) {
-                    let tank_ = withdrawFlag.pos.GetStructureList(['storage', 'terminal', 'container', 'tower'])
-                    if (tank_.length > 0) { this.withdraw_(tank_[0], 'energy'); return }
+                if (withdrawFlag.length > 0) {
+                    let tank_ = withdrawFlag[0].pos.GetStructureList(['storage', 'terminal', 'container', 'tower'])
+                    // console.log(this.name, tank_.length)
+                    if (tank_.length > 0) {
+                        /*扫描周围如果有八个爬 默认为已经占满 执行2空格策略*/
+                        let creeps = tank_[0].pos.findInRange(FIND_MY_CREEPS, 1)
+                        if (creeps.length >= 8 && !this.pos.isNearTo(tank_[0])) {
+                            if (this.pos.inRangeTo(tank_[0], 2)) {
+                                /*寻找相临的爬*/
+                                for (let i of creeps) {
+                                    if (this.pos.isNearTo(i) && i.store.getUsedCapacity('energy') > 200) {
+                                        i.transfer(this, 'energy')
+                                        return;
+                                    }
+                                }
+
+                            }
+                            this.goTo(tank_[0].pos, 2);
+                        } else {
+                            this.withdraw_(tank_[0], 'energy');
+                        }
+                        return
+                    }
                 }
                 if (this.room.storage) {
                     if (this.room.storage.store.getUsedCapacity('energy') > this.store.getFreeCapacity('energy')) {
@@ -391,6 +455,9 @@ export default class CreepMissonActionExtension extends Creep {
                 let source = this.pos.findClosestByPath(FIND_SOURCES_ACTIVE)
                 if (source) {
                     this.harvest_(source)
+                } else {
+                    // let source = this.pos.findClosestByPath(FIND_SOURCES)
+                    // if (!this.pos.isNearTo(source)) this.goTo(source.pos, 1)
                 }
                 // let tombstones = this.pos.findClosestByPath(FIND_DROPPED_RESOURCES)
                 // if (tombstones) {
@@ -409,14 +476,34 @@ export default class CreepMissonActionExtension extends Creep {
             }
             else {
                 // 以withdraw开头的旗帜  例如： withdraw_0
-                let withdrawFlag = this.pos.findClosestByPath(FIND_FLAGS, {
+                let withdrawFlag = this.room.find(FIND_FLAGS, {
                     filter: (flag) => {
                         return flag.name.indexOf('withdraw') == 0
                     }
                 })
-                if (withdrawFlag) {
-                    let tank_ = withdrawFlag.pos.GetStructureList(['storage', 'terminal', 'container', 'tower'])
-                    if (tank_.length > 0) { this.withdraw_(tank_[0], 'energy'); return }
+                if (withdrawFlag.length > 0) {
+                    let tank_ = withdrawFlag[0].pos.GetStructureList(['storage', 'terminal', 'container', 'tower'])
+                    // console.log(this.name, tank_.length)
+                    if (tank_.length > 0) {
+                        /*扫描周围如果有八个爬 默认为已经占满 执行2空格策略*/
+                        let creeps = tank_[0].pos.findInRange(FIND_MY_CREEPS, 1)
+                        if (creeps.length >= 8 && !this.pos.isNearTo(tank_[0])) {
+                            if (this.pos.inRangeTo(tank_[0], 2)) {
+                                /*寻找相临的爬*/
+                                for (let i of creeps) {
+                                    if (this.pos.isNearTo(i) && i.store.getUsedCapacity('energy') > 200) {
+                                        i.transfer(this, 'energy')
+                                        return;
+                                    }
+                                }
+
+                            }
+                            this.goTo(tank_[0].pos, 2);
+                        } else {
+                            this.withdraw_(tank_[0], 'energy');
+                        }
+                        return
+                    }
                 }
                 if (this.room.storage) {
                     if (this.room.storage.store.getUsedCapacity('energy') > this.store.getFreeCapacity('energy')) {
