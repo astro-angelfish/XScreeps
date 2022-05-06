@@ -4,7 +4,7 @@ export default class RoomMissonTransportExtension extends Room {
     public Spawn_Feed(): void {
         /* 每11 tick 观察一次 */
         if (Game.time % 10) return
-        if (!this.memory.StructureIdData.storageID) return
+        if (!this.storage && !this.terminal) return
         if (this.RoleMissionNum('transport', '虫卵填充') < 1) {
             // let thisPos = new RoomPosition(Memory.RoomControlData[this.name].center[0], Memory.RoomControlData[this.name].center[1], this.name)
             let emptyExtensions = this.find(FIND_MY_STRUCTURES, {
@@ -40,7 +40,7 @@ export default class RoomMissonTransportExtension extends Room {
         else {
             if (Game.time % 5) return
         }
-        if (!this.storage) return
+        if (!this.storage && !this.terminal) return
         if (!this.memory.StructureIdData.AtowerID) this.memory.StructureIdData.AtowerID = []
         for (let id of this.memory.StructureIdData.AtowerID) {
             let tower = Game.getObjectById(id) as StructureTower
@@ -51,12 +51,24 @@ export default class RoomMissonTransportExtension extends Room {
             if (tower.store.getUsedCapacity('energy') < 500) {
                 /* 下达搬运任务搬运 */
                 let storage_ = this.storage as StructureStorage
-                if (!storage_) return
-                if (this.RoleMissionNum('transport', '物流运输') > 3 || !this.Check_Carry('transport', storage_.pos, tower.pos, 'energy')) continue
-                if (storage_.store.getUsedCapacity('energy') < 1000) return
-                let thisTask = this.public_Carry({ 'transport': { num: 2, bind: [] } }, 35, this.name, storage_.pos.x, storage_.pos.y, this.name, tower.pos.x, tower.pos.y, 'energy', 1000 - tower.store.getUsedCapacity('energy'))
-                this.AddMission(thisTask)
-                return
+                if (storage_) {
+                    if (this.RoleMissionNum('transport', '物流运输') > 3 || !this.Check_Carry('transport', storage_.pos, tower.pos, 'energy')) continue
+                    if (storage_.store.getUsedCapacity('energy') >= 1000) {
+                        let thisTask = this.public_Carry({ 'transport': { num: 2, bind: [] } }, 35, this.name, storage_.pos.x, storage_.pos.y, this.name, tower.pos.x, tower.pos.y, 'energy', 1000 - tower.store.getUsedCapacity('energy'))
+                        this.AddMission(thisTask)
+                        return
+                    }
+                }
+
+                let terminal_ = this.terminal as StructureTerminal;
+                if (terminal_) {
+                    if (this.RoleMissionNum('transport', '物流运输') > 3 || !this.Check_Carry('transport', terminal_.pos, tower.pos, 'energy')) continue
+                    if (terminal_.store.getUsedCapacity('energy') >= 1000) {
+                        let thisTask = this.public_Carry({ 'transport': { num: 2, bind: [] } }, 35, this.name, terminal_.pos.x, terminal_.pos.y, this.name, tower.pos.x, tower.pos.y, 'energy', 1000 - tower.store.getUsedCapacity('energy'))
+                        this.AddMission(thisTask)
+                    }
+                }
+
             }
         }
     }
@@ -64,7 +76,7 @@ export default class RoomMissonTransportExtension extends Room {
     // 实验室能量填充任务 [包含多余物回收]
     public Lab_Feed(): void {
         if ((global.Gtime[this.name] - Game.time) % 13) return
-        if (!this.storage) return
+        if (!this.storage && !this.terminal) return
         if (!this.memory.StructureIdData.labs || this.memory.StructureIdData.labs.length <= 0) return
         let missionNum = this.RoleMissionNum('transport', '物流运输')
         if (missionNum > 3) return
@@ -78,10 +90,21 @@ export default class RoomMissonTransportExtension extends Room {
             if (thisLab.store.getUsedCapacity('energy') <= 800) {
                 /* 下布搬运命令 */
                 var storage_ = this.storage as StructureStorage
-                if (!storage_) return
-                if (storage_.store.getUsedCapacity('energy') < 2000 || !this.Check_Carry('transport', storage_.pos, thisLab.pos, 'energy')) { continue }
-                var thisTask = this.public_Carry({ 'transport': { num: 1, bind: [] } }, 25, this.name, storage_.pos.x, storage_.pos.y, this.name, thisLab.pos.x, thisLab.pos.y, 'energy', 2000 - thisLab.store.getUsedCapacity('energy'))
-                this.AddMission(thisTask)
+                if (storage_) {
+                    if (storage_.store.getUsedCapacity('energy') > 2000 && this.Check_Carry('transport', storage_.pos, thisLab.pos, 'energy')) {
+                        var thisTask = this.public_Carry({ 'transport': { num: 1, bind: [] } }, 25, this.name, storage_.pos.x, storage_.pos.y, this.name, thisLab.pos.x, thisLab.pos.y, 'energy', 2000 - thisLab.store.getUsedCapacity('energy'))
+                        this.AddMission(thisTask)
+                        return
+                    }
+                }
+                var terminal_ = this.terminal as StructureTerminal
+                if (terminal_) {
+                    if (terminal_.store.getUsedCapacity('energy') > 2000 && this.Check_Carry('transport', terminal_.pos, thisLab.pos, 'energy')) {
+                        var thisTask = this.public_Carry({ 'transport': { num: 1, bind: [] } }, 25, this.name, terminal_.pos.x, terminal_.pos.y, this.name, thisLab.pos.x, thisLab.pos.y, 'energy', 2000 - thisLab.store.getUsedCapacity('energy'))
+                        this.AddMission(thisTask)
+                        return
+                    }
+                }
                 return
             }
             /* 如果该实验室不在绑定状态却有多余资源 */

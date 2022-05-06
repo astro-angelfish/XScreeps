@@ -125,7 +125,7 @@ export default class DefendWarExtension extends Room {
     /* 主动防御任务发布 */
     public Task_Auto_Defend(): void {
         if (Game.time % 5) return
-        if (!Game.rooms[this.name].terminal) return
+        // if (!Game.rooms[this.name].terminal) return
         if (this.controller.level < 6) return
         if (!this.memory.state) return
         if (this.memory.state != 'war') { this.memory.switch.AutoDefend = false; this.memory.enemy = {}; return }
@@ -149,13 +149,14 @@ export default class DefendWarExtension extends Room {
             for (let c of enemys) if (!isInArray(users, c.owner.username)) users.push(c.owner.username)
             let str = ''; for (let s of users) str += ` ${s}`
 
-            if (str == 'Bulletproof' && enemys.length < 2) {
-                this.memory.switch.AutoDefend = false        // 表示房间存在主动防御任务
-                return;
-            } else {
-                Game.notify(`房间${this.name}激活主动防御! 目前检测到的攻击方为:${str},爬虫数为:${enemys.length},我们将抗战到底!`)
-                console.log(`房间${this.name}激活主动防御! 目前检测到的攻击方为:${str},爬虫数为:${enemys.length},我们将抗战到底!`)
-            }
+            Game.notify(`房间${this.name}激活主动防御! 目前检测到的攻击方为:${str},爬虫数为:${enemys.length},我们将抗战到底!`)
+            console.log(`房间${this.name}激活主动防御! 目前检测到的攻击方为:${str},爬虫数为:${enemys.length},我们将抗战到底!`)
+            // if (str == ' Bulletproof' && enemys.length <= 1) {
+            //     this.memory.switch.AutoDefend = false        // 表示房间存在主动防御任务
+            //     return;
+            // } else {
+
+            // }
         }
         // console.log(JSON.stringify(enemys))
         /* 分析敌对爬虫的数量,应用不同的主防任务应对 */
@@ -164,14 +165,14 @@ export default class DefendWarExtension extends Room {
 
         if (enemys.length < 2 || hostileCreep < 600)      // 1
         {
-            defend_plan = { 'attack': 1 }
+            defend_plan = { 'attack': 1, 'double': 0, 'range': 0 }
         } else if (enemys.length <= 2)      // 2
         {
-            defend_plan = { 'attack': 1 }
+            defend_plan = { 'attack': 1, 'double': 0, 'range': 0 }
         }
         else if (enemys.length > 2 && enemys.length < 5)       // 3-4
         {
-            defend_plan = { 'attack': 2, 'double': 1 }
+            defend_plan = { 'attack': 2, 'double': 0, 'range': 0 }
         }
         else if (enemys.length >= 5 && enemys.length < 8)   // 5-7
         {
@@ -189,8 +190,9 @@ export default class DefendWarExtension extends Room {
                     if (num <= 0) {
                         let thisTask = this.public_red_defend(defend_plan[plan])
                         if (thisTask) {
+
                             this.AddMission(thisTask)
-                            console.log(`房间${this.name}红球防御任务激活!`)
+                            console.log(`房间${this.name}红球防御任务激活!`, enemys.length)
                         }
                     }
                     else {
@@ -208,7 +210,7 @@ export default class DefendWarExtension extends Room {
                         let thisTask = this.public_blue_defend(defend_plan[plan])
                         if (thisTask) {
                             this.AddMission(thisTask)
-                            console.log(`房间${this.name}蓝球防御任务激活!`)
+                            console.log(`房间${this.name}蓝球防御任务激活!`, enemys.length)
                         }
                     }
                     else {
@@ -227,7 +229,7 @@ export default class DefendWarExtension extends Room {
                         let thisTask = this.public_double_defend(defend_plan[plan])
                         if (thisTask) {
                             this.AddMission(thisTask)
-                            console.log(`房间${this.name}双人防御任务激活!`)
+                            console.log(`房间${this.name}双人防御任务激活!`, enemys.length)
                         }
                     }
                     else {

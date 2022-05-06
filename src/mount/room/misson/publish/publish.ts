@@ -579,6 +579,7 @@ export default class RoomMissonPublish extends Room {
 
     /* 红球防御任务发布函数 */
     public public_red_defend(num: number): MissionModel {
+        if (num < 1) return null;
         var thisTask: MissionModel = {
             name: '红球防御',
             range: 'Creep',
@@ -596,6 +597,7 @@ export default class RoomMissonPublish extends Room {
 
     /* 蓝球防御任务发布函数 */
     public public_blue_defend(num: number): MissionModel {
+        if (num < 1) return null;
         var thisTask: MissionModel = {
             name: '蓝球防御',
             range: 'Creep',
@@ -615,11 +617,12 @@ export default class RoomMissonPublish extends Room {
 
     /* 双人小队防御任务发布函数 */
     public public_double_defend(num: number): MissionModel {
+        if (num < 1) return null;
         var thisTask: MissionModel = {
             name: '双人防御',
             range: 'Creep',
             delayTick: 99999,
-            reserve: true,
+            reserve: false,
             level: 10,
             Data: {}
         }

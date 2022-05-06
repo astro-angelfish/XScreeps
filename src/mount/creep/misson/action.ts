@@ -35,6 +35,9 @@ export default class CreepMissonActionExtension extends Creep {
                 }
             }
         }
+        if (Game.rooms[this.memory.belong] && Game.rooms[this.memory.belong].memory.state == 'war') {
+            if (this.hitsMax - this.hits > 500) this.optTower('heal', this)
+        }
         // var b = Game.cpu.getUsed();
         // console.log(this.name, '刷墙', b - a)
         if (mission.Data.RepairType == 'global') {
@@ -45,8 +48,19 @@ export default class CreepMissonActionExtension extends Creep {
                     var target_ = Game.getObjectById(this.memory.targetID) as StructureRampart
                     if (!target_) { delete this.memory.targetID; return }
                     this.repair_(target_)
+                    let hostileCreep = this.pos.findInRange(FIND_HOSTILE_CREEPS, 3, {
+                        filter: (creep) => {
+                            return creep.getActiveBodyparts('ranged_attack') > 0
+                        }
+                    })
+                    if (hostileCreep.length > 0) this.Flee(hostileCreep[0].pos, 4)
                 }
                 else {
+                    var construction = this.pos.findClosestByRange(FIND_MY_CONSTRUCTION_SITES)
+                    if (construction) {
+                        this.build_(construction)
+                        return;
+                    }
                     var leastRam = this.room.getListHitsleast([STRUCTURE_RAMPART, STRUCTURE_WALL], 3)
                     if (!leastRam) return
                     this.memory.targetID = leastRam.id
@@ -58,8 +72,10 @@ export default class CreepMissonActionExtension extends Creep {
                 // var leastRam = this.room.getListHitsleast([STRUCTURE_RAMPART, STRUCTURE_WALL], 3)
                 // if (!leastRam) return
                 if (this.memory.targetID) delete this.memory.targetID
-                if (storage_ && storage_.store.getUsedCapacity('energy') >= this.store.getCapacity()) {
-                    var tank_ = storage_;
+                if (this.room.terminal && this.room.terminal.store.getUsedCapacity('energy') >= 60000) {
+                    var tank_ = this.room.terminal as Structure;
+                } else if (storage_ && storage_.store.getUsedCapacity('energy') >= this.store.getCapacity()) {
+                    var tank_ = storage_ as Structure;
                 } else {
                     if (!this.memory.containerID) {
                         if (this.room.terminal && this.room.controller.level < 8) {
@@ -83,7 +99,7 @@ export default class CreepMissonActionExtension extends Creep {
                             }
                         }
                     }
-                    var tank_ = Game.getObjectById(this.memory.containerID) as StructureStorage
+                    var tank_ = Game.getObjectById(this.memory.containerID) as Structure
                 }
                 this.withdraw_(tank_, 'energy')
             }
@@ -142,9 +158,13 @@ export default class CreepMissonActionExtension extends Creep {
                         Game.rooms[this.memory.belong].memory.nukeData.rampart[strPos] = 0
                         return
                     }
-                    if (this.repair(wall_) == ERR_NOT_IN_RANGE) {
-                        this.goTo(wall_.pos, 3)
-                    }
+                    this.repair_(wall_)
+                    let hostileCreep = this.pos.findInRange(FIND_HOSTILE_CREEPS, 3, {
+                        filter: (creep) => {
+                            return creep.getActiveBodyparts('ranged_attack') > 0
+                        }
+                    })
+                    if (hostileCreep.length > 0) this.Flee(hostileCreep[0].pos, 4)
 
                 }
                 return
@@ -157,6 +177,12 @@ export default class CreepMissonActionExtension extends Creep {
                     var target_ = Game.getObjectById(this.memory.targetID) as StructureRampart
                     if (!target_) { delete this.memory.targetID; return }
                     this.repair_(target_)
+                    let hostileCreep = this.pos.findInRange(FIND_HOSTILE_CREEPS, 3, {
+                        filter: (creep) => {
+                            return creep.getActiveBodyparts('ranged_attack') > 0
+                        }
+                    })
+                    if (hostileCreep.length > 0) this.Flee(hostileCreep[0].pos, 4)
                 }
                 else {
                     var leastRam = this.room.getListHitsleast([STRUCTURE_RAMPART, STRUCTURE_WALL], 3)

@@ -45,7 +45,6 @@ export default class RoomFunctionTowerExtension extends Room {
         else if (this, this.memory.state == 'war') {
             if (Game.flags[`${this.name}/stop`]) return
             if (this.memory.switch.AutoDefend && this.controller.level > 6) {
-
                 return
             }
             /* 没有主动防御下的防御塔逻辑 */

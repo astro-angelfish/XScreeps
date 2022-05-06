@@ -26,6 +26,9 @@ export default class RoomMissonBehaviourExtension extends Room {
                 this.NumSpawn('build', _number)
             } else {
                 this.NumSpawn('build', 1)
+                // if ((!this.storage || !this.terminal) && this.controller.level >= 8) {
+                //     this.NumSpawn('build', 3)
+                // }
             }
         }
         else {
