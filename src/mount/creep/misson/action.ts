@@ -29,6 +29,10 @@ export default class CreepMissonActionExtension extends Creep {
                 if (!this.BoostCheck(['work'])) return
             }
         }
+        if (Game.rooms[this.memory.belong] && Game.rooms[this.memory.belong].memory.state == 'war')
+        {
+            if (this.hitsMax - this.hits > 500) this.optTower('heal',this)
+        }
         if (mission.Data.RepairType == 'global')
         {
             if (this.memory.working)
@@ -39,6 +43,10 @@ export default class CreepMissonActionExtension extends Creep {
                     var target_ = Game.getObjectById(this.memory.targetID) as StructureRampart
                     if (!target_) {delete this.memory.targetID;return}
                     this.repair_(target_)
+                    let hostileCreep = this.pos.findInRange(FIND_HOSTILE_CREEPS,3,{filter:(creep)=>{
+                        return creep.getActiveBodyparts('ranged_attack') > 0
+                    }})
+                    if (hostileCreep.length > 0) this.Flee(hostileCreep[0].pos,4)
                 }
                 else
                 {
@@ -127,10 +135,11 @@ export default class CreepMissonActionExtension extends Creep {
                         Game.rooms[this.memory.belong].memory.nukeData.rampart[strPos] = 0
                         return
                     }
-                    if (this.repair(wall_) == ERR_NOT_IN_RANGE)
-                    {
-                        this.goTo(wall_.pos,3)
-                    }
+                    this.repair_(wall_)
+                    let hostileCreep = this.pos.findInRange(FIND_HOSTILE_CREEPS,3,{filter:(creep)=>{
+                        return creep.getActiveBodyparts('ranged_attack') > 0
+                    }})
+                    if (hostileCreep.length > 0) this.Flee(hostileCreep[0].pos,4)
                     
                 }
                 return
@@ -146,6 +155,10 @@ export default class CreepMissonActionExtension extends Creep {
                     var target_ = Game.getObjectById(this.memory.targetID) as StructureRampart
                     if (!target_) {delete this.memory.targetID;return}
                     this.repair_(target_)
+                    let hostileCreep = this.pos.findInRange(FIND_HOSTILE_CREEPS,3,{filter:(creep)=>{
+                        return creep.getActiveBodyparts('ranged_attack') > 0
+                    }})
+                    if (hostileCreep.length > 0) this.Flee(hostileCreep[0].pos,4)
                 }
                 else
                 {
