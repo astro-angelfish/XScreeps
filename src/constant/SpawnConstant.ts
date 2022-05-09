@@ -44,7 +44,7 @@ export const RoleData: SpawnConstantData = {
     /* 外矿 */
     'out-claim': { num: 0, ability: [0, 0, 2, 0, 0, 0, 2, 0], level: 11, mark: "🟣" },
     'out-harvest': { num: 0, ability: [4, 2, 4, 0, 0, 0, 0, 0], level: 12, mark: "⛏️" },
-    'out-car': { num: 0, ability: [1, 5, 6, 0, 0, 0, 0, 0], level: 12, mark: "🚜" },
+    'out-car': { num: 0, ability: [1, 5, 6, 0, 0, 0, 0, 0], level: 13, mark: "🚜" },
     'out-defend': { num: 0, ability: [0, 0, 5, 5, 0, 5, 0, 0], level: 10, mark: "🧹" },
     /* 帕瓦 */
     'power-attack': { num: 0, ability: [0, 0, 20, 20, 0, 0, 0, 0], level: 10, mark: "🍎" },
@@ -190,7 +190,7 @@ export const RoleLevelData = {
         5: { bodypart: [4, 1, 2, 0, 0, 0, 0, 0], num: 0 },
         6: { bodypart: [6, 1, 3, 0, 0, 0, 0, 0], num: 0 },
         7: { bodypart: [7, 2, 7, 0, 0, 0, 0, 0], num: 0 },
-        8: { bodypart: [8, 2, 7, 0, 0, 0, 0, 0], num: 0 },
+        8: { bodypart: [10, 2, 10, 0, 0, 0, 0, 0], num: 0 },
     },
     "out-car": {
         1: { bodypart: [1, 1, 2, 0, 0, 0, 0, 0], num: 0 },

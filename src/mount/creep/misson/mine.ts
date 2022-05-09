@@ -52,17 +52,17 @@ export default class CreepMissonMineExtension extends Creep {
                 }
                 if (!this.pos.isNearTo(this.room.controller)) {
                     var controllerPos = unzipPosition(this.memory.disPos)
-                    this.goTo(controllerPos, 1)
+                    if (controllerPos.roomName == this.room.name)
+                        this.goTo(controllerPos, 1, 5000)
+                    else this.goTo(controllerPos, 1, 8000)
                 }
                 else {
                     if (this.room.controller && (!this.room.controller.sign || (Game.time - this.room.controller.sign.time) > 100000)) {
-                        if (!["superbitch", "ExtraDim"].includes(this.owner.username)) {
-                            this.signController(this.room.controller, ``)
-                        }
-                        else if (!["somygame"].includes(this.owner.username)) {
+                        if (["somygame"].includes(this.owner.username)) {
                             this.signController(this.room.controller, `麻了，麻了，彻底麻了`)
-                        }
-                        else {
+                        } else if (!["superbitch", "ExtraDim"].includes(this.owner.username)) {
+                            this.signController(this.room.controller, `${this.owner.username}'s 🌾 room!  Auto clean, Please keep distance!`)
+                        } else {
                             this.signController(this.room.controller, `躬耕陇亩`)
                         }
                     }
@@ -134,7 +134,9 @@ export default class CreepMissonMineExtension extends Creep {
                 }
             }
             else {
-                if (!this.pos.isNearTo(disPos)) this.goTo(disPos, 1)
+                if (!this.pos.isNearTo(disPos)) {
+                    this.goTo(disPos, 1)
+                }
                 else this.harvest(source)
             }
 
@@ -151,8 +153,19 @@ export default class CreepMissonMineExtension extends Creep {
             }
             if (!this.memory.bindpoint) return
             var disPos = unzipPosition(this.memory.bindpoint)
+            if (Game.time % 91 == 0 && this.room.name != this.memory.belong && this.room.name != disPos.roomName) {
+                if (Memory.outMineData && Memory.outMineData[disPos.roomName]) {
+                    for (var i of Memory.outMineData[disPos.roomName].road) {
+                        var thisPos = unzipPosition(i) as RoomPosition
+                        if (!thisPos.GetStructure('road')) {
+                            thisPos.createConstructionSite('road')
+                        }
+                    }
+                }
+            }
+
             if (this.memory.working) {
-                var stroage_ = this.room.storage as StructureStorage
+                var stroage_ = Game.rooms[this.memory.belong].storage
                 if (!stroage_) return
                 if (!this.pos.isNearTo(stroage_)) {
                     var construsions = this.pos.findClosestByPath(FIND_MY_CONSTRUCTION_SITES, {
@@ -160,15 +173,20 @@ export default class CreepMissonMineExtension extends Creep {
                             return constr.structureType == 'road'
                         }
                     })
+                    // console.log(this.name, '标记1')
                     if (construsions) {
                         this.build_(construsions)
                         return
                     }
-                    var road_ = this.pos.GetStructure('road')
-                    if (road_ && road_.hits < road_.hitsMax) {
-                        this.repair(road_)
-                        return
+                    // console.log(this.name, '标记2')
+                    if (this.room.name != this.memory.belong) {/*只修理外矿*/
+                        var road_ = this.pos.GetStructure('road')
+                        if (road_ && road_.hits < road_.hitsMax - 200) {
+                            this.repair(road_)
+                            return
+                        }
                     }
+                    // console.log(this.name, '标记3')
                     this.goTo(stroage_.pos, 1)
                 }
                 else {
@@ -182,7 +200,7 @@ export default class CreepMissonMineExtension extends Creep {
                     return
                 }
                 this.say("🚗", true)
-                var container_ = disPos.findInRange(FIND_STRUCTURES, 3, {
+                var container_ = disPos.findInRange(FIND_STRUCTURES, 1, {
                     filter: (stru) => {
                         return stru.structureType == 'container'
                     }

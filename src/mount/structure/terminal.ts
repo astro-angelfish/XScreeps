@@ -190,7 +190,14 @@ export default class terminalExtension extends StructureTerminal {
          * 订单如果已经完结则自动根据当前价格进行标记下次的报价，本模块只处理实时涨价操作，不处理实时降价操作
          * 操作涨价的订单，需要进行订单重新备份进程，需要其他模块介入帮助进行过期订单的清理操作
          * */
-        if (this.room.memory.MarketPrice.order_list.length < 1) { return }
+        if (this.room.memory.MarketPrice.order_list.length < 1) {
+            /* 没有标记订单的情况下 清理过期订单 */
+            for (let j in Game.market.orders) {
+                let order = Game.market.getOrderById(j);
+                if (!order.remainingAmount) Game.market.cancelOrder(j);
+            }
+            return
+        }
         if (Object.keys(global.Marketorder).length < 1) {
             /*需要对已有的订单进行初始化操作*/
             for (let j in Game.market.orders) {
@@ -322,6 +329,39 @@ export default class terminalExtension extends StructureTerminal {
         }
         this.room.memory.MarketPrice.order_list = this.room.memory.MarketPrice.order_list.filter(n => n)
     }
+    /**
+     * 资源买卖订单价格自助排序
+    */
+    public ResourceMarketdeal(market_deal, toll: number = 1): { id, amount, price } {
+        var orders = Game.market.getAllOrders({ type: ORDER_BUY, resourceType: market_deal.rType })
+        let a = 100, b = 50000;
+        (COMMODITIES[market_deal.rType] && COMMODITIES[market_deal.rType].level) ? a = 0 : a
+        let price = 0.05
+        if (COMMODITIES[market_deal.rType] && COMMODITIES[market_deal.rType].level) price = 10000
+        if (market_deal.price) price = market_deal.price
+        let order_: any = [];
+        for (let orders_data of orders) {
+            if (orders_data.price < market_deal.price) continue;/*价格不满足*/
+            if (orders_data.amount < a) continue;/*订单数量过少*/
+            let cost = Game.market.calcTransactionCost(1000, orders_data.roomName, this.room.name);
+            if (cost / 1000 > toll) continue;/*运费过高*/
+            let energy_cr = avePrice('energy', 1)
+            order_.push({
+                id: orders_data.id,
+                amount: orders_data.amount,
+                price: orders_data.price - energy_cr * (cost / 1000)
+            })
+        }
+        if (order_.length > 0) {
+            /*存在有效订单进行排序操作*/
+            var newOrderList = order_.sort(compare('price'))
+            let OrderData = newOrderList[newOrderList.length - 1];
+            console.log(JSON.stringify(OrderData))
+            return OrderData;
+        }
+        // var orders = Game.market.getAllOrders(order => order.resourceType == i.rType &&
+        //     price <= order.price && order.type == ORDER_BUY && order.amount > a && order.amount <= b)
+    }
 
     /**
      * 资源买卖函数 只买能量、挂单、卖 (不deal买资源)
@@ -339,41 +379,6 @@ export default class terminalExtension extends StructureTerminal {
         if (!this.room.storage) { console.log(`['${this.room.name}]不存在storage!`); return }
         let storage_ = this.room.storage
         this.EnergyreplenishMarket();/*动态报价工具*/
-
-        // // 能量购买函数
-        // let storeNum = storage_.store.getUsedCapacity('energy') + this.store.getUsedCapacity('energy')
-        // // 能量一般少的情况下，下平均价格订单购买能量
-        // if (storeNum < 250000 && storeNum >= 100000) {
-        //     let ave = avePrice('energy', 1)
-        //     let thisprice_ = ave * 1.1
-        //     if (!haveOrder(this.room.name, 'energy', 'buy', thisprice_, -0.6)) {
-        //         let result = Game.market.createOrder({
-        //             type: ORDER_BUY,
-        //             resourceType: 'energy',
-        //             price: thisprice_ - 0.5,
-        //             totalAmount: 50000,
-        //             roomName: this.room.name
-        //         });
-        //         if (result != OK) { console.log("创建能量订单出错,房间", this.room.name) }
-        //         console.log(Colorful(`[普通]房间${this.room.name}创建energy订单,价格:${thisprice_ - 0.5};数量:50000`, 'green', true))
-        //     }
-        // }
-        // // 能量极少的情况下，下市场合理范围内最高价格订单
-        // else if (storeNum < 100000) {
-        //     let ave = avePrice('energy', 2)
-        //     let highest = highestPrice('energy', 'buy', ave + 6)
-        //     if (!haveOrder(this.room.name, 'energy', 'buy', highest, -0.1)) {
-        //         let result = Game.market.createOrder({
-        //             type: ORDER_BUY,
-        //             resourceType: 'energy',
-        //             price: highest - 0.1,
-        //             totalAmount: 100000,
-        //             roomName: this.room.name
-        //         });
-        //         if (result != OK) { console.log("创建能量订单出错,房间", this.room.name) }
-        //         console.log(Colorful(`[紧急]房间${this.room.name}创建energy订单,价格:${highest - 0.1};数量:100000`, 'green', true))
-        //     }
-        // }
         /* 仓库资源过于饱和就卖掉能量 超出则不卖(考虑到pc技能间隔) */
         if (storage_.store.getFreeCapacity() < 50000 && storage_.store.getCapacity() >= storage_.store.getUsedCapacity()) {
             /* 如果仓库饱和(小于200k空间)，而且仓库能量超过400K,就卖能量 */
@@ -396,11 +401,18 @@ export default class terminalExtension extends StructureTerminal {
         for (var t in this.room.memory.market) {
             // deal类型
             if (t == 'deal') {
+                if (this.cooldown) continue LoopA   // 冷却模式下进行不了其他deal了
                 if (this.store.getUsedCapacity('energy') < 50000) continue LoopA // terminal空闲资源过少便不会继续
                 LoopB:
                 for (var i of this.room.memory.market['deal']) {
                     if (i.rType != 'energy') {
                         this.room.memory.TerminalData[i.rType] = { num: i.unit ? i.unit : 5000, fill: true }
+                    }
+                    if (storage_.store.getUsedCapacity(i.rType) <= 0 && this.room.RoleMissionNum('manage', '物流运输') <= 0) {
+                        if (i.rType != 'energy') delete this.room.memory.TerminalData[i.rType]
+                        var index = this.room.memory.market['deal'].indexOf(i)
+                        this.room.memory.market['deal'].splice(index, 1)
+                        continue LoopB
                     }
                     /* 数量少了就删除 */
                     if (i.num <= 0) {
@@ -408,37 +420,22 @@ export default class terminalExtension extends StructureTerminal {
                             delete this.room.memory.TerminalData[i.rType]
                         var index = this.room.memory.market['deal'].indexOf(i)
                         this.room.memory.market['deal'].splice(index, 1)
-                        continue LoopB
+                        continue
                     }
-                    if (this.cooldown) continue LoopA   // 冷却模式下进行不了其他deal了
                     let a = 100, b = 50000;
                     (COMMODITIES[i.rType] && COMMODITIES[i.rType].level) ? a = 0 : a
                     let price = 0.05
                     if (COMMODITIES[i.rType] && COMMODITIES[i.rType].level) price = 10000
                     if (i.price) price = i.price
-                    var orders = Game.market.getAllOrders(order => order.resourceType == i.rType &&
-                        price <= order.price && order.type == ORDER_BUY && order.amount > a && order.amount <= b)
-                    if (orders.length <= 0) continue LoopB
-                    /* 按价格从低到高排列 */
-                    var newOrderList = orders.sort(compare('price'))
-                    // 倒数第二 没有就倒数第一
-                    var thisDealOrder = newOrderList.length > 1 ? newOrderList[newOrderList.length - 2] : newOrderList[newOrderList.length - 1]
-                    if (!thisDealOrder) continue LoopB
-                    if (storage_.store.getUsedCapacity(i.rType) <= 0 && this.room.RoleMissionNum('manage', '物流运输') <= 0) {
-                        if (i.rType != 'energy')
-                            delete this.room.memory.TerminalData[i.rType]
-                        var index = this.room.memory.market['deal'].indexOf(i)
-                        this.room.memory.market['deal'].splice(index, 1)
-                        continue LoopB
-                    }
-                    if (thisDealOrder.amount >= this.store.getUsedCapacity(i.rType)) {
-                        Game.market.deal(thisDealOrder.id, this.store.getUsedCapacity(i.rType), this.room.name)
+                    let Marketdeal = this.ResourceMarketdeal(i);
+                    if (Marketdeal.amount >= this.store.getUsedCapacity(i.rType)) {
+                        Game.market.deal(Marketdeal.id, this.store.getUsedCapacity(i.rType), this.room.name)
                         i.num -= this.store.getUsedCapacity(i.rType)
                         break LoopA
                     }
                     else {
-                        Game.market.deal(thisDealOrder.id, thisDealOrder.amount, this.room.name)
-                        i.num -= thisDealOrder.amount
+                        Game.market.deal(Marketdeal.id, Marketdeal.amount, this.room.name)
+                        i.num -= Marketdeal.amount
                         break LoopA
                     }
                 }
@@ -594,7 +591,7 @@ export default class terminalExtension extends StructureTerminal {
         let num = task.Data.num
         var HistoryList = Game.market.getHistory(rType)
         let HistoryLength = HistoryList.length
-        if (HistoryList.length < 3 && Game.cpu.generatePixel) { console.log(`资源${rType}的订单太少，无法购买!`); return }// 以防特殊情况
+        if (HistoryList.length < 3 && Game.cpu.generatePixel) { console.log(`资源${rType}的订单太少，无法购买!`); this.room.DeleteMission(task.id); return }// 以防特殊情况
         var allNum: number = 0
         for (var iii = HistoryLength - 3; iii < HistoryLength; iii++) {
             if (HistoryList[iii]) { allNum += HistoryList[iii].avgPrice }

@@ -193,7 +193,7 @@ export default class RoomMissonBehaviourExtension extends Room {
         var needResource: ResourceConstant[] = [misson.Data.raw1, misson.Data.raw2]
         if (this.MissionNum('Structure', '资源购买') > 0) return // 存在资源购买任务的情况下，不执行资源调度
         if (DispatchNum(this.name) >= 2) return // 资源调度数量过多则不执行资源调度
-        let buy = true
+        let buy = false
         if (!Game.cpu.generatePixel) { buy = true }
         for (var resource_ of needResource) {
             // 原矿 资源调用
@@ -214,14 +214,14 @@ export default class RoomMissonBehaviourExtension extends Room {
                 return
             }
             // 其他中间物 资源调用
-            else if (storage_.store.getUsedCapacity(resource_) + terminal_.store.getUsedCapacity(resource_) < 500 && !isInArray(['H', 'O', 'K', 'L', 'X', 'U', 'Z'], resource_)) {
+            else if (storage_.store.getUsedCapacity(resource_) + terminal_.store.getUsedCapacity(resource_) < 1000 && !isInArray(['H', 'O', 'K', 'L', 'X', 'U', 'Z'], resource_)) {
                 if (checkDispatch(this.name, resource_)) continue  // 已经存在调用信息的情况
                 if (checkSend(this.name, resource_)) continue  // 已经存在其它房间的传送信息的情况
                 console.log(Colorful(`[资源调度]<lab com> 房间${this.name}没有足够的资源[${resource_}],将执行资源调度!`, 'yellow'))
                 let dispatchTask: RDData = {
                     sourceRoom: this.name,
                     rType: resource_,
-                    num: 1000,
+                    num: 2000,
                     delayTick: 100,
                     conditionTick: 25,
                     buy: buy,

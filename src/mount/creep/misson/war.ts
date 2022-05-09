@@ -196,11 +196,13 @@ export default class CreepMissonWarExtension extends Creep {
                     this.goTo_defend(nearstram.pos, 0)
                 else this.moveTo(nstC.pos)
             } else {
+                console.log('没有ram')
                 var ramp = this.pos.findClosestByRange(FIND_MY_STRUCTURES, {
                     filter: (stru) => {
-                        return stru.structureType == 'rampart' && stru.pos.GetStructureList(['extension', 'link', 'observer', 'tower', 'controller', 'extractor']).length <= 0 && (stru.pos.lookFor(LOOK_CREEPS).length <= 0 || stru.pos.lookFor(LOOK_CREEPS)[0] == this)
+                        return stru.structureType == 'rampart' && stru.pos.GetStructureList(['extension', 'link', 'observer', 'tower', 'controller', 'extractor']).length <= 0
                     }
                 })
+                console.log(ramp)
                 if (this.pos.inRangeTo(ramp, 3) && !this.pos.isEqualTo(ramp)) {
                     this.moveTo(ramp.pos)
                 }
@@ -339,7 +341,7 @@ export default class CreepMissonWarExtension extends Creep {
             } else {
                 var ramp = this.pos.findClosestByRange(FIND_MY_STRUCTURES, {
                     filter: (stru) => {
-                        return stru.structureType == 'rampart' && stru.pos.GetStructureList(['extension', 'link', 'observer', 'tower', 'controller', 'extractor']).length <= 0 && (stru.pos.lookFor(LOOK_CREEPS).length <= 0 || stru.pos.lookFor(LOOK_CREEPS)[0] == this)
+                        return stru.structureType == 'rampart' && stru.pos.GetStructureList(['extension', 'link', 'observer', 'tower', 'controller', 'extractor']).length <= 0 
                     }
                 })
                 if (this.pos.inRangeTo(ramp, 3) && !this.pos.isEqualTo(ramp)) {
