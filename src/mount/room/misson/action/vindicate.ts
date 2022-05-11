@@ -21,9 +21,23 @@ export default class RoomMissonVindicateExtension extends Room {
         }
         if ((Game.time - global.Gtime[this.name]) % 8) return
         if (mission.LabBind) {
-
             if (!this.Check_Lab(mission, 'transport', 'complex')) { }
-
+        }
+        /*任务检测工具*/
+        if ((Game.time - global.Gtime[this.name]) % 50) return
+        if (mission.Data.maxhit && mission.CreepBind.repair.bind.length < 1) {
+            /*存在最大生命判定 以及 爬已经全部死完*/
+            var leastRam = this.getListHitsleast([STRUCTURE_RAMPART, STRUCTURE_WALL], 3)
+            if (leastRam.hits > mission.Data.maxhit) {
+                /*完成刷墙任务*/
+                if (!mission.Data.retain) {
+                    this.DeleteMission(mission.id)
+                }
+            } else {
+                if (mission.CreepBind.repair.num < 1) {
+                    mission.CreepBind.repair.num = 1;
+                }
+            }
         }
     }
 

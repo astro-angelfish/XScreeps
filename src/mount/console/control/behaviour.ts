@@ -285,7 +285,7 @@ export default {
                         bR = false
                 }
                 if (bR) {
-                    thisRoom.memory.market['order'].push({ rType: rType, num: num, unit: unit, price: price })
+                    thisRoom.memory.market['order'].push({ rType: rType, num: num, unit: unit, price: price, mTyep: 'sell' })
                     return `[market] 房间${roomName}成功下达order的资源卖出指令,type:sell,rType:${rType},num:${num},unit:${unit},price:${price}`
                 }
                 else return `[market] 房间${roomName}已经存在${rType}的sell订单了`
@@ -298,7 +298,7 @@ export default {
                         bR = false
                 }
                 if (bR) {
-                    thisRoom.memory.market['deal'].push({ rType: rType, num: num, price: price, unit: unit })
+                    thisRoom.memory.market['deal'].push({ rType: rType, num: num, price: price, unit: unit, mTyep: 'sell' })
                     return `[market] 房间${roomName}成功下达deal的资源卖出指令,type:sell,rType:${rType},num:${num},price:${price},unit:${unit}`
                 }
                 else return `[market] 房间${roomName}已经存在${rType}的sell订单了`
@@ -766,23 +766,23 @@ export default {
             if (!factory_) return Colorful(`[factory] 未找到房间${roomName}的工厂!`, 'red', true)
             return factory_.del(cType)
         },
-        unzip(roomName:string,cType:CommodityConstant,num:number):string{
+        unzip(roomName: string, cType: CommodityConstant, num: number): string {
             var myRoom = Game.rooms[roomName]
             if (!myRoom) return `[factory] 未找到房间${roomName},请确认房间!`
             let factory_ = Game.getObjectById(myRoom.memory.StructureIdData.FactoryId) as StructureFactory
-            if (!factory_) return Colorful(`[factory] 未找到房间${roomName}的工厂!`,'red',true)
-            if (myRoom.memory.productData.unzip[cType]) return Colorful(`[factory] 房间${roomName}已经存在${cType}的解压缩任务!`,'red',true) 
-            myRoom.memory.productData.unzip[cType] = {num:num}
-            return Colorful(`[factory] 房间${roomName}已经设置${cType}的解压缩任务，数量:${num}!`,'blue',true) 
+            if (!factory_) return Colorful(`[factory] 未找到房间${roomName}的工厂!`, 'red', true)
+            if (myRoom.memory.productData.unzip[cType]) return Colorful(`[factory] 房间${roomName}已经存在${cType}的解压缩任务!`, 'red', true)
+            myRoom.memory.productData.unzip[cType] = { num: num }
+            return Colorful(`[factory] 房间${roomName}已经设置${cType}的解压缩任务，数量:${num}!`, 'blue', true)
         },
-        Cunzip(roomName:string,cType:CommodityConstant):string{
+        Cunzip(roomName: string, cType: CommodityConstant): string {
             var myRoom = Game.rooms[roomName]
             if (!myRoom) return `[factory] 未找到房间${roomName},请确认房间!`
             let factory_ = Game.getObjectById(myRoom.memory.StructureIdData.FactoryId) as StructureFactory
-            if (!factory_) return Colorful(`[factory] 未找到房间${roomName}的工厂!`,'red',true)
-            if (!myRoom.memory.productData.unzip[cType]) return Colorful(`[factory] 房间${roomName}不存在${cType}的解压缩任务!`,'red',true) 
+            if (!factory_) return Colorful(`[factory] 未找到房间${roomName}的工厂!`, 'red', true)
+            if (!myRoom.memory.productData.unzip[cType]) return Colorful(`[factory] 房间${roomName}不存在${cType}的解压缩任务!`, 'red', true)
             delete myRoom.memory.productData.unzip[cType]
-            return Colorful(`[factory] 房间${roomName} ${cType}的解压缩任务已经删除!`,'blue',true) 
+            return Colorful(`[factory] 房间${roomName} ${cType}的解压缩任务已经删除!`, 'blue', true)
         }
     },
 

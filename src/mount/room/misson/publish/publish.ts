@@ -48,7 +48,7 @@ export default class RoomMissonPublish extends Room {
      * @param level     身体部件 分为 T0 T1 T2
      * @returns         任务对象
      */
-    public public_repair(Rtype: 'global' | 'special' | 'nuker', num: number, boostType: ResourceConstant, level?: 'T0' | 'T1' | 'T2' | 'T3' | 'T4'): MissionModel {
+    public public_repair(Rtype: 'global' | 'special' | 'nuker', num: number, boostType: ResourceConstant, level?: 'T0' | 'T1' | 'T2' | 'T3' | 'T4', maxhit?: number, retain?: boolean): MissionModel {
         var thisTask: MissionModel = {
             name: '墙体维护',
             range: 'Creep',
@@ -58,7 +58,9 @@ export default class RoomMissonPublish extends Room {
                 RepairType: Rtype,
                 num: num,
                 boostType: boostType,
-                level: level
+                level: level,
+                maxhit: maxhit,
+                retain: retain
             },
             maxTime: 3
         }

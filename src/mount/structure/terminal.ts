@@ -190,14 +190,7 @@ export default class terminalExtension extends StructureTerminal {
          * 订单如果已经完结则自动根据当前价格进行标记下次的报价，本模块只处理实时涨价操作，不处理实时降价操作
          * 操作涨价的订单，需要进行订单重新备份进程，需要其他模块介入帮助进行过期订单的清理操作
          * */
-        if (this.room.memory.MarketPrice.order_list.length < 1) {
-            /* 没有标记订单的情况下 清理过期订单 */
-            for (let j in Game.market.orders) {
-                let order = Game.market.getOrderById(j);
-                if (!order.remainingAmount) Game.market.cancelOrder(j);
-            }
-            return
-        }
+
         if (Object.keys(global.Marketorder).length < 1) {
             /*需要对已有的订单进行初始化操作*/
             for (let j in Game.market.orders) {
@@ -206,7 +199,6 @@ export default class terminalExtension extends StructureTerminal {
                     if (!global.Marketorder[order.roomName]) { global.Marketorder[order.roomName] = [] }
                     global.Marketorder[order.roomName][order.id] = order
                 }
-                // if (!order.remainingAmount) Game.market.cancelOrder(j);
             }
         }
         if (this.room.memory.MarketPrice.order_list.length > 0) {
@@ -244,7 +236,8 @@ export default class terminalExtension extends StructureTerminal {
                 let Gatorder = global.Marketorder[this.room.name][order_data.order_id] as any;
                 if (!Gatorder) {
                     /*错误的订单信息，移除当前信息*/
-                    console.log(JSON.stringify)
+                    console.log(JSON.stringify(global.Marketorder[this.room.name]))
+                    console.log(JSON.stringify(this.room.memory.MarketPrice.order_list[j]))
                     console.log(Colorful(`[订单异常]房间${this.room.name}订单异常,异常完结`, 'red', true))
                     delete this.room.memory.MarketPrice.order_list[j];
                     continue;/*当前订单解除*/
@@ -327,6 +320,14 @@ export default class terminalExtension extends StructureTerminal {
                 }
             }
         }
+        // if (this.room.memory.MarketPrice.order_list.length < 1) {
+        //     /* 没有标记订单的情况下 清理过期订单 */
+        //     for (let j in Game.market.orders) {
+        //         let order = Game.market.getOrderById(j);
+        //         if (!order.remainingAmount) Game.market.cancelOrder(j);
+        //     }
+        //     return
+        // }
         this.room.memory.MarketPrice.order_list = this.room.memory.MarketPrice.order_list.filter(n => n)
     }
     /**
@@ -408,6 +409,7 @@ export default class terminalExtension extends StructureTerminal {
                     if (i.rType != 'energy') {
                         this.room.memory.TerminalData[i.rType] = { num: i.unit ? i.unit : 5000, fill: true }
                     }
+                    if (this.store.getUsedCapacity(i.rType) < 100) continue // terminal空闲资源过少便不会继续
                     if (storage_.store.getUsedCapacity(i.rType) <= 0 && this.room.RoleMissionNum('manage', '物流运输') <= 0) {
                         if (i.rType != 'energy') delete this.room.memory.TerminalData[i.rType]
                         var index = this.room.memory.market['deal'].indexOf(i)
@@ -422,11 +424,6 @@ export default class terminalExtension extends StructureTerminal {
                         this.room.memory.market['deal'].splice(index, 1)
                         continue
                     }
-                    let a = 100, b = 50000;
-                    (COMMODITIES[i.rType] && COMMODITIES[i.rType].level) ? a = 0 : a
-                    let price = 0.05
-                    if (COMMODITIES[i.rType] && COMMODITIES[i.rType].level) price = 10000
-                    if (i.price) price = i.price
                     let Marketdeal = this.ResourceMarketdeal(i);
                     if (Marketdeal.amount >= this.store.getUsedCapacity(i.rType)) {
                         Game.market.deal(Marketdeal.id, this.store.getUsedCapacity(i.rType), this.room.name)
@@ -464,24 +461,30 @@ export default class terminalExtension extends StructureTerminal {
                                 type: ORDER_SELL,
                                 resourceType: l.rType,
                                 price: price,
-                                totalAmount: l.num,
+                                totalAmount: l.unit ? l.unit : 5000,
                                 roomName: this.room.name
                             });
                             // console.log(result)
-                            if (result != OK) continue LoopC
+                            switch (result) {
+                                case OK:
+                                    l.num -= l.unit ? l.unit : 5000;
+                                    break;
+                                default:
+                                    continue LoopC
+                                    break;
+                            }
                         }
                         LoopO:
                         for (let o in Game.market.orders) {
                             let order = Game.market.getOrderById(o);
-                            // if (order.remainingAmount <= 0) { Game.market.cancelOrder(o); continue LoopO; }
-                            if (order.roomName == this.room.name && order.resourceType == l.rType && order.type == 'sell')
+                            if (order.roomName == this.room.name && order.resourceType == l.rType && order.type == 'sell' && order.price == price)
                                 l.id = o
                         }
                         continue LoopC
                     }
                     else {
                         let order = Game.market.getOrderById(l.id)
-                        if (!order || !order.remainingAmount)   // 取消订单信息
+                        if ((!order || !order.remainingAmount) && l.num < 1)   // 取消订单信息
                         {
                             if (l.rType != 'energy')
                                 delete this.room.memory.TerminalData[l.rType]

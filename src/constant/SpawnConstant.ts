@@ -26,7 +26,7 @@ export const RoleData: SpawnConstantData = {
     'repair': { num: 0, ability: [1, 1, 1, 0, 0, 0, 0, 0], level: 8, mark: "🧱", must: true },     // 刷墙
     'cclaim': { num: 0, ability: [0, 0, 1, 0, 0, 0, 1, 0], level: 10, mark: "🐱" },           // 开房sf
     'cupgrade': { num: 0, ability: [2, 5, 7, 0, 0, 0, 0, 0], level: 11, mark: "🐱" },
-    'dismantle': { num: 0, ability: [25, 0, 25, 0, 0, 0, 0, 0], level: 11, mark: "⚡" },
+    'xxdismantle': { num: 0, ability: [25, 0, 25, 0, 0, 0, 0, 0], level: 11, mark: "⚡" },
     'rush': { num: 0, ability: [10, 2, 5, 0, 0, 0, 0, 0], level: 11, mark: "🚬", must: true },
     'truck': { num: 0, ability: [0, 10, 10, 0, 0, 0, 0, 0], level: 9, mark: "✈️" },
     'claim': { num: 0, ability: [0, 0, 1, 0, 0, 0, 1, 0], level: 10, mark: "🟣" },

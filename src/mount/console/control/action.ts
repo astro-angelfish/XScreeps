@@ -6,14 +6,14 @@ import { Colorful, compare, isInArray, unzipPosition, zipPosition } from "@/util
 export default {
     /* 修墙 */
     repair: {
-        set(roomName: string, rtype: 'global' | 'special', num: number, boost: null | ResourceConstant, level?: 'T0' | 'T1' | 'T2' | 'T3' | 'T4'): string {
+        set(roomName: string, rtype: 'global' | 'special', num: number, boost: null | ResourceConstant, level?: 'T0' | 'T1' | 'T2' | 'T3' | 'T4', maxhit?: number, retain?: boolean): string {
             let thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[repair] 不存在房间${roomName}`
             for (var i of thisRoom.memory.Misson['Creep'])
                 if (i.name == '墙体维护' && i.Data.RepairType == rtype) {
                     return `[repair] 房间${roomName}已经存在类型为${rtype}的刷墙任务了`
                 }
-            var thisTask = thisRoom.public_repair(rtype, num, boost, level ? level : 'T0')
+            var thisTask = thisRoom.public_repair(rtype, num, boost, level ? level : 'T0', maxhit ? maxhit : 300000000, retain ? retain : false)
             if (thisRoom.AddMission(thisTask))
                 return `[repair] 房间${roomName}挂载类型为${rtype}刷墙任务成功`
             return `[repair] 房间${roomName}挂载类型为${rtype}刷墙任务失败`
@@ -28,6 +28,10 @@ export default {
                 }
             return `[repair] 房间${roomName}删除类型为${Rtype}刷墙任务失败!`
         },
+        removeall(Rtype: 'global' | 'special'): string {
+
+            return `[repair] 删除类型为${Rtype}刷墙任务失败!`
+        }
     },
     /* 特殊计划 不在manual里显示 */
     plan: {

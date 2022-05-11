@@ -31,7 +31,6 @@ export function haveOrder(roomName: string, res: ResourceConstant, mtype: 'sell'
     {
         for (let i in Game.market.orders) {
             let order = Game.market.getOrderById(i);
-            // if (order.remainingAmount <= 0) { Game.market.cancelOrder(i); continue; }
             if (order.roomName == roomName && order.resourceType == res && order.type == mtype)
                 return true
         }
@@ -41,7 +40,6 @@ export function haveOrder(roomName: string, res: ResourceConstant, mtype: 'sell'
     {
         for (let i in Game.market.orders) {
             let order = Game.market.getOrderById(i);
-            // if (order.remainingAmount <= 0) { Game.market.cancelOrder(i); continue; }
             if (order.roomName == roomName && order.resourceType == res && order.type == mtype && order.price >= (nowPrice + range))
                 return true
         }
