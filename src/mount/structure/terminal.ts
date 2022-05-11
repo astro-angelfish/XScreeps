@@ -398,13 +398,12 @@ export default class terminalExtension extends StructureTerminal {
             }
         }
         // 其他类型资源的交易 【考虑到已经有了资源调度模块的存在，这里主要是卖】
-        LoopA:
+
         for (var t in this.room.memory.market) {
             // deal类型
             if (t == 'deal') {
-                if (this.cooldown) continue LoopA   // 冷却模式下进行不了其他deal了
-                if (this.store.getUsedCapacity('energy') < 50000) continue LoopA // terminal空闲资源过少便不会继续
-                LoopB:
+                if (this.cooldown) continue    // 冷却模式下进行不了其他deal了
+                if (this.store.getUsedCapacity('energy') < 50000) continue  // terminal空闲资源过少便不会继续
                 for (var i of this.room.memory.market['deal']) {
                     if (i.rType != 'energy') {
                         this.room.memory.TerminalData[i.rType] = { num: i.unit ? i.unit : 5000, fill: true }
@@ -414,7 +413,7 @@ export default class terminalExtension extends StructureTerminal {
                         if (i.rType != 'energy') delete this.room.memory.TerminalData[i.rType]
                         var index = this.room.memory.market['deal'].indexOf(i)
                         this.room.memory.market['deal'].splice(index, 1)
-                        continue LoopB
+                        continue
                     }
                     /* 数量少了就删除 */
                     if (i.num <= 0) {
@@ -428,18 +427,17 @@ export default class terminalExtension extends StructureTerminal {
                     if (Marketdeal.amount >= this.store.getUsedCapacity(i.rType)) {
                         Game.market.deal(Marketdeal.id, this.store.getUsedCapacity(i.rType), this.room.name)
                         i.num -= this.store.getUsedCapacity(i.rType)
-                        break LoopA
+                        break
                     }
                     else {
                         Game.market.deal(Marketdeal.id, Marketdeal.amount, this.room.name)
                         i.num -= Marketdeal.amount
-                        break LoopA
+                        break
                     }
                 }
             }
             // order类型
             else if (t == 'order') {
-                LoopC:
                 for (var l of this.room.memory.market['order']) {
                     if (l.rType != 'energy') {
                         this.room.memory.TerminalData[l.rType] = { num: l.unit ? l.unit : 5000, fill: true }
@@ -470,17 +468,16 @@ export default class terminalExtension extends StructureTerminal {
                                     l.num -= l.unit ? l.unit : 5000;
                                     break;
                                 default:
-                                    continue LoopC
+                                    continue
                                     break;
                             }
                         }
-                        LoopO:
                         for (let o in Game.market.orders) {
                             let order = Game.market.getOrderById(o);
-                            if (order.roomName == this.room.name && order.resourceType == l.rType && order.type == 'sell' && order.price == price)
+                            if (order.roomName == this.room.name && order.resourceType == l.rType && order.type == 'sell')
                                 l.id = o
                         }
-                        continue LoopC
+                        continue
                     }
                     else {
                         let order = Game.market.getOrderById(l.id)
@@ -491,7 +488,26 @@ export default class terminalExtension extends StructureTerminal {
                             console.log(Colorful(`[market] 房间${this.room.name}订单ID:${l.id},rType:${l.rType}的删除订单!`, 'blue'))
                             var index = this.room.memory.market['order'].indexOf(l)
                             this.room.memory.market['order'].splice(index, 1)
-                            continue LoopC
+                            continue
+                        }
+                        let _add_number = l.unit ? l.unit : 5000;
+                        if (_add_number > l.num) {
+                            _add_number = l.num
+                        }
+                        if (order && (order.remainingAmount < _add_number) && l.num > 0) {
+                            let add_order_number = _add_number;
+                            if (order.remainingAmount) {
+                                add_order_number = _add_number - order.remainingAmount;
+                            }
+                            /*操作补充订单*/
+                            let result = Game.market.extendOrder(l.id, add_order_number)
+                            if (result == OK) {
+                                l.num -= add_order_number;
+                                console.log(Colorful(`[market] 房间${this.room.name}-rType:${l.rType}补充订单 ${add_order_number}!`, 'yellow'))
+                                continue
+                            } else {
+                                console.log(Colorful(`[market] 房间${this.room.name}订单ID:${l.id},rType:${l.rType}补充订单失败!`, 'blue'))
+                            }
                         }
                         // 价格
                         let price = order.price
