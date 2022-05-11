@@ -197,7 +197,7 @@ export default {
                 if (i.name =='控制攻击' && i.Data.disRoom ==disRoom && i.Data.shard == shard)
                 {
                     if (thisRoom.DeleteMission(i.id))
-                    return colorful(`[war] 房间${roomName}控制攻击任务成功`,'green')
+                    return colorful(`[war] 房间${roomName}控制攻击任务删除成功`,'green')
                 }
             }
             return colorful(`[war] 房间${roomName}控制攻击任务失败`,'red')

@@ -106,6 +106,10 @@ export default class CreepMoveExtension extends Creep {
                         (struct.structureType !==STRUCTURE_RAMPART || !struct.my))
                         costs.set(struct.pos.x,struct.pos.y,0xff)
                 })
+                room.find(FIND_HOSTILE_STRUCTURES).forEach(stru =>{
+                    if (stru.structureType == 'rampart' && stru.isPublic)
+                        costs.set(stru.pos.x,stru.pos.y,1)
+                })
                 room.find(FIND_MY_CONSTRUCTION_SITES).forEach(cons=>{
                     if (cons.structureType != 'road' && cons.structureType != 'rampart' && cons.structureType != 'container')
                     costs.set(cons.pos.x,cons.pos.y,255)

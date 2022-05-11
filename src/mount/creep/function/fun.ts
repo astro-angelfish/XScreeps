@@ -107,6 +107,7 @@ export default class CreepFunctionExtension extends Creep {
                     if (b.type == body) s++
                     }
                     if (!disLab.mineralType)return false
+                    if (thisRoomMisson.LabBind[tempID] != disLab.mineralType) return false
                     if (!this.pos.isNearTo(disLab)) this.goTo(disLab.pos,1)
                     else
                     {

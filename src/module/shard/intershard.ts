@@ -252,7 +252,7 @@ export const InterShardManager = function() :void {
     ResponseShard()
     ConfirmShard()
     DeleteShard()
-    InterShardMemory.setLocal(JSON.stringify(global.intershardData))
+    // InterShardMemory.setLocal(JSON.stringify(global.intershardData))
 }
 
 /* 保存跨shard信息 */

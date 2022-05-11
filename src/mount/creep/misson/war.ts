@@ -83,7 +83,7 @@ export default class CreepMissonWarExtension extends Creep {
             if (!this.pos.isNearTo(control)) this.goTo(control.pos,1)
             else
             {
-                if (control.owner)this.attackController(control)
+                if (control.owner && control.owner.username != this.owner.username)this.attackController(control)
                 else this.reserveController(control)
             }
         }
@@ -942,12 +942,12 @@ export default class CreepMissonWarExtension extends Creep {
             {
                 if (!this.BoostCheck(['move','heal','ranged_attack','tough'])) return
             }
-            else if (this.memory.role == 'aio')
+            else if (this.memory.role == 'saio')
             {
                 if (!this.BoostCheck(['move','heal','ranged_attack','tough'])) return
             }
         }
-        if (this.memory.role != 'aio' && !this.memory.double)
+        if (this.memory.role != 'saio' && !this.memory.double)
         {
             if (this.memory.role == 'double-heal')
             {
