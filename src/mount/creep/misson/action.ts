@@ -68,6 +68,7 @@ export default class CreepMissonActionExtension extends Creep {
                         if (leastRam.hits > mission.Data.maxhit) {
                             /*检测任务已经完成后将会标记新生成爬数量为0 同时保持任务，等待任务检测进程*/
                             mission.CreepBind.repair.num = 0;
+                            mission.Data.hangstate = true;
                         }
                     }
                     this.memory.targetID = leastRam.id

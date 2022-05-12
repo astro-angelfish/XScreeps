@@ -360,6 +360,7 @@ export default class terminalExtension extends StructureTerminal {
             // console.log(JSON.stringify(OrderData))
             return OrderData;
         }
+        return null
         // var orders = Game.market.getAllOrders(order => order.resourceType == i.rType &&
         //     price <= order.price && order.type == ORDER_BUY && order.amount > a && order.amount <= b)
     }
@@ -424,6 +425,7 @@ export default class terminalExtension extends StructureTerminal {
                         continue
                     }
                     let Marketdeal = this.ResourceMarketdeal(i);
+                    if(!Marketdeal) continue;
                     if (Marketdeal.amount >= this.store.getUsedCapacity(i.rType)) {
                         Game.market.deal(Marketdeal.id, this.store.getUsedCapacity(i.rType), this.room.name)
                         i.num -= this.store.getUsedCapacity(i.rType)

@@ -73,6 +73,8 @@ export default class RoomFunctionFindExtension extends Room {
             for (let missObj of this.memory.Misson[index]) {
                 if (!missObj.LabMessage) continue LoopB
                 if (!missObj.LabBind) missObj.LabBind = {}
+                /*检查任务是否处于挂起状态*/
+                if (missObj.Data.hangstate) continue
                 // 检测lab状态
                 LoopC:
                 for (let rType in missObj.LabMessage) {

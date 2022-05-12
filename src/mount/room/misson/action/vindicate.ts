@@ -5,23 +5,25 @@ import { Colorful, GenerateAbility, isInArray } from "@/utils";
 export default class RoomMissonVindicateExtension extends Room {
     public Task_Repair(mission: MissionModel): void {
         /* 根据level决定任务爬虫体型 */
-        let level = mission.Data.level
-        if (!level) mission.Data.level = 'T0'
-        if (level == 'T3') {
-            global.MSB[mission.id] = { 'repair': GenerateAbility(30, 10, 10, 0, 0, 0, 0, 0) }
-        }
-        else if (level == 'T2') {
-            global.MSB[mission.id] = { 'repair': GenerateAbility(6, 4, 10, 0, 0, 0, 0, 0) }
-        }
-        else if (level == 'T1') {
-            global.MSB[mission.id] = { 'repair': GenerateAbility(20, 10, 15, 0, 0, 0, 0, 0) }
-        }
-        else if (level == 'T0') {
-            // 默认配置
-        }
-        if ((Game.time - global.Gtime[this.name]) % 8) return
-        if (mission.LabBind) {
-            if (!this.Check_Lab(mission, 'transport', 'complex')) { }
+        if (mission.CreepBind.repair.num > 0) {
+            let level = mission.Data.level
+            if (!level) mission.Data.level = 'T0'
+            if (level == 'T3') {
+                global.MSB[mission.id] = { 'repair': GenerateAbility(30, 10, 10, 0, 0, 0, 0, 0) }
+            }
+            else if (level == 'T2') {
+                global.MSB[mission.id] = { 'repair': GenerateAbility(6, 4, 10, 0, 0, 0, 0, 0) }
+            }
+            else if (level == 'T1') {
+                global.MSB[mission.id] = { 'repair': GenerateAbility(20, 10, 15, 0, 0, 0, 0, 0) }
+            }
+            else if (level == 'T0') {
+                // 默认配置
+            }
+            if ((Game.time - global.Gtime[this.name]) % 8) return
+            if (mission.LabBind) {
+                if (!this.Check_Lab(mission, 'transport', 'complex')) { }
+            }
         }
         /*任务检测工具*/
         if ((Game.time - global.Gtime[this.name]) % 50) return
@@ -32,10 +34,20 @@ export default class RoomMissonVindicateExtension extends Room {
                 /*完成刷墙任务*/
                 if (!mission.Data.retain) {
                     this.DeleteMission(mission.id)
+                } else {
+                    mission.Data.hangstate = true;
+                    if (Object.keys(mission.LabBind).length > 0) {
+                        for (var l in mission.LabBind) {
+                            // console.log('LabID: ',m.LabBind[l],'------解绑-------->MissonID: ',m.id)
+                            this.UnBindLabData(l, mission.id)
+                        }
+                        mission.LabBind = {}
+                    }
                 }
             } else {
                 if (mission.CreepBind.repair.num < 1) {
                     mission.CreepBind.repair.num = 1;
+                    mission.Data.hangstate = false;
                 }
             }
         }

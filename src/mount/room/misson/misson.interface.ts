@@ -3,6 +3,7 @@ interface Room {
     MissionManager(): void
     AddMission(mis: MissionModel): boolean
     DeleteMission(id: string): boolean
+    UnBindLabData(id:string,MissonID:string)
     RoleMissionNum(role: string, name: string): number
     GainMission(id: string): MissionModel | null
     MissionNum(range: string, name: string): number
