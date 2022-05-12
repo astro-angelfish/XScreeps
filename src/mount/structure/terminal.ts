@@ -357,7 +357,7 @@ export default class terminalExtension extends StructureTerminal {
             /*存在有效订单进行排序操作*/
             var newOrderList = order_.sort(compare('price'))
             let OrderData = newOrderList[newOrderList.length - 1];
-            console.log(JSON.stringify(OrderData))
+            // console.log(JSON.stringify(OrderData))
             return OrderData;
         }
         // var orders = Game.market.getAllOrders(order => order.resourceType == i.rType &&
