@@ -1,4 +1,4 @@
-import { Colorful, isInArray } from "@/utils"
+import { Colorful, isInArray, GenerateAbility, CalculateEnergy } from "@/utils"
 import { result } from "lodash"
 import { allResource, roomResource } from "../control/local/resource"
 import { getStore } from "../control/local/store"
@@ -68,9 +68,60 @@ export default {
         change(roomName: string): string {
             let thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[Visual] 不存在房间${roomName}`
-            thisRoom.memory.Visualdisplay= !thisRoom.memory.Visualdisplay
+            thisRoom.memory.Visualdisplay = !thisRoom.memory.Visualdisplay
             return `[Visual] ${thisRoom} 可视化显示${thisRoom.memory.Visualdisplay}`
 
         }
+    },
+    /*房间维护开销的计算*/
+    Maintain: {
+        roommaintain(roomName: string): string {
+            let thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[Visual] 不存在房间${roomName}`
+            /*筛选出所有的道路*/
+            let structures_list = thisRoom.find(FIND_STRUCTURES, {
+                filter: (i) => i.structureType == STRUCTURE_ROAD
+            })
+            let road_maintain_energy = 0;
+            let role_maintain_energy = 0;
+            if (structures_list.length > 0) {
+                let getNtowerID = Game.getObjectById(thisRoom.memory.StructureIdData.NtowerID) as StructureTower
+                if (!getNtowerID) {
+                    return `[Maintain]  ${thisRoom} 没有对应的维修单位!`
+                }
+                let from_pos = `W${getNtowerID.pos.x}N${getNtowerID.pos.y}`
+                for (let Data_ of structures_list) {
+                    let to_pos = `W${Data_.pos.x}N${Data_.pos.y}`
+                    let _number = Game.map.getRoomLinearDistance(from_pos, to_pos)
+                    /*计算healnumber*/
+                    let _heal_number = 400;
+                    if (_number > 5) {
+                        _heal_number -= (_number - 5) * 20
+                    }
+                    _heal_number = _heal_number < 100 ? 100 : _heal_number;
+                    /*获取偏差数值*/
+                    let _loss_number = 1100;
+                    if (Data_.hitsMax > 20000) {
+                        _loss_number = 5500;
+                    }
+
+                    let _heal = Math.ceil(_loss_number / _heal_number);
+                    road_maintain_energy += _heal * 10 * 1.5
+                }
+            }
+            /*开始统计孵化开销*/
+            for (let cof in thisRoom.memory.SpawnConfig) {
+                let role = thisRoom.memory.SpawnConfig[cof]
+                let bd = global.CreepBodyData[thisRoom.name][cof];
+                let body = GenerateAbility(bd[0], bd[1], bd[2], bd[3], bd[4], bd[5], bd[6], bd[7])
+                let energy_ = CalculateEnergy(body)
+                role_maintain_energy += energy_ * role.num
+            }
+
+            /*筛选出维护塔*/
+            /*计算 基于塔的维修效果*/
+            return `[Maintain]  ${thisRoom} 道路维护 ${road_maintain_energy},基础孵化 ${role_maintain_energy} 300tick ${(road_maintain_energy + role_maintain_energy) / 5}`
+        }
+
     }
 }
