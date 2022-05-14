@@ -409,7 +409,7 @@ export default class terminalExtension extends StructureTerminal {
                     if (i.rType != 'energy') {
                         this.room.memory.TerminalData[i.rType] = { num: i.unit ? i.unit : 5000, fill: true }
                     }
-                    if (this.store.getUsedCapacity(i.rType) < 100) continue // terminal空闲资源过少便不会继续
+                    if (this.store.getUsedCapacity(i.rType) < 100 && i.num >= 100) continue // terminal空闲资源过少便不会继续
                     if (storage_.store.getUsedCapacity(i.rType) <= 0 && this.room.RoleMissionNum('manage', '物流运输') <= 0) {
                         if (i.rType != 'energy') delete this.room.memory.TerminalData[i.rType]
                         var index = this.room.memory.market['deal'].indexOf(i)
@@ -425,10 +425,16 @@ export default class terminalExtension extends StructureTerminal {
                         continue
                     }
                     let Marketdeal = this.ResourceMarketdeal(i);
-                    if(!Marketdeal) continue;
-                    if (Marketdeal.amount >= this.store.getUsedCapacity(i.rType)) {
-                        Game.market.deal(Marketdeal.id, this.store.getUsedCapacity(i.rType), this.room.name)
-                        i.num -= this.store.getUsedCapacity(i.rType)
+                    if (!Marketdeal) continue;
+                    let _market_x = 1;
+                    if (i.rType == 'energy') {
+                        _market_x = 0.5
+                    }
+                    let _mex_market_number = Math.trunc(this.store.getUsedCapacity(i.rType) / _market_x)
+                    if (Marketdeal.amount >= _mex_market_number) {
+
+                        Game.market.deal(Marketdeal.id, _mex_market_number, this.room.name)
+                        i.num -= _mex_market_number
                         break
                     }
                     else {
@@ -490,6 +496,7 @@ export default class terminalExtension extends StructureTerminal {
                             console.log(Colorful(`[market] 房间${this.room.name}订单ID:${l.id},rType:${l.rType}的删除订单!`, 'blue'))
                             var index = this.room.memory.market['order'].indexOf(l)
                             this.room.memory.market['order'].splice(index, 1)
+                            Game.market.cancelOrder(l.id)
                             continue
                         }
                         let _add_number = l.unit ? l.unit : 5000;

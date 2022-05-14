@@ -65,6 +65,9 @@ export default class RoomFunctionTowerExtension extends Room {
                 }
             }
             else if (enemys.length > 1) {
+                if (enemys.length >= 3) {
+                    return;
+                }
                 for (let c of this.memory.StructureIdData.AtowerID) {
                     let thisTower = Game.getObjectById(c) as StructureTower
                     if (!thisTower) {

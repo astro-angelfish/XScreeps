@@ -73,6 +73,7 @@ export default class RoomCoreSpawnExtension extends Room {
                 delete this.memory.SpawnConfig[role]
                 continue
             }
+            if (this.memory.SpawnConfig[role] && this.memory.SpawnConfig[role].num < 1) continue;
             if (this.memory.SpawnConfig[role] && (!roleNum || roleNum < this.memory.SpawnConfig[role].num)) {
                 /* 计算SpawnList里相关role的个数 */
                 let num_ = this.SpawnListRoleNum(role)
