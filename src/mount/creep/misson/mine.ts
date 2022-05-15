@@ -157,6 +157,7 @@ export default class CreepMissonMineExtension extends Creep {
                 if (Memory.outMineData && Memory.outMineData[disPos.roomName]) {
                     for (var i of Memory.outMineData[disPos.roomName].road) {
                         var thisPos = unzipPosition(i) as RoomPosition
+                        if (!Game.rooms[thisPos.roomName]) continue;
                         if (!thisPos.GetStructure('road')) {
                             thisPos.createConstructionSite('road')
                         }

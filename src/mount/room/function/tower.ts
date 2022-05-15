@@ -83,6 +83,7 @@ export default class RoomFunctionTowerExtension extends Room {
     }
 
     public TowerRepair(): void {
+        
         if ((Game.time - global.Gtime[this.name]) % 20 != 0) { return }
         global.Repairlist[this.name] = []
         var repairRoad = this.find(FIND_STRUCTURES, {

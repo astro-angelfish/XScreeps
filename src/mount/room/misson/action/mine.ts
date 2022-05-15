@@ -71,7 +71,7 @@ export default class RoomMissonMineExtension extends Room {
             }
             if (bR) {
                 /* 下达自动deal的任务 */
-                this.memory.market['deal'].push({ rType: this.memory.mineralType, num: 30000 })
+                this.memory.market['deal'].push({ rType: this.memory.mineralType, num: 30000, mTyep: 'sell'  })
             }
         }
         /* 防止挖矿致死 */

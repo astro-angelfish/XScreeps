@@ -32,6 +32,7 @@ export default class RoomMissonFrameExtension extends Room {
         this.Nuke_Defend()  // 核弹防御
         this.Task_CompoundDispatch()    // 合成规划 （中级）
         this.Task_LabAutomatic()    // Lab 自动合成规划
+        this.Task_FactoryAutomatic() // Factory 自动/压缩解压规划
         this.Task_monitorMineral()  // 挖矿
         this.Task_montitorPower()   // 烧power任务监控
         this.Task_Auto_Defend()     // 主动防御任务发布

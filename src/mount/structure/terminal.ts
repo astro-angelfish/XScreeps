@@ -394,7 +394,7 @@ export default class terminalExtension extends StructureTerminal {
                 }
                 if (bR) {
                     /* 下达自动deal的任务 */
-                    this.room.memory.market['deal'].push({ rType: 'energy', num: 100000 })
+                    this.room.memory.market['deal'].push({ rType: 'energy', num: 100000, mTyep: 'sell' })
                 }
             }
         }
@@ -406,6 +406,7 @@ export default class terminalExtension extends StructureTerminal {
                 if (this.cooldown) continue    // 冷却模式下进行不了其他deal了
                 if (this.store.getUsedCapacity('energy') < 50000) continue  // terminal空闲资源过少便不会继续
                 for (var i of this.room.memory.market['deal']) {
+                    if (i.mTyep == 'buy') { continue/*deal资源购买不在此处处理*/ }
                     if (i.rType != 'energy') {
                         this.room.memory.TerminalData[i.rType] = { num: i.unit ? i.unit : 5000, fill: true }
                     }
@@ -430,15 +431,14 @@ export default class terminalExtension extends StructureTerminal {
                     if (i.rType == 'energy') {
                         _market_x = 0.5
                     }
-                    let _mex_market_number = Math.trunc(this.store.getUsedCapacity(i.rType) / _market_x)
+                    let _mex_market_number = Math.trunc(this.store.getUsedCapacity(i.rType) * _market_x)
                     if (Marketdeal.amount >= _mex_market_number) {
-
-                        Game.market.deal(Marketdeal.id, _mex_market_number, this.room.name)
+                        let _market_state = Game.market.deal(Marketdeal.id, _mex_market_number, this.room.name)
                         i.num -= _mex_market_number
                         break
                     }
                     else {
-                        Game.market.deal(Marketdeal.id, Marketdeal.amount, this.room.name)
+                        let _market_state = Game.market.deal(Marketdeal.id, Marketdeal.amount, this.room.name)
                         i.num -= Marketdeal.amount
                         break
                     }
@@ -447,6 +447,7 @@ export default class terminalExtension extends StructureTerminal {
             // order类型
             else if (t == 'order') {
                 for (var l of this.room.memory.market['order']) {
+                    if (!i.mTyep) { continue/*无方向定义订单终止*/ }
                     if (l.rType != 'energy') {
                         this.room.memory.TerminalData[l.rType] = { num: l.unit ? l.unit : 5000, fill: true }
                     }
@@ -464,7 +465,7 @@ export default class terminalExtension extends StructureTerminal {
                             }
                             // let price_ave = avePrice(l.rType, 1)
                             let result = Game.market.createOrder({
-                                type: ORDER_SELL,
+                                type: i.mTyep as 'sell' || 'buy',
                                 resourceType: l.rType,
                                 price: price,
                                 totalAmount: l.unit ? l.unit : 5000,

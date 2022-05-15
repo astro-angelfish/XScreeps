@@ -1,7 +1,7 @@
 import { ResourceCanDispatch } from "@/module/dispatch/resource"
 import { checkBuy, checkDispatch, checkSend, DispatchNum, resourceMap } from "@/module/fun/funtion"
 import { Colorful, isInArray } from "@/utils"
-import { LabMap } from "@/constant/ResourceConstant"
+import { LabMap, unzipMap } from "@/constant/ResourceConstant"
 
 /* 房间原型拓展   --任务  --基本功能 */
 export default class RoomMissonBehaviourExtension extends Room {
@@ -230,6 +230,33 @@ export default class RoomMissonBehaviourExtension extends Room {
                 Memory.ResourceDispatchData.push(dispatchTask)
                 return
             }
+        }
+    }
+    /*Factory自动压缩和解压操作基于房间的设定*/
+    public Task_FactoryAutomatic(): void {
+        if ((Game.time - global.Gtime[this.name]) % 35) return
+        /*必须storage terminal 同时存在*/
+        if (!this.storage) return;
+        if (!this.terminal) return;
+
+        /*解压缩设定*/
+        if (this.memory.DynamicConfig.Dynamicfactoryuncondense) {
+            if (!_.isEmpty(this.memory.productData.unzip)) return   /*已有解压任务的情况下不做处理*/
+            /*检索以下特定资源*/
+            for (let bar in unzipMap) {
+                let resource = unzipMap[bar];
+                let resource_store = this.storage.store.getUsedCapacity(resource as ResourceConstant) + this.terminal.store.getUsedCapacity(resource as ResourceConstant)
+                let bar_store = this.storage.store.getUsedCapacity(bar as ResourceConstant) + this.terminal.store.getUsedCapacity(bar as ResourceConstant)
+                if (bar_store < 100) continue;
+                if (bar_store > 0 && resource_store < 20000) {
+                    let un_number = bar_store > 1000 ? 1000 : bar_store;
+                    this.memory.productData.unzip[bar] = { num: Math.trunc(un_number / 100) * 100 }
+                    return
+                }
+            }
+        }
+        if (this.memory.DynamicConfig.Dynamicfactorycondense) {
+
         }
     }
 

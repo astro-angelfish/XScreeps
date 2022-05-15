@@ -3,8 +3,8 @@ import { processRoomDataVisual } from "@/module/visual/visual"
 
 /* [通用]房间运行主程序 */
 export const roomRunner = function (room: Room): void {
-    if (!room?.controller?.my) return
     if (!Memory.RoomControlData[room.name]) return  // 非框架控制不运行
+    if (!room?.controller?.my) return
     /* 房间核心 */
     room.RoomInit()         // 房间数据初始化
     room.RoomEcosphere()    // 房间状态、布局
@@ -20,7 +20,7 @@ export const roomRunner = function (room: Room): void {
     room.StructureMission() // terminal link factory 工作
 
     ResourceDispatch(room)      // 资源调度
- 
+
     processRoomDataVisual(room)        // 房间可视化
 
     room.LevelMessageUpdate()        // 房间等级Memory信息更新

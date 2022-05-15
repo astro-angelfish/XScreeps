@@ -49,7 +49,7 @@ export const LabMap: labRawMap = {
 }
 
 // lab合成自动规划等级
-export const LabLevel:LabRawLevel = {
+export const LabLevel: LabRawLevel = {
 
     'ZK': 1,
     'UL': 1,

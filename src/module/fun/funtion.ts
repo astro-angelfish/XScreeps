@@ -5,11 +5,16 @@ import { isInArray } from "@/utils"
 
 // 计算平均价格
 export function avePrice(res: ResourceConstant, day: number): number {
+    if (!Game.cpu.generatePixel) {
+        let history = Game.market.getHistory(res)
+        if (!history) return 0
+        return history[history.length - 1].avgPrice
+    }
     if (day > 14) return 0  // 0
-    let allprice:number = 0
+    let allprice: number = 0
     let history = Game.market.getHistory(res)
-    for (var ii = 14 - day; ii < 14; ii++){
-        if(history[ii]) allprice += history[ii].avgPrice
+    for (var ii = 14 - day; ii < 14; ii++) {
+        if (history[ii]) allprice += history[ii].avgPrice
     }
     let avePrice = allprice / day // 平均能量价格
     return avePrice
