@@ -27,8 +27,8 @@ export const drawByConfig = function (str: string) {
             let x = pos.x + xx + flag.pos.x;
             let y = pos.y + yy + flag.pos.y;
             try {
-                if (terrian.get(x,y) != TERRAIN_MASK_WALL)
-                rv.structure(x, y, type)
+                if (terrian.get(x, y) != TERRAIN_MASK_WALL)
+                    rv.structure(x, y, type)
             } catch (e) {
                 log('err:' + x + "," + y + ',' + type)
                 throw e;
@@ -38,12 +38,11 @@ export const drawByConfig = function (str: string) {
     }
     // 墙
     let pos = flag.pos
-    for (let i = pos.x-9;i<pos.x+10;i++)
-    for (let j = pos.y-9;j<pos.y+10;j++)
-    {
-        if (!isInArray([0,1,48,49],i) && !isInArray([0,1,48,49],j) && (Math.abs(i-pos.x)==9 || Math.abs(j-pos.y)==9)  && terrian.get(i,j) != TERRAIN_MASK_WALL)
-            rv.structure(i,j,STRUCTURE_RAMPART)
-    }
+    for (let i = pos.x - 9; i < pos.x + 10; i++)
+        for (let j = pos.y - 9; j < pos.y + 10; j++) {
+            if (!isInArray([0, 1, 48, 49], i) && !isInArray([0, 1, 48, 49], j) && (Math.abs(i - pos.x) == 9 || Math.abs(j - pos.y) == 9) && terrian.get(i, j) != TERRAIN_MASK_WALL)
+                rv.structure(i, j, STRUCTURE_RAMPART)
+        }
     rv.connRoads();
 
 }

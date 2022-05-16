@@ -23,6 +23,14 @@ const pluginDeploy = config && config.copyPath ?
                 dest: config.copyPath
             },
             {
+                src: 'src/module/layoutVisual/algo_wasm_priorityqueue.wasm',
+                dest: config.copyPath
+            },
+            {
+                src: 'src/module/layoutVisual/autoPlanner63.js',
+                dest: config.copyPath
+            },
+            {
                 src: 'dist/main.js.map',
                 dest: config.copyPath,
                 rename: name => name + '.map.js',
@@ -53,7 +61,7 @@ export default {
         // 模块化依赖
         commonjs(),
         // 编译 ts
-        typescript({ tsconfig: "./tsconfig.json" }), 
+        typescript({ tsconfig: "./tsconfig.json" }),
         // 执行上传或者复制
         pluginDeploy
     ]

@@ -36,8 +36,18 @@ declare module NodeJS {
         controllerData?: { [roomName: string]: number[] },
         RoomDataVisual?: string
         Adaption?: any,
-        RoomResource?: { [roomName: string]: {} }
+        RoomResource?: { [roomName: string]: {} },
+        roomStructsData?: {
+            roomName?: string,
+            storagePos?: { x: number, y: number },
+            labPos?: { x: number, y: number },
+            structMap?: StructMap
+        } | null
     }
+}
+
+interface StructMap {
+    [key: string]: [number, number][]
 }
 
 interface globalStrcutureData {
