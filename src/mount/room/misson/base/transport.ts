@@ -4,7 +4,7 @@ export default class RoomMissonTransportExtension extends Room {
     public Spawn_Feed():void{
     /* 每11 tick 观察一次 */
         if (Game.time % 10) return
-        if (!this.storage  || !this.terminal) return
+        if (!this.storage  && !this.terminal) return
         if (this.RoleMissionNum('transport','虫卵填充') < 1)
         {
             let thisPos = new RoomPosition(Memory.RoomControlData[this.name].center[0],Memory.RoomControlData[this.name].center[1],this.name)

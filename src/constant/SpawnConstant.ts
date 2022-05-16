@@ -23,7 +23,7 @@ export const RoleData:SpawnConstantData = {
     'build':{num:0,ability:[1,1,2,0,0,0,0,0],level:10,mark:"🔨",init:true,fun:build_,must:true},   // 建筑工
     'manage':{num:0,ability:[0,1,1,0,0,0,0,0],level:2,mark:"🗃️",init:true,must:true,adaption:true},   // 中央搬运工
     'transport':{num:0,ability:[0,2,2,0,0,0,0,0],level:1,mark:"📦",init:true,must:true,adaption:true},  // 房间物流搬运工
-    'repair':{num:0,ability:[1,1,1,0,0,0,0,0],level:8,mark:"🧱",must:true},     // 刷墙
+    'repair':{num:0,ability:[1,1,1,0,0,0,0,0],level:7,mark:"🧱",must:true},     // 刷墙
     'cclaim':{num:0,ability:[0,0,1,0,0,0,1,0],level:10,mark:"🐱"},           // 开房sf
     'cupgrade':{num:0,ability:[2,5,7,0,0,0,0,0],level:11,mark:"🐱"},
     'dismantle':{num:0,ability:[25,0,25,0,0,0,0,0],level:11,mark:"⚡"},
@@ -53,8 +53,8 @@ export const RoleData:SpawnConstantData = {
     /* 沉积物 */
     'deposit':{num:0,ability:[15,10,25,0,0,0,0,0],level:11,mark:"⚙️"},
     /* 主动防御 */
-    'defend-attack':{num:0,ability:[0,0,10,40,0,0,0,0],level:8,mark:"🔴",must:true},
-    'defend-range':{num:0,ability:[0,0,10,0,40,0,0,0],level:8,mark:"🔵",must:true},
+    'defend-attack':{num:0,ability:[0,0,10,40,0,0,0,0],level:7,mark:"🔴",must:true},
+    'defend-range':{num:0,ability:[0,0,10,0,40,0,0,0],level:9,mark:"🔵",must:true},
     'defend-douAttack':{num:0,ability:[0,0,10,30,0,0,0,10],level:7,mark:"🔴",must:true},
     'defend-douHeal':{num:0,ability:[0,0,10,0,0,30,0,10],level:7,mark:"🟢",must:true},
     /* 四人小队 */

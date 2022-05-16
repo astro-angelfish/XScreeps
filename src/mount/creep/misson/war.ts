@@ -438,14 +438,15 @@ export default class CreepMissonWarExtension extends Creep {
                     var caption_hp = Game.creeps[this.memory.double].hits
                     var this_hp = this.hits
                     if (this_hp == this.hitsMax && caption_hp == Game.creeps[this.memory.double].hitsMax) this.heal(Game.creeps[this.memory.double])
-                    if (caption_hp < this_hp)
-                    {
-                        this.heal(Game.creeps[this.memory.double])
-                    }
-                    else
+                    if ( this_hp< caption_hp)
                     {
                         this.heal(this)
                     }
+                    else
+                    {
+                        this.heal(Game.creeps[this.memory.double])
+                    }
+
                     let otherCreeps = this.pos.findInRange(FIND_MY_CREEPS,3,{filter:(creep)=>{return creep.hits < creep.hitsMax - 300}})
                     if (otherCreeps[0] && this.hits == this.hitsMax && Game.creeps[this.memory.double].hits == Game.creeps[this.memory.double].hitsMax)
                     {
