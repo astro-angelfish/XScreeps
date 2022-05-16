@@ -14,7 +14,7 @@ export function layoutVisual(): void {
                     // drawByConfig63(flag.name);
 
                     // let roomStructsData: StructsData | undefined = undefined //全局变量
-
+                    // global.roomStructsData.structMap
                     let p = Game.flags.p;
                     let pa = Game.flags.pa;
                     let pb = Game.flags.pb;
@@ -24,8 +24,7 @@ export function layoutVisual(): void {
                         global.roomStructsData = autoPlanner63.ManagerPlanner.computeManor(p.pos.roomName, [pc, pm, pa, pb])
                         Game.flags.p.remove()
                     }
-
-                    if (name && global.roomStructsData) {
+                    if (global.roomStructsData) {
                         //这个有点消耗cpu 不看的时候记得关
                         autoPlanner63.HelperVisual.showRoomStructures(global.roomStructsData.roomName, global.roomStructsData.structMap)
                     }
