@@ -426,13 +426,15 @@ export default class RoomCoreInitExtension extends Room {
             if (this.memory.SpawnConfig.upgrade.num != creep_num) { console.log(this.name, 'upgrade动态调整', creep_num); }
             this.memory.SpawnConfig.upgrade.num = creep_num;
         } else {
-            if (this.MissionNum('Creep', '急速冲级') > 0) {
-                this.memory.SpawnConfig.upgrade.num = 0;
-            } else {
-                if (level >= 8) {
-                    this.memory.SpawnConfig.upgrade.num = 1;
+            if (!this.memory.economy) {
+                if (this.MissionNum('Creep', '急速冲级') > 0) {
+                    this.memory.SpawnConfig.upgrade.num = 0;
                 } else {
-                    this.memory.SpawnConfig.upgrade.num = 2;
+                    if (level >= 8) {
+                        this.memory.SpawnConfig.upgrade.num = 1;
+                    } else {
+                        this.memory.SpawnConfig.upgrade.num = 2;
+                    }
                 }
             }
         }

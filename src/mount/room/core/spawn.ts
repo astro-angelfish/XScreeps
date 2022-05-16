@@ -60,11 +60,10 @@ export default class RoomCoreSpawnExtension extends Room {
 
     /* 常驻爬虫孵化管理器 (任务爬虫是另外一个孵化函数) */
     public SpawnManager(): void {
-        LoopA:
         for (let role in this.memory.SpawnConfig) {
             var role_ = this.memory.SpawnConfig[role]
             // 战争状态下爬虫停止生产
-            if (this.memory.state == 'war') { if (!role_.must) continue LoopA }
+            if (this.memory.state == 'war') { if (!role_.must) continue }
             /* 固定 补员型 */
             let roleNum = global.CreepNumData[this.name][role]
             if (roleNum === undefined) roleNum = 0
@@ -73,12 +72,17 @@ export default class RoomCoreSpawnExtension extends Room {
                 delete this.memory.SpawnConfig[role]
                 continue
             }
-            if (this.memory.SpawnConfig[role] && this.memory.SpawnConfig[role].num < 1) continue;
+            // if (this.memory.SpawnConfig[role]) {
+            //     if (this.memory.SpawnConfig[role].num < 1) {
+            //         continue;
+            //     }
+            // }
             if (this.memory.SpawnConfig[role] && (!roleNum || roleNum < this.memory.SpawnConfig[role].num)) {
                 /* 计算SpawnList里相关role的个数 */
                 let num_ = this.SpawnListRoleNum(role)
                 if (num_ + roleNum < this.memory.SpawnConfig[role].num) {
                     /* 开始添加一个孵化任务进孵化队列 */
+                    // console.log(this.name, role, roleNum, this.memory.SpawnConfig[role].num)
                     if (global.CreepBodyData[this.name][role])
                         this.AddSpawnList(role, global.CreepBodyData[this.name][role], role_.level ? role_.level : 10, RoleData[role].mem)
                     else

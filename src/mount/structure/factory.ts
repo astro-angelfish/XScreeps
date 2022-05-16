@@ -114,6 +114,10 @@ export class factoryExtension extends StructureFactory {
             let disCom = this.room.memory.productData.flowCom
             if (disCom)   // 检测是否可以直接生产商品 是否可以资源调度
             {
+                let disComNumber = this.store.getUsedCapacity(disCom as ResourceConstant) + storage_.store.getUsedCapacity(disCom as ResourceConstant);
+                if (disComNumber > 500) {
+                    return
+                }
                 // 初始化numList数据
                 let numList = {}
                 let flow = true
@@ -299,6 +303,11 @@ export class factoryExtension extends StructureFactory {
         else if (state == 'flow')   // 生产流水线商品
         {
             let disCom = this.room.memory.productData.producing.com
+            let disComNumber = this.store.getUsedCapacity(disCom as ResourceConstant) + storage_.store.getUsedCapacity(disCom as ResourceConstant);
+            if (disComNumber > 1000) {
+                this.room.memory.productData.state = 'sleep'
+                return
+            }
             // 调度相关资源
             for (var i in COMMODITIES[disCom].components) {
                 if (COMMODITIES[disCom].level < 4) {
@@ -333,6 +342,10 @@ export class factoryExtension extends StructureFactory {
                 this.room.memory.productData.producing.num -= COMMODITIES[disCom].amount
             }
             else if (result == ERR_BUSY) {
+                if (!this.room.memory.productData.flowCom) {
+                    console.log(`[factory] 房间${this.room.name}转入sleep生产模式`)
+                    this.room.memory.productData.state = 'sleep'
+                }
                 if (Game.powerCreeps[`${this.room.name}/queen/${Game.shard.name}`])
                     this.room.enhance_factory();
                 else console.log(`[factory] 房间${this.room.name}出现工厂等级错误,不能生产${disCom}`)

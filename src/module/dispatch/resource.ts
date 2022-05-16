@@ -227,9 +227,9 @@ export function ResourceLimitUpdate(thisRoom: Room): void {
             }
         }
         else if ((COMMODITIES[disCom].level <= 2)) {
-            for (let row in COMMODITIES[b].components) {
-                if (!global.ResourceLimit[thisRoom.name][row] || global.ResourceLimit[thisRoom.name][row] < COMMODITIES[b].components[row] * 100)
-                    global.ResourceLimit[thisRoom.name][row] = COMMODITIES[b].components[row] * 100
+            for (let row in COMMODITIES[thisRoom.memory.productData.flowCom].components) {
+                if (!global.ResourceLimit[thisRoom.name][row] || global.ResourceLimit[thisRoom.name][row] < COMMODITIES[thisRoom.memory.productData.flowCom].components[row] * 100)
+                    global.ResourceLimit[thisRoom.name][row] = COMMODITIES[thisRoom.memory.productData.flowCom].components[row] * 100
             }
         }
     }
