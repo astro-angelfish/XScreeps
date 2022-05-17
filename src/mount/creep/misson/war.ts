@@ -1,8 +1,9 @@
 import { findFollowData, findNextData, identifyGarrison, identifyNext, parts, RoomInRange } from "@/module/fun/funtion"
-import { canSustain, pathClosestFlag, pathClosestStructure, RangeClosestCreep, RangeCreep, warDataInit } from "@/module/war/war"
+import { canSustain, pathClosestFlag, pathClosestStructure, RangeClosestCreep, RangeCreep, warDataInit, CheckExcludeRampart } from "@/module/war/war"
 import { generateID, getDistance, isInArray } from "@/utils"
 
 export default class CreepMissonWarExtension extends Creep {
+
 
     // 黄球拆迁
     public handle_dismantle(): void {
@@ -79,6 +80,25 @@ export default class CreepMissonWarExtension extends Creep {
             }
         }
     }
+    public Checkaroundhurt(pos: RoomPosition, range: number = 1, hits: number = 600) {
+        // console.log(this.name)
+        if (!global.HostileData[this.room.name]) return true
+        if (!global.HostileData[this.room.name].data) return true
+        // console.log(pos,'开始算伤')
+        for (let x = pos.x - range; x < pos.x + range; x++) {
+            for (let y = pos.y - range; y < pos.y + range; y++) {
+                let pos_ = `${x}/${y}`
+                let _atk_data = global.HostileData[this.room.name].data[pos_]
+                if (_atk_data) {
+                    if (_atk_data.attack + _atk_data.rattack > hits) {
+                        // console.log(this.name, _atk_data.attack + _atk_data.rattack, pos_)
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
 
 
     // 红球防御
@@ -114,6 +134,10 @@ export default class CreepMissonWarExtension extends Creep {
             }
             if (Number(hostileCreep_atk) < 600 && this.room.controller.level >= 8) {
                 // this.goTo(hostileCreep[0], 0)
+                if (Game.flags['TowerVisualWar']) {
+                    this.room.visual.line(this.pos, hostileCreep[0].pos,
+                        { color: 'red', lineStyle: 'dashed' });
+                }
                 this.goTo_defend(hostileCreep[0].pos, 0)
                 let attack_state = this.attack(hostileCreep[0])
                 if (attack_state == OK) {
@@ -163,50 +187,134 @@ export default class CreepMissonWarExtension extends Creep {
             }
         }
         else {
-            let en = Game.getObjectById(Game.rooms[this.memory.belong].memory.enemy[this.name][0]) as Creep
+            let en = Game.getObjectById(Game.rooms[this.memory.belong].memory.Enemydistribution[this.name]) as Creep
+            if (!isInArray(global.HostileGroup[this.memory.belong] as any, Game.rooms[this.memory.belong].memory.Enemydistribution[this.name])) {
+                delete Game.rooms[this.memory.belong].memory.Enemydistribution[this.name];
+                en = null;
+            }
             if (!en) {
-                Game.rooms[this.memory.belong].memory.enemy[this.name].splice(0, 1)
-                return
+                /*重新进行任务分配*/
+                if (Game.rooms[this.memory.belong].memory.Enemydistribution[this.name]) {
+                    delete Game.rooms[this.memory.belong].memory.Enemydistribution[this.name];
+                }
+                for (let ii in Game.rooms[this.memory.belong].memory.Enemydistribution) {
+                    if (isInArray(global.HostileGroup[this.memory.belong] as any, Game.rooms[this.memory.belong].memory.Enemydistribution[ii])) {
+                        var index = global.HostileGroup[this.memory.belong].indexOf(Game.rooms[this.memory.belong].memory.Enemydistribution[ii])
+                        global.HostileGroup[this.memory.belong].splice(index, 1)
+                    }
+                }
+                console.log('待分配', global.HostileGroup[this.memory.belong].length)
+                if (global.HostileGroup[this.memory.belong].length > 0) {
+                    console.log(this.name, '分配', global.HostileGroup[this.memory.belong][0])
+                    Game.rooms[this.memory.belong].memory.Enemydistribution[this.name] = global.HostileGroup[this.memory.belong][0]
+                    en = Game.getObjectById(Game.rooms[this.memory.belong].memory.Enemydistribution[this.name]) as Creep
+                }
             }
-            let nstC = en
-            // 查找是否是小队爬, 发现不是小队爬就删除
-            if (Game.rooms[this.memory.belong].memory.enemy[this.name].length > 1) {
-                B:
-                for (var id of Game.rooms[this.memory.belong].memory.enemy[this.name]) {
-                    let idCreep = Game.getObjectById(id) as Creep
-                    if (!idCreep) continue B
-                    if (Game.time % 10 == 0)    // 防止敌方爬虫bug
-                        if (Math.abs(idCreep.pos.x - en.pos.x) >= 2 || Math.abs(idCreep.pos.y - en.pos.y) >= 2) {
-                            let index = Game.rooms[this.memory.belong].memory.enemy[this.name].indexOf(id)
-                            Game.rooms[this.memory.belong].memory.enemy[this.name].splice(index, 1)
-                            continue B
+
+            if (en) {
+                let nstC = en
+                if (nstC) {
+                    // 寻找最近的爬距离最近的rampart,去那里呆着
+                    var nearstram = nstC.pos.findClosestByRange(FIND_MY_STRUCTURES, {
+                        filter: (stru) => {
+                            return (stru.structureType == 'rampart' && stru.pos.GetStructureList(['extension', 'link', 'observer', 'tower', 'controller', 'extractor']).length <= 0 && (stru.pos.lookFor(LOOK_CREEPS).length <= 0 || stru.pos.lookFor(LOOK_CREEPS)[0] == this) && CheckExcludeRampart(this.room, stru.pos))
                         }
-                    if (getDistance(this.pos, idCreep.pos) < getDistance(this.pos, nstC.pos))
-                        nstC = idCreep
-                }
-            }
-            if (nstC) {
-                // 寻找最近的爬距离最近的rampart,去那里呆着
-                var nearstram = nstC.pos.findClosestByRange(FIND_MY_STRUCTURES, {
-                    filter: (stru) => {
-                        return stru.structureType == 'rampart' && stru.pos.GetStructureList(['extension', 'link', 'observer', 'tower', 'controller', 'extractor']).length <= 0 && (stru.pos.lookFor(LOOK_CREEPS).length <= 0 || stru.pos.lookFor(LOOK_CREEPS)[0] == this)
+                    })
+                    if (nearstram) {
+                        if (Game.flags['TowerVisualWar']) {
+                            this.room.visual.line(this.pos, nearstram.pos,
+                                { color: 'red', lineStyle: 'dashed' });
+                            this.room.visual.line(nearstram.pos, nstC.pos,
+                                { color: 'green', lineStyle: 'dashed' });
+                        }
+                        /*检查当前范围可能受到的伤害如果不会超过600则追出去*/
+                        // if (this.Checkaroundhurt(this.pos, 2, 600) || this.Checkaroundhurt(nstC.pos, 2, 600) || this.hitsMax - 1200 > this.hits) {
+                        //     // console.log(this.name, '不满足追踪条件')
+                        //     this.goTo_defend(nearstram.pos, 0)
+                        // } else {
+                        //     console.log(this.name, '满足伤害要求|追出去')
+                        //     this.goTo_defend(nstC.pos, 0)
+                        // }
+                        this.goTo_defend(nearstram.pos, 0)
+                        /*如果对应的爬不在3的范围内则进行删除操作*/
+                        // if (!nearstram.pos.inRangeTo(nstC,2)) {
+                        //     // console.log(this.name, '放弃当前目标', nstC.name)
+                        //     Game.rooms[this.memory.belong].memory.enemy[this.name].splice(0, 1)
+                        // }
                     }
-                })
-                if (nearstram)
-                    this.goTo_defend(nearstram.pos, 0)
-                else this.moveTo(nstC.pos)
+                    else this.moveTo(nstC.pos)
+                } else {
+                    console.log('没有ram')
+                    var ramp = this.pos.findClosestByRange(FIND_MY_STRUCTURES, {
+                        filter: (stru) => {
+                            return stru.structureType == 'rampart' && stru.pos.GetStructureList(['extension', 'link', 'observer', 'tower', 'controller', 'extractor']).length <= 0 && CheckExcludeRampart(this.room, stru.pos)
+                        }
+                    })
+                    console.log(ramp)
+                    if (this.pos.inRangeTo(ramp, 3) && !this.pos.isEqualTo(ramp)) {
+                        this.moveTo(ramp.pos)
+                    }
+                }
             } else {
-                console.log('没有ram')
-                var ramp = this.pos.findClosestByRange(FIND_MY_STRUCTURES, {
-                    filter: (stru) => {
-                        return stru.structureType == 'rampart' && stru.pos.GetStructureList(['extension', 'link', 'observer', 'tower', 'controller', 'extractor']).length <= 0
-                    }
-                })
-                console.log(ramp)
-                if (this.pos.inRangeTo(ramp, 3) && !this.pos.isEqualTo(ramp)) {
-                    this.moveTo(ramp.pos)
-                }
+                console.log(this.name, '分配已饱和')
             }
+
+            // let en = Game.getObjectById(Game.rooms[this.memory.belong].memory.enemy[this.name][0]) as Creep
+            // if (!en) {
+            //     Game.rooms[this.memory.belong].memory.enemy[this.name].splice(0, 1)
+            //     return
+            // }
+            // let nstC = en
+            // // 查找是否是小队爬, 发现不是小队爬就删除
+            // if (Game.rooms[this.memory.belong].memory.enemy[this.name].length > 1) {
+            //     B:
+            //     for (var id of Game.rooms[this.memory.belong].memory.enemy[this.name]) {
+            //         let idCreep = Game.getObjectById(id) as Creep
+            //         if (!idCreep) continue B
+            //         if (Game.time % 10 == 0)    // 防止敌方爬虫bug
+            //             if (Math.abs(idCreep.pos.x - en.pos.x) >= 2 || Math.abs(idCreep.pos.y - en.pos.y) >= 2) {
+            //                 let index = Game.rooms[this.memory.belong].memory.enemy[this.name].indexOf(id)
+            //                 Game.rooms[this.memory.belong].memory.enemy[this.name].splice(index, 1)
+            //                 continue B
+            //             }
+            //         if (getDistance(this.pos, idCreep.pos) < getDistance(this.pos, nstC.pos))
+            //             nstC = idCreep
+            //     }
+            // }
+            // if (nstC) {
+            //     // 寻找最近的爬距离最近的rampart,去那里呆着
+            //     var nearstram = nstC.pos.findClosestByRange(FIND_MY_STRUCTURES, {
+            //         filter: (stru) => {
+            //             return (stru.structureType == 'rampart' && stru.pos.GetStructureList(['extension', 'link', 'observer', 'tower', 'controller', 'extractor']).length <= 0 && (stru.pos.lookFor(LOOK_CREEPS).length <= 0 || stru.pos.lookFor(LOOK_CREEPS)[0] == this) && CheckExcludeRampart(this.room, stru.pos))
+            //         }
+            //     })
+            //     if (nearstram) {
+            //         if (Game.flags['TowerVisualWar']) {
+            //             this.room.visual.line(this.pos, nearstram.pos,
+            //                 { color: 'red', lineStyle: 'dashed' });
+            //             this.room.visual.line(nearstram.pos, nstC.pos,
+            //                 { color: 'green', lineStyle: 'dashed' });
+            //         }
+            //         this.goTo_defend(nearstram.pos, 0)
+            //         /*如果对应的爬不在3的范围内则进行删除操作*/
+            //         // if (!nearstram.pos.inRangeTo(nstC,2)) {
+            //         //     // console.log(this.name, '放弃当前目标', nstC.name)
+            //         //     Game.rooms[this.memory.belong].memory.enemy[this.name].splice(0, 1)
+            //         // }
+            //     }
+            //     else this.moveTo(nstC.pos)
+            // } else {
+            //     console.log('没有ram')
+            //     var ramp = this.pos.findClosestByRange(FIND_MY_STRUCTURES, {
+            //         filter: (stru) => {
+            //             return stru.structureType == 'rampart' && stru.pos.GetStructureList(['extension', 'link', 'observer', 'tower', 'controller', 'extractor']).length <= 0 && CheckExcludeRampart(this.room, stru.pos)
+            //         }
+            //     })
+            //     console.log(ramp)
+            //     if (this.pos.inRangeTo(ramp, 3) && !this.pos.isEqualTo(ramp)) {
+            //         this.moveTo(ramp.pos)
+            //     }
+            // }
         }
         // 仍然没有说明主动防御已经饱和
         if (Game.rooms[this.memory.belong].memory.enemy[this.name].length <= 0) {
@@ -220,11 +328,17 @@ export default class CreepMissonWarExtension extends Creep {
                 /* 找离虫子最近的rampart */
                 var nearstram = closestCreep.pos.findClosestByRange(FIND_MY_STRUCTURES, {
                     filter: (stru) => {
-                        return stru.structureType == 'rampart' && stru.pos.GetStructureList(['extension', 'link', 'observer', 'tower', 'controller', 'extractor']).length <= 0 && (stru.pos.lookFor(LOOK_CREEPS).length <= 0 || stru.pos.lookFor(LOOK_CREEPS)[0] == this)
+                        return stru.structureType == 'rampart' && stru.pos.GetStructureList(['extension', 'link', 'observer', 'tower', 'controller', 'extractor']).length <= 0 && (stru.pos.lookFor(LOOK_CREEPS).length <= 0 || stru.pos.lookFor(LOOK_CREEPS)[0] == this) && CheckExcludeRampart(this.room, stru.pos)
                     }
                 })
-                if (nearstram)
+                if (nearstram) {
+                    if (Game.flags['TowerVisualWar']) {
+                        this.room.visual.line(this.pos, nearstram.pos,
+                            { color: 'red', lineStyle: 'dashed' });
+                    }
                     this.goTo_defend(nearstram.pos, 0)
+                }
+
             }
         }
         if (this.pos.x >= 48 || this.pos.x <= 1 || this.pos.y >= 48 || this.pos.y <= 1) {
@@ -332,7 +446,7 @@ export default class CreepMissonWarExtension extends Creep {
                 // 寻找最近的爬距离最近的rampart,去那里呆着
                 var nearstram = nstC.pos.findClosestByRange(FIND_MY_STRUCTURES, {
                     filter: (stru) => {
-                        return stru.structureType == 'rampart' && stru.pos.GetStructureList(['extension', 'link', 'observer', 'tower', 'controller', 'extractor']).length <= 0 && (stru.pos.lookFor(LOOK_CREEPS).length <= 0 || stru.pos.lookFor(LOOK_CREEPS)[0] == this)
+                        return stru.structureType == 'rampart' && stru.pos.GetStructureList(['extension', 'link', 'observer', 'tower', 'controller', 'extractor']).length <= 0 && (stru.pos.lookFor(LOOK_CREEPS).length <= 0 || stru.pos.lookFor(LOOK_CREEPS)[0] == this) && CheckExcludeRampart(this.room, stru.pos)
                     }
                 })
                 if (nearstram)
@@ -341,7 +455,7 @@ export default class CreepMissonWarExtension extends Creep {
             } else {
                 var ramp = this.pos.findClosestByRange(FIND_MY_STRUCTURES, {
                     filter: (stru) => {
-                        return stru.structureType == 'rampart' && stru.pos.GetStructureList(['extension', 'link', 'observer', 'tower', 'controller', 'extractor']).length <= 0 
+                        return stru.structureType == 'rampart' && stru.pos.GetStructureList(['extension', 'link', 'observer', 'tower', 'controller', 'extractor']).length <= 0 && CheckExcludeRampart(this.room, stru.pos)
                     }
                 })
                 if (this.pos.inRangeTo(ramp, 3) && !this.pos.isEqualTo(ramp)) {
@@ -361,7 +475,7 @@ export default class CreepMissonWarExtension extends Creep {
                 /* 找离虫子最近的rampart */
                 var nearstram = closestCreep.pos.findClosestByRange(FIND_MY_STRUCTURES, {
                     filter: (stru) => {
-                        return stru.structureType == 'rampart' && stru.pos.GetStructureList(['extension', 'link', 'observer', 'tower', 'controller', 'extractor']).length <= 0 && (stru.pos.lookFor(LOOK_CREEPS).length <= 0 || stru.pos.lookFor(LOOK_CREEPS)[0] == this)
+                        return stru.structureType == 'rampart' && stru.pos.GetStructureList(['extension', 'link', 'observer', 'tower', 'controller', 'extractor']).length <= 0 && (stru.pos.lookFor(LOOK_CREEPS).length <= 0 || stru.pos.lookFor(LOOK_CREEPS)[0] == this) && CheckExcludeRampart(this.room, stru.pos)
                     }
                 })
                 if (nearstram)
@@ -397,6 +511,13 @@ export default class CreepMissonWarExtension extends Creep {
                         disCreep.memory.captain = true
                     }
                 }
+                if (!this.memory.double) {
+                    if (this.hitsMax - this.hits > 600) {
+                        this.optTower('heal', this)
+                        this.heal(this)
+                    }
+                    this.goTo(Game.rooms[this.memory.belong].storage.pos, 1)
+                }
             }
             return
         }
@@ -422,7 +543,10 @@ export default class CreepMissonWarExtension extends Creep {
                             return !isInArray(Memory.whitesheet, creep.owner.username)
                         }
                     })
-                    if (creeps[0]) this.attack(creeps[0])
+                    if (creeps[0]) {
+                        this.optTower('attack', creeps[0])
+                        this.attack(creeps[0])
+                    }
                     this.goTo(flag.pos, 0)
                     return
                 }
@@ -431,9 +555,24 @@ export default class CreepMissonWarExtension extends Creep {
                         return !isInArray(Memory.whitesheet, creep.owner.username)
                     }
                 })
-                if (creeps && !isInArray([0, 49], creeps.pos.x) && !isInArray([0, 49], creeps.pos.y)) {
-                    if (this.attack(creeps) == ERR_NOT_IN_RANGE) this.goTo(creeps.pos, 1)
+                if (this.hitsMax - this.hits > 2500) {
+                    this.goTo(creeps.pos, 3)
+                    return;
                 }
+                if (creeps && !isInArray([0, 49], creeps.pos.x) && !isInArray([0, 49], creeps.pos.y)) {
+                    this.room.visual.line(this.pos, creeps.pos,
+                        { color: 'red', lineStyle: 'dashed' });
+                    switch (this.attack(creeps)) {
+                        case ERR_NOT_IN_RANGE:
+                            this.goTo(creeps.pos, 1)
+                            break;
+                        case OK:
+                            console.log('调度塔一起攻击')
+                            this.optTower('attack', creeps)
+                            break;
+                    }
+                }
+
                 if (this.pos.x >= 48 || this.pos.x <= 1 || this.pos.y >= 48 || this.pos.y <= 1) {
                     this.moveTo(new RoomPosition(Memory.RoomControlData[this.memory.belong].center[0], Memory.RoomControlData[this.memory.belong].center[1], this.memory.belong))
                 }
@@ -444,7 +583,12 @@ export default class CreepMissonWarExtension extends Creep {
             this.moveTo(Game.creeps[this.memory.double])
             if (Game.creeps[this.memory.double]) this.heal(Game.creeps[this.memory.double])
             else this.heal(this)
-            if (!Game.creeps[this.memory.double]) { this.suicide(); return }
+            if (!Game.creeps[this.memory.double]) {
+                if (this.ticksToLive < 100) {
+                    this.suicide(); return
+                }
+                delete this.memory.double;
+            }
             else {
                 if (this.pos.isNearTo(Game.creeps[this.memory.double])) {
                     var caption_hp = Game.creeps[this.memory.double].hits

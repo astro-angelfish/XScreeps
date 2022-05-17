@@ -1,20 +1,23 @@
-
 {
     "compilerOptions": {
         "target": "es2017",
-        "moduleResolution": "Node", 
+        "moduleResolution": "Node",
         "outDir": "dist/",
         "baseUrl": "./",
         "sourceMap": true,
         "allowSyntheticDefaultImports": true,
         "paths": {
-            "@/*": ["./src/*"]
+            "@/*": [
+                "./src/*"
+            ]
         }
     },
     "exclude": [
         "node_modules"
     ],
     "include": [
-        "src/**/*.ts"
-, "src/mount/global/resourceAPI.js", "src/visual/talk.js"    ]
+        "src/**/*.ts",
+        "src/mount/global/resourceAPI.js",
+        "src/visual/talk.js"
+    ]
 }

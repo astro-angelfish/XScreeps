@@ -265,6 +265,25 @@ export function warDataInit(room: Room): void {
 }
 
 /* -------------------------------战争信息二次加工区------------------------------------ */
+/*处理排除列表的ram*/
+export function CheckExcludeRampart(room: Room, pos: RoomPosition): boolean {
+    if (!room) return true
+    if (room.memory.ExcludeRampart.length < 1) return true;
+    let pos_ = `${pos.x}/${pos.y}`
+    if (isInArray(room.memory.ExcludeRampart, pos_)) return false;
+    return true;
+}
+
+
+export function CheckCreepTeam(Creep: Creep, enemys: Creep[]) {
+    let _C_list = [];
+    for (let C of enemys) {
+        if(Creep.pos.isNearTo(C)){
+            _C_list.push(C)
+        }
+    }
+    return _C_list;
+}
 
 /* 寻找离自己最近的爬虫 path attck为true会搜寻带有攻击部件的爬虫 ram为true会搜寻所在位置没有rampart的爬虫 */
 export function PathClosestCreep(pos: RoomPosition, creeps: Creep[], attack?: boolean, ram?: boolean): Creep | null {

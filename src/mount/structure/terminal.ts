@@ -447,7 +447,7 @@ export default class terminalExtension extends StructureTerminal {
             // order类型
             else if (t == 'order') {
                 for (var l of this.room.memory.market['order']) {
-                    if (!i.mTyep) { continue/*无方向定义订单终止*/ }
+                    if (!l.mTyep) { continue/*无方向定义订单终止*/ }
                     if (l.rType != 'energy') {
                         this.room.memory.TerminalData[l.rType] = { num: l.unit ? l.unit : 5000, fill: true }
                     }
@@ -465,7 +465,7 @@ export default class terminalExtension extends StructureTerminal {
                             }
                             // let price_ave = avePrice(l.rType, 1)
                             let result = Game.market.createOrder({
-                                type: i.mTyep as 'sell' || 'buy',
+                                type: l.mTyep as 'sell' || 'buy',
                                 resourceType: l.rType,
                                 price: price,
                                 totalAmount: l.unit ? l.unit : 5000,

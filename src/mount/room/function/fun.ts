@@ -1,4 +1,6 @@
 import { filter_structure, isInArray, LeastHit } from "@/utils"
+import { CheckExcludeRampart } from "@/module/war/war"
+
 
 /* 房间原型拓展   --方法  --寻找 */
 export default class RoomFunctionFindExtension extends Room {
@@ -358,6 +360,12 @@ export default class RoomFunctionFindExtension extends Room {
             if (structure.hits >= structure.hitsMax) continue
             if (hitsMax && structure.hits > hitsMax) {
                 continue
+            }
+            if (this.memory.state = 'war') {
+                console.log('war', `${structure.pos.x}/${structure.pos.y}`)
+                if (!CheckExcludeRampart(this, structure.pos)) {
+                    continue
+                }
             }
             s_list.push(structure)
         }

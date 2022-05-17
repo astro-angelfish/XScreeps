@@ -74,6 +74,8 @@ interface RoomMemory {
     }
     MarketPrice: { Dynamicprice?: boolean, order_list: any, buy: { low: number, high: number }, sell: { low: number, high: number } }/*智能价格调度*/
     Labautomatic: { automaticData?: AutomaticData[], automaticState?: boolean }
+    ExcludeRampart: string[]
+    Enemydistribution: { [Name: string]: string }/*战争认领清单*/
 }
 
 interface AutomaticData {

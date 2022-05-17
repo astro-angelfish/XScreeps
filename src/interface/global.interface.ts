@@ -19,6 +19,18 @@ declare module NodeJS {
         HostileCreeps: {
             [roomName: string]: { [creep: string]: any }
         },
+        HostileCreepsData: {
+            [creep_name: string]: { [creep: string]: any }
+        },
+        HostileGroup: {
+            [roomName: string]: { [creep: string]: any }
+        },
+        HostileData: {
+            [roomName: string]: { [creep: string]: any }
+        },
+        HostileTowerData: {
+            [roomName: string]: { [creep: string]: any }
+        },
         getStructure: {
             [roomName: string]: { [structure: string]: any }
         },

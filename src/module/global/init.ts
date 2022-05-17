@@ -15,7 +15,11 @@ export const MemoryInit = function (): void {
     if (!global.intervalData) global.intervalData = {}
     for (let i in global.intervalData) if (!global.intervalData[i]) global.intervalData[i] = {}
     if (!global.Stru) global.Stru = {}
+    if (!global.HostileData) global.HostileData = {}
+    if (!global.HostileTowerData) global.HostileTowerData = {}
     if (!global.HostileCreeps) global.HostileCreeps = {}
+    if (!global.HostileCreepsData) global.HostileCreepsData = {}
+    if (!global.HostileGroup) global.HostileGroup = {}
     if (!Memory.marketAdjust) Memory.marketAdjust = {}
     if (!Memory.ResourceDispatchData) Memory.ResourceDispatchData = []
     if (!global.ResourceLimit) global.ResourceLimit = {}
@@ -31,9 +35,10 @@ export const MemoryInit = function (): void {
     global.RoomDataVisual = null
     global.Adaption = {}
     global.RoomResource = {}
+    global.HostileCreepsData = {}
 }
 export const MemoryTickStart = function (): void {
-    
+
 }
 
 export const memoryInit: AppLifecycleCallbacks = {

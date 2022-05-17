@@ -18,8 +18,12 @@ export function CreepNumStatistic(): void {
         let creep_ = Game.creeps[c]
         /* 代表爬虫死亡或进入星门，清除记忆 */
         if (!creep_) {
+            if (Game.rooms[Memory.creeps[c].belong].memory.enemy[c]) {
+                delete Game.rooms[Memory.creeps[c].belong].memory.enemy[c];
+            }
             delete Memory.creeps[c]
             if (Memory.creepscpu[c]) { delete Memory.creepscpu[c] }
+
             //console.log(`爬虫${c}的记忆已被清除！`)
             continue
         }

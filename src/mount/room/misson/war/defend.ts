@@ -1,5 +1,7 @@
 import { deserveDefend } from "@/module/fun/funtion";
 import { isInArray, unzipPosition, zipPosition } from "@/utils"
+import { CheckCreepTeam } from "@/module/war/war"
+
 
 /* 房间原型拓展   --任务  --防御战争 */
 export default class DefendWarExtension extends Room {
@@ -108,8 +110,6 @@ export default class DefendWarExtension extends Room {
                     if (this.memory.nukeData.rampart[po]) delete this.memory.nukeData.rampart[po]
                     delete this.memory.nukeData.damage[po]
                 }
-
-
         }
         else {
             for (var m of this.memory.Misson['Creep']) {
@@ -122,8 +122,12 @@ export default class DefendWarExtension extends Room {
         }
     }
 
+
     /* 主动防御任务发布 */
     public Task_Auto_Defend(): void {
+        if (this.memory.state == 'war') {
+            this.Task_Defend_init();
+        }
         if (Game.time % 5) return
         // if (!Game.rooms[this.name].terminal) return
         if (this.controller.level < 6) return
@@ -176,11 +180,16 @@ export default class DefendWarExtension extends Room {
         }
         else if (enemys.length >= 5 && enemys.length < 8)   // 5-7
         {
-            defend_plan = { 'attack': 1, 'double': 1, 'range': 1 }
+            defend_plan = { 'attack': 3, 'double': 0, 'range': 0 }
         }
         else if (enemys.length >= 8)        // >8     一般这种情况下各个类型的防御任务爬虫的数量都要调高
         {
-            defend_plan = { 'attack': 2, 'double': 2, 'range': 2 }
+            let attack_number = 2
+            if (global.HostileGroup[this.name].length > 4) {
+                attack_number = global.HostileGroup[this.name].length;
+                attack_number = attack_number > 6 ? 6 : attack_number;
+            }
+            defend_plan = { 'attack': attack_number, 'double': 1, 'range': 0 }
         }
         for (var plan in defend_plan) {
 
@@ -275,47 +284,219 @@ export default class DefendWarExtension extends Room {
         return all_atk;
     }
 
-    /*敌人强度计算*/
-    public Task_Defend_Operation(HOSTILE_CREEPS) {
-        /*检查组队状态信息*/
-        for (let i in HOSTILE_CREEPS) {
 
+    public Get_HOSTILE_CREEPS(): Creep[] {
+        if (global.HostileCreeps[this.name].length < 1) {
+            var enemys = this.find(FIND_HOSTILE_CREEPS, {
+                filter: (creep) => {
+                    return !isInArray(Memory.whitesheet, creep.owner.username) && (creep.owner.username != 'Invader')
+                }
+            })
+            global.HostileCreeps[this.name] = enemys;
+            for (let creeps of enemys) {
+                global.HostileCreepsData[creeps.name] = creeps;
+            }
         }
-        /*检查对应的数量来检查匹配爬的数量信息*/
-        for (let i in HOSTILE_CREEPS) {
-            /*这里结算出爬的攻防结算*/
-            let creeps_hostile = HOSTILE_CREEPS[i];
-            if (global.HostileCreeps[this.name][creeps_hostile.name]) { continue; }
-            var hit = creeps_hostile.body.length * 100;
-            var attack = 0;
-            var ranged_attack = 0;
-            var heal = 0;
-            var tough = 0;
-            var tough_boost = 0;
-            for (let boost_i in creeps_hostile.body) {
-                let body_data = creeps_hostile.body[boost_i]
-                switch (body_data.type) {
+
+
+        return global.HostileCreeps[this.name] as Creep[];
+    }
+    public Task_Defend_init() {
+        let duplicate_list = [];
+        for (let creeps in this.memory.Enemydistribution) {
+            if (!Memory.creeps[creeps]) {
+                delete this.memory.Enemydistribution[creeps];
+            }
+            if (isInArray(duplicate_list, this.memory.Enemydistribution[creeps])) {
+                delete this.memory.Enemydistribution[creeps];
+            }
+            duplicate_list.push(this.memory.Enemydistribution[creeps])
+        }
+        /*开始进行矩阵计算*/
+        let creep_team_list = {};
+        var enemys = this.Get_HOSTILE_CREEPS()
+        for (let HostileCeeps of enemys) {
+            /*开始进行匹配操作*/
+            let pos_ = HostileCeeps.pos
+            creep_team_list[HostileCeeps.name] = CheckCreepTeam(HostileCeeps, enemys)
+        }
+        /*二次数据加工检测四人队伍信息*/
+        let _creep_list = [];
+        let creep_team_result = []
+        for (let creep_name in creep_team_list) {
+            if (isInArray(_creep_list, creep_name)) { continue }
+            /*检查KEY里面的爬是否均包含对应的爬信息*/
+            switch (creep_team_list[creep_name].length) {
+                case 4:
+                case 2:
+                case 1:
+                    let _c_data = [];
+                    for (let c_data of creep_team_list[creep_name]) {
+                        _creep_list.push(c_data.name)
+                        _c_data.push(c_data.name)
+                    }
+                    creep_team_result.push(_c_data)
+                    break;
+            }
+        }
+        for (let group of creep_team_result) {
+            if (global.HostileCreepsData[group[0]]) {
+                global.HostileGroup[this.name].push(global.HostileCreepsData[group[0]].id)
+            }
+        }
+        // console.log('分组', creep_team_result.length, JSON.stringify(global.HostileGroup[this.name]))
+        if (!global.HostileData[this.name]) global.HostileData[this.name] = { time: Game.time, data: this.Task_Defend_Operation() }
+        if (Game.time == global.HostileData[this.name].time) return // 跳过
+        else    // 说明数据过时了，更新数据
+        {
+            global.HostileData[this.name].time = Game.time
+            global.HostileData[this.name].data = this.Task_Defend_Operation()
+        }
+    }
+
+    /*敌人强度计算*/
+    public Task_Defend_Operation() {
+        let _boost_attack = {
+            'UH': 1,
+            'KO': 1,
+            'LO': 1,
+            'UH2O': 2,
+            'KHO2': 2,
+            'LHO2': 2,
+            'XUH2O': 3,
+            'XKHO2': 3,
+            'XLHO2': 3,
+        }
+        /*搜索所有的敌对爬的信息*/
+        // var enemys = this.find(FIND_HOSTILE_CREEPS, {
+        //     filter: (creep) => {
+        //         return !isInArray(Memory.whitesheet, creep.owner.username) && (creep.owner.username != 'Invader')
+        //     }
+        // })
+        var enemys = this.Get_HOSTILE_CREEPS()
+        let Defend_Data = {};
+        for (let HostileCeeps of enemys) {
+            /*检查爬的攻防信息 包括奶量*/
+            let attcak_body = 0
+            let ranged_attcak_body = 0
+            let heal_body = 0
+            for (let body of HostileCeeps.body) {
+                let boost_num = 1;
+                if (body.boost) {
+                    boost_num += _boost_attack[body.boost]
+                }
+                switch (body.type) {
                     case 'attack':
-                        attack += this.attack_number(body_data.type, body_data.boost)
+                        attcak_body += boost_num
                         break;
                     case 'ranged_attack':
-                        ranged_attack += this.attack_number(body_data.type, body_data.boost)
+                        ranged_attcak_body += boost_num
                         break;
                     case 'heal':
-                        heal += this.attack_number(body_data.type, body_data.boost)
-                        break;
-                    default:
+                        heal_body += boost_num;
                         break;
                 }
             }
-            let _creeps = {
-                'body': creeps_hostile.body,
-                'attack': attack,
-                'heal': heal,
-                'ranged_attack': ranged_attack
+
+            /*完成部位统计进行具体伤害的结算*/
+            if (attcak_body > 0) {
+                // console.log('搜索到attcak')
+                /*获取有效范围同时进行伤害标记*/
+                let get_Updatehurt = this.Updatehurt_atk(HostileCeeps.pos, 1, attcak_body * 30)
+                for (let key in get_Updatehurt) {
+                    Defend_Data = this.UpdateposData(key, get_Updatehurt[key], 0, 0, Defend_Data)
+                }
             }
-            global.HostileCreeps[this.name][creeps_hostile.name] = _creeps
+            if (ranged_attcak_body > 0) {
+                // console.log('搜索到ranged_attcak')
+                let get_Updatehurt = this.Updatehurt_atk(HostileCeeps.pos, 3, ranged_attcak_body * 10)
+                for (let key in get_Updatehurt) {
+                    Defend_Data = this.UpdateposData(key, 0, get_Updatehurt[key], 0, Defend_Data)
+                }
+            }
+            if (heal_body > 0) {
+                let get_Updatehurt = this.Updatehurt_heal(HostileCeeps.pos, 3, heal_body * 12)
+                for (let key in get_Updatehurt) {
+                    Defend_Data = this.UpdateposData(key, 0, 0, get_Updatehurt[key], Defend_Data)
+                }
+            }
         }
+        // 
+        // console.log(JSON.stringify(Defend_Data))
+        return Defend_Data;
+    }
+
+    public UpdateposData(key, attcak_number, ranged_attcak_number, heal_number, globaldata) {
+        if (!globaldata[key]) globaldata[key] = { attack: 0, rattack: 0, heal: 0, repair: 0 }
+        if (attcak_number > 0) {
+            globaldata[key].attack += attcak_number;
+        }
+        if (ranged_attcak_number > 0) {
+            globaldata[key].rattack += ranged_attcak_number;
+        }
+        if (heal_number > 0) {
+            globaldata[key].heal += heal_number;
+        }
+        return globaldata;
+    }
+
+    public Updatehurt_heal(pos, range, hurt) {
+        var a = -range;
+        let _roomlist = {};
+        for (var i = a; i <= range; i++) {
+            for (var ii = a; ii <= range; ii++) {
+                // console.log(i, ii)
+                /*检查具体的距离*/
+                let m_range = Math.max(Math.abs(i), Math.abs(ii))
+                /*出坐标信息*/
+                let x = pos.x + i;
+                let y = pos.y + ii;
+                let pos_ = `${x}/${y}`
+                // if (!global.warData.tower[pos.roomName].data[pos_]) { continue; }
+                // console.log(pos_, '更新伤害', JSON.stringify(this[pos_]))
+                switch (m_range) {
+                    case 1:
+                    case 0:
+                        _roomlist[pos_] = hurt;
+                        break;
+                    case 2:
+                    case 3:
+                        _roomlist[pos_] = hurt / 3;
+                        break;
+                }
+            }
+        }
+        return _roomlist;
+    }
+
+    public Updatehurt_atk(pos, range, hurt) {
+        var a = -range;
+        let _roomlist = {};
+        for (var i = a; i <= range; i++) {
+            for (var ii = a; ii <= range; ii++) {
+                // console.log(i, ii)
+                /*检查具体的距离*/
+                let m_range = Math.max(Math.abs(i), Math.abs(ii))
+                /*出坐标信息*/
+                let x = pos.x + i;
+                let y = pos.y + ii;
+                let pos_ = `${x}/${y}`
+                // if (!global.warData.tower[pos.roomName].data[pos_]) { continue; }
+                // console.log(pos_, '更新伤害', JSON.stringify(this[pos_]))
+                switch (m_range) {
+                    case 1:
+                        _roomlist[pos_] = hurt;
+                        break;
+                    case 2:
+                        _roomlist[pos_] = hurt * 0.4;
+                        break;
+                    case 3:
+                        _roomlist[pos_] = hurt * 0.1;
+                        break;
+                }
+            }
+        }
+        return _roomlist;
     }
 
     public attack_number(type, boost) {

@@ -17,10 +17,10 @@ interface SpawnConstantData {
 
 /* 爬虫信息列表 */
 export const RoleData: SpawnConstantData = {
-    'harvest': { num: 0, ability: [1, 1, 2, 0, 0, 0, 0, 0], adaption: true, level: 1, mark: "⛏️", must: true, init: true, fun: harvest_ },  // 矿点采集工
-    'carry': { num: 0, ability: [0, 3, 3, 0, 0, 0, 0, 0], level: 2, mark: "🚜", init: true, must: true, adaption: true, fun: carry_ },  // 矿点搬运工
+    'harvest': { num: 0, ability: [1, 1, 2, 0, 0, 0, 0, 0], adaption: true, level: 1, mark: "⛏️", must: false, init: true, fun: harvest_ },  // 矿点采集工
+    'carry': { num: 0, ability: [0, 3, 3, 0, 0, 0, 0, 0], level: 2, mark: "🚜", init: true, must: false, adaption: true, fun: carry_ },  // 矿点搬运工
     'upgrade': { num: 0, ability: [1, 1, 2, 0, 0, 0, 0, 0], level: 10, mark: "🚬", init: true, fun: upgrade_ },   // 升级工
-    'build': { num: 0, ability: [1, 1, 2, 0, 0, 0, 0, 0], level: 10, mark: "🔨", init: true, fun: build_, must: true },   // 建筑工
+    'build': { num: 0, ability: [1, 1, 2, 0, 0, 0, 0, 0], level: 10, mark: "🔨", init: true, fun: build_, must: false },   // 建筑工
     'manage': { num: 0, ability: [0, 1, 1, 0, 0, 0, 0, 0], level: 4, mark: "🗃️", init: true, must: true, adaption: true },   // 中央搬运工
     'transport': { num: 0, ability: [0, 2, 2, 0, 0, 0, 0, 0], level: 3, mark: "📦", init: true, must: true, adaption: true },  // 房间物流搬运工
     'repair': { num: 0, ability: [1, 1, 1, 0, 0, 0, 0, 0], level: 8, mark: "🧱", must: true },     // 刷墙
@@ -55,7 +55,7 @@ export const RoleData: SpawnConstantData = {
     /* 主动防御 */
     'defend-attack': { num: 0, ability: [0, 0, 10, 40, 0, 0, 0, 0], level: 8, mark: "🔴", must: true },
     'defend-range': { num: 0, ability: [0, 0, 10, 0, 40, 0, 0, 0], level: 8, mark: "🔵", must: true },
-    'defend-douAttack': { num: 0, ability: [0, 0, 10, 30, 0, 0, 0, 10], level: 7, mark: "🔴", must: true },
+    'defend-douAttack': { num: 0, ability: [0, 0, 10, 25, 0, 0, 0, 15], level: 7, mark: "🔴", must: true },
     'defend-douHeal': { num: 0, ability: [0, 0, 10, 0, 0, 30, 0, 10], level: 7, mark: "🟢", must: true },
     /* 四人小队 */
     'x-dismantle': { num: 0, ability: [28, 0, 10, 0, 0, 0, 0, 12], level: 9, mark: "🟨", must: true, mem: { creepType: 'attack' } },

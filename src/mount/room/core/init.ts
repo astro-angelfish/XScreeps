@@ -52,7 +52,7 @@ export default class RoomCoreInitExtension extends Room {
             if (!this.memory.Misson['Room']) this.memory.Misson['Room'] = []
             if (!this.memory.Misson['Creep']) this.memory.Misson['Creep'] = []
             if (!this.memory.Misson['PowerCreep']) this.memory.Misson['PowerCreep'] = []
-            if (!global.HostileCreeps[this.name]) global.HostileCreeps[this.name] = {}
+            // if (!global.HostileData[this.name]) global.HostileData[this.name] = {}
             if (!this.memory.TerminalData) this.memory.TerminalData = { 'energy': { num: 50000, fill: true } }
             if (!this.memory.market) this.memory.market = { 'deal': [], 'order': [] }
             if (!global.ResourceLimit[this.name]) global.ResourceLimit[this.name] = {}
@@ -68,7 +68,11 @@ export default class RoomCoreInitExtension extends Room {
             if (!this.memory.CoolDownDic) this.memory.CoolDownDic = {}
             if (!this.memory.Visualdisplay) this.memory.Visualdisplay = false
             if (!this.memory.Labautomatic) this.memory.Labautomatic = { 'automaticData': [], 'automaticState': false }
+            if (!this.memory.ExcludeRampart) { this.memory.ExcludeRampart = [] }
+            if (!this.memory.Enemydistribution) { this.memory.Enemydistribution = {} }
         }
+        global.HostileCreeps[this.name] = [];
+        global.HostileGroup[this.name] = [];
         global.getStructure[this.name] = {};
     }
 

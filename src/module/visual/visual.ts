@@ -14,6 +14,34 @@ import { getTowerData } from "../war/war"
  * @returns void
  */
 export function showTowerData(): void {
+  if (Game.flags['TowerVisualWar']) {
+    let roomName = Game.flags['TowerVisualWar'].pos.roomName
+    // if (!global.warData) global.warData = {}
+    if (!global.HostileData) return
+    if (!global.HostileData[roomName]) return
+    // console.log('开始绘制操作')
+    if (global.HostileData[roomName].data) {
+      // console.log(JSON.stringify(global.warData.tower[roomName].data))
+      for (var posData in global.HostileData[roomName].data) {
+        /* 数据 */
+        let posXY = unzipXandY(posData)
+        let tx = posXY[0]
+        let ty = posXY[1]
+        var Data = global.HostileData[roomName].data[posData]
+        let attack = Data.attack
+        if (Data.attack + Data.rattack > 0) {
+          let attack = Data.attack + Data.rattack
+          new RoomVisual(roomName).text(`${attack}`, tx, ty - 0.1, { color: 'red', font: 0.3, align: 'center' })
+        }
+        if (Data.heal > 0) {
+          new RoomVisual(roomName).text(`${Data.heal}`, tx, ty + 0.3, { color: 'green', font: 0.3, align: 'center' })
+        }
+      }
+      return
+    }
+    if (!Game.rooms[roomName]) { return }
+  }
+
   if (Game.flags['TowerVisualAllhurt']) {
     let roomName = Game.flags['TowerVisualAllhurt'].pos.roomName
     if (!global.warData) global.warData = {}
@@ -31,7 +59,7 @@ export function showTowerData(): void {
       }
       return
     }
-    if (!Game.rooms[roomName]) {return}
+    if (!Game.rooms[roomName]) { return }
   }
   if (Game.flags['TowerVisualAttack']) {
     let roomName = Game.flags['TowerVisualAttack'].pos.roomName
