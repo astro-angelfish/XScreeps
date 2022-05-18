@@ -136,12 +136,12 @@ export default class RoomCoreSpawnExtension extends Room {
 
             let adaption = false
             if (this.memory.SpawnConfig[roleName] && this.memory.SpawnConfig[roleName].adaption && allEnergy < CalculateEnergy(body)) {
-                if (!global.CreepNumData[this.name][roleName] || this.controller.level <= 3) {
+                if (!global.CreepNumData[this.name][roleName] || this.controller.level < 8) {
                     adaption_body(body, allEnergy)
                     adaption = true
                 }
-
             }
+            // console.log(this.name, roleName, adaption, body, this.memory.SpawnConfig[roleName].adaption, allEnergy, CalculateEnergy(body))
             // 名称整理
             let mark = RoleData[roleName].mark ? RoleData[roleName].mark : "#"
             let timestr = Game.time.toString().substr(Game.time.toString().length - 4)

@@ -264,7 +264,7 @@ export default class CreepMissonWarExtension extends Creep {
                 console.log(this.name, '分配已饱和')
                 if (this.room.memory.DefendDouId) {
                     let DefendDou = Game.getObjectById(this.room.memory.DefendDouId) as Creep
-                    if (DefendDou) {
+                    if (DefendDou || !this.Checkaroundhurt(DefendDou.pos, 2, 400)) {
                         console.log(this.name, '分配已饱和|追出去')
                         this.goTo_defend(DefendDou.pos, 0)
                     }
@@ -597,7 +597,7 @@ export default class CreepMissonWarExtension extends Creep {
                                 { color: 'red', lineStyle: 'dashed' });
                             switch (this.attack(DouID)) {
                                 case ERR_NOT_IN_RANGE:
-                                    this.goTo(DouID.pos, 1)
+                                    this.goTo(DouID.pos, 0)
                                     break;
                                 case OK:
                                     console.log('调度塔一起攻击')
