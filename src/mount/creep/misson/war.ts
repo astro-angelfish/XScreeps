@@ -205,8 +205,13 @@ export default class CreepMissonWarExtension extends Creep {
                 }
                 console.log('待分配', global.HostileGroup[this.memory.belong].length)
                 if (global.HostileGroup[this.memory.belong].length > 0) {
-                    console.log(this.name, '分配', global.HostileGroup[this.memory.belong][0])
-                    Game.rooms[this.memory.belong].memory.Enemydistribution[this.name] = global.HostileGroup[this.memory.belong][0]
+                    var HostileGroupnearstram = this.pos.findClosestByRange(FIND_HOSTILE_CREEPS, {
+                        filter: (stru) => {
+                            return isInArray(global.HostileGroup[this.memory.belong] as any, stru.id)
+                        }
+                    })
+                    console.log(this.name, '分配', HostileGroupnearstram.id)
+                    Game.rooms[this.memory.belong].memory.Enemydistribution[this.name] = HostileGroupnearstram.id
                     en = Game.getObjectById(Game.rooms[this.memory.belong].memory.Enemydistribution[this.name]) as Creep
                 }
             }
@@ -228,14 +233,14 @@ export default class CreepMissonWarExtension extends Creep {
                                 { color: 'green', lineStyle: 'dashed' });
                         }
                         /*检查当前范围可能受到的伤害如果不会超过600则追出去*/
-                        // if (this.Checkaroundhurt(this.pos, 2, 600) || this.Checkaroundhurt(nstC.pos, 2, 600) || this.hitsMax - 1200 > this.hits) {
-                        //     // console.log(this.name, '不满足追踪条件')
-                        //     this.goTo_defend(nearstram.pos, 0)
-                        // } else {
-                        //     console.log(this.name, '满足伤害要求|追出去')
-                        //     this.goTo_defend(nstC.pos, 0)
-                        // }
-                        this.goTo_defend(nearstram.pos, 0)
+                        if (this.Checkaroundhurt(this.pos, 2, 400) || this.Checkaroundhurt(nstC.pos, 2, 400) || this.hitsMax - 1200 > this.hits) {
+                            // console.log(this.name, '不满足追踪条件')
+                            this.goTo_defend(nearstram.pos, 0)
+                        } else {
+                            console.log(this.name, '满足伤害要求|追出去')
+                            this.goTo_defend(nstC.pos, 0)
+                        }
+                        // this.goTo_defend(nearstram.pos, 0)
                         /*如果对应的爬不在3的范围内则进行删除操作*/
                         // if (!nearstram.pos.inRangeTo(nstC,2)) {
                         //     // console.log(this.name, '放弃当前目标', nstC.name)
@@ -257,6 +262,14 @@ export default class CreepMissonWarExtension extends Creep {
                 }
             } else {
                 console.log(this.name, '分配已饱和')
+                if (this.room.memory.DefendDouId) {
+                    let DefendDou = Game.getObjectById(this.room.memory.DefendDouId) as Creep
+                    if (DefendDou) {
+                        console.log(this.name, '分配已饱和|追出去')
+                        this.goTo_defend(DefendDou.pos, 0)
+                    }
+
+                }
             }
 
             // let en = Game.getObjectById(Game.rooms[this.memory.belong].memory.enemy[this.name][0]) as Creep
@@ -525,13 +538,27 @@ export default class CreepMissonWarExtension extends Creep {
             if (this.hitsMax - this.hits > 1200) this.optTower('heal', this)
             if (!Game.creeps[this.memory.double]) return
             if (this.fatigue || Game.creeps[this.memory.double].fatigue) return
-            if (Game.creeps[this.memory.double] && !this.pos.isNearTo(Game.creeps[this.memory.double]) && (!isInArray([0, 49], this.pos.x) && !isInArray([0, 49], this.pos.y)))
+            if (Game.creeps[this.memory.double] && !this.pos.isNearTo(Game.creeps[this.memory.double]) && (!isInArray([0, 49], this.pos.x) && !isInArray([0, 49], this.pos.y))) {
+                /*只扫描周围目标进行攻击 不操作移动*/
+                let creeps = this.pos.findInRange(FIND_HOSTILE_CREEPS, 1, {
+                    filter: (creep) => {
+                        return !isInArray(Memory.whitesheet, creep.owner.username)
+                    }
+                })
+                if (creeps[0]) {
+                    this.optTower('attack', creeps[0])
+                    this.attack(creeps[0])
+                }
                 return
+            }
+
             /* 确保在自己房间 */
             if (this.room.name != this.memory.belong) {
                 this.goTo(new RoomPosition(24, 24, this.memory.belong), 23)
             }
             else {
+
+
                 let flag = this.pos.findClosestByPath(FIND_FLAGS, {
                     filter: (flag) => {
                         return flag.name.indexOf('defend_double') == 0
@@ -555,13 +582,43 @@ export default class CreepMissonWarExtension extends Creep {
                         return !isInArray(Memory.whitesheet, creep.owner.username)
                     }
                 })
-                if (this.hitsMax - this.hits > 2500) {
+                if (this.hitsMax - this.hits > 3000) {
                     this.goTo(creeps.pos, 3)
                     return;
+                }
+                /*检查是否存在已经针对的目标信息*/
+                if (this.room.memory.DefendDouId) {
+                    let DouID = Game.getObjectById(this.room.memory.DefendDouId) as Creep;
+                    if (!DouID) { delete this.room.memory.DefendDouId }
+                    if (DouID) {
+                        console.log('协同追踪', this.room.memory.DefendDouId)
+                        if (DouID && !isInArray([0, 49], DouID.pos.x) && !isInArray([0, 49], DouID.pos.y)) {
+                            this.room.visual.line(this.pos, DouID.pos,
+                                { color: 'red', lineStyle: 'dashed' });
+                            switch (this.attack(DouID)) {
+                                case ERR_NOT_IN_RANGE:
+                                    this.goTo(DouID.pos, 1)
+                                    break;
+                                case OK:
+                                    console.log('调度塔一起攻击')
+                                    this.optTower('attack', DouID)
+                                    break;
+                            }
+                            return
+                        }
+                    }
                 }
                 if (creeps && !isInArray([0, 49], creeps.pos.x) && !isInArray([0, 49], creeps.pos.y)) {
                     this.room.visual.line(this.pos, creeps.pos,
                         { color: 'red', lineStyle: 'dashed' });
+                    let DefendDoulist = this.pos.findInRange(FIND_HOSTILE_CREEPS, 1, {
+                        filter: (creep) => {
+                            return !isInArray(Memory.whitesheet, creep.owner.username) && creep.id != creeps.id
+                        }
+                    })
+                    if (DefendDoulist) {
+                        this.room.memory.DefendDouId = creeps.id;
+                    }
                     switch (this.attack(creeps)) {
                         case ERR_NOT_IN_RANGE:
                             this.goTo(creeps.pos, 1)
@@ -581,7 +638,10 @@ export default class CreepMissonWarExtension extends Creep {
         else {
             if (this.hitsMax - this.hits > 600) this.optTower('heal', this)
             this.moveTo(Game.creeps[this.memory.double])
-            if (Game.creeps[this.memory.double]) this.heal(Game.creeps[this.memory.double])
+            if (Game.creeps[this.memory.double]) {
+                this.heal(Game.creeps[this.memory.double])
+
+            }
             else this.heal(this)
             if (!Game.creeps[this.memory.double]) {
                 if (this.ticksToLive < 100) {

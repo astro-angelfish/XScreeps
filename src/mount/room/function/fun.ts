@@ -362,7 +362,6 @@ export default class RoomFunctionFindExtension extends Room {
                 continue
             }
             if (this.memory.state = 'war') {
-                console.log('war', `${structure.pos.x}/${structure.pos.y}`)
                 if (!CheckExcludeRampart(this, structure.pos)) {
                     continue
                 }

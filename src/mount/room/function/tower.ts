@@ -28,17 +28,6 @@ export default class RoomFunctionTowerExtension extends Room {
                     return
                 }
                 Ntower.repair(Repairdata)
-                // if ((Game.time - global.Gtime[this.name]) % 5 == 0) {
-                //     /* 寻找路，修路 */
-                //     var repairRoad = Ntower.room.find(FIND_STRUCTURES, {
-                //         filter: (stru) => {
-                //             return (stru.structureType == 'road' || stru.structureType == 'container') && stru.hits / stru.hitsMax < 0.8
-                //         }
-                //     })
-                //     if (repairRoad.length > 0) {
-                //         if (repairRoad) Ntower.repair(repairRoad[0])
-                //     }
-                // }
             }
 
         }
@@ -66,6 +55,22 @@ export default class RoomFunctionTowerExtension extends Room {
             }
             else if (enemys.length > 1) {
                 if (enemys.length >= 3) {
+                    this.TowerRepair()
+                    if (global.Repairlist[this.name].length > 0) {
+                        let Ntower: StructureTower = null
+                        if (this.memory.StructureIdData.NtowerID) { Ntower = Game.getObjectById(this.memory.StructureIdData.NtowerID) as StructureTower }
+                        if (!Ntower) { delete this.memory.StructureIdData.NtowerID; return; }
+                        let Repairdata = Game.getObjectById(global.Repairlist[this.name][0]) as StructureTower
+                        if (!Repairdata) {
+                            global.Repairlist[this.name].shift()
+                            return
+                        }
+                        if (Repairdata.hits >= Repairdata.hitsMax) {
+                            global.Repairlist[this.name].shift()
+                            return
+                        }
+                        Ntower.repair(Repairdata)
+                    }
                     return;
                 }
                 for (let c of this.memory.StructureIdData.AtowerID) {
@@ -83,7 +88,7 @@ export default class RoomFunctionTowerExtension extends Room {
     }
 
     public TowerRepair(): void {
-        
+
         if ((Game.time - global.Gtime[this.name]) % 20 != 0) { return }
         global.Repairlist[this.name] = []
         var repairRoad = this.find(FIND_STRUCTURES, {
