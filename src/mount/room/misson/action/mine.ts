@@ -1,5 +1,5 @@
 import { Colorful, isInArray, unzipPosition, zipPosition } from "@/utils"
-
+import { zipMap } from "@/constant/ResourceConstant"
 
 /* 房间原型拓展   --行为  --采矿任务 */
 export default class RoomMissonMineExtension extends Room {
@@ -58,21 +58,25 @@ export default class RoomMissonMineExtension extends Room {
             return
         }
         /* 建筑都到位了，开始下任务 */
-        var storage_ = Game.getObjectById(this.memory.StructureIdData.storageID) as StructureStorage
+        var storage_ = this.storage as StructureStorage
         if (!storage_) return
-        /* 如果矿物饱和，挂任务卖原矿 */
+        /* 如果矿物饱和，自动进行打包操作 */
         if (storage_.store.getUsedCapacity(this.memory.mineralType) > 200000) {
-            if (!this.memory.market) this.memory.market = {}
-            if (!this.memory.market['deal']) this.memory.market['deal'] = []
-            var bR = true
-            for (var od of this.memory.market['deal']) {
-                if (od.rType == this.memory.mineralType)
-                    bR = false
+            let factory_ = Game.getObjectById(this.memory.StructureIdData.FactoryId) as StructureFactory
+            if (factory_ && zipMap[this.memory.mineralType]) {
+                factory_.add(zipMap[this.memory.mineralType], 6000)
             }
-            if (bR) {
-                /* 下达自动deal的任务 */
-                this.memory.market['deal'].push({ rType: this.memory.mineralType, num: 30000, mTyep: 'sell'  })
-            }
+            // if (!this.memory.market) this.memory.market = {}
+            // if (!this.memory.market['deal']) this.memory.market['deal'] = []
+            // var bR = true
+            // for (var od of this.memory.market['deal']) {
+            //     if (od.rType == this.memory.mineralType)
+            //         bR = false
+            // }
+            // if (bR) {
+            //     /* 下达自动deal的任务 */
+            //     this.memory.market['deal'].push({ rType: this.memory.mineralType, num: 30000, mTyep: 'sell'  })
+            // }
         }
         /* 防止挖矿致死 */
         if (storage_.store.getFreeCapacity() > 200000 && storage_.store.getUsedCapacity(this.memory.mineralType) < 200000) {
@@ -160,7 +164,7 @@ export default class RoomMissonMineExtension extends Room {
         }
         else if (misson.Data.state == 2)    // 采集状态 [正常状态]
         {
-           
+
             misson.CreepBind['out-harvest'].num = Memory.outMineData[disRoomName].minepoint.length
             misson.CreepBind['out-defend'].num = 0
             if (Memory.outMineData[disRoomName].car) {
