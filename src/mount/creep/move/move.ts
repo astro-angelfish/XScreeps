@@ -30,7 +30,7 @@ export default class CreepMoveExtension extends Creep {
     }
 
     // 通用寻路
-    public findPath(target: RoomPosition, range: number, ops?: number): string | null {
+    public findPath(target: RoomPosition, range: number, ops?: number, ExcludePosition?: RoomPosition[]): string | null {
         /* 全局路线存储 */
         if (!global.routeCache) global.routeCache = {}
         if (!this.memory.moveData) this.memory.moveData = {}
@@ -116,6 +116,13 @@ export default class CreepMoveExtension extends Creep {
                     else
                         costs.set(creep.pos.x, creep.pos.y, 3)
                 })
+
+                if (ExcludePosition) {
+                    for (let _pos of ExcludePosition) {
+                        if (_pos.roomName != roomName) { continue }
+                        costs.set(_pos.x, _pos.y, 255)
+                    }
+                }
                 return costs
             }
         })
@@ -146,18 +153,18 @@ export default class CreepMoveExtension extends Creep {
     }
 
     // 通用移动 (配合findPath 和 goByPath)
-    public goTo(target: RoomPosition, range: number = 1, ops?: number): CreepMoveReturnCode | ERR_NO_PATH | ERR_NOT_IN_RANGE | ERR_INVALID_TARGET {
+    public goTo(target: RoomPosition, range: number = 1, ops?: number, ExcludePosition?: RoomPosition[]): CreepMoveReturnCode | ERR_NO_PATH | ERR_NOT_IN_RANGE | ERR_INVALID_TARGET {
         //  var a = Game.cpu.getUsed()
         if (this.memory.moveData == undefined) this.memory.moveData = {}
         // 确认目标没有变化，如果变化了就重新规划路线
         const targetPosTag = this.standardizePos(target)
         if (targetPosTag !== this.memory.moveData.targetPos) {
             this.memory.moveData.targetPos = targetPosTag
-            this.memory.moveData.path = this.findPath(target, range, ops ? ops : null)
+            this.memory.moveData.path = this.findPath(target, range, ops ? ops : null, ExcludePosition ? ExcludePosition : null)
         }
         // 确认缓存有没有被清除
         if (!this.memory.moveData.path) {
-            this.memory.moveData.path = this.findPath(target, range, ops ? ops : null)
+            this.memory.moveData.path = this.findPath(target, range, ops ? ops : null, ExcludePosition ? ExcludePosition : null)
         }
         // 还为空的话就是没有找到路径
         if (!this.memory.moveData.path) {

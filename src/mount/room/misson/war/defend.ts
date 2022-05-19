@@ -542,7 +542,10 @@ export default class DefendWarExtension extends Room {
             }
         })
         if (enemys.length <= 0) {
-            this.DeleteMission(mission.id)
+            mission.CreepBind['defend-attack'].num = 0/*标记归零操作 待命*/
+            if (mission.CreepBind['defend-attack'].bind.length < 1) {
+                this.DeleteMission(mission.id)
+            }
         }
     }
 
@@ -557,7 +560,10 @@ export default class DefendWarExtension extends Room {
             }
         })
         if (enemys.length <= 0) {
-            this.DeleteMission(mission.id)
+            mission.CreepBind['defend-range'].num = 0/*标记归零操作 待命*/
+            if (mission.CreepBind['defend-range'].bind.length < 1) {
+                this.DeleteMission(mission.id)
+            }
         }
     }
 
@@ -572,7 +578,11 @@ export default class DefendWarExtension extends Room {
             }
         })
         if (enemys.length <= 0) {
-            this.DeleteMission(mission.id)
+            mission.CreepBind['defend-douAttack'].num = 0
+            mission.CreepBind['defend-douHeal'].num = 0
+            if (mission.CreepBind['defend-douAttack'].bind.length < 1 && mission.CreepBind['defend-douHeal'].bind.length < 1) {
+                this.DeleteMission(mission.id)
+            }
         }
     }
 

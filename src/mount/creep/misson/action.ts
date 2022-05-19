@@ -56,7 +56,7 @@ export default class CreepMissonActionExtension extends Creep {
                     if (hostileCreep.length > 0) this.Flee(hostileCreep[0].pos, 4)
                 }
                 else {
-                    if (this.room.memory.state = 'peace') {
+                    if (this.room.memory.state == 'peace') {
                         var construction = this.pos.findClosestByRange(FIND_MY_CONSTRUCTION_SITES)
                         if (construction) {
                             this.build_(construction)

@@ -639,8 +639,33 @@ export default class CreepMissonWarExtension extends Creep {
             if (this.hitsMax - this.hits > 600) this.optTower('heal', this)
             this.moveTo(Game.creeps[this.memory.double])
             if (Game.creeps[this.memory.double]) {
-                this.heal(Game.creeps[this.memory.double])
-
+                let double_creeps = Game.creeps[this.memory.double];
+                if (double_creeps.hitsMax * 0.8 < double_creeps.hits) {
+                    let creeps = this.pos.findInRange(FIND_MY_CREEPS, 1, {
+                        filter: (creep) => {
+                            return Game.creeps[this.memory.double].id != creep.id && creep.id != this.id && creep.hitsMax * 0.8 > creep.hits
+                        }
+                    })
+                    if (creeps.length > 0) {
+                        if (Game.flags['TowerVisualWar']) {
+                            this.room.visual.line(this.pos, creeps[0].pos,
+                                { color: 'green' });
+                        }
+                        this.heal(creeps[0])
+                    } else {
+                        if (Game.flags['TowerVisualWar']) {
+                            this.room.visual.line(this.pos, Game.creeps[this.memory.double].pos,
+                                { color: 'green' });
+                        }
+                        this.heal(Game.creeps[this.memory.double])
+                    }
+                } else {
+                    if (Game.flags['TowerVisualWar']) {
+                        this.room.visual.line(this.pos, Game.creeps[this.memory.double].pos,
+                            { color: 'green' });
+                    }
+                    this.heal(Game.creeps[this.memory.double])
+                }
             }
             else this.heal(this)
             if (!Game.creeps[this.memory.double]) {
