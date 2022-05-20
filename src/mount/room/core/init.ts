@@ -57,6 +57,7 @@ export default class RoomCoreInitExtension extends Room {
             if (!this.memory.market) this.memory.market = { 'deal': [], 'order': [] }
             if (!global.ResourceLimit[this.name]) global.ResourceLimit[this.name] = {}
             if (!this.memory.ComDispatchData) this.memory.ComDispatchData = {}
+            if (!this.memory.DefendDouPosition) this.memory.DefendDouPosition = [];
             if (!this.memory.switch) this.memory.switch = {}
             if (!this.memory.enemy) this.memory.enemy = {}
             if (!this.memory.productData) this.memory.productData = { level: 0, state: 'sleep', baseList: {}, balanceData: {} }
@@ -75,6 +76,7 @@ export default class RoomCoreInitExtension extends Room {
         global.HostileGroup[this.name] = [];
         global.getStructure[this.name] = {};
         delete this.memory.DefendDouId;/*每个Tick都进行重置操作*/
+        this.memory.DefendDouPosition = [];
     }
 
     /**

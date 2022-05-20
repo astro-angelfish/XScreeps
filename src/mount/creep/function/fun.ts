@@ -198,4 +198,17 @@ export default class CreepFunctionExtension extends Creep {
         }
         return _number;
     }
+
+
+    public SearchHostilecreeps(range: number = 1): Creep | null {
+        if (!global.HostileCreepsData) return null
+        if (!global.HostileCreepsData[this.room.name]) return null
+        let creeps_list = global.HostileCreepsData[this.room.name] as Creep[];
+        for (let creeps of creeps_list) {
+            if (this.pos.inRangeTo(creeps, range)) {
+                return creeps
+            }
+        }
+        return null;
+    }
 }

@@ -10,8 +10,9 @@ interface Creep {
     repair_(distination: Structure): void
     withdraw_(distination: Structure, rType: ResourceConstant, range?: number): void
     BoostCheck(boostBody: string[]): boolean
-    optTower(otype: 'heal' | 'attack', creep: Creep,boolean?:boolean ): void
+    optTower(otype: 'heal' | 'attack', creep: Creep, boolean?: boolean): void
     hostileCreep_atk(creep: any): void
     isInDefend(creep: Creep): boolean
     closestCreep(creep: Creep[], hurt?: boolean): Creep
+    SearchHostilecreeps( range?: number): Creep | null
 }

@@ -12,7 +12,6 @@ export function layoutVisual(): void {
                     break;
                 case 'LayoutVisual63':
                     // drawByConfig63(flag.name);
-
                     // let roomStructsData: StructsData | undefined = undefined //全局变量
                     // global.roomStructsData.structMap
                     // let p = Game.flags.p;

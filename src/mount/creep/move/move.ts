@@ -120,6 +120,7 @@ export default class CreepMoveExtension extends Creep {
                 if (ExcludePosition) {
                     for (let _pos of ExcludePosition) {
                         if (_pos.roomName != roomName) { continue }
+                        // console.log('排除位置',JSON.stringify(_pos))
                         costs.set(_pos.x, _pos.y, 255)
                     }
                 }
@@ -153,18 +154,18 @@ export default class CreepMoveExtension extends Creep {
     }
 
     // 通用移动 (配合findPath 和 goByPath)
-    public goTo(target: RoomPosition, range: number = 1, ops?: number, ExcludePosition?: RoomPosition[]): CreepMoveReturnCode | ERR_NO_PATH | ERR_NOT_IN_RANGE | ERR_INVALID_TARGET {
+    public goTo(target: RoomPosition, range: number = 1, ops?: number): CreepMoveReturnCode | ERR_NO_PATH | ERR_NOT_IN_RANGE | ERR_INVALID_TARGET {
         //  var a = Game.cpu.getUsed()
         if (this.memory.moveData == undefined) this.memory.moveData = {}
         // 确认目标没有变化，如果变化了就重新规划路线
         const targetPosTag = this.standardizePos(target)
         if (targetPosTag !== this.memory.moveData.targetPos) {
             this.memory.moveData.targetPos = targetPosTag
-            this.memory.moveData.path = this.findPath(target, range, ops ? ops : null, ExcludePosition ? ExcludePosition : null)
+            this.memory.moveData.path = this.findPath(target, range, ops ? ops : null, this.room.memory.DefendDouPosition ? this.room.memory.DefendDouPosition : null)
         }
         // 确认缓存有没有被清除
         if (!this.memory.moveData.path) {
-            this.memory.moveData.path = this.findPath(target, range, ops ? ops : null, ExcludePosition ? ExcludePosition : null)
+            this.memory.moveData.path = this.findPath(target, range, ops ? ops : null, this.room.memory.DefendDouPosition ? this.room.memory.DefendDouPosition : null)
         }
         // 还为空的话就是没有找到路径
         if (!this.memory.moveData.path) {

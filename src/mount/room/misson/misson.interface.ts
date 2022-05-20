@@ -76,7 +76,8 @@ interface RoomMemory {
     Labautomatic: { automaticData?: AutomaticData[], automaticState?: boolean }
     ExcludeRampart: string[]
     Enemydistribution: { [Name: string]: string }/*战争认领清单*/
-    DefendDouId:string
+    DefendDouId: string
+    DefendDouPosition: RoomPosition[]
 }
 
 interface AutomaticData {

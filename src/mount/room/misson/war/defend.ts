@@ -126,7 +126,10 @@ export default class DefendWarExtension extends Room {
     /* 主动防御任务发布 */
     public Task_Auto_Defend(): void {
         if (this.memory.state == 'war') {
+            let s = Game.cpu.getUsed()
             this.Task_Defend_init();
+            let e = Game.cpu.getUsed()
+            console.log('初始化', e - s)
         }
         if (Game.time % 5) return
         // if (!Game.rooms[this.name].terminal) return
@@ -176,11 +179,11 @@ export default class DefendWarExtension extends Room {
         }
         else if (enemys.length > 2 && enemys.length < 5)       // 3-4
         {
-            defend_plan = { 'attack': 2, 'double': 1, 'range': 0 }
+            defend_plan = { 'attack': 2, 'double': 0, 'range': 0 }
         }
         else if (enemys.length >= 5 && enemys.length < 8)   // 5-7
         {
-            defend_plan = { 'attack': 3, 'double': 1, 'range': 0 }
+            defend_plan = { 'attack': 3, 'double': 0, 'range': 0 }
         }
         else if (enemys.length >= 8)        // >8     一般这种情况下各个类型的防御任务爬虫的数量都要调高
         {
@@ -283,6 +286,10 @@ export default class DefendWarExtension extends Room {
         }
         return all_atk;
     }
+
+    // public Get_Hostile_creeps_range(creep: Creep, range: number = 1): Creep | null {
+       
+    // }
 
 
     public Get_HOSTILE_CREEPS(): Creep[] {
@@ -543,6 +550,8 @@ export default class DefendWarExtension extends Room {
         })
         if (enemys.length <= 0) {
             mission.CreepBind['defend-attack'].num = 0/*标记归零操作 待命*/
+            //清理待孵化的列表
+
             if (mission.CreepBind['defend-attack'].bind.length < 1) {
                 this.DeleteMission(mission.id)
             }
