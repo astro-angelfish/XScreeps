@@ -76,7 +76,9 @@ export default class CreepMissonWarExtension extends Creep {
             if (control.level < 1) {
                 /*完成攻击任务删除*/
                 if (Game.shard.name == this.memory.shard) {
-                    Game.rooms[this.memory.belong].DeleteMission(id)
+                    // console.log('完成攻击',this.memory.taskRB)
+                    Game.rooms[this.memory.belong].DeleteMission(this.memory.taskRB)
+                    // console.log('完成攻击-A')
                 }
             }
             if (!this.pos.isNearTo(control)) this.goTo(control.pos, 1)
@@ -114,14 +116,15 @@ export default class CreepMissonWarExtension extends Creep {
         if (this.hitsMax - this.hits > 200) this.optTower('heal', this)
         this.memory.crossLevel = 16
         /* 如果周围1格发现敌人，爬虫联合防御塔攻击 */
-        var nearCreep = this.pos.findInRange(FIND_HOSTILE_CREEPS, 1, {
-            filter: (creep) => {
-                return !isInArray(Memory.whitesheet, creep.name)
-            }
-        })
-        if (nearCreep.length > 0) {
-            this.attack(nearCreep[0])
-            this.optTower('attack', nearCreep[0])
+        // var nearCreep = this.pos.findInRange(FIND_HOSTILE_CREEPS, 1, {
+        //     filter: (creep) => {
+        //         return !isInArray(Memory.whitesheet, creep.name)
+        //     }
+        // })
+        let nearCreep = this.SearchHostilecreeps(1)
+        if (nearCreep) {
+            this.attack(nearCreep)
+            this.optTower('attack', nearCreep)
         }
 
         /* 寻路去距离敌对爬虫最近的rampart */
@@ -739,8 +742,17 @@ export default class CreepMissonWarExtension extends Creep {
                 }
             }
         }
+        
         if ((this.room.name != data.disRoom || Game.shard.name != data.shard)) {
-            this.heal(this)
+            if (this.hits < this.hitsMax) {
+                this.heal(this)
+                /*检查坐标信息*/
+                if (isInArray([0, 49], this.pos.x) || isInArray([0, 49], this.pos.y)) { 
+                    this.Flee(this.pos, 2)
+                }
+                /*检查是否存在敌对目标的信息*/
+                return
+            }
             this.arriveTo(new RoomPosition(24, 24, data.disRoom), 23, data.shard, data.shardData ? data.shardData : null)
         }
         else {
@@ -912,7 +924,7 @@ export default class CreepMissonWarExtension extends Creep {
             // 寻找最近的敌人攻击
             let closestCreep = this.pos.findClosestByPath(FIND_HOSTILE_CREEPS, {
                 filter: (creep) => {
-                    return !isInArray(Memory.whitesheet, creep.owner.username) && !creep.pos.GetStructure('rampart')
+                    return !isInArray(Memory.whitesheet, creep.owner.username) && !creep.pos.GetStructure('rampart') && (!isInArray([0, 49], creep.pos.x) && !isInArray([0, 49], creep.pos.y))
                 }
             })
             if (closestCreep && !this.pos.isNearTo(closestCreep)) {
@@ -1411,10 +1423,11 @@ export default class CreepMissonWarExtension extends Creep {
                     }
                     return
                 }
+                warDataInit(Game.rooms[data.disRoom])
                 /* 攻击离四格内离自己最近的爬 */
                 var enemy = this.pos.findClosestByPath(FIND_HOSTILE_CREEPS, {
                     filter: (creep) => {
-                        return !isInArray(Memory.whitesheet, creep.owner.username) && !creep.pos.GetStructure('rampart')
+                        return !isInArray(Memory.whitesheet, creep.owner.username) && !creep.pos.GetStructure('rampart') && (!isInArray([0, 49], creep.pos.x) && !isInArray([0, 49], creep.pos.y))
                     }
                 })
                 if (enemy && Math.max(Math.abs(this.pos.x - enemy.pos.x), Math.abs(this.pos.y - enemy.pos.y)) <= 4) {

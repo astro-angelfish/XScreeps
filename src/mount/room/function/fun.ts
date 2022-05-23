@@ -361,7 +361,7 @@ export default class RoomFunctionFindExtension extends Room {
             if (hitsMax && structure.hits > hitsMax) {
                 continue
             }
-            if (this.memory.state = 'war') {
+            if (this.memory.state == 'war') {
                 if (!CheckExcludeRampart(this, structure.pos)) {
                     continue
                 }

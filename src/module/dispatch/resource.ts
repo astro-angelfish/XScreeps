@@ -94,6 +94,8 @@ export function ResourceDispatch(thisRoom: Room): void {
             if (storage_.store.getUsedCapacity(i.rType))
                 var limitNum = global.ResourceLimit[thisRoom.name][i.rType] ? global.ResourceLimit[thisRoom.name][i.rType] : 0
             if (storage_.store.getUsedCapacity(i.rType) <= 0) continue  // 没有就删除
+
+            // console.log(i.rType,limitNum)
             // storage里资源大于等于调度所需资源
             if ((storage_.store.getUsedCapacity(i.rType) - limitNum) >= i.num) {
                 var SendNum = i.num > 50000 ? 50000 : i.num
@@ -198,7 +200,7 @@ export function ResourceLimitUpdate(thisRoom: Room): void {
     // 监测工厂相关
     for (var b in thisRoom.memory.productData.baseList) {
         // 基础合成物品也做一定限制
-        global.ResourceLimit[thisRoom.name][b] = Math.ceil(thisRoom.memory.productData.baseList[b].num / 2)
+        // global.ResourceLimit[thisRoom.name][b] = Math.ceil(thisRoom.memory.productData.baseList[b].num / 2)
         // 所有基础合成物品的底物也做一定限制
         LoopC:
         for (let row in COMMODITIES[b].components) {

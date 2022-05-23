@@ -126,10 +126,10 @@ export default class DefendWarExtension extends Room {
     /* 主动防御任务发布 */
     public Task_Auto_Defend(): void {
         if (this.memory.state == 'war') {
-            let s = Game.cpu.getUsed()
+            // let s = Game.cpu.getUsed()
             this.Task_Defend_init();
-            let e = Game.cpu.getUsed()
-            console.log('初始化', e - s)
+            // let e = Game.cpu.getUsed()
+            // console.log('初始化', e - s)
         }
         if (Game.time % 5) return
         // if (!Game.rooms[this.name].terminal) return

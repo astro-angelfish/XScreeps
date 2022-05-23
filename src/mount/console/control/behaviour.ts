@@ -241,16 +241,36 @@ export default {
             return result
         },
         // 下买订单
-        buy(roomName: string, rType: ResourceConstant, price: number, amount: number): string {
-            var result = Game.market.createOrder({
-                type: 'buy',
-                resourceType: rType,
-                price: price,
-                totalAmount: amount,
-                roomName: roomName
-            });
-            if (result == OK) return `[market] ` + Colorful(`买资源${rType}的订单下达成功！ 数量为${amount},价格为${price}`, 'blue', true)
-            else return `[market] ` + Colorful(`买资源${rType}的订单出现错误，不能下达！`, 'red', true)
+        buy(roomName: string, rType: ResourceConstant, mType: 'deal' | 'order', price: number, num: number, unit: number = 2000): string {
+            var thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[support] 不存在房间${roomName}`
+            if (!thisRoom.memory.market) thisRoom.memory.market = {}
+            if (mType == 'order') {
+                if (!thisRoom.memory.market['order']) thisRoom.memory.market['order'] = []
+                var bR = true
+                for (var od of thisRoom.memory.market['order']) {
+                    if (od.rType == rType)
+                        bR = false
+                }
+                if (bR) {
+                    thisRoom.memory.market['order'].push({ rType: rType, num: num, unit: unit, price: price, mTyep: 'buy' })
+                    return `[market] 房间${roomName}成功下达order的资源采购指令,type:sell,rType:${rType},num:${num},unit:${unit},price:${price}`
+                }
+                else return `[market] 房间${roomName}已经存在${rType}的订单了`
+            }
+            else if (mType == 'deal') {
+                if (!thisRoom.memory.market['deal']) thisRoom.memory.market['deal'] = []
+                var bR = true
+                for (var od of thisRoom.memory.market['deal']) {
+                    if (od.rType == rType)
+                        bR = false
+                }
+                if (bR) {
+                    thisRoom.memory.market['deal'].push({ rType: rType, num: num, price: price, unit: unit, mTyep: 'buy' })
+                    return `[market] 房间${roomName}成功下达deal的资源采购指令,type:sell,rType:${rType},num:${num},price:${price},unit:${unit}`
+                }
+                else return `[market] 房间${roomName}已经存在${rType}的订单了`
+            }
         },
         // 查询平均价格
         ave(rType: ResourceConstant, day: number = 1): string {

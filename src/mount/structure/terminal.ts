@@ -448,12 +448,12 @@ export default class terminalExtension extends StructureTerminal {
             else if (t == 'order') {
                 for (var l of this.room.memory.market['order']) {
                     if (!l.mTyep) { continue/*无方向定义订单终止*/ }
-                    if (l.rType != 'energy') {
+                    if (l.rType != 'energy' && l.mTyep == 'sell') {
                         this.room.memory.TerminalData[l.rType] = { num: l.unit ? l.unit : 5000, fill: true }
                     }
                     // 查询有无订单
                     if (!l.id) {
-                        let myOrder = haveOrder(this.room.name, l.rType, 'sell')
+                        let myOrder = haveOrder(this.room.name, l.rType, l.mTyep as 'sell' | 'buy')
                         if (!myOrder) {
                             console.log(Colorful(`[market] 房间${this.room.name}-rType:${l.rType}创建订单!`, 'yellow'))
                             // 没有就创建订单
@@ -483,7 +483,7 @@ export default class terminalExtension extends StructureTerminal {
                         }
                         for (let o in Game.market.orders) {
                             let order = Game.market.getOrderById(o);
-                            if (order.roomName == this.room.name && order.resourceType == l.rType && order.type == 'sell')
+                            if (order.roomName == this.room.name && order.resourceType == l.rType && order.type == l.mTyep)
                                 l.id = o
                         }
                         continue

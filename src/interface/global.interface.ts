@@ -91,6 +91,7 @@ interface ARH {
     attack: number
     repair: number
     heal: number
+    avoid?:number
 }
 
 interface StructureData {

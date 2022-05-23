@@ -2,7 +2,7 @@ import { CompoundColor } from "@/constant/ResourceConstant"
 import { colors } from "@/utils"
 import { AppLifecycleCallbacks } from "../framework/types"
 import { unzipXandY } from "../fun/funtion"
-import { getTowerData } from "../war/war"
+import { getTowerData, getAllhurt } from "../war/war"
 
 /* 可视化模块 */
 /**
@@ -55,11 +55,30 @@ export function showTowerData(): void {
         let tx = posXY[0]
         let ty = posXY[1]
         var Data = global.warData.allhurt[roomName].data[posData]
-        new RoomVisual(roomName).text(`${Data.attack}`, tx, ty, { color: 'red', font: 0.4, align: 'center' })
+        new RoomVisual(roomName).text(`${Data.attack}`, tx, ty - 0.1, { color: 'red', font: 0.3, align: 'center' })
+        if (Data.avoid) {
+          new RoomVisual(roomName).text(`${Data.avoid}`, tx, ty + 0.3, { color: 'yellow', font: 0.3, align: 'center' })
+        }
       }
       return
     }
-    if (!Game.rooms[roomName]) { return }
+    if (!Game.rooms[roomName]) {
+      /* 如果没有房间视野，采用observe观察 */
+      for (let i in Memory.RoomControlData) {
+        if (Game.rooms[i] && Game.rooms[i].controller.level >= 8) {
+          let observer_ = Game.getObjectById(Game.rooms[i].memory.StructureIdData.ObserverID) as StructureObserver
+          if (observer_ && observer_.observeRoom(roomName) == OK)
+            break
+        }
+      }
+      return
+    }
+    if (!global.warData.allhurt[roomName]) {
+      console.log(roomName, '操作绘制')
+      global.warData.allhurt[roomName] = { count: 0, data: {} };
+      global.warData.allhurt[roomName].data = getAllhurt(Game.rooms[roomName])
+    }
+
   }
   if (Game.flags['TowerVisualAttack']) {
     let roomName = Game.flags['TowerVisualAttack'].pos.roomName
@@ -74,7 +93,10 @@ export function showTowerData(): void {
         let tx = posXY[0]
         let ty = posXY[1]
         var Data = global.warData.tower[roomName].data[posData]
-        new RoomVisual(roomName).text(`${Data.attack}`, tx, ty, { color: 'red', font: 0.4, align: 'center' })
+        new RoomVisual(roomName).text(`${Data.attack}`, tx, ty-0.1, { color: 'red', font: 0.3, align: 'center' })
+        if (Data.avoid) {
+          new RoomVisual(roomName).text(`${Data.avoid}`, tx, ty + 0.3, { color: 'yellow', font: 0.3, align: 'center' })
+        }
       }
       return
     }

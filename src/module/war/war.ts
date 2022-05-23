@@ -1,6 +1,6 @@
 import creep from "@/mount/creep"
 import { isInArray } from "@/utils"
-import { bodypartData } from "../fun/funtion"
+import { bodypartData, unzipXandY } from "../fun/funtion"
 
 /* 战争相关 "基础设施" */
 
@@ -57,22 +57,90 @@ export function getTowerData(room: Room): TowerRangeMapData {
     if (towers.length <= 0) return {}
     let terrianData = room.getTerrain()
     let tempData: TowerRangeMapData = {}
-    for (let i = 0; i < 50; i++)
-        LoopTerrian:
+    let mask_wall = [];
+    for (let i = 0; i < 50; i++) {
         for (let j = 0; j < 50; j++) {
             let thisPos = new RoomPosition(i, j, room.name)
             // 0 平原 1 墙壁 2 沼泽
-            if (terrianData.get(i, j) == 1)
-                continue LoopTerrian
-            let tempNum: ARH = { attack: 0, heal: 0, repair: 0 }
+            let _terrianData = terrianData.get(i, j)
+            if (_terrianData == 1) {
+                mask_wall.push(thisPos)
+                continue
+            }
+            let avoid = 0;
+            if (_terrianData == TERRAIN_MASK_SWAMP) {
+                avoid = 20;
+            }
+            let tempNum: ARH = { attack: 0, heal: 0, repair: 0, avoid: avoid }
             for (var t of towers) {
                 // 伤害计算叠加
                 thisPos.AddTowerRangeData(t, tempNum)
             }
             tempData[`${thisPos.x}/${thisPos.y}`] = tempNum
         }
+    }
+    var excludemaskwall_list = {} as any;
+    // console.log(JSON.stringify(mask_wall))
+    // console.log(JSON.stringify(tempData))
+    for (let i = 0; i < mask_wall.length; i++) {
+        excludemaskwall_list = Excludemaskwall(excludemaskwall_list, mask_wall[i])
+    }
+    //检查房间的出口信息
+    let find_exit = room.find(FIND_EXIT)
+    for (let exit_data of find_exit) {
+        excludemaskwall_list = Excludemaskwall(excludemaskwall_list, exit_data, -10)
+    }
+    for (let audit in excludemaskwall_list) {
+        // let auditdata = excludemaskwall_list[audit]
+        let posXY = unzipXandY(audit)
+        let auditnumber = 0;
+        let swampnumber = 0;
+        for (let i = -1; i <= 1; i++) {
+            for (let j = -1; j <= 1; j++) {
+                let _terrianData = terrianData.get(posXY[0] + i, posXY[1] + j)
+                if (_terrianData == 1) {
+                    auditnumber++;
+                } else if (_terrianData == 2) {
+                    swampnumber++
+                }
+            }
+        }
+        if (auditnumber + swampnumber < 3) {
+            excludemaskwall_list[audit] = 0;
+        }
+    }
+    console.log(JSON.stringify(find_exit))
+    // console.log(JSON.stringify(excludemaskwall_list))
+    for (let Data in excludemaskwall_list) {
+        if (tempData[Data]) {
+            if (excludemaskwall_list[Data] > tempData[Data].avoid) tempData[Data].avoid = excludemaskwall_list[Data];
+        }
+    }
+
     return tempData
 }
+
+
+export function Excludemaskwall(excludemaskwall_list, pos, number = 5) {
+    for (let i = -1; i <= 1; i++) {
+        for (let j = -1; j <= 1; j++) {
+            if (i == 0 && j == 0) continue;
+            let x = pos.x + i
+            let y = pos.y + j;
+            let _pos = `${x}/${y}`;
+            if (!excludemaskwall_list[_pos]) {
+                excludemaskwall_list[_pos] = 0
+            }
+            excludemaskwall_list[_pos] += number;
+            // if (excludemaskwall_list[_pos] < number) {
+            //     excludemaskwall_list[_pos] = 10;
+            // }
+
+        }
+    }
+    return excludemaskwall_list;
+}
+
 export function cloneObj(obj) {
     var newObj = {};
     if (obj instanceof Array) {
@@ -278,7 +346,7 @@ export function CheckExcludeRampart(room: Room, pos: RoomPosition): boolean {
 export function CheckCreepTeam(Creep: Creep, enemys: Creep[]) {
     let _C_list = [];
     for (let C of enemys) {
-        if(Creep.pos.isNearTo(C)){
+        if (Creep.pos.isNearTo(C)) {
             _C_list.push(C)
         }
     }

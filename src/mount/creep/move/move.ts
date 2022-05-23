@@ -1,5 +1,5 @@
 // import { RequestShard } from "@/shard/base"
-import { hurts, parts } from "@/module/fun/funtion"
+import { hurts, parts, unzipXandY } from "@/module/fun/funtion"
 import { RequestShard } from "@/module/shard/intershard"
 import { canSustain } from "@/module/war/war"
 import { closestPotalRoom, getOppositeDirection, isInArray } from "@/utils"
@@ -547,7 +547,22 @@ export default class CreepMoveExtension extends Creep {
     }
 
     // 逃离寻路
-    public Flee(target: RoomPosition, range: number): void {
+    public Flee(target: RoomPosition, range: number, ExcludePosition?: RoomPosition[]): void {
+        let avoid_pos = [] as RoomPosition[];
+        if (global.warData.tower[this.room.name]) {
+            let _tower_data = global.warData.tower[this.room.name]
+            if (_tower_data.data) {
+                // console.log(this.room.name, JSON.stringify(_tower_data))
+                for (let _pos of Object.keys(_tower_data.data)) {
+                    let _tower_pos = global.warData.tower[this.room.name].data[_pos]
+                    if (_tower_pos.avoid > 0) {
+                        let posXY = unzipXandY(_pos)
+                        // costs.set(posXY[0], posXY[1], _tower_pos.avoid)
+                        avoid_pos.push(new RoomPosition(posXY[0], posXY[1], this.room.name))
+                    }
+                }
+            }
+        }
         let path = PathFinder.search(this.pos, { pos: target, range: range }, {
             plainCost: 1,
             swampCost: 20,
@@ -584,6 +599,13 @@ export default class CreepMoveExtension extends Creep {
                     else
                         costs.set(creep.pos.x, creep.pos.y, 3)
                 })
+
+                for (let _pos of avoid_pos) {
+                    if (_pos.roomName == roomName) {
+                        costs.set(_pos.x, _pos.y, 5)
+                    }
+                }
+
                 return costs
             }
         })
