@@ -158,6 +158,11 @@ export default class CreepMoveExtension extends Creep {
     public goTo(target:RoomPosition,range:number = 1,ops?:number):CreepMoveReturnCode | ERR_NO_PATH | ERR_NOT_IN_RANGE | ERR_INVALID_TARGET{
         //  var a = Game.cpu.getUsed()
         if (this.memory.moveData == undefined) this.memory.moveData = {}
+        if (target.roomName != this.room.name)
+        {
+            Game.map.visual.line(this.pos, target,{color: '#ffffff', lineStyle: 'dashed'});
+            Game.map.visual.text(`${this.memory.MissionData?this.memory.MissionData.name:null}|${this.name}`, this.pos, {color: '#ffffff', fontSize: 5});
+        }
         // 确认目标没有变化，如果变化了就重新规划路线
         const targetPosTag = this.standardizePos(target)
         if (targetPosTag !== this.memory.moveData.targetPos)

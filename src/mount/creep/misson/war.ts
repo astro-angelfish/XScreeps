@@ -35,7 +35,7 @@ export default class CreepMissonWarExtension extends Creep {
         if (!disFlag)
         {
             var clostStructure = this.pos.findClosestByPath(FIND_HOSTILE_STRUCTURES,{filter:(struc)=>{
-                return !isInArray(['controller'],struc.structureType)
+                return !isInArray(['controller','storage','terminal','rampart'],struc.structureType)
             }})
             if (clostStructure)
             {
@@ -44,7 +44,16 @@ export default class CreepMissonWarExtension extends Creep {
                 return
             }
             else
+            {
+                let clostStru = this.pos.findClosestByPath(FIND_STRUCTURES,{filter:(str)=>{
+                    return str.structureType == 'constructedWall' || str.structureType == 'rampart'
+                }})
+                if (clostStru)
+                {
+                    if (this.dismantle(clostStru) == ERR_NOT_IN_RANGE) this.goTo(clostStru.pos,1)
+                }
                 return
+            }
         }
         let stru = disFlag.pos.lookFor(LOOK_STRUCTURES)[0]
         if (stru )
