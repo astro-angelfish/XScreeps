@@ -518,7 +518,7 @@ export default class RoomMissonFrameExtension extends Room {
         for (let Roomname in global.RoomResource) {
             let _RoomData = global.RoomResource[Roomname]
             let rTypeNum = _RoomData[rType];
-
+            if(!rTypeNum) continue;
             /*标记rType 查询保存量*/
             var basic_num = 0;
             if (this.name != Roomname) {
