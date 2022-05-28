@@ -36,6 +36,7 @@ export const MemoryInit = function (): void {
     global.Adaption = {}
     global.RoomResource = {}
     global.HostileCreepsData = {}
+    Memory.SystemEconomy = false;
 }
 export const MemoryTickStart = function (): void {
 

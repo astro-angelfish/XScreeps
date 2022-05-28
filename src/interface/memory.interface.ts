@@ -9,6 +9,7 @@ interface Memory {
     stats :any
     StopPixel :boolean,
     creepscpu?:{[creeps:string]:string}
+    SystemEconomy:boolean
 }
 
 interface RDData{

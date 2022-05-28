@@ -148,7 +148,6 @@ export default class RoomMissonVindicateExtension extends Room {
     }
     // 扩张援建
     public Task_Expand(mission: MissionModel): void {
-        if ((Game.time - global.Gtime[this.name]) % 11) return
         // console.log('扩张援助体型检测',mission.Data.level)
         if (mission.Data.defend && mission.Data.level) {
             // console.log('扩张援助体型3',mission.Data.level)
@@ -185,6 +184,7 @@ export default class RoomMissonVindicateExtension extends Room {
             //     'Eupgrade': GenerateAbility(10, 4, 20, 0, 0, 6, 0, 0)
             // }
         }
+        if ((Game.time - global.Gtime[this.name]) % 11) return
         if (!this.Check_Lab(mission, 'transport', 'complex')) return
     }
 

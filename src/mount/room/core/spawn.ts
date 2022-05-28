@@ -236,7 +236,7 @@ export default class RoomCoreSpawnExtension extends Room {
 
     /* 经济模式特殊处理 */
     public Economy(): void {
-        if (this.controller.level == 8 && this.memory.economy) {
+        if (this.controller.level == 8 && (this.memory.economy || Memory.SystemEconomy)) {
             if (this.controller.ticksToDowngrade < 180000)
                 this.memory.SpawnConfig['upgrade'].num = 1
             else

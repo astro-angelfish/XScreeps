@@ -171,7 +171,10 @@ export default class RoomFunctionFindExtension extends Room {
                     if (this.memory.RoomLabBind[i].type == miss.LabMessage[rType])
                         return 'normal' // 正常运转
                     else {
-                        console.log(` this.memory.RoomLabBind[i].type: ${this.memory.RoomLabBind[i].type} == miss.LabMessage[rType] : ${miss.LabMessage[rType]}`)
+                        if (this.memory.RoomLabBind[i].type == 'boost') {
+                            return 'normal' // 正常运转
+                        }
+                        console.log(miss.name, i, ` this.memory.RoomLabBind[i].type: ${this.memory.RoomLabBind[i].type} == miss.LabMessage[rType] : ${miss.LabMessage[rType]}`)
                         return 'unbind'
                     }
 

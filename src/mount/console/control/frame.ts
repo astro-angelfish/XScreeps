@@ -143,6 +143,13 @@ export default {
                 myRoom.memory.SpawnConfig['upgrade'].num = 1
             }
             return `[frame] 房间${roomName}的economy选项改为${myRoom.memory.economy}`
+        },
+        alleconomy(): string {
+            Memory.SystemEconomy = !Memory.SystemEconomy;
+            if (!Memory.SystemEconomy) {
+                return `[frame] 关闭全局经济模式`
+            }
+            return `[frame] 启用全局经济模式`
         }
     },
     spawn:
