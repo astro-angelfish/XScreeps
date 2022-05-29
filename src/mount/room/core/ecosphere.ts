@@ -119,7 +119,7 @@ export default class RoomCoreEcosphereExtension extends Room {
         if (Game.shard.name == 'shard3') { if (Game.time % 25) return }
         else { if (Game.time % 5) return }
         if (this.memory.state == 'peace' || Game.time % 100 == 0) {
-           
+
             /* cpu过少就不进行自动重建 */
             if (Game.cpu.bucket < 4000) return
             /* 仅仅在和平情况下才会打开自动重建 */
@@ -188,8 +188,12 @@ export default class RoomCoreEcosphereExtension extends Room {
                     return !isInArray(Memory.whitesheet, creep.owner.username)
                 }
             })
-            if (enemy[0] || enemyPowerCreep[0]) this.memory.state = 'war'
-            else this.memory.state = 'peace'
+            if (enemy[0] || enemyPowerCreep[0]) {
+                this.memory.state = 'war'
+            }
+            else {
+                this.memory.state = 'peace'
+            }
         }
     }
 

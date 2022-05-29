@@ -3,6 +3,7 @@ import { isInArray } from "@/utils";
 /* 房间原型拓展   --方法  --防御塔 */
 export default class RoomFunctionTowerExtension extends Room {
     public TowerWork(): void {
+        this.TowerRepair()
         if (this.memory.state == 'peace') {
             if (Game.flags[`${this.name}/repair`]) {
                 var towers = this.find(FIND_MY_STRUCTURES, {
@@ -13,7 +14,6 @@ export default class RoomFunctionTowerExtension extends Room {
                 var ramparts = this.getListHitsleast(['rampart', 'constructedWall'], 3)
                 for (var t of towers) if (t.store.getUsedCapacity('energy') > 400) t.repair(ramparts)
             }
-            this.TowerRepair()
             if (global.Repairlist[this.name].length > 0) {
                 let Ntower: StructureTower = null
                 if (this.memory.StructureIdData.NtowerID) { Ntower = Game.getObjectById(this.memory.StructureIdData.NtowerID) as StructureTower }
@@ -34,6 +34,23 @@ export default class RoomFunctionTowerExtension extends Room {
         else if (this, this.memory.state == 'war') {
             if (Game.flags[`${this.name}/stop`]) return
             if (this.memory.switch.AutoDefend && this.controller.level > 6) {
+                if (this.controller.level >= 8) {
+                    if (global.Repairlist[this.name].length > 0) {
+                        let Ntower: StructureTower = null
+                        if (this.memory.StructureIdData.NtowerID) { Ntower = Game.getObjectById(this.memory.StructureIdData.NtowerID) as StructureTower }
+                        if (!Ntower) { delete this.memory.StructureIdData.NtowerID; return; }
+                        let Repairdata = Game.getObjectById(global.Repairlist[this.name][0]) as StructureTower
+                        if (!Repairdata) {
+                            global.Repairlist[this.name].shift()
+                            return
+                        }
+                        if (Repairdata.hits >= Repairdata.hitsMax) {
+                            global.Repairlist[this.name].shift()
+                            return
+                        }
+                        Ntower.repair(Repairdata)
+                    }
+                }
                 return
             }
             /* 没有主动防御下的防御塔逻辑 */
@@ -55,22 +72,6 @@ export default class RoomFunctionTowerExtension extends Room {
             }
             else if (enemys.length > 1) {
                 if (enemys.length >= 3) {
-                    this.TowerRepair()
-                    if (global.Repairlist[this.name].length > 0) {
-                        let Ntower: StructureTower = null
-                        if (this.memory.StructureIdData.NtowerID) { Ntower = Game.getObjectById(this.memory.StructureIdData.NtowerID) as StructureTower }
-                        if (!Ntower) { delete this.memory.StructureIdData.NtowerID; return; }
-                        let Repairdata = Game.getObjectById(global.Repairlist[this.name][0]) as StructureTower
-                        if (!Repairdata) {
-                            global.Repairlist[this.name].shift()
-                            return
-                        }
-                        if (Repairdata.hits >= Repairdata.hitsMax) {
-                            global.Repairlist[this.name].shift()
-                            return
-                        }
-                        Ntower.repair(Repairdata)
-                    }
                     return;
                 }
                 for (let c of this.memory.StructureIdData.AtowerID) {
