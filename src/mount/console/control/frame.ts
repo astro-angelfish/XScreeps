@@ -147,9 +147,9 @@ export default {
         alleconomy(): string {
             Memory.SystemEconomy = !Memory.SystemEconomy;
             if (!Memory.SystemEconomy) {
-                return `[frame] 关闭全局经济模式`
+                return `[frame] 关闭全局经济模式(自动烧帕瓦)`
             }
-            return `[frame] 启用全局经济模式`
+            return `[frame] 启用全局经济模式(自动烧帕瓦)`
         }
     },
     spawn:

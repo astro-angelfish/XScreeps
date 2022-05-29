@@ -490,16 +490,22 @@ export default class RoomMissonBehaviourExtension extends Room {
 
     /* 烧Power发布函数任务 */
     public Task_montitorPower(): void {
+        if (Game.cpu.bucket < 6000 && Memory.StopPixel) return/*CPU不足情况下暂停*/
         if (Game.time % 7) return
         if (this.controller.level < 8) return
-        if (!this.memory.switch.StartPower) return
+        if (!this.memory.switch.StartPower && !Memory.SystemEconomy) return
         // 有任务了就不发布烧帕瓦的任务
         if (this.MissionNum('Room', 'power升级') > 0) return
         let storage_ = this.storage as StructureStorage
         //  powerspawn_ = global.Stru[this.name]['powerspawn'] as StructurePowerSpawn
         if (!storage_) return
+        /* 检测类型*/
+        let SavePower = this.memory.switch.SavePower;
+        if (!SavePower && Memory.SystemEconomy && !this.memory.switch.StartPower) {
+            SavePower = true;
+        }
         // SavePower 是节省能量的一种"熔断"机制 防止烧power致死
-        if (storage_.store.getUsedCapacity('energy') > (this.memory.switch.SavePower ? 260000 : 150000) && storage_.store.getUsedCapacity('power') > 100) {
+        if (storage_.store.getUsedCapacity('energy') > (SavePower ? 250000 : 150000) && storage_.store.getUsedCapacity('power') > 100) {
             /* 发布烧power任务 */
             var thisTask: MissionModel = {
                 name: 'power升级',
