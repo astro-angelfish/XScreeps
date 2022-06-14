@@ -30,7 +30,7 @@ export default class CreepMoveExtension extends Creep {
     }
 
     // 通用寻路
-    public findPath(target: RoomPosition, range: number, ops?: number, ExcludePosition?: RoomPosition[]): string | null {
+    public findPath(target: RoomPosition, range: number, ops?: number, ExcludePosition?: RoomPosition[], plain?: number): string | null {
         /* 全局路线存储 */
         if (!global.routeCache) global.routeCache = {}
         if (!this.memory.moveData) this.memory.moveData = {}
@@ -49,7 +49,7 @@ export default class CreepMoveExtension extends Creep {
             let disRoomparsed = Number((/^[WE]([0-9]+)[NS]([0-9]+)$/.exec(target.roomName)));
             /* 计算距离 如果两个房间之间距离过短就不这样做 */
             let enoughDistance = Math.sqrt(Math.abs(myroomparsed[0] - disRoomparsed[0]) ** 2 + Math.abs(myroomparsed[1] - disRoomparsed[1]) ** 2)
-            if (enoughDistance > 4.3) swi = true
+            if (enoughDistance > 4.3 || range > 10) swi = true
             if (swi) {
                 let ret = Game.map.findRoute(this.pos.roomName, target.roomName, {
                     routeCallback(roomName) {
@@ -76,17 +76,21 @@ export default class CreepMoveExtension extends Creep {
             }
         }
         /* 路线查找 */
+        let room_list:any = [];
+        let okroom_list:any = [];
         const result = PathFinder.search(this.pos, { pos: target, range: range }, {
-            plainCost: 2,
+            plainCost: plain ? plain : 2,
             swampCost: 10,
-            maxRooms: target.roomName == this.room.name ? 1 : 10,
-            maxOps: ops ? ops : (target.roomName == this.room.name ? 1200 : 8000),
+            maxRooms: target.roomName == this.room.name ? 1 : 64,
+            maxOps: ops ? ops : (target.roomName == this.room.name ? 1200 : 15000),
             roomCallback: roomName => {
                 // 在全局绕过房间列表的房间 false
+                room_list.push(roomName)
                 if (!swi && Memory.bypassRooms && Memory.bypassRooms.includes(roomName)) return false
                 if (swi && allowedRooms[roomName] === undefined) {
                     return false;
                 }
+                okroom_list.push(roomName)
                 // 在爬虫记忆绕过房间列表的房间 false
                 const room = Game.rooms[roomName]
                 // 没有视野的房间只观察地形
@@ -127,6 +131,14 @@ export default class CreepMoveExtension extends Creep {
                 return costs
             }
         })
+        if (range == 18) {
+            console.log(target.roomName)
+            console.log(JSON.stringify(allowedRooms));
+            console.log(JSON.stringify(room_list))
+            console.log(JSON.stringify(okroom_list))
+            console.log(this.name, swi, JSON.stringify(result))
+        }
+
         // 寻路异常返回null
         if (result.path.length <= 0) return null
         // 寻路结果压缩
@@ -154,18 +166,25 @@ export default class CreepMoveExtension extends Creep {
     }
 
     // 通用移动 (配合findPath 和 goByPath)
-    public goTo(target: RoomPosition, range: number = 1, ops?: number): CreepMoveReturnCode | ERR_NO_PATH | ERR_NOT_IN_RANGE | ERR_INVALID_TARGET {
+    public goTo(target: RoomPosition, range: number = 1, ops?: number, plain?: number): CreepMoveReturnCode | ERR_NO_PATH | ERR_NOT_IN_RANGE | ERR_INVALID_TARGET {
         //  var a = Game.cpu.getUsed()
         if (this.memory.moveData == undefined) this.memory.moveData = {}
         // 确认目标没有变化，如果变化了就重新规划路线
         const targetPosTag = this.standardizePos(target)
         if (targetPosTag !== this.memory.moveData.targetPos) {
             this.memory.moveData.targetPos = targetPosTag
-            this.memory.moveData.path = this.findPath(target, range, ops ? ops : null, this.room.memory.DefendDouPosition ? this.room.memory.DefendDouPosition : null)
+            if (range == 18) {
+                console.log('执行了新的搜索-1')
+            }
+
+            this.memory.moveData.path = this.findPath(target, range, ops ? ops : null, this.room.memory.DefendDouPosition ? this.room.memory.DefendDouPosition : null, plain)
         }
         // 确认缓存有没有被清除
         if (!this.memory.moveData.path) {
-            this.memory.moveData.path = this.findPath(target, range, ops ? ops : null, this.room.memory.DefendDouPosition ? this.room.memory.DefendDouPosition : null)
+            if (range == 18) {
+                console.log('执行了新的搜索-2')
+            }
+            this.memory.moveData.path = this.findPath(target, range, ops ? ops : null, this.room.memory.DefendDouPosition ? this.room.memory.DefendDouPosition : null, plain)
         }
         // 还为空的话就是没有找到路径
         if (!this.memory.moveData.path) {

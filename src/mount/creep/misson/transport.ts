@@ -74,6 +74,43 @@ export default class CreepMissonTransportExtension extends Creep {
         }
     }
 
+    /*位面物资运输*/
+    public handle_carrysenior(): void {
+        let missionData = this.memory.MissionData
+        let id = missionData.id
+        let data = missionData.Data
+        if (this.room.name == this.memory.belong && this.memory.shard == Game.shard.name && !this.memory.working) {
+            if (this.room.storage.store.getUsedCapacity(data.rType) < this.store.getFreeCapacity(data.rType)) {
+                Game.rooms[this.memory.belong].DeleteMission(id)
+            }
+            this.withdraw_(this.room.storage, data.rType)
+            this.workstate(data.rType)
+            return
+        }
+        if (this.memory.working) {
+            // console.log('完成取货准备搬运')
+            if ((this.room.name != data.disRoom || Game.shard.name != data.shard)) {
+                this.arriveTo(new RoomPosition(24, 24, data.disRoom), 23, data.shard, data.shardData ? data.shardData : null)
+            } else {
+                let storage_ = Game.rooms[data.disRoom].storage
+                if (storage_) {
+                    let transfer = this.transfer(storage_, data.rType)
+                    switch (transfer) {
+                        case ERR_NOT_IN_RANGE:
+                            this.goTo(storage_.pos, 1)
+                            break;
+                    }
+                    this.workstate(data.rType)
+                }
+            }
+        } else {
+            console.log('目标闲置操作')
+            this.suicide();
+        }
+
+    }
+
+
     /* 物资运输任务  已测试 */
     public handle_carry(): void {
         var Data = this.memory.MissionData.Data

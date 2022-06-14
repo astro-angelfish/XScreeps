@@ -360,6 +360,19 @@ export default {
             }
             return Colorful(`[market] 房间${roomName}取消资源[${rType}----${mtype}]卖出配置失败`, 'red')
         },
+        reviseprice(roomName: string, mtype: 'order' | 'deal', mTyep: 'sell' | 'buy', rType: ResourceConstant, price: number): string {
+            var thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[support] 不存在房间${roomName}`
+            for (let i of thisRoom.memory.market[mtype]) {
+                if (i.rType == rType && i.mTyep == mTyep) {
+                    i.price = price
+                    i.changePrice = true;
+                    return Colorful(`[market] 房间${roomName}资源[${rType}-${mtype}-${mTyep}]改价成功-${price}`, 'blue')
+                }
+            }
+            return Colorful(`[market] 房间${roomName}资源[${rType}-${mtype}-${mTyep}]改价失败`, 'red')
+        }
+
     },
 
     /* lab */

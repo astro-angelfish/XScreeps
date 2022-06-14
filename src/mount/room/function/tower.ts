@@ -92,11 +92,20 @@ export default class RoomFunctionTowerExtension extends Room {
 
         if ((Game.time - global.Gtime[this.name]) % 20 != 0) { return }
         global.Repairlist[this.name] = []
-        var repairRoad = this.find(FIND_STRUCTURES, {
-            filter: (stru) => {
-                return (stru.structureType == 'road' || stru.structureType == 'container') && stru.hits / stru.hitsMax < 0.8
-            }
-        })
+        if (this.memory.state == 'war') {
+            var repairRoad = this.find(FIND_STRUCTURES, {
+                filter: (stru) => {
+                    return (stru.structureType == 'road' || stru.structureType == 'container' ) && stru.hits / stru.hitsMax < 0.3
+                }
+            })
+        } else {
+            var repairRoad = this.find(FIND_STRUCTURES, {
+                filter: (stru) => {
+                    return (stru.structureType == 'road' || stru.structureType == 'container') && stru.hits / stru.hitsMax < 0.8
+                }
+            })
+        }
+
         if (repairRoad.length > 0) {
             for (let i in repairRoad) {
                 let repairRoad_ = repairRoad[i] as Structure

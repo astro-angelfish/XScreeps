@@ -43,6 +43,7 @@ export default class RoomMissonFrameExtension extends Room {
                 // var a = Game.cpu.getUsed()
                 switch (misson.name) {
                     case "物流运输": this.Task_Carry(misson); break;
+                    case "位面运输": this.Task_Carrysenior(misson); break;
                     case "墙体维护": this.Task_Repair(misson); break;
                     case '黄球拆迁': this.Task_dismantle(misson); break;
                     case '急速冲级': this.Task_Quick_upgrade(misson); break;

@@ -334,7 +334,7 @@ export default class CreepMissonActionExtension extends Creep {
             else this.memory.arrived = true
             return
         }
-        if (this.room.memory.state == 'peace') {
+        if (this.room.memory.state == 'peace' && (this.room.controller.my && this.room.controller.level >= 5)) {
             if (this.hits < this.hitsMax) {
                 this.optTower('heal', this, true)
             }
@@ -444,7 +444,7 @@ export default class CreepMissonActionExtension extends Creep {
                         return
                     }
                 }
-                if (this.room.storage) {
+                if (this.room.storage && this.room.storage.my && this.room.terminal) {
                     if (this.room.storage.store.getUsedCapacity('energy') > this.store.getFreeCapacity('energy')) {
                         this.withdraw_(this.room.storage, 'energy'); return
                     }
@@ -463,12 +463,9 @@ export default class CreepMissonActionExtension extends Creep {
                     }
                     return
                 }
-
-
-
                 let resources = this.pos.findClosestByPath(FIND_DROPPED_RESOURCES, {
                     filter: (res) => {
-                        return res.amount > 100 && res.resourceType == 'energy'
+                        return res.amount > 200 && res.resourceType == 'energy'
                     }
                 })
                 if (resources) {
@@ -541,7 +538,7 @@ export default class CreepMissonActionExtension extends Creep {
                         return
                     }
                 }
-                if (this.room.storage) {
+                if (this.room.storage && this.room.storage.my && this.room.terminal) {
                     if (this.room.storage.store.getUsedCapacity('energy') > this.store.getFreeCapacity('energy')) {
                         this.withdraw_(this.room.storage, 'energy'); return
                     }

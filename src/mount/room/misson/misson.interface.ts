@@ -33,6 +33,7 @@ interface Room {
 
     // 被动任务
     Task_Carry(misson: MissionModel): void
+    Task_Carrysenior(misson: MissionModel): void
     Task_Repair(mission: MissionModel): void
     Task_dismantle(mission: MissionModel): void
     Task_Quick_upgrade(mission: MissionModel): void

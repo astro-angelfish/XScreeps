@@ -382,7 +382,7 @@ export default class terminalExtension extends StructureTerminal {
         let storage_ = this.room.storage
         this.EnergyreplenishMarket();/*动态报价工具*/
         /* 仓库资源过于饱和就卖掉能量 超出则不卖(考虑到pc技能间隔) */
-        if (storage_.store.getFreeCapacity() < 50000 && storage_.store.getCapacity() >= storage_.store.getUsedCapacity()) {
+        if (storage_.store.getFreeCapacity() < 50000 && storage_.store.getCapacity() >= storage_.store.getUsedCapacity() && this.room.controller.level >= 8) {
             /* 如果仓库饱和(小于200k空间)，而且仓库能量超过400K,就卖能量 */
             if (storage_.store.getUsedCapacity('energy') > 350000) {
                 if (!this.room.memory.market) this.room.memory.market = {}
@@ -520,18 +520,20 @@ export default class terminalExtension extends StructureTerminal {
                             }
                         }
                         // 价格
-                        let price = order.price
-                        let standprice = l.price
-                        // 价格太低或太高都会改变订单价格
-                        if (standprice <= price / 3 || standprice >= price * 3) {
-                            Game.market.changeOrderPrice(l.id, l.price)
-                            console.log(`[market] 房间${this.room.name}改变订单ID:${l.id},type:${l.rType}的价格为${l.price}`)
-                        }
-                        // 收到改变价格指令，也会改变订单价格
-                        if (l.changePrice) {
-                            Game.market.changeOrderPrice(l.id, l.price)
-                            console.log(`[market] 房间${this.room.name}改变订单ID:${l.id},type:${l.rType}的价格为${l.price}`)
-                            l.changePrice = false
+                        if (order) {
+                            let price = order.price
+                            let standprice = l.price
+                            // 价格太低或太高都会改变订单价格
+                            if (standprice <= price / 3 || standprice >= price * 3) {
+                                Game.market.changeOrderPrice(l.id, l.price)
+                                console.log(`[market] 房间${this.room.name}改变订单ID:${l.id},type:${l.rType}的价格为${l.price}`)
+                            }
+                            // 收到改变价格指令，也会改变订单价格
+                            if (l.changePrice) {
+                                Game.market.changeOrderPrice(l.id, l.price)
+                                console.log(`[market] 房间${this.room.name}改变订单ID:${l.id},type:${l.rType}的价格为${l.price}`)
+                                l.changePrice = false
+                            }
                         }
                     }
                 }

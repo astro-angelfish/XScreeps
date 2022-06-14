@@ -110,6 +110,22 @@ export default {
             }
             return `[frame] 房间${roomName}未找到相应建筑!`
         },
+        // 删除某房间的建筑
+        deltype(roomName: string, mold: BuildableStructureConstant, my?: boolean): string {
+            var myRoom = Game.rooms[roomName]
+            if (!myRoom) return `[frame] 未找到房间${roomName},请确认房间!`
+            if (!mold) return `[frame] 未定义类型!`
+            var clostStructure = myRoom.find(FIND_HOSTILE_STRUCTURES, {
+                filter: (struc) => {
+                    return struc.structureType == mold
+                }
+            })
+            console.log(clostStructure.length)
+            for (let _data of clostStructure) {
+                _data.destroy()
+            }
+            return `[frame] 房间${roomName}已清理类型!`
+        },
         // 查询任务
         task(roomName: string): string {
             var myRoom = Game.rooms[roomName]

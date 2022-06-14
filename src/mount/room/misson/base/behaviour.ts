@@ -13,6 +13,13 @@ export default class RoomMissonBehaviourExtension extends Room {
         if (!misson.CreepBind) this.DeleteMission(misson.id)
     }
 
+    // 搬运基本任务
+    public Task_Carrysenior(misson: MissionModel): void {
+        /* 搬运任务需求 sourcePosX,Y sourceRoom targetPosX,Y targetRoom num  rType  */
+        // 没有任务数据 或者数据不全就取消任务
+        if (!misson.Data) this.DeleteMission(misson.id)
+        if (!misson.CreepBind) this.DeleteMission(misson.id)
+    }
     // 建造任务
     public Constru_Build(): void {
         if (Game.time % 51) return
@@ -20,15 +27,19 @@ export default class RoomMissonBehaviourExtension extends Room {
         var myConstrusion = this.find(FIND_MY_CONSTRUCTION_SITES)
         if (myConstrusion.length > 0) {
             /* 添加一个进孵化队列 */
-            if (myConstrusion.length > 10) {
-                let _number = Math.ceil(myConstrusion.length / 10);
-                _number = _number > 3 ? 3 : _number;
-                this.NumSpawn('build', _number)
-            } else {
+            if (this.memory.state == 'war') {
                 this.NumSpawn('build', 1)
-                // if ((!this.storage || !this.terminal) && this.controller.level >= 8) {
-                //     this.NumSpawn('build', 3)
-                // }
+            } else {
+                if (myConstrusion.length > 10) {
+                    let _number = Math.ceil(myConstrusion.length / 10);
+                    _number = _number > 3 ? 3 : _number;
+                    this.NumSpawn('build', _number)
+                } else {
+                    this.NumSpawn('build', 1)
+                    // if ((!this.storage || !this.terminal) && this.controller.level >= 8) {
+                    //     this.NumSpawn('build', 3)
+                    // }
+                }
             }
         }
         else {
@@ -247,8 +258,8 @@ export default class RoomMissonBehaviourExtension extends Room {
                 let resource = unzipMap[bar];
                 let resource_store = this.storage.store.getUsedCapacity(resource as ResourceConstant) + this.terminal.store.getUsedCapacity(resource as ResourceConstant)
                 let bar_store = this.storage.store.getUsedCapacity(bar as ResourceConstant) + this.terminal.store.getUsedCapacity(bar as ResourceConstant)
-                if (bar_store < 100) continue;
-                if (bar_store > 0 && resource_store < 20000) {
+                if (bar_store < 1000) continue;
+                if (bar_store > 0 && resource_store < (resource == RESOURCE_ENERGY ? 300000 : 20000)) {
                     let un_number = bar_store > 1000 ? 1000 : bar_store;
                     this.memory.productData.unzip[bar] = { num: Math.trunc(un_number / 100) * 100 }
                     return

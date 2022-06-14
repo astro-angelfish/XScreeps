@@ -112,74 +112,79 @@ export class factoryExtension extends StructureFactory {
             if ((Game.time - global.Gtime[this.room.name]) % 45) return
             delete this.room.memory.productData.producing
             let disCom = this.room.memory.productData.flowCom
+            if (this.room.name == 'W7N7') {
+                console.log('完成流水线检查')
+            }
             if (disCom)   // 检测是否可以直接生产商品 是否可以资源调度
             {
                 let disComNumber = this.store.getUsedCapacity(disCom as ResourceConstant) + storage_.store.getUsedCapacity(disCom as ResourceConstant);
-                if (disComNumber > 500) {
-                    return
-                }
-                // 初始化numList数据
-                let numList = {}
-                let flow = true
-                // 判断合成资源是否足够
-                LoopA:
-                for (var i in COMMODITIES[disCom].components) {
-                    numList[i] = storage_.store.getUsedCapacity(i as ResourceConstant)
-                    if (COMMODITIES[disCom].level >= 4) {
-                        // 如果仓库内的底物少于规定量
-                        if (numList[i] < COMMODITIES[disCom].components[i] * 5) {
-                            flow = false
-                            // 判断一下能否调度 不能调度直接跳转到baseList相关合成判断
-                            let identify = ResourceCanDispatch(this.room, i as ResourceConstant, COMMODITIES[disCom].components[i] * 5)
-                            if (identify == "can") {
-                                console.log(`[dispatch]<factory> 房间${this.room.name}将进行资源为${i}的资源调度!`)
-                                let dispatchTask: RDData = {
-                                    sourceRoom: this.room.name,
-                                    rType: i as ResourceConstant,
-                                    num: COMMODITIES[disCom].components[i] * 5,
-                                    delayTick: 200,
-                                    conditionTick: 35,
-                                    buy: false,
+                if (disComNumber < 500) {
+                    // 初始化numList数据
+                    let numList = {}
+                    let flow = true
+                    // 判断合成资源是否足够
+                    LoopA:
+                    for (var i in COMMODITIES[disCom].components) {
+                        numList[i] = storage_.store.getUsedCapacity(i as ResourceConstant)
+                        if (COMMODITIES[disCom].level >= 4) {
+                            // 如果仓库内的底物少于规定量
+                            if (numList[i] < COMMODITIES[disCom].components[i] * 5) {
+                                flow = false
+                                // 判断一下能否调度 不能调度直接跳转到baseList相关合成判断
+                                let identify = ResourceCanDispatch(this.room, i as ResourceConstant, COMMODITIES[disCom].components[i] * 5)
+                                if (identify == "can") {
+                                    console.log(`[dispatch]<factory> 房间${this.room.name}将进行资源为${i}的资源调度!`)
+                                    let dispatchTask: RDData = {
+                                        sourceRoom: this.room.name,
+                                        rType: i as ResourceConstant,
+                                        num: COMMODITIES[disCom].components[i] * 5,
+                                        delayTick: 200,
+                                        conditionTick: 35,
+                                        buy: false,
+                                    }
+                                    Memory.ResourceDispatchData.push(dispatchTask)
                                 }
-                                Memory.ResourceDispatchData.push(dispatchTask)
+                                else if (identify == 'running') return
+                                else break LoopA
                             }
-                            else if (identify == 'running') return
-                            else break LoopA
+                            else {
+                                continue
+                            }
                         }
                         else {
-                            continue
-                        }
-                    }
-                    else {
-                        if (numList[i] < COMMODITIES[disCom].components[i] * 10) {
-                            flow = false
-                            let identify = ResourceCanDispatch(this.room, i as ResourceConstant, COMMODITIES[disCom].components[i] * 10)
-                            if (identify == "can") {
-                                console.log(`[dispatch]<factory> 房间${this.room.name}将进行资源为${i}的资源调度!`)
-                                let dispatchTask: RDData = {
-                                    sourceRoom: this.room.name,
-                                    rType: i as ResourceConstant,
-                                    num: COMMODITIES[disCom].components[i] * 10,
-                                    delayTick: 200,
-                                    conditionTick: 35,
-                                    buy: false,
+                            if (numList[i] < COMMODITIES[disCom].components[i] * 10) {
+                                flow = false
+                                let identify = ResourceCanDispatch(this.room, i as ResourceConstant, COMMODITIES[disCom].components[i] * 10)
+                                if (identify == "can") {
+                                    console.log(`[dispatch]<factory> 房间${this.room.name}将进行资源为${i}的资源调度!`)
+                                    let dispatchTask: RDData = {
+                                        sourceRoom: this.room.name,
+                                        rType: i as ResourceConstant,
+                                        num: COMMODITIES[disCom].components[i] * 10,
+                                        delayTick: 200,
+                                        conditionTick: 35,
+                                        buy: false,
+                                    }
+                                    Memory.ResourceDispatchData.push(dispatchTask)
                                 }
-                                Memory.ResourceDispatchData.push(dispatchTask)
+                                else if (identify == 'running') return
+                                else break LoopA
                             }
-                            else if (identify == 'running') return
-                            else break LoopA
-                        }
-                        else {
-                            continue
+                            else {
+                                continue
+                            }
                         }
                     }
+                    if (flow) {
+                        console.log(`[factory] 房间${this.room.name}转入flow生产模式,目标商品为${disCom}`)
+                        this.room.memory.productData.state = 'flow'
+                        this.room.memory.productData.producing = { com: disCom }
+                        return
+                    }
                 }
-                if (flow) {
-                    console.log(`[factory] 房间${this.room.name}转入flow生产模式,目标商品为${disCom}`)
-                    this.room.memory.productData.state = 'flow'
-                    this.room.memory.productData.producing = { com: disCom }
-                    return
-                }
+            }
+            if (this.room.name == 'W7N7') {
+                console.log('完成流水线检查开始加工基本')
             }
             // 如果没有流水线商品或者商品不够生产流水线商品 就生产基本商品
             if (Object.keys(this.room.memory.productData.baseList).length <= 0) return
@@ -202,21 +207,21 @@ export class factoryExtension extends StructureFactory {
                 }
             }
             // 检测低级商品是否满足
-            LoopJ:
+            // LoopJ:
             for (let l of low) {
                 if (storage_.store.getUsedCapacity(l) < this.room.memory.productData.baseList[l].num - 300) {
-                    if (this.owner.username == 'ExtraDim') {
-                        /* 测试用 */
-                        let minList = ['energy', 'L', 'O', 'H', 'U', 'K', 'Z', 'X', 'G']
-                        // 判断一下是否有足够子资源
-                        for (var i in COMMODITIES[l].components) {
-                            if (!isInArray(minList, i) &&
-                                storage_.store.getUsedCapacity(i as ResourceConstant) < COMMODITIES[l].components[i] &&
-                                ResourceCanDispatch(this.room, i as ResourceConstant, COMMODITIES[l].components[i] * 100) == 'no') {
-                                continue LoopJ
-                            }
-                        }
-                    }
+                    // if (this.owner.username == 'ExtraDim') {
+                    //     /* 测试用 */
+                    //     let minList = ['energy', 'L', 'O', 'H', 'U', 'K', 'Z', 'X', 'G']
+                    //     // 判断一下是否有足够子资源
+                    //     for (var i in COMMODITIES[l].components) {
+                    //         if (!isInArray(minList, i) &&
+                    //             storage_.store.getUsedCapacity(i as ResourceConstant) < COMMODITIES[l].components[i] &&
+                    //             ResourceCanDispatch(this.room, i as ResourceConstant, COMMODITIES[l].components[i] * 100) == 'no') {
+                    //             continue LoopJ
+                    //         }
+                    //     }
+                    // }
                     console.log(`[factory] 房间${this.room.name}转入base生产模式,目标商品为${l}`)
                     this.room.memory.productData.state = 'base'
                     this.room.memory.productData.producing = { com: l, num: this.room.memory.productData.baseList[l].num }

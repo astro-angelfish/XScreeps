@@ -288,7 +288,7 @@ export default class DefendWarExtension extends Room {
     }
 
     // public Get_Hostile_creeps_range(creep: Creep, range: number = 1): Creep | null {
-       
+
     // }
 
 
@@ -493,13 +493,9 @@ export default class DefendWarExtension extends Room {
                 // console.log(pos_, '更新伤害', JSON.stringify(this[pos_]))
                 switch (m_range) {
                     case 1:
-                        _roomlist[pos_] = hurt;
-                        break;
                     case 2:
-                        _roomlist[pos_] = hurt * 0.4;
-                        break;
                     case 3:
-                        _roomlist[pos_] = hurt * 0.1;
+                        _roomlist[pos_] = hurt;
                         break;
                 }
             }
@@ -540,7 +536,7 @@ export default class DefendWarExtension extends Room {
 
     /* 红球防御 */
     public Task_Red_Defend(mission: MissionModel): void {
-        if ((Game.time - global.Gtime[this.name]) % 10) return
+        if ((Game.time - global.Gtime[this.name]) % 5) return
         if (!this.Check_Lab(mission, 'transport', 'complex')) return
         if ((Game.time - global.Gtime[this.name]) % 20) return
         var enemys = this.find(FIND_HOSTILE_CREEPS, {
@@ -560,7 +556,7 @@ export default class DefendWarExtension extends Room {
 
     /* 蓝球防御 */
     public Task_Blue_Defend(mission: MissionModel): void {
-        if ((Game.time - global.Gtime[this.name]) % 10) return
+        if ((Game.time - global.Gtime[this.name]) % 5) return
         if (!this.Check_Lab(mission, 'transport', 'complex')) return
         if ((Game.time - global.Gtime[this.name]) % 20) return
         var enemys = this.find(FIND_HOSTILE_CREEPS, {
@@ -578,7 +574,7 @@ export default class DefendWarExtension extends Room {
 
     /* 双人防御 */
     public Task_Double_Defend(mission: MissionModel): void {
-        if ((Game.time - global.Gtime[this.name]) % 10) return
+        if ((Game.time - global.Gtime[this.name]) % 5) return
         if (!this.Check_Lab(mission, 'transport', 'complex')) return
         if ((Game.time - global.Gtime[this.name]) % 20) return
         var enemys = this.find(FIND_HOSTILE_CREEPS, {

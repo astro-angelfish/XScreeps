@@ -9,6 +9,7 @@ export default class PowerCreepMisson extends Room {
         if (!storage_) return
         var pc = Game.powerCreeps[`${this.name}/queen/${Game.shard.name}`]
         var pcspawn = global.Stru[this.name]['powerspawn'] as StructurePowerSpawn
+        // console.log(this.name,`${this.name}/queen/${Game.shard.name}`,JSON.stringify(pc))
         if (!pc)
             return
         else {

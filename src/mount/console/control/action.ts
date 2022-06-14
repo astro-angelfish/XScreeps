@@ -388,6 +388,25 @@ export default {
                 }
             return `[carry] 房间${roomName}删除搬运任务失败`
         },
+        senior(roomName: string, disRoom: string, shard: shardName = Game.shard.name as shardName, res: ResourceConstant, CreepNum: number, interval: number, shardData?: shardRoomData[]): string {
+            let thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[carry] 不存在房间${roomName}`
+            var thisTask = thisRoom.public_Carrysenior(disRoom, CreepNum, shard, res, interval)
+            if (shardData) thisTask.Data.shardData = shardData
+            if (thisRoom.AddMission(thisTask)) return `[carry] 房间${roomName}挂载位面搬运任务成功`
+            return `[carry] 房间${roomName}删除位面搬运任务失败`
+        },
+        Csenior(roomName: string, disRoom: string, shard: shardName = Game.shard.name as shardName): string {
+            var thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[carry] 不存在房间${roomName}`
+            for (var i of thisRoom.memory.Misson['Creep']) {
+                if (i.name == '位面运输' && i.Data.disRoom == disRoom && i.Data.shard == shard) {
+                    if (thisRoom.DeleteMission(i.id))
+                        return Colorful(`[carry] 房间${roomName}位面搬运删除成功`, 'green')
+                }
+            }
+            return Colorful(`[carry] 房间${roomName}位面搬运人物失败`, 'red')
+        },
     },
     /* 支援 */
     support: {

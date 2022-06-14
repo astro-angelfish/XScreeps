@@ -25,6 +25,13 @@ export default class CreepMissonWarExtension extends Creep {
             }
             return
         }
+
+        if ((this.room.controller?.my && this.room.controller.level >= 5)) {
+            if (this.hits < this.hitsMax) {
+                this.optTower('heal', this, true)
+            }
+        }
+
         /* dismantle_0 */
         let disFlag = this.pos.findClosestByPath(FIND_FLAGS, {
             filter: (flag) => {
@@ -587,7 +594,7 @@ export default class CreepMissonWarExtension extends Creep {
                         return !isInArray(Memory.whitesheet, creep.owner.username) && (!isInArray([0, 49], creep.pos.x) && !isInArray([0, 49], creep.pos.y))
                     }
                 })
-                if (this.hitsMax - this.hits > 2000 && this.Checkaroundhurt(this.pos, 1, (this.hitsMax - this.hits) / 2)) {
+                if (this.hitsMax - this.hits > 1500 && this.Checkaroundhurt(this.pos, 1, (this.hitsMax - this.hits) / 2)) {
                     console.log(this.name, '逃离')
                     this.Flee(creeps.pos, 3)
                     return;
@@ -742,12 +749,12 @@ export default class CreepMissonWarExtension extends Creep {
                 }
             }
         }
-        
+
         if ((this.room.name != data.disRoom || Game.shard.name != data.shard)) {
             if (this.hits < this.hitsMax) {
                 this.heal(this)
                 /*检查坐标信息*/
-                if (isInArray([0, 49], this.pos.x) || isInArray([0, 49], this.pos.y)) { 
+                if (isInArray([0, 49], this.pos.x) || isInArray([0, 49], this.pos.y)) {
                     this.Flee(this.pos, 2)
                 }
                 /*检查是否存在敌对目标的信息*/
@@ -1113,7 +1120,9 @@ export default class CreepMissonWarExtension extends Creep {
                     // 没有集结旗帜的情况下，自动判断
                     if (identifyNext(this.room.name, roomName) == false || Game.shard.name != data.shard) {
                         this.say("🔪")
+                      
                         if (this.memory.squad[this.name].index == 0)
+                            // console.log('四人小队移动',this.name,roomName)
                             this.arriveTo(new RoomPosition(24, 24, roomName), 18, shard, data.shardData ? data.shardData : null)
                         return
                     }

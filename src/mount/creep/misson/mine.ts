@@ -17,7 +17,7 @@ export default class CreepMissonMineExtension extends Creep {
         }
         if (this.memory.role == 'out-claim') {
             if (this.room.name != creepMisson.disRoom && !this.memory.disPos) {
-                this.goTo(new RoomPosition(25, 25, creepMisson.disRoom), 20)
+                this.goTo(new RoomPosition(25, 25, creepMisson.disRoom), 20, null, 2)
                 if (this.room.name != this.memory.belong) {
                     /* 如果是别人的房间就不考虑 */
                     if (this.room.controller && this.room.controller.owner && this.room.controller.owner.username != this.owner.username)
@@ -188,7 +188,7 @@ export default class CreepMissonMineExtension extends Creep {
                         }
                     }
                     // console.log(this.name, '标记3')
-                    this.goTo(stroage_.pos, 1)
+                    this.goTo(stroage_.pos, 1, null, 4)
                 }
                 else {
                     this.transfer(stroage_, "energy")

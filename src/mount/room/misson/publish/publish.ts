@@ -40,6 +40,25 @@ export default class RoomMissonPublish extends Room {
         return thisTask
     }
 
+    public public_Carrysenior(disRoom: string, CreepNum: number, shard: shardName, res: ResourceConstant, interval: number): MissionModel {
+        console.log('开始创建任务')
+        var thisTask: MissionModel =
+        {
+            name: '位面运输',
+            range: 'Creep',
+            delayTick: 99999,
+            Data: {
+                disRoom: disRoom,
+                shard: shard,
+                rType: res,
+            }
+        }
+        console.log(JSON.stringify(thisTask))
+        thisTask.CreepBind = { 'truckshard': { num: CreepNum, interval: interval, bind: []} }
+        console.log(JSON.stringify(thisTask))
+        return thisTask
+    }
+
     /**
      * 修墙任务的发布函数
      * @param Rtype     维修范围： global->全局维修 special->黄黑旗下建筑维修 nuker->核弹防御

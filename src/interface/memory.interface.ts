@@ -27,6 +27,7 @@ interface RDData{
 /* 外矿信息 存储所有外矿的信息 */
 interface OutMineData{
     road:string[]       // 外矿房间的路位置数据 ['12/24/E49S43','34/12/E49S43',....,'23/43/E49S42']
+    outroad?:string[] /*外矿排除的位置*/
     startpoint:string  // 外矿起始点 12/23/E49W43
     minepoint:{pos:string,bind:{harvest?:string,car?:string}}[]// 矿点位置，矿点绑定爬虫信息
     car?:boolean   // 是否派运输爬 默认不派出
