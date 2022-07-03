@@ -63,8 +63,9 @@ export default class RoomMissonMineExtension extends Room {
         /* 如果矿物饱和，自动进行打包操作 */
         if (storage_.store.getUsedCapacity(this.memory.mineralType) > 200000) {
             let factory_ = Game.getObjectById(this.memory.StructureIdData.FactoryId) as StructureFactory
-            if (factory_ && zipMap[this.memory.mineralType]) {
-                factory_.add(zipMap[this.memory.mineralType], 6000)
+            if (factory_ && !zipMap[this.memory.mineralType]) {
+                let storage_zip_number = Number(storage_.store.getUsedCapacity(this.memory.mineralType))
+                factory_.add(zipMap[this.memory.mineralType], 6000 + storage_zip_number)
             }
             // if (!this.memory.market) this.memory.market = {}
             // if (!this.memory.market['deal']) this.memory.market['deal'] = []
@@ -132,11 +133,12 @@ export default class RoomMissonMineExtension extends Room {
                 }
                 /* 矿点信息更新完毕了 接下来更新路线信息 */
                 if (!misson.Data.roadUpdated) {
+                    Memory.outMineData[disRoomName].road = [];
                     var startpos = unzipPosition(Memory.outMineData[disRoomName].startpoint)
                     if (!startpos) { console.log(`${startpos}不能解压成RoomPosition对象`); return }
                     /* 每个矿点都要有一个路线信息 */
                     for (var s of sources) {
-                        var results = startpos.FindPath(s.pos, 1)
+                        var results = s.pos.FindPath(startpos, 1, misson.Data.roadUpdatedforce)
                         LoopB:
                         for (var p of results) {
                             if (p.isNearTo(s.pos)) continue
@@ -148,6 +150,7 @@ export default class RoomMissonMineExtension extends Room {
                         }
                     }
                     misson.Data.roadUpdated = true
+                    misson.Data.roadUpdatedforce = false;
                     return
                 }
                 /* 先看路径点中是否有本房间的位置点，有的话就创建工地 */
@@ -176,11 +179,11 @@ export default class RoomMissonMineExtension extends Room {
         {
             misson.CreepBind['out-harvest'].num = 0
             misson.CreepBind['out-car'].num = 0
-            misson.CreepBind['out-defend'].num = 2
+            misson.CreepBind['out-defend'].num = 1
             if (Game.rooms[misson.Data.disRoom]) {
                 var enemys = Game.rooms[misson.Data.disRoom].find(FIND_HOSTILE_CREEPS, {
                     filter: (creep) => {
-                        return !isInArray(Memory.whitesheet, creep.owner.username)
+                        return !isInArray(Memory.whitesheet, creep.owner.username) && (creep.getActiveBodyparts(ATTACK) > 0 || creep.getActiveBodyparts(RANGED_ATTACK) > 0)
                     }
                 })
                 var InvaderCore = Game.rooms[misson.Data.disRoom].find(FIND_STRUCTURES, {
@@ -204,10 +207,12 @@ export default class RoomMissonMineExtension extends Room {
         if (misson.Data.relateRooms.length <= 0) return
         if (!misson.Data.index) misson.Data.index = 0
         if (!misson.Data.state) misson.Data.state = 1
-        if (misson.Data.index >= misson.Data.relateRooms.length) misson.Data.index = 0
+
         if (misson.Data.state == 1) {
             /* 观察房间 */
-            observer_.observeRoom(misson.Data.relateRooms[misson.Data.index])
+            if (misson.Data.relateRooms[misson.Data.index]) {
+                observer_.observeRoom(misson.Data.relateRooms[misson.Data.index])
+            }
             // console.log(`observer正在观察房间${misson.Data.relateRooms[misson.Data.index]}`)
             /* 获取上个tick的房间名 */
             let beforRoom: string
@@ -218,6 +223,7 @@ export default class RoomMissonMineExtension extends Room {
             }
             if (Game.rooms[beforRoom]) {
                 /* 查找power和deposit */
+                // console.log('扫描房间',this.name)
                 if (misson.Data.power) {
                     var powerbank = Game.rooms[beforRoom].find(FIND_STRUCTURES, {
                         filter: (stru) => {
@@ -247,6 +253,7 @@ export default class RoomMissonMineExtension extends Room {
                             return stru.ticksToDecay >= 3800 && stru.lastCooldown < 150
                         }
                     })
+                    // console.log(this.name, beforRoom, deposit.length)
                     if (deposit.length > 0) {
                         let BR = true
                         for (var i of this.memory.Misson['Creep']) {
@@ -269,11 +276,13 @@ export default class RoomMissonMineExtension extends Room {
                     }
                 }
             }
-            misson.Data.index++
-            if (Game.rooms[beforRoom] && misson.Data.index == 1) {
-                // console.log(Colorful("进入休息模式",'blue'))
+
+            if (misson.Data.index > misson.Data.relateRooms.length) {
+                misson.Data.index = 0
                 misson.Data.time = Game.time
                 misson.Data.state = 2
+            } else {
+                misson.Data.index++
             }
         }
         else if (misson.Data.state == 2) {

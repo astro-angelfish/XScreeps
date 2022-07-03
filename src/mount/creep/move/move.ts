@@ -2,7 +2,7 @@
 import { hurts, parts, unzipXandY } from "@/module/fun/funtion"
 import { RequestShard } from "@/module/shard/intershard"
 import { canSustain } from "@/module/war/war"
-import { closestPotalRoom, getOppositeDirection, isInArray } from "@/utils"
+import { closestPotalRoom, getOppositeDirection, isInArray, unzipPosition } from "@/utils"
 
 /* 本地寻路移动 */
 export default class CreepMoveExtension extends Creep {
@@ -30,7 +30,7 @@ export default class CreepMoveExtension extends Creep {
     }
 
     // 通用寻路
-    public findPath(target: RoomPosition, range: number, ops?: number, ExcludePosition?: RoomPosition[], plain?: number): string | null {
+    public findPath(target: RoomPosition, range: number, ops?: number, ExcludePosition?: RoomPosition[], plain?: number, ExcludePositionroad?: {} | null): string | null {
         /* 全局路线存储 */
         if (!global.routeCache) global.routeCache = {}
         if (!this.memory.moveData) this.memory.moveData = {}
@@ -76,8 +76,8 @@ export default class CreepMoveExtension extends Creep {
             }
         }
         /* 路线查找 */
-        let room_list:any = [];
-        let okroom_list:any = [];
+        let room_list: any = [];
+        let okroom_list: any = [];
         const result = PathFinder.search(this.pos, { pos: target, range: range }, {
             plainCost: plain ? plain : 2,
             swampCost: 10,
@@ -93,10 +93,21 @@ export default class CreepMoveExtension extends Creep {
                 okroom_list.push(roomName)
                 // 在爬虫记忆绕过房间列表的房间 false
                 const room = Game.rooms[roomName]
+                let costs = new PathFinder.CostMatrix
+
+                if (ExcludePositionroad) {/*预制线路*/
+                    if (ExcludePositionroad[roomName]) {
+                        for (let _pos of ExcludePositionroad[roomName]) {
+                            if (_pos.roomName != roomName) { continue }
+                            // console.log('排除位置',JSON.stringify(_pos))
+                            costs.set(_pos.x, _pos.y, 1)
+                        }
+                    }
+                }
                 // 没有视野的房间只观察地形
                 if (!room) return
                 // 有视野的房间
-                let costs = new PathFinder.CostMatrix
+
                 // 将道路的cost设置为1，无法行走的建筑设置为255
                 room.find(FIND_STRUCTURES).forEach(struct => {
                     if (struct.structureType === STRUCTURE_ROAD) {
@@ -128,6 +139,7 @@ export default class CreepMoveExtension extends Creep {
                         costs.set(_pos.x, _pos.y, 255)
                     }
                 }
+
                 return costs
             }
         })
@@ -166,25 +178,37 @@ export default class CreepMoveExtension extends Creep {
     }
 
     // 通用移动 (配合findPath 和 goByPath)
-    public goTo(target: RoomPosition, range: number = 1, ops?: number, plain?: number): CreepMoveReturnCode | ERR_NO_PATH | ERR_NOT_IN_RANGE | ERR_INVALID_TARGET {
+    public goTo(target: RoomPosition, range: number = 1, ops?: number, plain?: number, CustomPositionroad?: any[]): CreepMoveReturnCode | ERR_NO_PATH | ERR_NOT_IN_RANGE | ERR_INVALID_TARGET {
         //  var a = Game.cpu.getUsed()
         if (this.memory.moveData == undefined) this.memory.moveData = {}
         // 确认目标没有变化，如果变化了就重新规划路线
         const targetPosTag = this.standardizePos(target)
+        var ExcludePosition = {};
         if (targetPosTag !== this.memory.moveData.targetPos) {
             this.memory.moveData.targetPos = targetPosTag
-            if (range == 18) {
-                console.log('执行了新的搜索-1')
+            if (CustomPositionroad) {
+                for (var i of CustomPositionroad) {
+                    var thisPos = unzipPosition(i) as RoomPosition
+                    if (!ExcludePosition[thisPos.roomName]) {
+                        ExcludePosition[thisPos.roomName] = [];
+                    }
+                    ExcludePosition[thisPos.roomName].push(thisPos)
+                }
             }
-
-            this.memory.moveData.path = this.findPath(target, range, ops ? ops : null, this.room.memory.DefendDouPosition ? this.room.memory.DefendDouPosition : null, plain)
+            this.memory.moveData.path = this.findPath(target, range, ops ? ops : null, this.room.memory.DefendDouPosition ? this.room.memory.DefendDouPosition : null, plain, ExcludePosition)
         }
         // 确认缓存有没有被清除
         if (!this.memory.moveData.path) {
-            if (range == 18) {
-                console.log('执行了新的搜索-2')
+            if (CustomPositionroad) {
+                for (var i of CustomPositionroad) {
+                    var thisPos = unzipPosition(i) as RoomPosition
+                    if (!ExcludePosition[thisPos.roomName]) {
+                        ExcludePosition[thisPos.roomName] = [];
+                    }
+                    ExcludePosition[thisPos.roomName].push(thisPos)
+                }
             }
-            this.memory.moveData.path = this.findPath(target, range, ops ? ops : null, this.room.memory.DefendDouPosition ? this.room.memory.DefendDouPosition : null, plain)
+            this.memory.moveData.path = this.findPath(target, range, ops ? ops : null, this.room.memory.DefendDouPosition ? this.room.memory.DefendDouPosition : null, plain, ExcludePosition)
         }
         // 还为空的话就是没有找到路径
         if (!this.memory.moveData.path) {

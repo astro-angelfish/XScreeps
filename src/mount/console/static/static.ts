@@ -1,5 +1,5 @@
 import { Colorful, isInArray, GenerateAbility, CalculateEnergy } from "@/utils"
-import { result } from "lodash"
+import { forEach, result } from "lodash"
 import { allResource, roomResource } from "../control/local/resource"
 import { getStore } from "../control/local/store"
 
@@ -71,6 +71,12 @@ export default {
             thisRoom.memory.Visualdisplay = !thisRoom.memory.Visualdisplay
             return `[Visual] ${thisRoom} 可视化显示${thisRoom.memory.Visualdisplay}`
 
+        },
+        clearflagall(): string {
+            for (let flags_key in Game.flags) {
+                Game.flags[flags_key].remove()
+            }
+            return `[Visual] 完成旗帜清理`
         }
     },
     /*房间维护开销的计算*/

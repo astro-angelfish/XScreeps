@@ -9,6 +9,7 @@
     "peasantry": "rollup -cw --environment DEST:peasantry",
     "local": "rollup -cw --environment DEST:local",
     "localsf": "rollup -cw --environment DEST:localsf",
+    "localMo": "rollup -cw --environment DEST:localMo",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

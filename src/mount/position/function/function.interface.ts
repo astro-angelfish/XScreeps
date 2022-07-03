@@ -8,7 +8,7 @@ interface RoomPosition {
     GetStructure(stru:StructureConstant):Structure
     GetStructureList(stru:StructureConstant[]):StructureStorage[]
     GetRuin():Ruin
-    FindPath(target:RoomPosition,range:number):RoomPosition[]
+    FindPath(target:RoomPosition,range:number,roadUpdatedforce?:boolean):RoomPosition[]
     FindRangeCreep(num:number):Creep[]
     AddTowerRangeData(target:StructureTower,tempData:ARH):void
 }

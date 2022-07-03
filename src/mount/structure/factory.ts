@@ -112,9 +112,6 @@ export class factoryExtension extends StructureFactory {
             if ((Game.time - global.Gtime[this.room.name]) % 45) return
             delete this.room.memory.productData.producing
             let disCom = this.room.memory.productData.flowCom
-            if (this.room.name == 'W7N7') {
-                console.log('完成流水线检查')
-            }
             if (disCom)   // 检测是否可以直接生产商品 是否可以资源调度
             {
                 let disComNumber = this.store.getUsedCapacity(disCom as ResourceConstant) + storage_.store.getUsedCapacity(disCom as ResourceConstant);
@@ -183,9 +180,6 @@ export class factoryExtension extends StructureFactory {
                     }
                 }
             }
-            if (this.room.name == 'W7N7') {
-                console.log('完成流水线检查开始加工基本')
-            }
             // 如果没有流水线商品或者商品不够生产流水线商品 就生产基本商品
             if (Object.keys(this.room.memory.productData.baseList).length <= 0) return
             let zip = []        // 压缩商品 bar
@@ -207,20 +201,20 @@ export class factoryExtension extends StructureFactory {
                 }
             }
             // 检测低级商品是否满足
-            // LoopJ:
+            LoopJ:
             for (let l of low) {
                 if (storage_.store.getUsedCapacity(l) < this.room.memory.productData.baseList[l].num - 300) {
                     // if (this.owner.username == 'ExtraDim') {
                     //     /* 测试用 */
-                    //     let minList = ['energy', 'L', 'O', 'H', 'U', 'K', 'Z', 'X', 'G']
+                    let minList = ['energy', 'L', 'O', 'H', 'U', 'K', 'Z', 'X', 'G']
                     //     // 判断一下是否有足够子资源
-                    //     for (var i in COMMODITIES[l].components) {
-                    //         if (!isInArray(minList, i) &&
-                    //             storage_.store.getUsedCapacity(i as ResourceConstant) < COMMODITIES[l].components[i] &&
-                    //             ResourceCanDispatch(this.room, i as ResourceConstant, COMMODITIES[l].components[i] * 100) == 'no') {
-                    //             continue LoopJ
-                    //         }
-                    //     }
+                    for (var i in COMMODITIES[l].components) {
+                        if (!isInArray(minList, i) &&
+                            storage_.store.getUsedCapacity(i as ResourceConstant) < COMMODITIES[l].components[i] &&
+                            ResourceCanDispatch(this.room, i as ResourceConstant, COMMODITIES[l].components[i] * 100) == 'no') {
+                            continue LoopJ
+                        }
+                    }
                     // }
                     console.log(`[factory] 房间${this.room.name}转入base生产模式,目标商品为${l}`)
                     this.room.memory.productData.state = 'base'

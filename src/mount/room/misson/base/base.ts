@@ -180,7 +180,7 @@ export default class RoomMissonFrameExtension extends Room {
                 return true
             }
         }
-        console.log(Colorful(`任务删除失败 ID:${m.id} Name:${m.name} Room:${this.name}`, 'red'))
+        console.log(Colorful(`任务删除失败 ID:${id} Room:${this.name}`, 'red'))
         return false
     }
 
@@ -519,7 +519,7 @@ export default class RoomMissonFrameExtension extends Room {
         for (let Roomname in global.RoomResource) {
             let _RoomData = global.RoomResource[Roomname]
             let rTypeNum = _RoomData[rType];
-            if(!rTypeNum) continue;
+            if (!rTypeNum) continue;
 
             /*标记rType 查询保存量*/
             var basic_num = 0;

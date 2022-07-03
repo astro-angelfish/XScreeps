@@ -168,14 +168,14 @@ export default {
             return `[mine] ${roomName} -> ${disRoom} 的外矿任务删除失败！`
         },
         // 更新外矿road信息
-        road(roomName: string): string {
-            if (!Game.rooms[roomName]) return `[mine] 不存在相应视野`
-            let roads = Game.rooms[roomName].find(FIND_STRUCTURES, {
+        road(roomName: string, disRoom: string): string {
+            if (!Game.rooms[disRoom]) return `[mine] 不存在相应视野`
+            let roads = Game.rooms[disRoom].find(FIND_STRUCTURES, {
                 filter: (stru) => {
                     return stru.structureType == 'road'
                 }
             })
-            let cons = Game.rooms[roomName].find(FIND_CONSTRUCTION_SITES, {
+            let cons = Game.rooms[disRoom].find(FIND_CONSTRUCTION_SITES, {
                 filter: (cons) => {
                     return cons.structureType == 'road'
                 }
@@ -195,8 +195,39 @@ export default {
                 if (!isInArray(Memory.outMineData[roomName].road, p))
                     Memory.outMineData[roomName].road.push(p)
             }
-            return `[mine] 已经更新房间${roomName}的外矿信息!`
+            return `[mine] 已经更新房间${disRoom}的外矿信息!`
         },
+        uproad(roomName: string, disRoom: string, roadUpdatedforce?: boolean): string {
+            var thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[mine] 不存在房间${roomName}`
+            for (var i of thisRoom.memory.Misson['Creep']) {
+                if (i.name == '外矿开采' && i.Data.disRoom == disRoom) {
+                    i.Data.roadUpdatedforce = roadUpdatedforce ? true : false;
+                    i.Data.roadUpdated = false;
+                    i.Data.state = 1;
+                    return `[mine] ${roomName} -> ${disRoom} 的外矿任务更新成功！`
+                }
+            }
+            return `[mine] ${roomName} -> ${disRoom} 的外矿任务更新失败！`
+        },
+        Delroad(roomName: string, x: number, y: number): string {
+            var thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[mine] 不存在房间${roomName}`
+            let road_t = `${x}/${y}/${roomName}`
+            if (!isInArray(Memory.outMineData[roomName].road, road_t)) return `[mine] 已经没有${road_t}路径信息!`
+            let index = Memory.outMineData[roomName].road.indexOf(road_t)
+            Memory.outMineData[roomName].road.splice(index, 1)
+            var thisPosition: RoomPosition = new RoomPosition(x, y, roomName)
+            var result = []
+            for (var looki of thisPosition.lookFor(LOOK_STRUCTURES)) result.push(looki)
+            for (var lookj of thisPosition.lookFor(LOOK_CONSTRUCTION_SITES)) result.push(lookj)
+            for (var sample of result) {
+                if (sample.destroy) sample.destroy()
+                else if (sample.remove) sample.remove()
+            }
+            return `[mine] 已经更新房间路径信息!`
+
+        }
     },
 
     /* 市场 */

@@ -119,7 +119,7 @@ export default class RoomCoreSpawnExtension extends Room {
             let roleName = spawnlist[0].role
             let mem = spawnlist[0].memory
             let bd = spawnlist[0].body
-            let body = GenerateAbility(bd[0], bd[1], bd[2], bd[3], bd[4], bd[5], bd[6], bd[7])
+            let body = GenerateAbility(bd[0], bd[1], bd[2], bd[3], bd[4], bd[5], bd[6], bd[7],roleName)
             // 如果global有该爬虫的部件信息，优先用global的数据 global.SpecialBodyData  次优先级
             if (global.SpecialBodyData[this.name][roleName]) {
                 body = global.SpecialBodyData[this.name][roleName]

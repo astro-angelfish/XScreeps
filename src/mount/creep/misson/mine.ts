@@ -169,26 +169,33 @@ export default class CreepMissonMineExtension extends Creep {
                 var stroage_ = Game.rooms[this.memory.belong].storage
                 if (!stroage_) return
                 if (!this.pos.isNearTo(stroage_)) {
-                    var construsions = this.pos.findClosestByPath(FIND_MY_CONSTRUCTION_SITES, {
-                        filter: (constr) => {
-                            return constr.structureType == 'road'
-                        }
-                    })
-                    // console.log(this.name, '标记1')
-                    if (construsions) {
-                        this.build_(construsions)
-                        return
-                    }
-                    // console.log(this.name, '标记2')
-                    if (this.room.name != this.memory.belong) {/*只修理外矿*/
-                        var road_ = this.pos.GetStructure('road')
-                        if (road_ && road_.hits < road_.hitsMax - 200) {
-                            this.repair(road_)
+                    if (this.getActiveBodyparts(WORK) > 0) {
+                        var construsions = this.pos.findClosestByPath(FIND_MY_CONSTRUCTION_SITES, {
+                            filter: (constr) => {
+                                return constr.structureType == 'road'
+                            }
+                        })
+                        // console.log(this.name, '标记1')
+                        if (construsions) {
+                            this.build_(construsions)
                             return
+                        }
+                        // console.log(this.name, '标记2')
+                        if (this.room.name != this.memory.belong) {/*只修理外矿*/
+                            var road_ = this.pos.GetStructure('road')
+                            if (road_ && road_.hits < road_.hitsMax - 200) {
+                                this.repair(road_)
+                                return
+                            }
                         }
                     }
                     // console.log(this.name, '标记3')
-                    this.goTo(stroage_.pos, 1, null, 4)
+                    if (Memory.outMineData && Memory.outMineData[creepMisson.roomName]) {
+                        this.goTo(stroage_.pos, 1, null, 4, Memory.outMineData[creepMisson.roomName].road)
+                    } else {
+                        this.goTo(stroage_.pos, 1, null, 4)
+                    }
+
                 }
                 else {
                     this.transfer(stroage_, "energy")
@@ -196,6 +203,15 @@ export default class CreepMissonMineExtension extends Creep {
                 }
             }
             else {
+                if (this.memory.belong == this.room.name && this.ticksToLive < 200) {
+                    if (this.memory.moveData) {
+                        if (this.memory.moveData.path) {
+                            if (this.memory.moveData.path.length * 2 + 30 > this.ticksToLive) {
+                                this.suicide()
+                            }
+                        }
+                    }
+                }
                 if (!Game.rooms[disPos.roomName]) {
                     this.goTo(disPos, 1)
                     return
@@ -225,12 +241,15 @@ export default class CreepMissonMineExtension extends Creep {
 
         }
         else {
-            if (this.hits < this.hitsMax) this.heal(this)
+            var heal_state = false;
+            if (this.hits < this.hitsMax) heal_state = true
             if (this.room.name != creepMisson.disRoom) {
                 this.goTo(new RoomPosition(25, 25, creepMisson.disRoom), 20)
+                if (heal_state) { this.heal(this) }
             }
             else {
                 if (globalMisson.Data.state == 2) {
+                    if (heal_state) { this.heal(this) }
                     let wounded = this.pos.findClosestByRange(FIND_MY_CREEPS, {
                         filter: (creep) => {
                             return creep.hits < creep.hitsMax && creep != this
@@ -239,6 +258,13 @@ export default class CreepMissonMineExtension extends Creep {
                     if (wounded) {
                         if (!this.pos.isNearTo(wounded)) this.goTo(wounded.pos, 1)
                         this.heal(wounded)
+                    } else {
+                        let wounded_isNearTo = this.pos.findInRange(FIND_MY_CREEPS, 1, {
+                            filter: (creep) => {
+                                return creep.hits < creep.hitsMax && creep != this
+                            }
+                        })
+                        this.heal(wounded_isNearTo[0])
                     }
                     return
                 }
@@ -249,21 +275,37 @@ export default class CreepMissonMineExtension extends Creep {
                 })
                 if (enemy) {
                     if (this.rangedAttack(enemy) == ERR_NOT_IN_RANGE) {
-                        this.goTo(enemy.pos, 3)
+                        this.goTo(enemy.pos, 1)
                     }
-                    return
-                }
-                var InvaderCore = this.pos.findClosestByPath(FIND_HOSTILE_STRUCTURES, {
-                    filter: (stru) => {
-                        return stru.structureType != 'rampart'
+                    if (!heal_state) {
+                        /*判定是否相邻*/
+                        if (this.pos.isNearTo(enemy)) {
+                            this.attack(enemy)
+                        } else {
+                            this.goTo(enemy.pos, 1)
+                        }
                     }
-                })
-                if (InvaderCore) {
-                    this.memory.standed = true
-                    if (!this.pos.isNearTo(InvaderCore)) this.goTo(InvaderCore.pos, 1)
-                    else this.rangedMassAttack()
-                    return
+
+                } else {
+                    var InvaderCore = this.pos.findClosestByPath(FIND_HOSTILE_STRUCTURES, {
+                        filter: (stru) => {
+                            return stru.structureType != 'rampart'
+                        }
+                    })
+                    if (InvaderCore) {
+                        this.memory.standed = true
+                        if (!this.pos.isNearTo(InvaderCore)) this.goTo(InvaderCore.pos, 1)
+                        else this.rangedMassAttack()
+
+                        if (!heal_state) {
+                            /*判定是否相邻*/
+                            if (this.pos.isNearTo(enemy)) {
+                                this.rangedAttack(enemy)
+                            }
+                        }
+                    }
                 }
+                if (heal_state) { this.heal(this) }
             }
         }
     }
@@ -301,6 +343,18 @@ export default class CreepMissonMineExtension extends Creep {
                     return
                 if (this.fatigue || Game.creeps[this.memory.double].fatigue)
                     return
+
+                /*出击 主动攻击*/
+                const h_creeps = this.pos.findInRange(FIND_HOSTILE_CREEPS, 4);
+                if (h_creeps.length > 0) {
+                    // console.log("找到攻击目标",h_creeps[0].name)
+                    if (this.pos.isNearTo(h_creeps[0])) {
+                        this.attack(h_creeps[0]);
+                    } else {
+                        this.goTo(h_creeps[0].pos, 1)
+                    }
+                    return
+                }
                 /* 先寻找powerbank周围的空点，并寻找空点上有没有人 */
                 if (!this.pos.isNearTo(missonPostion)) {
                     if (!Game.rooms[missonPostion.roomName]) {
@@ -334,15 +388,16 @@ export default class CreepMissonMineExtension extends Creep {
                     }
                 }
                 else {
+
                     /* 这是被攻击了 */
-                    if (this.hits < 1500) {
-                        /* 被攻击停止所有爬虫生产 */
-                        globalMisson.CreepBind['power-attack'].num = 0
-                        globalMisson.CreepBind['power-heal'].num = 0
-                        let hostileCreep = this.pos.findClosestByRange(FIND_HOSTILE_CREEPS)
-                        Game.notify(`[warning] 采集爬虫小队${this.name}遭受${hostileCreep ? hostileCreep.owner.username : "不明"}攻击，地点在${this.room.name}！已经停止该power爬虫孵化！`)
-                        return
-                    }
+                    // if (this.hits < 1000) {
+                    //     /* 被攻击停止所有爬虫生产 */
+                    //     globalMisson.CreepBind['power-attack'].num = 0
+                    //     globalMisson.CreepBind['power-heal'].num = 0
+                    //     let hostileCreep = this.pos.findClosestByRange(FIND_HOSTILE_CREEPS)
+                    //     Game.notify(`[warning] 采集爬虫小队${this.name}遭受${hostileCreep ? hostileCreep.owner.username : "不明"}攻击，地点在${this.room.name}！已经停止该power爬虫孵化！`)
+                    //     return
+                    // }
                     if (!this.memory.tick) this.memory.tick = this.ticksToLive
                     var powerbank_ = missonPostion.GetStructure('powerBank')
                     if (powerbank_) {
@@ -460,11 +515,9 @@ export default class CreepMissonMineExtension extends Creep {
                         /* 说明没有资源了 */
                         if (this.store.getUsedCapacity('power') > 0) this.memory.working = true
                         if (ruins.length <= 0 && drop_power.length <= 0 && this.store.getUsedCapacity('power') <= 0) {
+                            globalMisson.CreepBind['power-carry'].num = 0
                             this.suicide()
                         }
-
-
-
                     }
                 }
             }

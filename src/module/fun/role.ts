@@ -42,10 +42,18 @@ export function harvest_(creep_: Creep): void {
             if (!link) delete data.linkID
             else {
                 if (link.hits < link.hitsMax) { creep_.repair(link); return }
-                if (creep_.pos.isNearTo(link)) creep_.transfer(link, 'energy')
-                else creep_.goTo(link.pos, 1)
+                if (creep_.pos.isNearTo(link)) {
+                    if (link.store.getFreeCapacity('energy') > 0) {
+                        creep_.transfer(link, 'energy')
+                        return
+                    }
+                }
+                else {
+                    creep_.goTo(link.pos, 1)
+                    return
+                }
             }
-            return
+
         }
 
         // 其次寻找container
@@ -54,10 +62,16 @@ export function harvest_(creep_: Creep): void {
             if (!container) delete data.containerID
             else {
                 if (container.hits < container.hitsMax) { creep_.repair(container); return }
-                if (creep_.pos.isEqualTo(container)) creep_.transfer(container, 'energy')
-                else creep_.goTo(container.pos, 0)
+                if (creep_.pos.isEqualTo(container)) {
+                    creep_.transfer(container, 'energy')
+                    return
+                }
+                else {
+                    creep_.goTo(container.pos, 0)
+                    return
+                }
             }
-            return
+
         }
     }
     else {

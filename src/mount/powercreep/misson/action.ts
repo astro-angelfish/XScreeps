@@ -162,7 +162,9 @@ export default class PowerCreepMissonAction extends PowerCreep {
         if (!source_) return;
         if (source_.effects) {
             if (source_.effects.length > 0) {
-                Game.rooms[this.memory.belong].DeleteMission(this.memory.MissionData.id)
+                if (this.memory.MissionData.id) {
+                    Game.rooms[this.memory.belong].DeleteMission(this.memory.MissionData.id) 
+                }
                 this.memory.MissionData = {}
             }
         }

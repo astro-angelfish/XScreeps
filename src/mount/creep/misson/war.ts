@@ -353,7 +353,7 @@ export default class CreepMissonWarExtension extends Creep {
                     return !isInArray(Memory.whitesheet, creep.name)
                 }
             })
-            if (closestCreep && !this.pos.inRangeTo(closestCreep.pos, 3)) {
+            if (closestCreep && !this.pos.inRangeTo(closestCreep.pos, 2)) {
                 /* 找离虫子最近的rampart */
                 var nearstram = closestCreep.pos.findClosestByRange(FIND_MY_STRUCTURES, {
                     filter: (stru) => {
@@ -368,6 +368,30 @@ export default class CreepMissonWarExtension extends Creep {
                     this.goTo_defend(nearstram.pos, 0)
                 }
 
+            } else {
+                var nearstram = this.pos.findClosestByRange(FIND_MY_STRUCTURES, {
+                    filter: (stru) => {
+                        return stru.structureType == 'rampart' && stru.pos.GetStructureList(['extension', 'link', 'observer', 'tower', 'controller', 'extractor']).length <= 0 && (stru.pos.lookFor(LOOK_CREEPS).length <= 0 || stru.pos.lookFor(LOOK_CREEPS)[0] == this) && CheckExcludeRampart(this.room, stru.pos)
+                    }
+                })
+                if (nearstram) {
+
+                    if (Game.flags['TowerVisualWar']) {
+                        this.room.visual.line(this.pos, nearstram.pos,
+                            { color: 'aqua', lineStyle: 'dashed' });
+                    }
+                    this.goTo_defend(nearstram.pos, 0)
+                }
+            }
+            /*检查是否有相邻的敌对目标。进行进攻*/
+            var adjoinCreep = this.pos.findInRange(FIND_HOSTILE_CREEPS, 1, {
+                filter: (creep) => {
+                    return !isInArray(Memory.whitesheet, creep.name)
+                }
+            })
+            if (adjoinCreep.length > 0) {
+                console.log(this.name,'攻击相邻',adjoinCreep[0].name)
+                this.attack(adjoinCreep[0])
             }
         }
         if (this.pos.x >= 48 || this.pos.x <= 1 || this.pos.y >= 48 || this.pos.y <= 1) {
@@ -1082,7 +1106,9 @@ export default class CreepMissonWarExtension extends Creep {
                 if (!followCreep && portal) { return }
                 if (followCreep) {
                     // 跟随爬不靠在一起就等一等
-                    if (!this.pos.isNearTo(followCreep)) return
+                    if (!this.pos.isNearTo(followCreep)) {
+                        return;
+                    }
                 }
             }
             /* 编号为 1 2 3 的爬需要遵守的规则 */
@@ -1098,7 +1124,10 @@ export default class CreepMissonWarExtension extends Creep {
                     this.updateShardAffirm()
                 }
                 if (disCreepName == null || (!Game.creeps[disCreepName] && !portal)) return
-                if (!Game.creeps[disCreepName] && portal) { this.arriveTo(new RoomPosition(24, 24, roomName), 20, shard, data.shardData ? data.shardData : null); return }
+                if (!Game.creeps[disCreepName] && portal) {
+                    this.arriveTo(new RoomPosition(24, 24, roomName), 20, shard, data.shardData ? data.shardData : null);
+                    return
+                }
                 if (Game.shard.name == shard && !Game.creeps[disCreepName]) return
                 var disCreep = Game.creeps[disCreepName]
                 if (this.room.name == this.memory.belong) this.goTo(disCreep.pos, 0)
@@ -1120,7 +1149,7 @@ export default class CreepMissonWarExtension extends Creep {
                     // 没有集结旗帜的情况下，自动判断
                     if (identifyNext(this.room.name, roomName) == false || Game.shard.name != data.shard) {
                         this.say("🔪")
-                      
+
                         if (this.memory.squad[this.name].index == 0)
                             // console.log('四人小队移动',this.name,roomName)
                             this.arriveTo(new RoomPosition(24, 24, roomName), 18, shard, data.shardData ? data.shardData : null)

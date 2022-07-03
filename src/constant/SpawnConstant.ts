@@ -51,7 +51,7 @@ export const RoleData: SpawnConstantData = {
     'out-car': { num: 0, ability: [1, 5, 6, 0, 0, 0, 0, 0], level: 13, mark: "🚜" },
     'out-defend': { num: 0, ability: [0, 0, 5, 5, 0, 5, 0, 0], level: 10, mark: "🧹" },
     /* 帕瓦 */
-    'power-attack': { num: 0, ability: [0, 0, 20, 20, 0, 0, 0, 0], level: 10, mark: "🍎" },
+    'power-attack': { num: 0, ability: [0, 0, 25, 20, 0, 0, 0, 5], level: 10, mark: "🍎" },
     'power-heal': { num: 0, ability: [0, 0, 25, 0, 0, 25, 0, 0], level: 10, mark: "🍏" },
     'power-carry': { num: 0, ability: [0, 32, 16, 0, 0, 0, 0, 0], level: 10, mark: "📦" },
     /* 沉积物 */
@@ -89,8 +89,8 @@ export const RoleLevelData = {
         4: { bodypart: [0, 6, 6, 0, 0, 0, 0, 0], num: 2 },
         5: { bodypart: [0, 6, 6, 0, 0, 0, 0, 0], num: 2 },
         6: { bodypart: [0, 6, 6, 0, 0, 0, 0, 0], num: 1 },
-        7: { bodypart: [0, 2, 2, 0, 0, 0, 0, 0], num: 0 },
-        8: { bodypart: [0, 2, 2, 0, 0, 0, 0, 0], num: 0 },
+        7: { bodypart: [0, 10, 10, 0, 0, 0, 0, 0], num: 0 },
+        8: { bodypart: [0, 10, 10, 0, 0, 0, 0, 0], num: 0 },
     },
     'upgrade': {
         1: { bodypart: [1, 1, 2, 0, 0, 0, 0, 0], num: 3 },
@@ -214,7 +214,7 @@ export const RoleLevelData = {
         5: { bodypart: [0, 0, 6, 0, 3, 3, 0, 0], num: 0 },
         6: { bodypart: [0, 0, 8, 0, 4, 4, 0, 0], num: 0 },
         7: { bodypart: [0, 0, 16, 0, 8, 8, 0, 0], num: 0 },
-        8: { bodypart: [0, 0, 20, 0, 10, 10, 0, 0], num: 0 },
+        8: { bodypart: [0, 0, 23, 3, 10, 10, 0, 0], num: 0 },
     },
     'r-dismantle': {
         1: { bodypart: [1, 0, 1, 0, 0, 0, 0, 0], num: 0 },

@@ -41,18 +41,27 @@ export const createApp = function (opt: Partial<CreateOptions> = {}) {
      * 来源 @see https://screeps.slack.com/files/U33SKDU0P/F5GKDBBAA/Memory_Cache.js?origin_team=T0HJCPP9T&origin_channel=C2G22RFPF
      */
     let _memoryCacher: MemoryCacher = next => {
-        if (_cachedMemory) {
-            // @ts-ignore
-            delete global.Memory
-            // @ts-ignore
-            global.Memory = _cachedMemory
+        switch (Game.shard.name) {
+            case 'shard1':
+                _cachedMemory = Memory
+                // @ts-ignore
+                delete global.Memory
+                // @ts-ignore
+                global.Memory = _cachedMemory
+                break;
+            default:
+                if (_cachedMemory) {
+                    // @ts-ignore
+                    delete global.Memory
+                    // @ts-ignore
+                    global.Memory = _cachedMemory
+                }
+                else {
+                    _cachedMemory = Memory
+                }
+                break;
         }
-        else {
-            _cachedMemory = Memory
-        }
-
         next()
-
         // @ts-ignore
         RawMemory.set(JSON.stringify(global.Memory))
     }
