@@ -218,7 +218,7 @@ export class factoryExtension extends StructureFactory {
                     // }
                     console.log(`[factory] 房间${this.room.name}转入base生产模式,目标商品为${l}`)
                     this.room.memory.productData.state = 'base'
-                    this.room.memory.productData.producing = { com: l, num: this.room.memory.productData.baseList[l].num }
+                    this.room.memory.productData.producing = { com: l, num: this.room.memory.productData.baseList[l].num}
                     return
                 }
             }

@@ -42,7 +42,7 @@ export const createApp = function (opt: Partial<CreateOptions> = {}) {
      */
     let _memoryCacher: MemoryCacher = next => {
         switch (Game.shard.name) {
-            case 'shard1':
+            case 'shard9':
                 _cachedMemory = Memory
                 // @ts-ignore
                 delete global.Memory

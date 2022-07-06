@@ -329,7 +329,7 @@ export default class CreepMissonActionExtension extends Creep {
             this.arriveTo(new RoomPosition(24, 24, missionData.Data.disRoom), 10, missionData.Data.shard, missionData.Data.shardData ? missionData.Data.shardData : null)
             return
         }
-        if(this.room.name == missionData.Data.disRoom && Game.shard.name == missionData.Data.shard){
+        if (this.room.name == missionData.Data.disRoom && Game.shard.name == missionData.Data.shard) {
 
         }
         if (!this.memory.arrived && Game.flags[`${this.memory.belong}/expand`] && Game.flags[`${this.memory.belong}/expand`].pos.roomName == this.room.name) {
@@ -688,6 +688,12 @@ export default class CreepMissonActionExtension extends Creep {
                 })
                 if (tower) {
                     this.transfer_(tower, 'energy')
+                    return
+                }
+
+                let _storage = this.room.storage;
+                if (_storage) {
+                    this.transfer_(_storage, 'energy')
                     return
                 }
             }

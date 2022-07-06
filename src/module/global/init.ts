@@ -37,6 +37,13 @@ export const MemoryInit = function (): void {
     global.RoomResource = {}
     global.HostileCreepsData = {}
     // Memory.SystemEconomy = false;
+    if (Game.time % 100) {
+        for (let rooms in Memory.rooms) {
+            if (!Game.rooms[rooms]) {
+                delete Memory.rooms[rooms]
+            }
+        }
+    }
 }
 export const MemoryTickStart = function (): void {
 

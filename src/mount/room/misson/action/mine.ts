@@ -65,8 +65,12 @@ export default class RoomMissonMineExtension extends Room {
             let factory_ = Game.getObjectById(this.memory.StructureIdData.FactoryId) as StructureFactory
             if (factory_ && zipMap[this.memory.mineralType] && !Game.rooms[this.name].memory.productData.unzip[this.memory.mineralType]) {
 
-                let storage_zip_number = Number(storage_.store.getUsedCapacity(this.memory.mineralType))
-                factory_.add(zipMap[this.memory.mineralType], 6000 + storage_zip_number)
+                // let storage_zip_number = Number(storage_.store.getUsedCapacity(zipMap[this.memory.mineralType]))
+                // factory_.add(zipMap[this.memory.mineralType], 6000 + storage_zip_number)
+                if (Game.rooms[this.name].memory.productData.state == 'sleep') {
+                    Game.rooms[this.name].memory.productData.state == 'base'
+                    Game.rooms[this.name].memory.productData.producing = { com: zipMap[this.memory.mineralType], num: 6000 }
+                }
             }
             // if (!this.memory.market) this.memory.market = {}
             // if (!this.memory.market['deal']) this.memory.market['deal'] = []
