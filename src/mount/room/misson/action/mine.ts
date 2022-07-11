@@ -316,7 +316,8 @@ export default class RoomMissonMineExtension extends Room {
             if (misson.CreepBind['power-carry'].num == misson.CreepBind['power-carry'].bind.length && misson.CreepBind['power-carry'].num != 0) {
                 misson.CreepBind['power-carry'].num = 0
             }
-            if (misson.CreepBind['power-attack'].bind.length <= 0 && misson.CreepBind['power-heal'].bind.length <= 0 && misson.CreepBind['power-carry'].bind.length <= 0) {
+            if (misson.CreepBind['power-attack'].bind.length <= 0 && misson.CreepBind['power-heal'].bind.length <= 0 && misson.CreepBind['power-carry'].bind.length <= 0
+                && misson.CreepBind['power-carry'].num <= 0) {
                 this.DeleteMission(misson.id)
             }
         }
