@@ -144,6 +144,39 @@ export function ResourceDispatchTick(): void {
             }
         }
     }
+    /*帕瓦资源调度器 100tick 调度一次*/
+    // if (Game.shard.name != 'shard3') return;
+    if (Game.time % 101) return;
+    if (Memory.PowerSupply.length > 0 && global.PowerDemand.length > 0) {
+        let rType = RESOURCE_POWER;
+        let PowerNum = 2000;
+        LoopP:
+        for (let roomName of Memory.PowerSupply) {
+            var thisRoom = Game.rooms[roomName]
+            if (!thisRoom) continue;
+            var terminal_ = Game.getObjectById(thisRoom.memory.StructureIdData.terminalID) as StructureTerminal
+            var storage_ = Game.getObjectById(thisRoom.memory.StructureIdData.storageID) as StructureStorage
+            if (!terminal_ || !storage_) { delete thisRoom.memory.StructureIdData.terminalID; delete thisRoom.memory.StructureIdData.storageID; }
+            if (!thisRoom.memory.Misson['Structure']) thisRoom.memory.Misson['Structure'] = []
+            for (var tM of thisRoom.memory.Misson['Structure']) {
+                if (tM.name == '资源传送' && tM.Data.rType == rType) {
+                    continue LoopP;/*存在任务将会直接跳出*/
+                }
+            }
+            /* 计算资源是否满足 */
+            if (terminal_.store.getUsedCapacity(rType) + storage_.store.getUsedCapacity(rType) < PowerNum + 5000) continue;
+            /*提前进行保留运费的计算操作*/
+            if (terminal_.store.getUsedCapacity('energy') < 25000) continue;
+            /*开始具体房间的运算操作*/
+            let disRoom: string = global.PowerDemand.shift();
+            var thisTask = thisRoom.public_Send(disRoom, rType, PowerNum)
+            if (thisRoom.AddMission(thisTask)) {
+                continue;
+            }
+        }
+    }
+
+
 }
 export const ResourceDispatchDelayManager: AppLifecycleCallbacks = {
     tickEnd: ResourceDispatchTick

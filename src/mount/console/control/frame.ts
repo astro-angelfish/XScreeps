@@ -248,4 +248,31 @@ export default {
             return result
         }
     },
+    /*帕瓦的供应设置模块*/
+    powersupply: {
+        /*添加帕瓦供应的房间列表*/
+        add(roomNames: string): string {
+            if (!Memory.PowerSupply) Memory.PowerSupply = []
+            var myRoom = Game.rooms[roomNames]
+            if (!myRoom) return `[powersupply] 未找到房间${roomNames},请确认房间!`
+            // 确保新增的房间名不会重复
+            Memory.PowerSupply = _.uniq([...Memory.PowerSupply, roomNames])
+            return `[powersupply]已添加供应房间 \n ${this.show()}`
+        },
+        show(): string {
+            if (!Memory.PowerSupply || Memory.PowerSupply.length <= 0) return '[powersupply]当前power供应房间'
+            return `[powersupply]当前power供应房间列表：${Memory.PowerSupply.join(' ')}`
+        },
+        clean(): string {
+            Memory.PowerSupply = []
+            return `[powersupply]已清空供应房间列表，当前列表：${Memory.PowerSupply.join(' ')}`
+        },
+        remove(roomNames: string): string {
+            if (!Memory.PowerSupply) Memory.PowerSupply = []
+            if (roomNames.length <= 0) delete Memory.PowerSupply
+            else Memory.PowerSupply = _.difference(Memory.PowerSupply, [roomNames])
+            return `[powersupply]已移除供应房间${roomNames}`
+        }
+
+    }
 }

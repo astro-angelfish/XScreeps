@@ -49,6 +49,8 @@ declare module NodeJS {
         RoomDataVisual?: string
         Adaption?: any,
         RoomResource?: { [roomName: string]: {} },
+        /*帕瓦的需求列表*/
+        PowerDemand?: string[],
         roomStructsData?: {
             roomName?: string,
             storagePos?: { x: number, y: number },
@@ -91,7 +93,7 @@ interface ARH {
     attack: number
     repair: number
     heal: number
-    avoid?:number
+    avoid?: number
 }
 
 interface StructureData {

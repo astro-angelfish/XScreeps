@@ -516,7 +516,8 @@ export default class RoomMissonBehaviourExtension extends Room {
             SavePower = true;
         }
         // SavePower 是节省能量的一种"熔断"机制 防止烧power致死
-        if (storage_.store.getUsedCapacity('energy') > (SavePower ? 250000 : 150000) && storage_.store.getUsedCapacity('power') > 100) {
+        let storage_number = storage_.store.getUsedCapacity('power');
+        if (storage_.store.getUsedCapacity('energy') > (SavePower ? 250000 : 150000) && storage_number > 100) {
             /* 发布烧power任务 */
             var thisTask: MissionModel = {
                 name: 'power升级',
@@ -525,6 +526,17 @@ export default class RoomMissonBehaviourExtension extends Room {
                 state: 1
             }
             this.AddMission(thisTask)
+        } else {
+            if (!this.terminal) return;
+            if (storage_number + this.terminal.store.getUsedCapacity('power') <= 5000) {
+                console.log(this.name, '等待帕瓦供应')
+                /*将补充信息添加到待处理的列表中*/
+                global.PowerDemand = _.uniq([...global.PowerDemand, this.name])
+            } else {
+                if (global.PowerDemand.length > 0) {
+                    global.PowerDemand = _.difference(global.PowerDemand, this.name)
+                }
+            }
         }
     }
 
