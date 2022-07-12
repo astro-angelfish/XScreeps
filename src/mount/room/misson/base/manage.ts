@@ -6,7 +6,7 @@ export default class RoomMissonManageExtension extends Room {
     public Task_Clink(): void {
         if ((Game.time - global.Gtime[this.name]) % 5) return
         if (!this.memory.StructureIdData.center_link) return/*不存在中央LINK终止*/
-        var center_link = Game.getObjectById(this.memory.StructureIdData.center_link as string) as StructureLink
+        var center_link = Game.getObjectById(this.memory.StructureIdData.center_link as Id<StructureLink>) as StructureLink
         if (!center_link) { delete this.memory.StructureIdData.center_link; return }
         var storage_ = this.storage as StructureStorage/*获取storage*/
         if (!storage_) { return }

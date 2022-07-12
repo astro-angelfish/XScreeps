@@ -32,7 +32,7 @@ export default class RoomCoreEcosphereExtension extends Room {
                 let source = Game.getObjectById(sourceID) as Source
                 let harvestcontainerID = this.memory.harvestData[sourceID].containerID;
                 if (!harvestcontainerID) return
-                let container = Game.getObjectById(harvestcontainerID) as StructureContainer
+                let container = Game.getObjectById(harvestcontainerID as Id<StructureContainer>) as StructureContainer
                 if (!container) return
                 let points = source.pos.getSourceLinkVoid()
                 if (points.length <= 0) return
@@ -54,7 +54,7 @@ export default class RoomCoreEcosphereExtension extends Room {
                 let source = Game.getObjectById(sourceID) as Source
                 let harvestcontainerID = this.memory.harvestData[sourceID].containerID;
                 if (!harvestcontainerID) return
-                let container = Game.getObjectById(harvestcontainerID) as StructureContainer
+                let container = Game.getObjectById(harvestcontainerID as Id<StructureContainer>) as StructureContainer
                 if (!container) return
                 let points = source.pos.getSourceLinkVoid()
                 if (points.length <= 0) return

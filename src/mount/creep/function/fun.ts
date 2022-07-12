@@ -86,7 +86,7 @@ export default class CreepFunctionExtension extends Creep {
                     }
                 }
                 if (!tempID) continue
-                var disLab = Game.getObjectById(tempID) as StructureLab
+                var disLab = Game.getObjectById(tempID as Id<StructureLab>) as StructureLab
                 if (!disLab) continue
                 // 计算body部件
                 let s = 0

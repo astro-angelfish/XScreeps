@@ -154,7 +154,7 @@ export default class RoomFunctionFindExtension extends Room {
         }
         for (let i in miss.LabBind) {
             if (miss.LabBind[i] == rType) {
-                let lab_ = Game.getObjectById(i) as StructureLab
+                let lab_ = Game.getObjectById(i as Id<StructureLab>) as StructureLab
                 if (!lab_) {
                     delete this.memory.RoomLabBind[i]
                     // 删除 structureIdData中的无效lab
@@ -335,7 +335,7 @@ export default class RoomFunctionFindExtension extends Room {
             // 寻找性质为com的lab
             for (let occ_lab_id in this.memory.RoomLabBind) {
                 // 只要lab存在，且其ID注册为com 就强制占用
-                if (this.memory.RoomLabBind[occ_lab_id].type && this.memory.RoomLabBind[occ_lab_id].type == 'com' && Game.getObjectById(occ_lab_id)) {
+                if (this.memory.RoomLabBind[occ_lab_id].type && this.memory.RoomLabBind[occ_lab_id].type == 'com' && Game.getObjectById(occ_lab_id as Id<StructureLab>)) {
                     return occ_lab_id
                 }
             }

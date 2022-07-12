@@ -20,7 +20,7 @@ export default class CreepMissonActionExtension extends Creep {
             // 需要boost检查，必要情况下可以不检查
             let boo = false
             for (var ids in mission.LabBind) {
-                var lab_ = Game.getObjectById(ids) as StructureLab
+                var lab_ = Game.getObjectById(ids as Id<StructureLab>) as StructureLab
                 if (!lab_ || !lab_.mineralType || lab_.store.getUsedCapacity(lab_.mineralType) < 500)
                     boo = true
             }
@@ -45,7 +45,7 @@ export default class CreepMissonActionExtension extends Creep {
             if (this.memory.working) {
                 if (this.memory.targetID) {
                     this.say("🛠️")
-                    var target_ = Game.getObjectById(this.memory.targetID) as StructureRampart
+                    var target_ = Game.getObjectById(this.memory.targetID as Id<StructureRampart>) as StructureRampart
                     if (!target_) { delete this.memory.targetID; return }
                     this.repair_(target_)
                     let hostileCreep = this.pos.findInRange(FIND_HOSTILE_CREEPS, 3, {
@@ -109,7 +109,7 @@ export default class CreepMissonActionExtension extends Creep {
                             }
                         }
                     }
-                    var tank_ = Game.getObjectById(this.memory.containerID) as Structure
+                    var tank_ = Game.getObjectById(this.memory.containerID as Id<Structure>) as Structure
                 }
                 this.withdraw_(tank_, 'energy')
             }
@@ -160,7 +160,7 @@ export default class CreepMissonActionExtension extends Creep {
                 else {
                     this.memory.standed = false
                     if (this.memory.crossLevel > 10) this.memory.crossLevel = 10 - Math.ceil(Math.random() * 10)
-                    var wall_ = Game.getObjectById(this.memory.targetID) as StructureRampart
+                    var wall_ = Game.getObjectById(this.memory.targetID as Id<StructureRampart>) as StructureRampart
                     var strPos = zipPosition(wall_.pos)
                     if (!wall_ || wall_.hits >= Game.rooms[this.memory.belong].memory.nukeData.damage[strPos] + Game.rooms[this.memory.belong].memory.nukeData.rampart[strPos] + 500000) {
                         delete this.memory.targetID
@@ -184,7 +184,7 @@ export default class CreepMissonActionExtension extends Creep {
             if (this.memory.working) {
                 if (this.memory.targetID) {
                     this.say("🛠️")
-                    var target_ = Game.getObjectById(this.memory.targetID) as StructureRampart
+                    var target_ = Game.getObjectById(this.memory.targetID as Id<StructureRampart>) as StructureRampart
                     if (!target_) { delete this.memory.targetID; return }
                     this.repair_(target_)
                     let hostileCreep = this.pos.findInRange(FIND_HOSTILE_CREEPS, 3, {
@@ -241,7 +241,7 @@ export default class CreepMissonActionExtension extends Creep {
                         this.memory.containerID = this.room.terminal.id
                     }
                 }
-                let tank_ = Game.getObjectById(this.memory.containerID) as StructureStorage
+                let tank_ = Game.getObjectById(this.memory.containerID as Id<StructureStorage>) as StructureStorage
 
                 this.withdraw_(tank_, 'energy')
             }
@@ -399,7 +399,7 @@ export default class CreepMissonActionExtension extends Creep {
                 if (this.room.controller.level > 6) {
                     if (this.memory.targetID) {
                         this.say("🛠️")
-                        var target_ = Game.getObjectById(this.memory.targetID) as StructureRampart
+                        var target_ = Game.getObjectById(this.memory.targetID as Id<StructureRampart>) as StructureRampart
                         if (!target_) { delete this.memory.targetID; return }
                         if (target_.hits > 1000000) { delete this.memory.targetID; }
                         this.repair_(target_)
@@ -777,7 +777,7 @@ export default class CreepMissonActionExtension extends Creep {
             return
         }
         else {
-            container = Game.getObjectById(this.memory.containerID) as StructureContainer
+            container = Game.getObjectById(this.memory.containerID as Id<StructureContainer>) as StructureContainer
             if (!container) return
             /* container杂志清理 */
             if (container.store && container.store.getUsedCapacity() > 0 && this.pos.isEqualTo(container)) {

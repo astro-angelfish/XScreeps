@@ -320,7 +320,7 @@ export default class RoomCoreInitExtension extends Room {
         if (Game.time % tickratio * 3 == 0) {
             for (let id in this.memory.harvestData) {
                 if (!this.memory.harvestData[id].containerID) {
-                    let source = Game.getObjectById(id) as Source
+                    let source = Game.getObjectById(id as Id<Source>) as Source
                     let containers = source.pos.findInRange(FIND_STRUCTURES, 1, { filter: (stru) => { return stru.structureType == 'container' } })
                     if (containers.length > 0) {
                         this.memory.harvestData[id].containerID = containers[0].id
@@ -330,7 +330,7 @@ export default class RoomCoreInitExtension extends Room {
                     carry_num++;
                 }
                 if (level >= 5 && !this.memory.harvestData[id].linkID) {
-                    let source = Game.getObjectById(id) as Source
+                    let source = Game.getObjectById(id as Id<Source>) as Source
                     let links = source.pos.findInRange(FIND_STRUCTURES, 2, { filter: (stru) => { return stru.structureType == 'link' } })
                     if (links.length > 0) {
                         this.memory.harvestData[id].linkID = links[0].id

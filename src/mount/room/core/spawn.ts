@@ -100,7 +100,7 @@ export default class RoomCoreSpawnExtension extends Room {
         // 如果没有spawn就return
         if (!this.memory.StructureIdData.spawn || this.memory.StructureIdData.spawn.length <= 0) return
         for (let sID of this.memory.StructureIdData.spawn as string[]) {
-            let thisSpawn = Game.getObjectById(sID) as StructureSpawn
+            let thisSpawn = Game.getObjectById(sID as Id<StructureSpawn>) as StructureSpawn
             if (!thisSpawn) {
                 /* 没有该spawn说明spawn已经被摧毁或者被拆除了，删除structureData里的数据 */
                 var spawnMemoryList = this.memory.StructureIdData.spawn as string[]

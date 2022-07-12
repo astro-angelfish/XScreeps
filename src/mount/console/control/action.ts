@@ -440,7 +440,7 @@ export default {
         launch(roomName: string, disRoom: string, x_: number, y_: number): string {
             var myRoom = Game.rooms[roomName]
             if (!myRoom) return `[nuke]房间错误，请确认房间${roomName}！`
-            var nuke_ = Game.getObjectById(myRoom.memory.StructureIdData.NukerID as string) as StructureNuker
+            var nuke_ = Game.getObjectById(myRoom.memory.StructureIdData.NukerID as Id<StructureNuker>) as StructureNuker
             if (!nuke_) return `[nuke]核弹查询错误!`
             if (nuke_.launchNuke(new RoomPosition(x_, y_, disRoom)) == OK)
                 return Colorful(`[nuke]${roomName}->${disRoom}的核弹发射成功!预计---500000---ticks后着陆!`, 'yellow', true)

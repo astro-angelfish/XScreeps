@@ -18,7 +18,7 @@ export default class RoomFunctionTowerExtension extends Room {
                 let Ntower: StructureTower = null
                 if (this.memory.StructureIdData.NtowerID) { Ntower = Game.getObjectById(this.memory.StructureIdData.NtowerID) as StructureTower }
                 if (!Ntower) { delete this.memory.StructureIdData.NtowerID; return; }
-                let Repairdata = Game.getObjectById(global.Repairlist[this.name][0]) as StructureTower
+                let Repairdata = Game.getObjectById(global.Repairlist[this.name][0] as Id<StructureTower>) as StructureTower
                 if (!Repairdata) {
                     global.Repairlist[this.name].shift()
                     return
@@ -39,7 +39,7 @@ export default class RoomFunctionTowerExtension extends Room {
                         let Ntower: StructureTower = null
                         if (this.memory.StructureIdData.NtowerID) { Ntower = Game.getObjectById(this.memory.StructureIdData.NtowerID) as StructureTower }
                         if (!Ntower) { delete this.memory.StructureIdData.NtowerID; return; }
-                        let Repairdata = Game.getObjectById(global.Repairlist[this.name][0]) as StructureTower
+                        let Repairdata = Game.getObjectById(global.Repairlist[this.name][0] as Id<StructureTower>) as StructureTower
                         if (!Repairdata) {
                             global.Repairlist[this.name].shift()
                             return

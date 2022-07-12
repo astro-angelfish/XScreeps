@@ -203,7 +203,7 @@ export default class CreepMissonWarExtension extends Creep {
             }
         }
         else {
-            let en = Game.getObjectById(Game.rooms[this.memory.belong].memory.Enemydistribution[this.name]) as Creep
+            let en = Game.getObjectById(Game.rooms[this.memory.belong].memory.Enemydistribution[this.name] as Id<Creep>) as Creep
             if (!isInArray(global.HostileGroup[this.memory.belong] as any, Game.rooms[this.memory.belong].memory.Enemydistribution[this.name])) {
                 delete Game.rooms[this.memory.belong].memory.Enemydistribution[this.name];
                 en = null;
@@ -228,7 +228,7 @@ export default class CreepMissonWarExtension extends Creep {
                     })
                     console.log(this.name, '分配', HostileGroupnearstram.id)
                     Game.rooms[this.memory.belong].memory.Enemydistribution[this.name] = HostileGroupnearstram.id
-                    en = Game.getObjectById(Game.rooms[this.memory.belong].memory.Enemydistribution[this.name]) as Creep
+                    en = Game.getObjectById(Game.rooms[this.memory.belong].memory.Enemydistribution[this.name] as Id<Creep>) as Creep
                 }
             }
 
@@ -279,7 +279,7 @@ export default class CreepMissonWarExtension extends Creep {
             } else {
                 console.log(this.name, '分配已饱和')
                 if (this.room.memory.DefendDouId) {
-                    let DefendDou = Game.getObjectById(this.room.memory.DefendDouId) as Creep
+                    let DefendDou = Game.getObjectById(this.room.memory.DefendDouId as Id<Creep>) as Creep
                     if (DefendDou || !this.Checkaroundhurt(DefendDou.pos, 2, 400)) {
                         console.log(this.name, '分配已饱和|追出去')
                         this.goTo_defend(DefendDou.pos, 0)
@@ -473,7 +473,7 @@ export default class CreepMissonWarExtension extends Creep {
             }
         }
         else {
-            let en = Game.getObjectById(Game.rooms[this.memory.belong].memory.enemy[this.name][0]) as Creep
+            let en = Game.getObjectById(Game.rooms[this.memory.belong].memory.enemy[this.name][0] as Id<Creep>) as Creep
             if (!en) {
                 Game.rooms[this.memory.belong].memory.enemy[this.name].splice(0, 1)
                 return
@@ -483,7 +483,7 @@ export default class CreepMissonWarExtension extends Creep {
             if (Game.rooms[this.memory.belong].memory.enemy[this.name].length > 1) {
                 B:
                 for (var id of Game.rooms[this.memory.belong].memory.enemy[this.name]) {
-                    let idCreep = Game.getObjectById(id) as Creep
+                    let idCreep = Game.getObjectById(id as Id<Creep>) as Creep
                     if (!idCreep) continue B
                     if (Game.time % 10 == 0)
                         if (Math.abs(idCreep.pos.x - en.pos.x) >= 2 || Math.abs(idCreep.pos.y - en.pos.y) >= 2) {
@@ -625,7 +625,7 @@ export default class CreepMissonWarExtension extends Creep {
                 }
                 /*检查是否存在已经针对的目标信息*/
                 if (this.room.memory.DefendDouId) {
-                    let DouID = Game.getObjectById(this.room.memory.DefendDouId) as Creep;
+                    let DouID = Game.getObjectById(this.room.memory.DefendDouId as Id<Creep>) as Creep;
                     if (!DouID) { delete this.room.memory.DefendDouId }
                     if (DouID) {
                         console.log(this.name, '协同追踪', this.room.memory.DefendDouId)

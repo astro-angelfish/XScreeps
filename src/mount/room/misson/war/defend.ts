@@ -262,7 +262,7 @@ export default class DefendWarExtension extends Room {
             else {
                 /* 查找项目里的爬虫是否已经死亡 */
                 for (let enemyID of this.memory.enemy[myCreepName]) {
-                    if (!Game.getObjectById(enemyID)) {
+                    if (!Game.getObjectById(enemyID as Id<Creep>)) {
                         let index = this.memory.enemy[myCreepName].indexOf(enemyID)
                         this.memory.enemy[myCreepName].splice(index, 1)
                     }
@@ -579,7 +579,7 @@ export default class DefendWarExtension extends Room {
         if ((Game.time - global.Gtime[this.name]) % 20) return
         var enemys = this.find(FIND_HOSTILE_CREEPS, {
             filter: (creep) => {
-                return !isInArray(Memory.whitesheet, creep.owner.username) && (creep.owner.username != '1Invader' && deserveDefend(creep))
+                return !isInArray(Memory.whitesheet, creep.owner.username) && (creep.owner.username != 'Invader' && deserveDefend(creep))
             }
         })
         if (enemys.length <= 0) {

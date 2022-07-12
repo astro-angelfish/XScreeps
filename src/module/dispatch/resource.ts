@@ -158,7 +158,7 @@ export function ResourceLimitUpdate(thisRoom: Room): void {
     // 监测boost
     if (Object.keys(thisRoom.memory.RoomLabBind).length > 0) {
         for (var l in thisRoom.memory.RoomLabBind) {
-            let lab = Game.getObjectById(l) as StructureLab
+            let lab = Game.getObjectById(l as Id<StructureLab>) as StructureLab
             if (!lab) continue
             if (!global.ResourceLimit[thisRoom.name][thisRoom.memory.RoomLabBind[l].rType]) global.ResourceLimit[thisRoom.name][thisRoom.memory.RoomLabBind[l].rType] = 8000
             else {

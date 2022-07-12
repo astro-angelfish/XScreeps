@@ -42,7 +42,7 @@ export default class CreepMissonTransportExtension extends Creep {
                 }
             }
             if (this.memory.Extensions_id) {
-                let extensions_ = Game.getObjectById(this.memory.Extensions_id) as StructureExtension
+                let extensions_ = Game.getObjectById(this.memory.Extensions_id as Id<StructureExtension>) as StructureExtension
                 if (!extensions_) { delete this.memory.Extensions_id }
                 if (extensions_.store.getFreeCapacity('energy') < 1) {
                     delete this.memory.Extensions_id

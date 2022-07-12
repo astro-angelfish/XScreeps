@@ -324,7 +324,7 @@ export default class RoomMissonBehaviourExtension extends Room {
             if (use_number < automaticData.Num) {
                 /*继续进行Lab数量的检查*/
                 for (let lab_id in MissionName.LabBind) {
-                    var lab_data = Game.getObjectById(lab_id) as StructureLab;
+                    var lab_data = Game.getObjectById(lab_id as Id<StructureLab>) as StructureLab;
                     if (!lab_data) continue;
                     if (MissionName.LabBind[lab_id] == Type) {
                         use_number += lab_data.store.getUsedCapacity(Type)

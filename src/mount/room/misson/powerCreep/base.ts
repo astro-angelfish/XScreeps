@@ -64,7 +64,7 @@ export default class PowerCreepMisson extends Room {
         for (let id in this.memory.RoomLabBind) {
             let lab_data = this.memory.RoomLabBind[id];
             if (lab_data.type == 'com') {
-                var lab_ = Game.getObjectById(id) as StructureLab
+                var lab_ = Game.getObjectById(id as Id<StructureLab>) as StructureLab
                 if (lab_ && !isOPWR(lab_))
                     list.push(id)
             }

@@ -29,7 +29,7 @@ export function harvest_(creep_: Creep): void {
             return
         } else {
             /*维修操作检查*/
-            let container = Game.getObjectById(data.containerID) as StructureContainer
+            let container = Game.getObjectById(data.containerID as Id<StructureContainer>) as StructureContainer
             if (container) {
                 if (container.hits < container.hitsMax) {
                     creep_.repair(container)
@@ -38,7 +38,7 @@ export function harvest_(creep_: Creep): void {
             }
         }
         if (data.linkID) {
-            let link = Game.getObjectById(data.linkID) as StructureLink
+            let link = Game.getObjectById(data.linkID as Id<StructureLink>) as StructureLink
             if (!link) delete data.linkID
             else {
                 if (link.hits < link.hitsMax) { creep_.repair(link); return }
@@ -58,7 +58,7 @@ export function harvest_(creep_: Creep): void {
 
         // 其次寻找container
         if (data.containerID) {
-            let container = Game.getObjectById(data.containerID) as StructureLink
+            let container = Game.getObjectById(data.containerID as Id<StructureLink>) as StructureLink
             if (!container) delete data.containerID
             else {
                 if (container.hits < container.hitsMax) { creep_.repair(container); return }
@@ -96,7 +96,7 @@ export function harvest_(creep_: Creep): void {
             return
         }
         /* 寻找target附近的container */
-        let source = Game.getObjectById(creep_.memory.targetID) as Source
+        let source = Game.getObjectById(creep_.memory.targetID as Id<Source>) as Source
         if (!source) return
         if (!creep_.pos.isNearTo(source)) { creep_.goTo(source.pos, 1); return }
         let data = Game.rooms[creep_.memory.belong].memory.harvestData[creep_.memory.targetID]
@@ -121,8 +121,8 @@ export function harvest_(creep_: Creep): void {
             creep_.harvest(source)
         } else {
             if (!data.containerID || !data.linkID) return
-            let container = Game.getObjectById(data.containerID) as StructureContainer
-            let link = Game.getObjectById(data.linkID) as StructureLink
+            let container = Game.getObjectById(data.containerID as Id<StructureContainer>) as StructureContainer
+            let link = Game.getObjectById(data.linkID as Id<StructureLink>) as StructureLink
             if (!container || !link) return
             let container_energy = container.store.getUsedCapacity(RESOURCE_ENERGY)
             if (container_energy < 1) return/*容器没有能量终止*/
@@ -163,7 +163,7 @@ export function carry_(creep_: Creep): void {
         else {
             var harvestData_ = harvestData[Object.keys(harvestData)[0]]
             if (harvestData_.containerID) {
-                let container = Game.getObjectById(harvestData_.containerID)
+                let container = Game.getObjectById(harvestData_.containerID as Id<StructureContainer>)
                 if (!container) delete harvestData_.containerID
                 else {
                     creep_.memory.containerID = harvestData_.containerID
@@ -196,7 +196,7 @@ export function carry_(creep_: Creep): void {
         creep_.transfer_(target, 'energy')
     }
     else {
-        let container = Game.getObjectById(creep_.memory.containerID) as StructureContainer
+        let container = Game.getObjectById(creep_.memory.containerID as Id<StructureContainer>) as StructureContainer
         if (!container) {
             /* 删除房间相关的记忆 */
             for (var hdata in Game.rooms[creep_.memory.belong].memory.harvestData) {
@@ -263,7 +263,7 @@ export function upgrade_(creep_: Creep): void {
             else { creep_.memory.targetID = target.id }
         }
         else {
-            let target = Game.getObjectById(creep_.memory.targetID) as StructureStorage
+            let target = Game.getObjectById(creep_.memory.targetID as Id<StructureStorage>) as StructureStorage
             if (target) creep_.withdraw_(target, 'energy')
         }
 
@@ -300,7 +300,7 @@ export function build_(creep: Creep): void {
                 }
             } else {
                 if (global.Repairlist[thisRoom.name].length > 0) {
-                    let Repairdata = Game.getObjectById(global.Repairlist[thisRoom.name][0]) as StructureTower
+                    let Repairdata = Game.getObjectById(global.Repairlist[thisRoom.name][0] as Id<StructureTower>) as StructureTower
                     if (!Repairdata) {
                         global.Repairlist[thisRoom.name].shift()
                         return

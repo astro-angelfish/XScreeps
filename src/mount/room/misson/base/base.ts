@@ -275,7 +275,7 @@ export default class RoomMissonFrameExtension extends Room {
         if (!this.memory.RoomLabBind) this.memory.RoomLabBind = {}
         for (var i in this.memory.RoomLabBind) {
             if (i == id) {
-                var thisLab = Game.getObjectById(i) as StructureLab
+                var thisLab = Game.getObjectById(i as Id<StructureLab>) as StructureLab
                 if (!thisLab) return false
                 if (thisLab.mineralType && thisLab.mineralType != rType) {
                     return false
@@ -404,7 +404,7 @@ export default class RoomMissonFrameExtension extends Room {
             if (!this.memory.StructureIdData.terminalID) return false
             id = this.memory.StructureIdData.terminalID
         }
-        var tank_ = Game.getObjectById(id) as StructureStorage | StructureTerminal
+        var tank_ = Game.getObjectById(id as Id<Structure>) as StructureStorage | StructureTerminal
         if (!tank_ && id) return false
         /* 负责lab的填充 */
         var terminal = this.terminal as StructureTerminal
@@ -442,7 +442,7 @@ export default class RoomMissonFrameExtension extends Room {
                 }
                 return
             }
-            var disLab = Game.getObjectById(i) as StructureLab
+            var disLab = Game.getObjectById(i as Id<StructureLab>) as StructureLab
             if (!disLab) // 说明找不到lab了
             {
                 let index = this.memory.StructureIdData.labs.indexOf(i)
