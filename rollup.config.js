@@ -58,20 +58,20 @@ export default {
     plugins: [
         // 清除上次编译成果
         clear({ targets: ["dist"] }),
-        copy({
-            targets: [
-                {
-                    src: 'src/module/layoutVisual/algo_wasm_priorityqueue.wasm',
-                    dest: 'dist'
-                },
-                {
-                    src: 'src/module/layoutVisual/autoPlanner63.js',
-                    dest: 'dist'
-                }
-            ],
-            hook: 'writeBundle',
-            verbose: true
-        }),
+        // copy({
+        //     targets: [
+        //         {
+        //             src: 'src/module/layoutVisual/algo_wasm_priorityqueue.wasm',
+        //             dest: 'dist'
+        //         },
+        //         {
+        //             src: 'src/module/layoutVisual/autoPlanner63.js',
+        //             dest: 'dist'
+        //         }
+        //     ],
+        //     hook: 'writeBundle',
+        //     verbose: true
+        // }),
         // 打包依赖
         resolve(),
         // 模块化依赖
