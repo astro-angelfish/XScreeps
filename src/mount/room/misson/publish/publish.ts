@@ -316,7 +316,7 @@ export default class RoomMissonPublish extends Room {
         thisTask.CreepBind = {
             'claim': { num: cnum, bind: [], interval: 1000, MSB: defend ? defend : false },
             'Ebuild': { num: num, bind: [], interval: 1000, MSB: defend ? defend : false },
-            'Eupgrade': { num: num, bind: [], interval: 500, MSB: defend ? defend : false }
+            'Eupgrade': { num: num, bind: [], interval: 1000, MSB: defend ? defend : false }
         }
         if (defend) {
             switch (level) {
