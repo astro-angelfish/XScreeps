@@ -30,6 +30,7 @@ interface Room {
     Task_monitorMineral(): void
     Task_montitorPower(): void
     Task_Auto_Defend(): void
+    Global_Detection():void
 
     // 被动任务
     Task_Carry(misson: MissionModel): void

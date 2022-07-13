@@ -36,6 +36,7 @@ export default class RoomMissonFrameExtension extends Room {
         this.Task_monitorMineral()  // 挖矿
         this.Task_montitorPower()   // 烧power任务监控
         this.Task_Auto_Defend()     // 主动防御任务发布
+        // this.Global_Detection() //其他任务信息的检测
 
         /* 基本任务监控区域 */
         for (var index in this.memory.Misson) {

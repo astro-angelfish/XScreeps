@@ -445,16 +445,25 @@ export default class RoomCoreInitExtension extends Room {
                 }
             }
         }
-        let transport_num = this.memory.SpawnConfig.transport.num;
-        if (this.memory.state == 'peace') {
-            /*调整物流人员的数量*/
-            transport_num = 1;
-        } else if (this.memory.state == 'war') {
-            transport_num = 2;
+        if (this.controller.level >= 4) {
+            let transport_num = this.memory.SpawnConfig.transport.num;
+            if (this.memory.state == 'peace') {
+                /*调整物流人员的数量*/
+                transport_num = 1;
+            } else if (this.memory.state == 'war') {
+                transport_num = 2;
+            }
+            if (this.memory.DynamicConfig.Dynamictransport) {
+                transport_num += this.memory.DynamicConfig.Dynamictransport;
+            }
+            this.NumSpawn('transport', transport_num)
+        } else {
+            this.NumSpawn('transport', 0)
         }
-        if (this.memory.DynamicConfig.Dynamictransport) {
-            transport_num += this.memory.DynamicConfig.Dynamictransport;
+        /*针对单矿房间进行定式操作*/
+        if (Object.keys(this.memory.harvestData).length <= 1) {
+            this.NumSpawn('harvest', 1)
         }
-        this.NumSpawn('transport', transport_num)
+
     }
 }
