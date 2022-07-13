@@ -388,10 +388,10 @@ export default {
                 }
             return `[carry] 房间${roomName}删除搬运任务失败`
         },
-        senior(roomName: string, disRoom: string, shard: shardName = Game.shard.name as shardName, res: ResourceConstant, CreepNum: number, interval: number, shardData?: shardRoomData[]): string {
+        senior(roomName: string, disRoom: string, shard: shardName = Game.shard.name as shardName, res: ResourceConstant, CreepNum: number, interval: number, level: 'T0' | 'T3', shardData?: shardRoomData[]): string {
             let thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[carry] 不存在房间${roomName}`
-            var thisTask = thisRoom.public_Carrysenior(disRoom, CreepNum, shard, res, interval)
+            var thisTask = thisRoom.public_Carrysenior(disRoom, CreepNum, shard, res, interval,level)
             if (shardData) thisTask.Data.shardData = shardData
             if (thisRoom.AddMission(thisTask)) return `[carry] 房间${roomName}挂载位面搬运任务成功`
             return `[carry] 房间${roomName}删除位面搬运任务失败`

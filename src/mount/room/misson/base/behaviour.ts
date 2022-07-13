@@ -1,6 +1,6 @@
 import { ResourceCanDispatch } from "@/module/dispatch/resource"
 import { checkBuy, checkDispatch, checkSend, DispatchNum, resourceMap } from "@/module/fun/funtion"
-import { Colorful, isInArray } from "@/utils"
+import { Colorful, isInArray, GenerateAbility } from "@/utils"
 import { LabMap, unzipMap } from "@/constant/ResourceConstant"
 
 /* 房间原型拓展   --任务  --基本功能 */
@@ -14,11 +14,22 @@ export default class RoomMissonBehaviourExtension extends Room {
     }
 
     // 搬运基本任务
-    public Task_Carrysenior(misson: MissionModel): void {
+    public Task_Carrysenior(mission: MissionModel): void {
         /* 搬运任务需求 sourcePosX,Y sourceRoom targetPosX,Y targetRoom num  rType  */
         // 没有任务数据 或者数据不全就取消任务
-        if (!misson.Data) this.DeleteMission(misson.id)
-        if (!misson.CreepBind) this.DeleteMission(misson.id)
+        if (mission.CreepBind.truckshard.num > 0) {
+            let level = mission.Data.level
+            if (level == 'T3') {
+                global.MSB[mission.id] = { 'truckshard': GenerateAbility(0, 40, 10, 0, 0, 0, 0, 0) }
+            }
+            if ((Game.time - global.Gtime[this.name]) % 8) return
+            if (mission.LabBind) {
+                if (!this.Check_Lab(mission, 'transport', 'complex')) { }
+            }
+        }
+
+        if (!mission.Data) this.DeleteMission(mission.id)
+        if (!mission.CreepBind) this.DeleteMission(mission.id)
     }
     // 建造任务
     public Constru_Build(): void {
@@ -529,7 +540,7 @@ export default class RoomMissonBehaviourExtension extends Room {
         } else {
             if (!this.terminal) return;
             if (storage_number + this.terminal.store.getUsedCapacity('power') <= 5000) {
-                console.log(this.name, '等待帕瓦供应')
+                // console.log(this.name, '等待帕瓦供应')
                 /*将补充信息添加到待处理的列表中*/
                 global.PowerDemand = _.uniq([...global.PowerDemand, this.name])
             } else {

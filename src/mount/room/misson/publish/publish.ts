@@ -40,7 +40,7 @@ export default class RoomMissonPublish extends Room {
         return thisTask
     }
 
-    public public_Carrysenior(disRoom: string, CreepNum: number, shard: shardName, res: ResourceConstant, interval: number): MissionModel {
+    public public_Carrysenior(disRoom: string, CreepNum: number, shard: shardName, res: ResourceConstant, interval: number, level: 'T0' | 'T1' | 'T2' | 'T3' = 'T0'): MissionModel {
         console.log('开始创建任务')
         var thisTask: MissionModel =
         {
@@ -51,11 +51,15 @@ export default class RoomMissonPublish extends Room {
                 disRoom: disRoom,
                 shard: shard,
                 rType: res,
+                level: level
             }
         }
-        console.log(JSON.stringify(thisTask))
-        thisTask.CreepBind = { 'truckshard': { num: CreepNum, interval: interval, bind: []} }
-        console.log(JSON.stringify(thisTask))
+        thisTask.CreepBind = { 'truckshard': { num: CreepNum, interval: interval, bind: [], MSB: (level ? true : false) } }
+        switch (level) {
+            case 'T3':
+                thisTask.LabMessage = { 'XKH2O': 'boost', 'XZHO2': 'boost' }
+                break;
+        }
         return thisTask
     }
 

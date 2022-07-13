@@ -71,7 +71,7 @@ export default class RoomFunctionTowerExtension extends Room {
                 }
             }
             else if (enemys.length > 1) {
-                if (enemys.length >= 3) {
+                if (enemys.length >= 3 && enemys[0].ticksToLive < 1450) {
                     return;
                 }
                 for (let c of this.memory.StructureIdData.AtowerID) {
@@ -95,7 +95,7 @@ export default class RoomFunctionTowerExtension extends Room {
         if (this.memory.state == 'war') {
             var repairRoad = this.find(FIND_STRUCTURES, {
                 filter: (stru) => {
-                    return (stru.structureType == 'road' || stru.structureType == 'container' ) && stru.hits / stru.hitsMax < 0.3
+                    return (stru.structureType == 'road' || stru.structureType == 'container') && stru.hits / stru.hitsMax < 0.3
                 }
             })
         } else {

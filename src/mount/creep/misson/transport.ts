@@ -80,6 +80,13 @@ export default class CreepMissonTransportExtension extends Creep {
         let id = missionData.id
         let data = missionData.Data
         if (this.room.name == this.memory.belong && this.memory.shard == Game.shard.name && !this.memory.working) {
+            if (this.room.name == this.memory.belong) {
+                switch (missionData.Data.level) {
+                    case 'T3':
+                        if (!this.BoostCheck(['move', 'carry'])) return
+                        break;
+                }
+            }
             if (this.room.storage.store.getUsedCapacity(data.rType) < this.store.getFreeCapacity(data.rType)) {
                 Game.rooms[this.memory.belong].DeleteMission(id)
             }

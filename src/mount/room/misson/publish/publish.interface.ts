@@ -1,7 +1,7 @@
 interface Room {
     Check_Lab(misson: MissionModel, role: string, tankType: 'storage' | 'terminal' | 'complex')
     public_Carry(creepData: BindData, delayTick: number, sR: string, sX: number, sY: number, tR: string, tX: number, tY: number, rType?: ResourceConstant, num?: number): MissionModel
-    public_Carrysenior(disRoom: string, CreepNum: number, shard: shardName, res: ResourceConstant, interval?:number ): MissionModel
+    public_Carrysenior(disRoom: string, CreepNum: number, shard: shardName, res: ResourceConstant, interval?: number, level?: 'T0' | 'T3'): MissionModel
     public_repair(Rtype: 'global' | 'special' | 'nuker', num: number, boostType: ResourceConstant, level?: 'T0' | 'T1' | 'T2' | 'T3' | 'T4', maxhit?: number, retain?: boolean): MissionModel
     public_planC(disRoom: string, Cnum: number, upNum: number, shard?: shardName,): MissionModel
     public_link(structure: string[], disStructure: string, level: number, delayTick?: number): MissionModel
