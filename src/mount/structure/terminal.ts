@@ -490,7 +490,7 @@ export default class terminalExtension extends StructureTerminal {
                     }
                     else {
                         let order = Game.market.getOrderById(l.id)
-                        if ((!order || !order.remainingAmount) && l.num < 1)   // 取消订单信息
+                        if (((!order || !order.remainingAmount) && l.num < 1) || !order)   // 取消订单信息
                         {
                             if (l.rType != 'energy')
                                 delete this.room.memory.TerminalData[l.rType]
