@@ -360,22 +360,22 @@ export default class CreepMissonActionExtension extends Creep {
         }
         else if (this.memory.role == 'Ebuild') {
             if (this.memory.working) {
-                /* 优先遭建筑 */
-                let cons = this.pos.findClosestByRange(FIND_MY_CONSTRUCTION_SITES)
-                if (cons) {
-                    this.build_(cons)
-                    return
-                }
-                if (this.room.controller.level < 6) {
+                if (this.room.controller.level < 8) {
                     let tower = this.pos.findClosestByPath(FIND_MY_STRUCTURES, {
                         filter: (stru) => {
-                            return stru.structureType == 'tower' && stru.store.getFreeCapacity('energy') > 400
+                            return stru.structureType == 'tower' && stru.store.getFreeCapacity('energy') > 800
                         }
                     })
                     if (tower) {
                         this.transfer_(tower, 'energy')
                         return
                     }
+                }
+                /* 优先遭建筑 */
+                let cons = this.pos.findClosestByRange(FIND_MY_CONSTRUCTION_SITES)
+                if (cons) {
+                    this.build_(cons)
+                    return
                 }
                 if (this.room.controller.level < 6) {
                     let store = this.pos.getClosestStore()

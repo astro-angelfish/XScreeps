@@ -348,10 +348,20 @@ export default class CreepMissonMineExtension extends Creep {
                 const h_creeps = this.pos.findInRange(FIND_HOSTILE_CREEPS, 4);
                 if (h_creeps.length > 0) {
                     // console.log("找到攻击目标",h_creeps[0].name)
-                    if (this.pos.isNearTo(h_creeps[0])) {
-                        this.attack(h_creeps[0]);
+                    /*搜索拥有攻击组件的爬为优先*/
+                    let _creeps_data: Creep = null;
+                    for (var creep_data of h_creeps) {
+                        if (!_creeps_data) {
+                            if (creep_data.getActiveBodyparts(ATTACK)) _creeps_data = creep_data
+                        }
+                    }
+                    if (!_creeps_data) {
+                        _creeps_data = h_creeps[0];
+                    }
+                    if (this.pos.isNearTo(_creeps_data)) {
+                        this.attack(_creeps_data);
                     } else {
-                        this.goTo(h_creeps[0].pos, 1)
+                        this.goTo(_creeps_data.pos, 1)
                     }
                     return
                 }
@@ -399,6 +409,10 @@ export default class CreepMissonMineExtension extends Creep {
                     //     return
                     // }
                     if (!this.memory.tick) this.memory.tick = this.ticksToLive
+                    if (this.hitsMax - 400 > this.hits) {
+                        /*等待治疗*/
+                        return;
+                    }
                     var powerbank_ = missonPostion.GetStructure('powerBank')
                     if (powerbank_) {
                         this.attack(powerbank_)
