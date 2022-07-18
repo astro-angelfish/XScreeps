@@ -247,7 +247,7 @@ export default class DefendWarExtension extends Room {
                     else {
                         /* 已经存在的话查看数量是否正确 */
                         let task = this.MissionName('Creep', '双人防御')
-                        if (task) {
+                        if (task && !task.warstop) {
                             task.CreepBind['defend-douAttack'].num = defend_plan[plan]
                             task.CreepBind['defend-douHeal'].num = defend_plan[plan]
                             // console.log(Colorful(`房间${this.name}双人防御任务数量调整为${defend_plan[plan]}!`,'green'))
@@ -575,8 +575,46 @@ export default class DefendWarExtension extends Room {
     /* 双人防御 */
     public Task_Double_Defend(mission: MissionModel): void {
         if ((Game.time - global.Gtime[this.name]) % 5) return
-        if (!this.Check_Lab(mission, 'transport', 'complex')) return
+        if (mission.CreepBind['defend-douAttack'].num > 0 && mission.CreepBind['defend-douHeal'].num > 0) {
+            if (!this.Check_Lab(mission, 'transport', 'complex')) return
+        }
         if ((Game.time - global.Gtime[this.name]) % 20) return
+        /*开始进行列表的纳入操作*/
+        if (!mission.warlist) mission.warlist = {};
+        if (mission.CreepBind['defend-douAttack'].bind.length > 0) {
+            for (let creep_name of mission.CreepBind['defend-douAttack'].bind) {
+                let creep_data = Game.creeps[creep_name];
+                if (creep_data && !mission.warlist[creep_name]) {
+                    let s_time = Game.time - creep_data.ticksToLive + 1500;
+                    mission.warlist[creep_name] = s_time;
+                }
+            }
+        }
+        if (mission.CreepBind['defend-douHeal'].bind.length > 0) {
+            for (let creep_name of mission.CreepBind['defend-douHeal'].bind) {
+                let creep_data = Game.creeps[creep_name];
+                if (creep_data && !mission.warlist[creep_name]) {
+                    let s_time = Game.time - creep_data.ticksToLive + 1500;
+                    mission.warlist[creep_name] = s_time;
+                }
+            }
+        }
+        /*检测已有爬的存活信息*/
+        let system_time = 1500;
+        let system_creep_number = 8;
+        for (let creep_n in mission.warlist) {
+            let creep_t = mission.warlist[creep_n];
+            if (Game.time - system_time > creep_t) {
+                delete mission.warlist[creep_n];
+            }
+        }
+        if (Object.keys(mission.warlist).length > system_creep_number) {
+            mission.warstop = true;/*终止出兵操作*/
+        }
+        if (mission.warstop) {
+            mission.CreepBind['defend-douAttack'].num = 0
+            mission.CreepBind['defend-douHeal'].num = 0
+        }
         var enemys = this.find(FIND_HOSTILE_CREEPS, {
             filter: (creep) => {
                 return !isInArray(Memory.whitesheet, creep.owner.username) && (creep.owner.username != 'Invader' && deserveDefend(creep))

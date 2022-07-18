@@ -63,13 +63,14 @@ export default class RoomMissonMineExtension extends Room {
         /* 如果矿物饱和，自动进行打包操作 */
         if (storage_.store.getUsedCapacity(this.memory.mineralType) > 200000) {
             let factory_ = Game.getObjectById(this.memory.StructureIdData.FactoryId) as StructureFactory
-            if (factory_ && zipMap[this.memory.mineralType] && !Game.rooms[this.name].memory.productData.unzip[this.memory.mineralType]) {
-
+            // console.log('矿物饱和打包',this.name,zipMap[this.memory.mineralType],Object.keys(this.memory.productData.unzip).length,JSON.stringify(factory_))
+            if (factory_ && zipMap[this.memory.mineralType] && Object.keys(this.memory.productData.unzip).length < 1) {
+                // console.log('矿物饱和打包',this.name,this.memory.productData.state)
                 // let storage_zip_number = Number(storage_.store.getUsedCapacity(zipMap[this.memory.mineralType]))
                 // factory_.add(zipMap[this.memory.mineralType], 6000 + storage_zip_number)
-                if (Game.rooms[this.name].memory.productData.state == 'sleep') {
-                    Game.rooms[this.name].memory.productData.state == 'base'
-                    Game.rooms[this.name].memory.productData.producing = { com: zipMap[this.memory.mineralType], num: 6000 }
+                if (this.memory.productData.state == 'sleep') {
+                    this.memory.productData.state = 'base'
+                    this.memory.productData.producing = { com: zipMap[this.memory.mineralType], num: 6000 }
                 }
             }
             // if (!this.memory.market) this.memory.market = {}
@@ -85,7 +86,7 @@ export default class RoomMissonMineExtension extends Room {
             // }
         }
         /* 防止挖矿致死 */
-        if (storage_.store.getFreeCapacity() > 200000 && storage_.store.getUsedCapacity(this.memory.mineralType) < 200000) {
+        if (storage_.store.getFreeCapacity() > 100000 && storage_.store.getUsedCapacity(this.memory.mineralType) < 220000) {
             // 下达挖矿任务
             var thisTask: MissionModel = {
                 name: '原矿开采',

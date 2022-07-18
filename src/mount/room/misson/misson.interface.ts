@@ -30,7 +30,7 @@ interface Room {
     Task_monitorMineral(): void
     Task_montitorPower(): void
     Task_Auto_Defend(): void
-    Global_Detection():void
+    Global_Detection(): void
 
     // 被动任务
     Task_Carry(misson: MissionModel): void
@@ -111,6 +111,8 @@ interface MissionModel {
     /* 自动处理属性 */
     processing?: boolean // 任务是否正在被处理 只有在处理期间过期时间才会递减 ture --> delayTick -- false delayTick(x)
     id?: string       // 每个任务的唯一标识  获取任务 删除任务  添加任务api id
+    warstop?: boolean,// 战争启用状态表示
+    warlist?: {} //战争死亡状态表示器
 }
 
 /* 任务角色绑定数据 */
