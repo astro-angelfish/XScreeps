@@ -41,29 +41,19 @@ export const createApp = function (opt: Partial<CreateOptions> = {}) {
      * 来源 @see https://screeps.slack.com/files/U33SKDU0P/F5GKDBBAA/Memory_Cache.js?origin_team=T0HJCPP9T&origin_channel=C2G22RFPF
      */
     let _memoryCacher: MemoryCacher = next => {
-        switch (Game.shard.name) {
-            case 'shard9':
-                _cachedMemory = Memory
-                // @ts-ignore
-                delete global.Memory
-                // @ts-ignore
-                global.Memory = _cachedMemory
-                break;
-            default:
-                if (_cachedMemory) {
-                    // @ts-ignore
-                    delete global.Memory
-                    // @ts-ignore
-                    global.Memory = _cachedMemory
-                }
-                else {
-                    _cachedMemory = Memory
-                }
-                break;
+        if (_cachedMemory) {
+            // @ts-ignore
+            delete global.Memory
+            // @ts-ignore
+            global.Memory = _cachedMemory
+        }
+        else {
+            _cachedMemory = Memory
         }
         next()
         // @ts-ignore
-        RawMemory.set(JSON.stringify(global.Memory))
+        RawMemory._parsed = global.Memory;
+        // RawMemory.set(JSON.stringify(global.Memory))
     }
 
     /**
@@ -117,6 +107,7 @@ export const createApp = function (opt: Partial<CreateOptions> = {}) {
      * 运行 bot
      */
     const run = function (): void {
+        // console.log(`——初始化——${Game.cpu.getUsed()}——`)
         if (showCpuCost) console.log(`—————————— Game.time ${Game.time} ——————————`)
         // 有内存缓存的话就包裹一下，否则就直接运行
         if (_memoryCacher) _memoryCacher(_run)
