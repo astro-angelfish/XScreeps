@@ -119,6 +119,10 @@ export default class terminalExtension extends StructureTerminal {
                 Memory.ResourceDispatchData.push(dispatchTask)
                 // Game.market.deal('62643960d8dac7fd5f21810b', 100000, this.room.name);
                 return;
+            } else {
+                if (Game.market.credits) {
+                    if (Game.market.credits < 1000000) return
+                }
             }
             /*检索房间内的所有订单，同时进行匹配,*/
             /*取出当前类型的基准价格*/
