@@ -56,6 +56,8 @@ export const RoleData: SpawnConstantData = {
     'power-carry': { num: 0, ability: [0, 32, 16, 0, 0, 0, 0, 0], level: 10, mark: "📦" },
     /* 沉积物 */
     'deposit': { num: 0, ability: [15, 10, 25, 0, 0, 0, 0, 0], level: 11, mark: "⚙️" },
+    'deposit-harvest': { num: 0, ability: [20, 10, 20, 0, 0, 0, 0, 0], level: 11, mark: "⚙️" },
+    'deposit-transfer': { num: 0, ability: [0, 25, 25, 0, 0, 0, 0, 0], level: 11, mark: "⚙️" },
     /* 主动防御 */
     'defend-attack': { num: 0, ability: [0, 0, 10, 40, 0, 0, 0, 0], level: 8, mark: "🔴", must: true },
     'defend-range': { num: 0, ability: [0, 0, 10, 0, 40, 0, 0, 0], level: 8, mark: "🔵", must: true },

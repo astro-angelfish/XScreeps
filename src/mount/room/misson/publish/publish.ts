@@ -580,7 +580,7 @@ export default class RoomMissonPublish extends Room {
     }
 
     /* deposit采集任务发布函数 */
-    public public_DepositHarvest(disRoom: string, x: number, y: number, rType: DepositConstant): MissionModel {
+    public public_DepositHarvest(disRoom: string, x: number, y: number, rType: DepositConstant, Num: number = 1): MissionModel {
         var thisTask: MissionModel = {
             name: 'deposit采集',
             range: 'Creep',
@@ -595,7 +595,8 @@ export default class RoomMissonPublish extends Room {
             },
             maxTime: 2
         }
-        thisTask.CreepBind = { 'deposit': { num: 1, bind: [] } }
+        // thisTask.CreepBind = { 'deposit': { num: 1, bind: [] } }
+        thisTask.CreepBind = { 'deposit-harvest': { num: Num > 3 ? 3 : Num, bind: [] }, 'deposit-transfer': { num: 1, bind: [] } }
         // var MissonNum = this.MissionNum('Creep','deposit采集')
         // if (MissonNum > 2) return null
         // thisTask.maxTime = MissonNum

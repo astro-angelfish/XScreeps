@@ -273,9 +273,12 @@ export default class RoomMissonMineExtension extends Room {
                             for (var dm of this.memory.Misson['Creep']) {
                                 if (dm.name == 'deposit采集' && dm.Data.room == beforRoom) have = true
                             }
+                            /*检测dp可以挖掘的位置数量*/
+                            var harvest_void: RoomPosition[] = deposit[0].pos.getSourceVoid()
                             /* 下达采集任务 */
-                            var thisTask = this.public_DepositHarvest(beforRoom, deposit[0].pos.x, deposit[0].pos.y, deposit[0].depositType)
+                            var thisTask = this.public_DepositHarvest(beforRoom, deposit[0].pos.x, deposit[0].pos.y, deposit[0].depositType, harvest_void.length)
                             if (thisTask != null && !have) {
+                                thisTask.Data.deposit_id = deposit[0].id;
                                 this.AddMission(thisTask)
                             }
                         }

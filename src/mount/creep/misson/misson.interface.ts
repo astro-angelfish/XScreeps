@@ -44,6 +44,8 @@ interface CreepMemory{
     arrived?:boolean
     targetFlag?:string
     Extensions_id?:string
+    transfercreep?:string,
+    creeptime?:number
 }
 
 

@@ -18,7 +18,7 @@ interface Room {
     public_aio(disRoom: string, disShard: shardName, num: number, interval: number, boost: boolean, bodylevel?: "T0" | "T1" | "T2")
     public_OutMine(sourceRoom: string, x: number, y: number, disRoom: string): MissionModel
     public_PowerHarvest(disRoom: string, x: number, y: number, num: number): MissionModel
-    public_DepositHarvest(disRoom: string, x: number, y: number, rType: DepositConstant): MissionModel
+    public_DepositHarvest(disRoom: string, x: number, y: number, rType: DepositConstant,Num?:number): MissionModel
     public_red_defend(num: number, bodylevel?: "T0" | "T1" | "T2" | "T3"): MissionModel
     public_blue_defend(num: number, bodylevel?: "T0" | "T1" | "T2" | "T3"): MissionModel
     public_double_defend(num: number, bodylevel?: "T0" | "T1" | "T2" | "T3"): MissionModel

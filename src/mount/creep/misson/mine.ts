@@ -536,7 +536,7 @@ export default class CreepMissonMineExtension extends Creep {
                 }
             }
             else {
-                var storage_ =Game.rooms[this.memory.belong].storage as StructureStorage
+                var storage_ = Game.rooms[this.memory.belong].storage as StructureStorage
                 if (!storage_) return
                 if (!this.pos.isNearTo(storage_)) this.goTo(storage_.pos, 1)
                 else {
@@ -558,57 +558,188 @@ export default class CreepMissonMineExtension extends Creep {
             let hcreep = this.pos.findClosestByRange(FIND_HOSTILE_CREEPS)
             Game.notify(`来自${this.memory.belong}的商品爬虫在房间${this.room.name}遭受攻击,攻击者疑似为${hcreep ? hcreep.owner.username : "不明生物"}`)
         }
-        this.workstate(creepMisson.rType)
-        if (this.memory.working) {
-            var storage_ = Game.rooms[this.memory.belong].storage as StructureStorage
-            if (!storage_) return
-            if (!this.pos.isNearTo(storage_)) this.goTo(storage_.pos, 1)
-            else {
-                this.transfer(storage_, creepMisson.rType)
-                Game.rooms[this.memory.belong].DeleteMission(this.memory.MissionData.id)
-                this.suicide()
+        let myroom = Game.rooms[this.memory.belong];
+        if (this.memory.role == 'deposit-transfer') {
+            if (creepMisson.creeptime) {
+                if (this.ticksToLive <= creepMisson.creeptime * 2 && !this.store.getUsedCapacity()) { this.suicide(); return; }/*回传之后不够来回的直接操作自杀*/
+                if (this.ticksToLive <= creepMisson.creeptime || this.store.getFreeCapacity() < 1)//回家放资源
+                {
+                    this.transfer_(myroom.storage ? myroom.storage : myroom.terminal, Object.keys(this.store)[0] as ResourceConstant);
+                    return;
+                }
             }
         }
-        else {
-            var missonPostion = new RoomPosition(creepMisson.x, creepMisson.y, creepMisson.room)
-            if (!missonPostion) { this.say("找不到目标地点！"); return }
-            if (!this.pos.isNearTo(missonPostion)) {
-                if (!Game.rooms[missonPostion.roomName]) {
-                    this.goTo(missonPostion, 1)
-                    return
+        var missonPostion = new RoomPosition(creepMisson.x, creepMisson.y, creepMisson.room)
+        if (!missonPostion) { this.say("找不到目标地点！"); return }
+        switch (this.memory.role) {
+            case 'deposit-harvest':
+                if (!this.memory.standed) this.memory.standed = true;
+                /*这里对transfer进行绑定操作*/
+                if (this.pos.roomName == creepMisson.room) {
+                    if (Game.time % 10 == 0) {
+                        if (!this.memory.transfercreep) {
+                            var transfercreep = this.pos.findClosestByRange(FIND_MY_CREEPS, {
+                                filter: (creep) => {
+                                    return creep.memory.role == 'deposit-transfer'
+                                }
+                            })
+                            if (transfercreep) {
+                                this.memory.transfercreep = transfercreep.name;/*进行搬运工赋值操作*/
+                            }
+                        }
+                        if (!Game.creeps[this.memory.transfercreep]) {
+                            delete this.memory.transfercreep;
+                        } else {
+                            if (Game.creeps[this.memory.transfercreep].pos.roomName != creepMisson.room) {
+                                delete this.memory.transfercreep;
+                            }
+                        }
+                    }
                 }
-                var harvest_void: RoomPosition[] = missonPostion.getSourceVoid()
-                var active_void: RoomPosition[] = []
-                for (var v of harvest_void) {
-                    var creep_ = v.lookFor(LOOK_CREEPS)
-                    if (creep_.length <= 0) active_void.push(v)
+
+                let User_number = this.store.getUsedCapacity();
+                if (!Game.creeps[this.memory.transfercreep]) {
+                    delete this.memory.transfercreep;
                 }
-                if (active_void.length > 0) {
+                /*检查是否容量已经超过200或者一半*/
+                if ((User_number >= 200 || User_number >= this.store.getFreeCapacity()) && this.memory.transfercreep) {
+                    if (Game.creeps[this.memory.transfercreep].pos.roomName == this.pos.roomName) {
+                        /*这里执行搬运操作*/
+                        if (Game.creeps[this.memory.transfercreep].store.getFreeCapacity() > 0) {
+                            if (!this.pos.isNearTo(Game.creeps[this.memory.transfercreep])) {
+                                this.goTo(Game.creeps[this.memory.transfercreep].pos, 1)
+                                return;
+                            }
+                            this.transfer(Game.creeps[this.memory.transfercreep], Object.keys(this.store)[0] as ResourceConstant)
+                            return;
+                        }
+                    }
+                }
+                if (!this.pos.isNearTo(missonPostion)) {
                     this.goTo(missonPostion, 1)
+                    // if (!Game.rooms[missonPostion.roomName]) {
+                    //     this.goTo(missonPostion, 1)
+                    //     return
+                    // }
+                    // var harvest_void: RoomPosition[] = missonPostion.getSourceVoid()
+                    // var active_void: RoomPosition[] = []
+                    // for (var v of harvest_void) {
+                    //     var creep_ = v.lookFor(LOOK_CREEPS)
+                    //     if (creep_.length <= 0) active_void.push(v)
+                    // }
+                    // if (active_void.length > 0) {
+                    //     this.goTo(missonPostion, 1)
+                    // }
+                    // else {
+                    //     if (!missonPostion.inRangeTo(this.pos.x, this.pos.y, 3))
+                    //         this.goTo(missonPostion, 3)
+                    // }
                 }
                 else {
-                    if (!missonPostion.inRangeTo(this.pos.x, this.pos.y, 3))
-                        this.goTo(missonPostion, 3)
+                    if (!this.memory.tick) this.memory.tick = this.ticksToLive
+                    // if (this.ticksToLive < (1500 - (this.memory.tick ? this.memory.tick : 1000) + 70)) {
+                    //     //寿命超限-准备执行退休操作
+                    //     if (User_number > 0) {
+                    //         /*等待搬运*/
+                    //     } else {
+                    //         this.suicide()/*寿命不足同时没有资源的情况下suicide操作*/
+                    //     }
+                    // }
+                    /* 开始采集 */
+                    var deposit_ = Game.getObjectById(creepMisson.deposit_id) as Deposit
+                    if (deposit_) {
+                        if (!deposit_.cooldown && this.store.getFreeCapacity() > 0) {
+                            this.harvest(deposit_)
+                        }
+                    }
+                    else {
+                        if (this.pos.roomName == creepMisson.room) {
+                            Game.rooms[this.memory.belong].DeleteMission(this.memory.MissionData.id)
+                            return
+                        }
+                    }
                 }
-            }
-            else {
-                if (!this.memory.tick) this.memory.tick = this.ticksToLive
-                if (this.ticksToLive < (1500 - (this.memory.tick ? this.memory.tick : 1000) + 70) && this.store.getUsedCapacity(creepMisson.rType) > 0) {
-                    this.memory.working = true
+                break;
+            case 'deposit-transfer':
+                if (!this.memory.standed) this.memory.standed = true;
+                creepMisson.creeptimebool = false;//停止计时
+                if (this.pos.roomName == creepMisson.room) {
+                    if (Game.time % 10 == 0) {
+                        /*地上捡垃圾*/
+                        var deposit_ = Game.getObjectById(creepMisson.deposit_id) as Deposit
+                        let targets = this.pos.findInRange(FIND_TOMBSTONES, 3, { filter: function (object) { return object.store.getUsedCapacity(deposit_.depositType); } });
+                        if (targets.length > 0) {
+                            if (this.withdraw(targets[0], deposit_.depositType) == ERR_NOT_IN_RANGE) {
+                                this.goTo(targets[0].pos, 1);
+                            }
+                        }
+                    }
                 }
-                /* 开始采集 */
-                var deposit_ = missonPostion.lookFor(LOOK_DEPOSITS)[0] as Deposit
-                if (deposit_) {
-                    if (!deposit_.cooldown) {
-                        this.harvest(deposit_)
+                if (!this.pos.inRangeTo(missonPostion, 2)) {
+                    this.goTo(missonPostion, 2)
+                } else {
+                    if (!creepMisson.creeptime) {
+                        /*标记爬的距离信息*/
+                        creepMisson.creeptime = 1500 - this.ticksToLive + 50;
+                    }
+                }
+                break;
+            default:
+                this.workstate(creepMisson.rType)
+                if (this.memory.working) {
+                    var storage_ = Game.rooms[this.memory.belong].storage as StructureStorage
+                    if (!storage_) return
+                    if (!this.pos.isNearTo(storage_)) this.goTo(storage_.pos, 1)
+                    else {
+                        this.transfer(storage_, creepMisson.rType)
+                        Game.rooms[this.memory.belong].DeleteMission(this.memory.MissionData.id)
+                        this.suicide()
                     }
                 }
                 else {
-                    Game.rooms[this.memory.belong].DeleteMission(this.memory.MissionData.id)
-                    return
+                    var missonPostion = new RoomPosition(creepMisson.x, creepMisson.y, creepMisson.room)
+                    if (!missonPostion) { this.say("找不到目标地点！"); return }
+                    if (!this.pos.isNearTo(missonPostion)) {
+                        if (!Game.rooms[missonPostion.roomName]) {
+                            this.goTo(missonPostion, 1)
+                            return
+                        }
+                        var harvest_void: RoomPosition[] = missonPostion.getSourceVoid()
+                        var active_void: RoomPosition[] = []
+                        for (var v of harvest_void) {
+                            var creep_ = v.lookFor(LOOK_CREEPS)
+                            if (creep_.length <= 0) active_void.push(v)
+                        }
+                        if (active_void.length > 0) {
+                            this.goTo(missonPostion, 1)
+                        }
+                        else {
+                            if (!missonPostion.inRangeTo(this.pos.x, this.pos.y, 3))
+                                this.goTo(missonPostion, 3)
+                        }
+                    }
+                    else {
+                        if (!this.memory.tick) this.memory.tick = this.ticksToLive
+                        if (this.ticksToLive < (1500 - (this.memory.tick ? this.memory.tick : 1000) + 70) && this.store.getUsedCapacity(creepMisson.rType) > 0) {
+                            this.memory.working = true
+                        }
+                        /* 开始采集 */
+                        var deposit_ = missonPostion.lookFor(LOOK_DEPOSITS)[0] as Deposit
+                        if (deposit_) {
+                            if (!deposit_.cooldown) {
+                                this.harvest(deposit_)
+                            }
+                        }
+                        else {
+                            Game.rooms[this.memory.belong].DeleteMission(this.memory.MissionData.id)
+                            return
+                        }
+                    }
                 }
-            }
+                break;
         }
+
+
 
     }
 }

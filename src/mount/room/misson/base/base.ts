@@ -408,7 +408,7 @@ export default class RoomMissonFrameExtension extends Room {
             if (!this.terminal) return false
             tank_ = this.terminal
         }
-        console.log(this.name, '填充检测', tankType)
+        // console.log(this.name, '填充检测', tankType)
         // var tank_ = Game.getObjectById(id as Id<Structure>) as StructureStorage | StructureTerminal
         /* 负责lab的填充 */
         var terminal = this.terminal as StructureTerminal
