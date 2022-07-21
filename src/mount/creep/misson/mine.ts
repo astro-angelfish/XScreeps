@@ -561,7 +561,7 @@ export default class CreepMissonMineExtension extends Creep {
         let myroom = Game.rooms[this.memory.belong];
         if (this.memory.role == 'deposit-transfer') {
             if (creepMisson.creeptime) {
-                if (this.ticksToLive <= creepMisson.creeptime * 2 && !this.store.getUsedCapacity()) { this.suicide(); return; }/*回传之后不够来回的直接操作自杀*/
+                if (this.ticksToLive <= creepMisson.creeptime * 2 && !this.store.getUsedCapacity() && this.pos.roomName == this.memory.belong) { this.suicide(); return; }/*回传之后不够来回的直接操作自杀*/
                 if (this.ticksToLive <= creepMisson.creeptime || this.store.getFreeCapacity() < 1)//回家放资源
                 {
                     this.transfer_(myroom.storage ? myroom.storage : myroom.terminal, Object.keys(this.store)[0] as ResourceConstant);
