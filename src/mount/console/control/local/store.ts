@@ -1,6 +1,6 @@
 /* 房间统计  轮子-非自己开发! */
 /* 与room.memory相关的和getRooms()需要根据自己情况更改 */
-type Colors = 'red'|'blue'| 'green' | 'yellow'
+type Colors = 'red' | 'blue' | 'green' | 'yellow'
 const colors: { [name in Colors]: string } = {
 	red: '#ef9a9a',
 	green: '#6b9955',
@@ -74,8 +74,8 @@ export function Colorful(content: string, colorName: Colors | string = null, bol
 function getRooms(): string[] {
 	let rooms = [];
 	for (let name in Memory.RoomControlData) {
-        if (Game.rooms[name])
-		rooms.push(name)
+		if (Game.rooms[name])
+			rooms.push(name)
 	}
 	return rooms;
 }
@@ -84,7 +84,7 @@ export function getStore(roomName?: string) {
 	if (roomName) {
 		let storage = Game.rooms[roomName].storage;
 		let terminal = Game.rooms[roomName].terminal;
-		let factory = Game.getObjectById(Game.rooms[roomName].memory.StructureIdData?Game.rooms[roomName].memory.StructureIdData.FactoryId:'') as StructureFactory;
+		let factory = Game.rooms[roomName].GetStruDate(STRUCTURE_FACTORY) as StructureFactory;
 		let storageUsed = storage?.store.getUsedCapacity() || 0;
 		let storeCapacity = storage?.store.getCapacity() || 1;
 		let storageProportion = (storageUsed / storeCapacity * 100).toFixed(2) + '%';
@@ -106,7 +106,7 @@ export function getStore(roomName?: string) {
 		for (let i = 0; i < rooms.length; i++) {
 			let storage = Game.rooms[rooms[i]].storage;
 			let terminal = Game.rooms[rooms[i]].terminal;
-			let factory = Game.getObjectById(Game.rooms[rooms[i]].memory.StructureIdData?Game.rooms[rooms[i]].memory.StructureIdData.FactoryId:'') as StructureFactory;
+			let factory = Game.rooms[roomName].GetStruDate(STRUCTURE_FACTORY) as StructureFactory;
 			let storageUsed = storage?.store.getUsedCapacity() || 0;
 			let storeCapacity = storage?.store.getCapacity() || 1;
 			let storageProportion = (storageUsed / storeCapacity * 100).toFixed(2) + '%';
@@ -123,7 +123,7 @@ export function getStore(roomName?: string) {
 				'Storage:', Colorful(storageProportion, storageColor), ' ',
 				'Terminal', Colorful(terminalProportion, terminalColor), ' ',
 				'Factory', Colorful(factoryProportion, factoryColor));
-				// Colorful(string, colorHex(getColor(Math.ceil(storageUsed / storeCapacity * 100))))
+			// Colorful(string, colorHex(getColor(Math.ceil(storageUsed / storeCapacity * 100))))
 		}
 	}
 }

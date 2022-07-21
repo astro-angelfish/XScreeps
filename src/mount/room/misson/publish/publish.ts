@@ -441,7 +441,7 @@ export default class RoomMissonPublish extends Room {
     /* 资源传送任务发布函数 */
     public public_Send(disRoom: string, rType: ResourceConstant, num: number): MissionModel {
         if (!this.memory.StructureIdData.terminalID) return null
-        var terminal = Game.getObjectById(this.memory.StructureIdData.terminalID) as StructureTerminal
+        var terminal = this.terminal as StructureTerminal
         if (!terminal) {
             delete this.memory.StructureIdData.terminalID
             return null
@@ -472,7 +472,7 @@ export default class RoomMissonPublish extends Room {
      */
     public public_Buy(res: ResourceConstant, num: number, range: number, max?: number): MissionModel {
         if (!this.memory.StructureIdData.terminalID) return null
-        var terminal = Game.getObjectById(this.memory.StructureIdData.terminalID) as StructureTerminal
+        var terminal = this.terminal as StructureTerminal
         if (!terminal) {
             delete this.memory.StructureIdData.terminalID
             return null
@@ -537,7 +537,7 @@ export default class RoomMissonPublish extends Room {
     /* 外矿开采任务发布函数 */
     public public_OutMine(sourceRoom: string, x: number, y: number, disRoom: string): MissionModel {
         var pos = new RoomPosition(x, y, sourceRoom)
-        if (!this.memory.StructureIdData.storageID) return null
+        if (!this.storage) return null
         if (!pos) return null
         // 检查是否已经存在重复任务了
         for (var i of this.memory.Misson['Creep']) {

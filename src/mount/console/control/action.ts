@@ -60,9 +60,9 @@ export default {
             if (!thisRoom) return `[plan] 不存在房间${roomName}`
             var thisTask = thisRoom.public_Send(disRoom, 'Z', num)
             /* 查看资源是否足够 */
-            var terminal_ = Game.getObjectById(thisRoom.memory.StructureIdData.terminalID) as StructureTerminal
-            var storage_ = Game.getObjectById(thisRoom.memory.StructureIdData.storageID) as StructureStorage
-            if (!terminal_ || !storage_) { delete thisRoom.memory.StructureIdData.terminalID; delete thisRoom.memory.StructureIdData.storageID; return Colorful(`[terminal] 房间${roomName}不存在终端/仓房或记忆未更新！`, 'red', true) }
+            var terminal_ = thisRoom.terminal as StructureTerminal
+            var storage_ = thisRoom.storage as StructureStorage
+            if (!terminal_ || !storage_) { return Colorful(`[terminal] 房间${roomName}不存在终端/仓房或记忆未更新！`, 'red', true) }
             /* 查询其他资源传送任务中是否有一样的资源 */
             var Num = 0
             if (!thisRoom.memory.Misson['Structure']) thisRoom.memory.Misson['Structure'] = []
@@ -391,7 +391,7 @@ export default {
         senior(roomName: string, disRoom: string, shard: shardName = Game.shard.name as shardName, res: ResourceConstant, CreepNum: number, interval: number, level: 'T0' | 'T3', shardData?: shardRoomData[]): string {
             let thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[carry] 不存在房间${roomName}`
-            var thisTask = thisRoom.public_Carrysenior(disRoom, CreepNum, shard, res, interval,level)
+            var thisTask = thisRoom.public_Carrysenior(disRoom, CreepNum, shard, res, interval, level)
             if (shardData) thisTask.Data.shardData = shardData
             if (thisRoom.AddMission(thisTask)) return `[carry] 房间${roomName}挂载位面搬运任务成功`
             return `[carry] 房间${roomName}删除位面搬运任务失败`

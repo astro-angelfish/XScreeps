@@ -54,7 +54,7 @@ export default class RoomMissonBehaviourExtension extends Room {
             }
         }
         else {
-            delete this.memory.SpawnConfig['build']
+            if (this.memory.SpawnConfig['build']) { delete this.memory.SpawnConfig['build'] }
         }
     }
 
@@ -66,10 +66,12 @@ export default class RoomMissonBehaviourExtension extends Room {
         // let center_link = Game.getObjectById(this.memory.StructureIdData.center_link) as StructureLink
         // if (!center_link) { delete this.memory.StructureIdData.center_link; return }
         // else { if (center_link.store.getUsedCapacity('energy') > 750) return }
-        for (let id of this.memory.StructureIdData.source_links) {
-            let source_link = Game.getObjectById(id) as StructureLink
+        // this.getStructure(STRUCTURE_LINK)
+        let source_links = this.getStructureData(STRUCTURE_LINK, 'source_links', this.memory.StructureIdData.source_links)
+        for (let source_link of source_links as StructureLink[]) {
+            // let source_link = Game.getObjectById(id) as StructureLink
             if (!source_link) {
-                let index = this.memory.StructureIdData.source_links.indexOf(id)
+                let index = this.memory.StructureIdData.source_links.indexOf(source_link.id)
                 this.memory.StructureIdData.source_links.splice(index, 1)
                 return
             }
@@ -77,7 +79,8 @@ export default class RoomMissonBehaviourExtension extends Room {
             if (source_link.store.getUsedCapacity('energy') < 700) { continue; }
             /*检查up_link状态*/
             if (this.memory.StructureIdData.upgrade_link) {
-                let upgrade_link = Game.getObjectById(this.memory.StructureIdData.upgrade_link) as StructureLink
+                let upgrade_link = this.getStructureData(STRUCTURE_LINK, 'upgrade_link', [this.memory.StructureIdData.upgrade_link])[0] as StructureLink
+                // let upgrade_link = Game.getObjectById(this.memory.StructureIdData.upgrade_link) as StructureLink
                 if (upgrade_link && upgrade_link.store.getFreeCapacity('energy') > 600) {
                     var thisTask = this.public_link([source_link.id], upgrade_link.id, 10)
                     this.AddMission(thisTask)
@@ -86,7 +89,8 @@ export default class RoomMissonBehaviourExtension extends Room {
             }
             /*检查中央link*/
             if (this.memory.StructureIdData.center_link) {
-                let center_link = Game.getObjectById(this.memory.StructureIdData.center_link) as StructureLink
+                let center_link = this.getStructureData(STRUCTURE_LINK, 'center_link', [this.memory.StructureIdData.center_link])[0] as StructureLink
+                // let center_link = Game.getObjectById(this.memory.StructureIdData.center_link) as StructureLink
                 if (center_link && center_link.store.getFreeCapacity('energy') > 600) {
                     var thisTask = this.public_link([source_link.id], center_link.id, 10)
                     this.AddMission(thisTask)
@@ -106,10 +110,12 @@ export default class RoomMissonBehaviourExtension extends Room {
     public Task_ComsumeLink(): void {
         if ((global.Gtime[this.name] - Game.time) % 7) return
         if (!this.memory.StructureIdData.center_link) return
-        let center_link = Game.getObjectById(this.memory.StructureIdData.center_link) as StructureLink
+        let center_link = this.getStructureData(STRUCTURE_LINK, 'center_link', [this.memory.StructureIdData.center_link])[0] as StructureLink
+        // let center_link = Game.getObjectById(this.memory.StructureIdData.center_link) as StructureLink
         if (!center_link) { delete this.memory.StructureIdData.center_link; return }
         if (this.memory.StructureIdData.upgrade_link) {
-            let upgrade_link = Game.getObjectById(this.memory.StructureIdData.upgrade_link) as StructureLink
+            let upgrade_link = this.getStructureData(STRUCTURE_LINK, 'upgrade_link', [this.memory.StructureIdData.upgrade_link])[0] as StructureLink
+            // let upgrade_link = Game.getObjectById(this.memory.StructureIdData.upgrade_link) as StructureLink
             if (!upgrade_link) { delete this.memory.StructureIdData.upgrade_link; return }
             if (upgrade_link.store.getUsedCapacity('energy') < 400) {
                 var thisTask = this.public_link([center_link.id], upgrade_link.id, 25)
@@ -117,10 +123,11 @@ export default class RoomMissonBehaviourExtension extends Room {
                 return
             }
             if (this.memory.StructureIdData.comsume_link.length > 0) {
-                for (var i of this.memory.StructureIdData.comsume_link) {
-                    let l = Game.getObjectById(i) as StructureLink
+                let comsume_link = this.getStructureData(STRUCTURE_LINK, 'comsume_link', [this.memory.StructureIdData.comsume_link]) as StructureLink[]
+                for (var l of comsume_link) {
+                    // let l = Game.getObjectById(i) as StructureLink
                     if (!l) {
-                        let index = this.memory.StructureIdData.comsume_link.indexOf(i)
+                        let index = this.memory.StructureIdData.comsume_link.indexOf(l.id)
                         this.memory.StructureIdData.comsume_link.splice(index, 1)
                         return
                     }
@@ -140,7 +147,6 @@ export default class RoomMissonBehaviourExtension extends Room {
         if (!this.memory.StructureIdData.labInspect || Object.keys(this.memory.StructureIdData.labInspect).length < 3) return
         let storage_ = this.storage as StructureStorage
         let terminal_ = this.terminal as StructureTerminal
-        // console.log('LAB删除调试', global.Stru[this.name]['storage'])
         if (misson.Data.num <= -50 || !storage_ || !terminal_)  // -50 为误差允许值
         {
             this.DeleteMission(misson.id)
@@ -513,21 +519,32 @@ export default class RoomMissonBehaviourExtension extends Room {
     /* 烧Power发布函数任务 */
     public Task_montitorPower(): void {
         if (Game.cpu.bucket < 6000 && Memory.StopPixel) return/*CPU不足情况下暂停*/
-        if (Game.time % 7) return
+        if (Game.time % 15) return
         if (this.controller.level < 8) return
         if (!this.memory.switch.StartPower && !Memory.SystemEconomy) return
-        // 有任务了就不发布烧帕瓦的任务
-        if (this.MissionNum('Room', 'power升级') > 0) return
         let storage_ = this.storage as StructureStorage
         //  powerspawn_ = global.Stru[this.name]['powerspawn'] as StructurePowerSpawn
-        if (!storage_) return
+        if (!storage_ || !this.terminal) return
+        let storage_number = storage_.store.getUsedCapacity('power');
+        if (storage_number + this.terminal.store.getUsedCapacity('power') <= 5000) {
+            // console.log(this.name, '等待帕瓦供应')
+            /*将补充信息添加到待处理的列表中*/
+            global.PowerDemand = _.uniq([...global.PowerDemand, this.name])
+        } else {
+            if (global.PowerDemand.length > 0) {
+                global.PowerDemand = _.difference(global.PowerDemand, this.name)
+            }
+        }
+        // 有任务了就不发布烧帕瓦的任务
+        if (this.MissionNum('Room', 'power升级') > 0) return
+
         /* 检测类型*/
         let SavePower = this.memory.switch.SavePower;
         if (!SavePower && Memory.SystemEconomy && !this.memory.switch.StartPower) {
             SavePower = true;
         }
         // SavePower 是节省能量的一种"熔断"机制 防止烧power致死
-        let storage_number = storage_.store.getUsedCapacity('power');
+
         if (storage_.store.getUsedCapacity('energy') > (SavePower ? 250000 : 150000) && storage_number > 100) {
             /* 发布烧power任务 */
             var thisTask: MissionModel = {
@@ -537,24 +554,15 @@ export default class RoomMissonBehaviourExtension extends Room {
                 state: 1
             }
             this.AddMission(thisTask)
-        } else {
-            if (!this.terminal) return;
-            if (storage_number + this.terminal.store.getUsedCapacity('power') <= 5000) {
-                // console.log(this.name, '等待帕瓦供应')
-                /*将补充信息添加到待处理的列表中*/
-                global.PowerDemand = _.uniq([...global.PowerDemand, this.name])
-            } else {
-                if (global.PowerDemand.length > 0) {
-                    global.PowerDemand = _.difference(global.PowerDemand, this.name)
-                }
-            }
         }
+
+
     }
 
     /* 烧Power执行函数 */
     public Task_ProcessPower(misson: MissionModel): void {
         let storage_ = this.storage as StructureStorage
-        let powerspawn_ = global.Stru[this.name]['powerspawn'] as StructurePowerSpawn
+        let powerspawn_ = Game.rooms[this.name].GetStruDate('powerspawn') as StructurePowerSpawn
         let terminal_ = this.terminal as StructureTerminal
         if (!storage_ || !powerspawn_ || !terminal_) return
         if (misson.state == 1) {

@@ -536,7 +536,7 @@ export default class CreepMissonMineExtension extends Creep {
                 }
             }
             else {
-                var storage_ = Game.getObjectById(Game.rooms[this.memory.belong].memory.StructureIdData.storageID) as StructureStorage
+                var storage_ =Game.rooms[this.memory.belong].storage as StructureStorage
                 if (!storage_) return
                 if (!this.pos.isNearTo(storage_)) this.goTo(storage_.pos, 1)
                 else {
@@ -560,7 +560,7 @@ export default class CreepMissonMineExtension extends Creep {
         }
         this.workstate(creepMisson.rType)
         if (this.memory.working) {
-            var storage_ = Game.getObjectById(Game.rooms[this.memory.belong].memory.StructureIdData.storageID) as StructureStorage
+            var storage_ = Game.rooms[this.memory.belong].storage as StructureStorage
             if (!storage_) return
             if (!this.pos.isNearTo(storage_)) this.goTo(storage_.pos, 1)
             else {

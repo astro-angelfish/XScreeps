@@ -62,7 +62,7 @@ export default class RoomMissonMineExtension extends Room {
         if (!storage_) return
         /* 如果矿物饱和，自动进行打包操作 */
         if (storage_.store.getUsedCapacity(this.memory.mineralType) > 200000) {
-            let factory_ = Game.getObjectById(this.memory.StructureIdData.FactoryId) as StructureFactory
+            let factory_ = this.GetStruDate(STRUCTURE_FACTORY) as StructureFactory
             // console.log('矿物饱和打包',this.name,zipMap[this.memory.mineralType],Object.keys(this.memory.productData.unzip).length,JSON.stringify(factory_))
             if (factory_ && zipMap[this.memory.mineralType] && Object.keys(this.memory.productData.unzip).length < 1) {
                 // console.log('矿物饱和打包',this.name,this.memory.productData.state)

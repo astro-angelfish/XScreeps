@@ -119,11 +119,9 @@ export default class CreepMissonActionExtension extends Creep {
         else if (mission.Data.RepairType == 'nuker') {
             // 没有仓库和终端就不防了
             if (!storage_) {
-                delete Game.rooms[this.memory.belong].memory.StructureIdData.storageID;
-                storage_ = Game.getObjectById(Game.rooms[this.memory.belong].memory.StructureIdData.terminalID) as StructureStorage
+               
                 return;
             }
-            if (!storage_) return
             // 核弹防御
             /* 防核函数  测试成功！*/
             if (!Game.rooms[this.memory.belong].memory.nukeData) return
@@ -789,7 +787,7 @@ export default class CreepMissonActionExtension extends Creep {
             if (this.memory.working && this.store.getFreeCapacity() == this.store.getCapacity()) this.memory.working = false
             if (!this.memory.working && this.store.getFreeCapacity() == 0) this.memory.working = true
             if (this.memory.working) {
-                var storage_ = Game.getObjectById(Game.rooms[this.memory.belong].memory.StructureIdData.storageID) as StructureStorage
+                var storage_ = Game.rooms[this.memory.belong].storage as StructureStorage
                 if (!storage_) return
                 if (!this.pos.isNearTo(storage_)) this.goTo(storage_.pos, 1)
                 else {

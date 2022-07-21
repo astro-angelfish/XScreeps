@@ -15,7 +15,8 @@ export default class RoomCoreInitExtension extends Room {
         if (cpu_test) { cpu_list.push(Game.cpu.getUsed()) }
         this.RoomSpawnListInit()
         if (cpu_test) { cpu_list.push(Game.cpu.getUsed()) }
-        this.RoomGlobalStructure()
+        /*建筑初始化已废弃*/
+        // this.RoomGlobalStructure()
         if (cpu_test) { cpu_list.push(Game.cpu.getUsed()) }
         this.RoomGlobalDynamicconfig()
         if (cpu_test) {
@@ -75,6 +76,7 @@ export default class RoomCoreInitExtension extends Room {
         global.HostileCreeps[this.name] = [];
         global.HostileGroup[this.name] = [];
         global.getStructure[this.name] = {};
+        global.getStructureData[this.name] = {};
         delete this.memory.DefendDouId;/*每个Tick都进行重置操作*/
         this.memory.DefendDouPosition = [];
     }
@@ -90,18 +92,18 @@ export default class RoomCoreInitExtension extends Room {
         if (cpu_test) { cpu_list.push(Game.cpu.getUsed()) }
         let level = this.controller.level
         let StructureData = this.memory.StructureIdData
-        /* Spawn建筑记忆更新 */
+        /* Spawn建筑记忆更新-8级之后此部分不会被重复触发 */
         if (!StructureData.spawn) StructureData.spawn = []
         if (StructureData.spawn.length < 3) {
             if (level <= 6 && StructureData.spawn.length < 1) {
-                let ASpawn = this.getStructure('spawn') as StructureSpawn[]
+                let ASpawn = this.find(FIND_MY_SPAWNS) as StructureSpawn[]
                 for (let sp of ASpawn) {
                     StructureData.spawn.push(sp.id)
                 }
             }
             else if ((level == 7 && StructureData.spawn.length < 2) || (level >= 8 && StructureData.spawn.length < 3)) {
                 if (Game.time % tickratio * 2 == 0) {
-                    let ASpawn = this.getStructure('spawn') as StructureSpawn[]
+                    let ASpawn = this.find(FIND_MY_SPAWNS) as StructureSpawn[]
                     for (let sp of ASpawn) {
                         if (!isInArray(StructureData.spawn, sp.id))
                             StructureData.spawn.push(sp.id)
@@ -110,8 +112,8 @@ export default class RoomCoreInitExtension extends Room {
             }
         }
         if (cpu_test) { cpu_list.push(Game.cpu.getUsed()) }
-        /* 中心点依赖建筑*/
-        if (Memory.RoomControlData[this.name].center.length == 2) {
+        /* 中心点依赖建筑 - 正常情况下8级不应该发生触发*/
+        if (Memory.RoomControlData[this.name].center.length == 2 && !this.memory.StructureIdData.NtowerID) {
             let centerlist = Memory.RoomControlData[this.name].center
             /* 近塔记忆更新 (用于维护道路和container的塔) */
             if (!this.memory.StructureIdData.NtowerID && this.controller.level >= 3) {
@@ -122,13 +124,13 @@ export default class RoomCoreInitExtension extends Room {
             }
         }
         if (cpu_test) { cpu_list.push(Game.cpu.getUsed()) }
-        /* 资源矿记忆更新 */
+        /* 资源矿记忆更新-不进行重复刷新*/
         if (!StructureData.mineralID) {
             let Mineral_ = this.find(FIND_MINERALS)
             if (Mineral_.length == 1) this.memory.StructureIdData.mineralID = Mineral_[0].id
         }
         if (cpu_test) { cpu_list.push(Game.cpu.getUsed()) }
-        /* 能量矿记忆更新*/
+        /* 能量矿记忆更新-不进行重复刷新*/
         if (!StructureData.source) StructureData.source = []
         if (StructureData.source.length <= 0) {
             let allSource = this.find(FIND_SOURCES)
@@ -137,7 +139,7 @@ export default class RoomCoreInitExtension extends Room {
             StructureData.source = sourceIDs
         }
         if (cpu_test) { cpu_list.push(Game.cpu.getUsed()) }
-        /* 升级Link记忆更新 */
+        /* 升级Link记忆更新 -不进行重复刷新*/
         if (!StructureData.source_links) StructureData.source_links = []
         if (level >= 6 && !StructureData.upgrade_link) {
             if (Game.time % tickratio * 4 == 0) {
@@ -210,7 +212,7 @@ export default class RoomCoreInitExtension extends Room {
         }
         if (cpu_test) { cpu_list.push(Game.cpu.getUsed()) }
         /* 通过仓库抓取中央link */
-        if (level >= 5 && !StructureData.center_link && this.memory.StructureIdData.storageID) {
+        if (level >= 5 && !StructureData.center_link && this.storage) {
             let storage_ = this.storage as StructureStorage
             if (storage_) {
                 let center_links = storage_.pos.getRangedStructure(['link'], 2, 0) as StructureLink[]
@@ -236,7 +238,7 @@ export default class RoomCoreInitExtension extends Room {
         if (cpu_test) {
             cpu_list.push(Game.cpu.getUsed())
         }
-        /* 终端识别 */
+        /* 终端识别  -不进行重复刷新*/
         if (!this.memory.StructureIdData.terminalID && level >= 6) {
             if (this.terminal) this.memory.StructureIdData.terminalID = this.terminal.id
         }
@@ -276,35 +278,37 @@ export default class RoomCoreInitExtension extends Room {
             }
 
         }
-        if (cpu_test) { cpu_list.push(Game.cpu.getUsed()) }
-        /* 观察器识别 */
-        if (!this.memory.StructureIdData.ObserverID && this.controller.level >= 8) {
-            var observer_ = this.getStructure(STRUCTURE_OBSERVER)
-            if (observer_.length > 0) {
-                this.memory.StructureIdData.ObserverID = observer_[0].id
+        if (Game.time % tickratio * 10) {
+            if (cpu_test) { cpu_list.push(Game.cpu.getUsed()) }
+            /* 观察器识别 */
+            if (!this.memory.StructureIdData.ObserverID && this.controller.level >= 8) {
+                var observer_ = this.getStructure(STRUCTURE_OBSERVER)
+                if (observer_.length > 0) {
+                    this.memory.StructureIdData.ObserverID = observer_[0].id
+                }
             }
-        }
-        if (cpu_test) { cpu_list.push(Game.cpu.getUsed()) }
-        /* PowerSpawn识别 */
-        if (!this.memory.StructureIdData.PowerSpawnID && this.controller.level >= 8) {
-            var powerSpawn = this.getStructure(STRUCTURE_POWER_SPAWN)
-            if (powerSpawn.length > 0)
-                this.memory.StructureIdData.PowerSpawnID = powerSpawn[0].id
-        }
-        if (cpu_test) { cpu_list.push(Game.cpu.getUsed()) }
-        /* 核弹识别 */
-        if (!this.memory.StructureIdData.NukerID && this.controller.level >= 8) {
-            var nuke_ = this.getStructure(STRUCTURE_NUKER)
-            if (nuke_.length > 0) {
-                this.memory.StructureIdData.NukerID = nuke_[0].id
+            if (cpu_test) { cpu_list.push(Game.cpu.getUsed()) }
+            /* PowerSpawn识别 */
+            if (!this.memory.StructureIdData.PowerSpawnID && this.controller.level >= 8) {
+                var powerSpawn = this.getStructure(STRUCTURE_POWER_SPAWN)
+                if (powerSpawn.length > 0)
+                    this.memory.StructureIdData.PowerSpawnID = powerSpawn[0].id
             }
-        }
-        if (cpu_test) { cpu_list.push(Game.cpu.getUsed()) }
-        /* 工厂识别 */
-        if (!this.memory.StructureIdData.FactoryId && this.controller.level >= 8) {
-            var factory_ = this.getStructure(STRUCTURE_FACTORY)
-            if (factory_.length > 0) {
-                this.memory.StructureIdData.FactoryId = factory_[0].id
+            if (cpu_test) { cpu_list.push(Game.cpu.getUsed()) }
+            /* 核弹识别 */
+            if (!this.memory.StructureIdData.NukerID && this.controller.level >= 8) {
+                var nuke_ = this.getStructure(STRUCTURE_NUKER)
+                if (nuke_.length > 0) {
+                    this.memory.StructureIdData.NukerID = nuke_[0].id
+                }
+            }
+            if (cpu_test) { cpu_list.push(Game.cpu.getUsed()) }
+            /* 工厂识别 */
+            if (!this.memory.StructureIdData.FactoryId && this.controller.level >= 8) {
+                var factory_ = this.getStructure(STRUCTURE_FACTORY)
+                if (factory_.length > 0) {
+                    this.memory.StructureIdData.FactoryId = factory_[0].id
+                }
             }
         }
         if (cpu_test) { cpu_list.push(Game.cpu.getUsed()) }
@@ -317,7 +321,7 @@ export default class RoomCoreInitExtension extends Room {
         }
         if (cpu_test) { cpu_list.push(Game.cpu.getUsed()) }
         let carry_num = 0;
-        if (Game.time % tickratio * 3 == 0) {
+        if (Game.time % tickratio * 5 == 0) {
             for (let id in this.memory.harvestData) {
                 if (!this.memory.harvestData[id].containerID) {
                     let source = Game.getObjectById(id as Id<Source>) as Source
@@ -362,57 +366,31 @@ export default class RoomCoreInitExtension extends Room {
         if (!global.CreepBodyData[this.name]) global.CreepBodyData[this.name] = {}
         if (!global.CreepNumData) global.CreepNumData = {}
         if (!global.CreepNumData[this.name]) global.CreepNumData[this.name] = {}
-
     }
 
     /**
      * 房间全局建筑初始化
      */
     public RoomGlobalStructure(): void {
-        if (Game.time % 7 != 0) { return }
         // 目前只支持 storage terminal factory powerspawn
-        if (this.memory.StructureIdData.storageID) {
-            global.Stru[this.name]['storage'] = this.storage as StructureStorage
-            if (!global.Stru[this.name]['storage']) {
-                delete this.memory.StructureIdData.storageID
-            }
-        }
-        if (this.memory.StructureIdData.terminalID) {
-            global.Stru[this.name]['terminal'] = this.terminal as StructureTerminal
-            if (!global.Stru[this.name]['terminal']) {
-                delete this.memory.StructureIdData.terminalID
-            }
-        }
-        if (this.memory.StructureIdData.PowerSpawnID) {
-            global.Stru[this.name]['powerspawn'] = Game.getObjectById(this.memory.StructureIdData.PowerSpawnID) as StructurePowerSpawn
-            if (!global.Stru[this.name]['powerspawn']) {
-                delete this.memory.StructureIdData.PowerSpawnID
-            }
-        }
-        if (this.memory.StructureIdData.FactoryId) {
-            global.Stru[this.name]['factory'] = Game.getObjectById(this.memory.StructureIdData.FactoryId) as StructureFactory
-            if (!global.Stru[this.name]['factory']) {
-                delete this.memory.StructureIdData.FactoryId
-            }
-        }
-        if (this.memory.StructureIdData.NtowerID) {
-            global.Stru[this.name]['Ntower'] = Game.getObjectById(this.memory.StructureIdData.NtowerID) as StructureTower
-            if (!global.Stru[this.name]['Ntower']) {
-                delete this.memory.StructureIdData.NtowerID
-            }
-        }
-        if (this.memory.StructureIdData.AtowerID && this.memory.StructureIdData.AtowerID.length > 0) {
-            var otlist = global.Stru[this.name]['Atower'] = [] as StructureTower[]
-            for (var ti of this.memory.StructureIdData.AtowerID) {
-                var ot = Game.getObjectById(ti) as StructureTower
-                if (!ot) {
-                    var index = this.memory.StructureIdData.AtowerID.indexOf(ti)
-                    this.memory.StructureIdData.AtowerID.splice(index, 1)
-                    continue
-                }
-                otlist.push(ot)
-            }
-        }
+        // if (this.memory.StructureIdData.NtowerID) {
+        //     global.Stru[this.name]['Ntower'] = Game.getObjectById(this.memory.StructureIdData.NtowerID) as StructureTower
+        //     if (!global.Stru[this.name]['Ntower']) {
+        //         delete this.memory.StructureIdData.NtowerID
+        //     }
+        // }
+        // if (this.memory.StructureIdData.AtowerID && this.memory.StructureIdData.AtowerID.length > 0) {
+        //     var otlist = global.Stru[this.name]['Atower'] = [] as StructureTower[]
+        //     for (var ti of this.memory.StructureIdData.AtowerID) {
+        //         var ot = Game.getObjectById(ti) as StructureTower
+        //         if (!ot) {
+        //             var index = this.memory.StructureIdData.AtowerID.indexOf(ti)
+        //             this.memory.StructureIdData.AtowerID.splice(index, 1)
+        //             continue
+        //         }
+        //         otlist.push(ot)
+        //     }
+        // }
     }
 
     /**

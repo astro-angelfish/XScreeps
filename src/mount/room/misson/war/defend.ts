@@ -15,11 +15,12 @@ export default class DefendWarExtension extends Room {
             }
         if (Game.time % 41) return
         if (this.memory.switch.Stopnukeprotect) return
-        var nuke_ = this.find(FIND_NUKES)
+
         if (this.controller.level < 6) return
         // var nuke_ = this.find(FIND_FLAGS,{filter:(flag_)=>{return flag_.color == COLOR_ORANGE}})
         if (!this.memory.nukeID) this.memory.nukeID = []
         if (!this.memory.nukeData) this.memory.nukeData = { damage: {}, rampart: {} }
+        var nuke_ = this.find(FIND_NUKES)
         if (nuke_.length > 0) {
             /* 发现核弹，激活核防御任务 */
             var data = this.memory.nukeData.damage

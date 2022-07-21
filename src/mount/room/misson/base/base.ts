@@ -7,6 +7,8 @@ import { Colorful, compare, generateID, isInArray } from "@/utils"
 export default class RoomMissonFrameExtension extends Room {
     /* 任务管理器 */
     public MissionManager(): void {
+        var cpu_test = true
+        let cpu_list = [];
         // 冷却监测
         this.CoolDownCaculator()
         // 超时监测
@@ -26,6 +28,7 @@ export default class RoomMissonFrameExtension extends Room {
         this.Task_ComsumeLink() // 消费、冲级link
         this.Constru_Build()   // 建筑任务
         this.Task_Clink()       // 链接送仓任务
+
         this.Tower_Feed()   // 防御塔填充任务
         this.Lab_Feed()     // 实验室填充\回收任务  
         this.Nuker_Feed()   // 核弹填充任务      
@@ -36,7 +39,7 @@ export default class RoomMissonFrameExtension extends Room {
         this.Task_monitorMineral()  // 挖矿
         this.Task_montitorPower()   // 烧power任务监控
         this.Task_Auto_Defend()     // 主动防御任务发布
-        // this.Global_Detection() //其他任务信息的检测
+
 
         /* 基本任务监控区域 */
         for (var index in this.memory.Misson) {
@@ -396,17 +399,17 @@ export default class RoomMissonFrameExtension extends Room {
     /* 判断lab的boost搬运模块 */
     public Check_Lab(misson: MissionModel, role: string, tankType: 'storage' | 'terminal' | 'complex'): boolean {
         if (!misson.LabBind) return true
-        var id: string
+        var tank_: StructureStorage | StructureTerminal
         if (tankType == 'storage') {
-            if (!this.memory.StructureIdData.storageID) return false
-            id = this.memory.StructureIdData.storageID
+            if (!this.storage) return false
+            tank_ = this.storage
         }
         else if (tankType == 'terminal') {
-            if (!this.memory.StructureIdData.terminalID) return false
-            id = this.memory.StructureIdData.terminalID
+            if (!this.terminal) return false
+            tank_ = this.terminal
         }
-        var tank_ = Game.getObjectById(id as Id<Structure>) as StructureStorage | StructureTerminal
-        if (!tank_ && id) return false
+        console.log(this.name, '填充检测', tankType)
+        // var tank_ = Game.getObjectById(id as Id<Structure>) as StructureStorage | StructureTerminal
         /* 负责lab的填充 */
         var terminal = this.terminal as StructureTerminal
         var storage = this.storage as StructureStorage
@@ -540,5 +543,27 @@ export default class RoomMissonFrameExtension extends Room {
             }
         }
         return false;
+    }
+
+
+    public GetStruDate(build: string): Structure {
+        if (isInArray(['powerspawn', 'factory', 'Ntower', 'Atower'], build)) {
+
+            switch (build) {
+                case 'powerspawn':
+                    let powerspawn_data = this.getStructure(STRUCTURE_POWER_SPAWN)
+                    if (powerspawn_data) return powerspawn_data[0];
+                    break;
+                case 'factory':
+                    let factory_data = this.getStructure(STRUCTURE_FACTORY)
+                    if (factory_data) return factory_data[0];
+                    break;
+                case 'Ntower':
+                    break;
+                case 'Atower':
+                    break;
+            }
+        }
+        return null;
     }
 }

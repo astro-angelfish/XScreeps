@@ -34,6 +34,9 @@ declare module NodeJS {
         getStructure: {
             [roomName: string]: { [structure: string]: any }
         },
+        getStructureData: {
+            [roomName: string]: { [structure: string]: any }
+        },
         intervalData: { [roomName: string]: { [creepRole: string]: number } }
         ResourceLimit: resourceLimitData
         warData: any

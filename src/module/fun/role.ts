@@ -175,10 +175,9 @@ export function carry_(creep_: Creep): void {
     }
     if (creep_.memory.working) {
         let target = null
-        if (Game.rooms[creep_.memory.belong].memory.StructureIdData.storageID)  // 优先仓库
+        if (Game.rooms[creep_.memory.belong].storage)  // 优先仓库
         {
-            target = Game.getObjectById(Game.rooms[creep_.memory.belong].memory.StructureIdData.storageID) as StructureStorage
-            if (!target) delete Game.rooms[creep_.memory.belong].memory.StructureIdData.storageID
+            target = Game.rooms[creep_.memory.belong].storage as StructureStorage
         }
         if (!target)    // 其次虫卵
         {
@@ -245,10 +244,9 @@ export function upgrade_(creep_: Creep): void {
                     target = Game.getObjectById(Game.rooms[creep_.memory.belong].memory.StructureIdData.upgrade_link) as StructureLink
                     if (!target) delete Game.rooms[creep_.memory.belong].memory.StructureIdData.upgrade_link
                 }
-                else if (Game.rooms[creep_.memory.belong].memory.StructureIdData.storageID)  // 优先仓库
+                else if (Game.rooms[creep_.memory.belong].storage)  // 优先仓库
                 {
-                    target = Game.getObjectById(Game.rooms[creep_.memory.belong].memory.StructureIdData.storageID) as StructureStorage
-                    if (!target) delete Game.rooms[creep_.memory.belong].memory.StructureIdData.storageID
+                    target = Game.rooms[creep_.memory.belong].storage as StructureStorage
                 }
                 if (!target)    // 其次container
                 {

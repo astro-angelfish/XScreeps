@@ -154,9 +154,9 @@ export function ResourceDispatchTick(): void {
         for (let roomName of Memory.PowerSupply) {
             var thisRoom = Game.rooms[roomName]
             if (!thisRoom) continue;
-            var terminal_ = Game.getObjectById(thisRoom.memory.StructureIdData.terminalID) as StructureTerminal
-            var storage_ = Game.getObjectById(thisRoom.memory.StructureIdData.storageID) as StructureStorage
-            if (!terminal_ || !storage_) { delete thisRoom.memory.StructureIdData.terminalID; delete thisRoom.memory.StructureIdData.storageID; }
+            var terminal_ = thisRoom.terminal as StructureTerminal
+            var storage_ = thisRoom.storage as StructureStorage
+            if (!terminal_ || !storage_) { }
             if (!thisRoom.memory.Misson['Structure']) thisRoom.memory.Misson['Structure'] = []
             for (var tM of thisRoom.memory.Misson['Structure']) {
                 if (tM.name == '资源传送' && tM.Data.rType == rType) {

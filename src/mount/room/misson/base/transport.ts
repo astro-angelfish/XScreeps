@@ -7,12 +7,27 @@ export default class RoomMissonTransportExtension extends Room {
         if (!this.storage && !this.terminal) return
         if (this.RoleMissionNum('transport', '虫卵填充') < 1) {
             // let thisPos = new RoomPosition(Memory.RoomControlData[this.name].center[0], Memory.RoomControlData[this.name].center[1], this.name)
-            let emptyExtensions = this.find(FIND_MY_STRUCTURES, {
-                filter: (structure) => {
-                    return (structure.structureType == 'spawn' || structure.structureType == 'extension') && structure.store.getFreeCapacity('energy') > 0
+            // let emptyExtensions = this.find(FIND_MY_STRUCTURES, {
+            //     filter: (structure) => {
+            //         return (structure.structureType == 'spawn' || structure.structureType == 'extension') && structure.store.getFreeCapacity('energy') > 0
+            //     }
+            // })
+            let emptyExtensions: boolean = false
+            for (let struc of this.find(FIND_MY_SPAWNS) as StructureSpawn[]) {
+                if (struc.store.getFreeCapacity('energy') > 0) {
+                    emptyExtensions = true;
+                    break;
                 }
-            })
-            if (emptyExtensions.length > 0) {
+            }
+            if (!emptyExtensions) {
+                for (let struc of this.getStructure(STRUCTURE_EXTENSION) as StructureExtension[]) {
+                    if (struc.store.getFreeCapacity('energy') > 0) {
+                        emptyExtensions = true;
+                        break;
+                    }
+                }
+            }
+            if (emptyExtensions) {
                 /*存储填充对象的信息*/
                 // this.memory.Transport['SpawnFeed'] = []
                 // for (let id in emptyExtensions) {
@@ -41,13 +56,7 @@ export default class RoomMissonTransportExtension extends Room {
             if (Game.time % 5) return
         }
         if (!this.storage && !this.terminal) return
-        if (!this.memory.StructureIdData.AtowerID) this.memory.StructureIdData.AtowerID = []
-        for (let id of this.memory.StructureIdData.AtowerID) {
-            let tower = Game.getObjectById(id) as StructureTower
-            if (!tower) {
-                let index = this.memory.StructureIdData.AtowerID.indexOf(id)
-                this.memory.StructureIdData.AtowerID.splice(index, 1)
-            }
+        for (let tower of this.getStructure(STRUCTURE_TOWER) as StructureTower[]) {
             if (tower.store.getUsedCapacity('energy') < 500) {
                 /* 下达搬运任务搬运 */
                 let storage_ = this.storage as StructureStorage
@@ -59,7 +68,6 @@ export default class RoomMissonTransportExtension extends Room {
                         return
                     }
                 }
-
                 let terminal_ = this.terminal as StructureTerminal;
                 if (terminal_) {
                     if (this.RoleMissionNum('transport', '物流运输') > 3 || !this.Check_Carry('transport', terminal_.pos, tower.pos, 'energy')) continue
@@ -77,16 +85,9 @@ export default class RoomMissonTransportExtension extends Room {
     public Lab_Feed(): void {
         if ((global.Gtime[this.name] - Game.time) % 13) return
         if (!this.storage && !this.terminal) return
-        if (!this.memory.StructureIdData.labs || this.memory.StructureIdData.labs.length <= 0) return
         let missionNum = this.RoleMissionNum('transport', '物流运输')
         if (missionNum > 3) return
-        for (var id of this.memory.StructureIdData.labs) {
-            var thisLab = Game.getObjectById(id) as StructureLab
-            if (!thisLab) {
-                var index = this.memory.StructureIdData.labs.indexOf(id)
-                this.memory.StructureIdData.labs.splice(index, 1)
-                continue
-            }
+        for (var thisLab of this.getStructure(STRUCTURE_LAB) as StructureLab[]) {
             if (thisLab.store.getUsedCapacity('energy') <= 800) {
                 /* 下布搬运命令 */
                 var storage_ = this.storage as StructureStorage
@@ -108,7 +109,7 @@ export default class RoomMissonTransportExtension extends Room {
                 return
             }
             /* 如果该实验室不在绑定状态却有多余资源 */
-            if (!this.memory.RoomLabBind[id] && thisLab.mineralType) {
+            if (!this.memory.RoomLabBind[thisLab.id] && thisLab.mineralType) {
                 var storage_ = this.storage as StructureStorage
                 if (!storage_) return
                 var thisTask = this.public_Carry({ 'transport': { num: 1, bind: [] } }, 25, this.name, thisLab.pos.x, thisLab.pos.y, this.name, storage_.pos.x, storage_.pos.y, thisLab.mineralType, thisLab.store.getUsedCapacity(thisLab.mineralType))

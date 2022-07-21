@@ -62,11 +62,11 @@ export default class RoomFunctionTowerExtension extends Room {
             if (!this.memory.StructureIdData.AtowerID) this.memory.StructureIdData.AtowerID = []
             if (enemys.length <= 0) return
             else if (enemys.length == 1) {
-                for (let c of this.memory.StructureIdData.AtowerID) {
-                    let thisTower = Game.getObjectById(c) as StructureTower
-                    if (!thisTower) {
-                        let index = this.memory.StructureIdData.AtowerID.indexOf(c); this.memory.StructureIdData.AtowerID.splice(index, 1); continue
-                    }
+                for (let thisTower of this.getStructure(STRUCTURE_TOWER) as StructureTower[]) {
+                    // let thisTower = Game.getObjectById(c) as StructureTower
+                    // if (!thisTower) {
+                    //     let index = this.memory.StructureIdData.AtowerID.indexOf(c); this.memory.StructureIdData.AtowerID.splice(index, 1); continue
+                    // }
                     thisTower.attack(enemys[0])
                 }
             }
@@ -74,11 +74,11 @@ export default class RoomFunctionTowerExtension extends Room {
                 if (enemys.length >= 3 && enemys[0].ticksToLive < 1450) {
                     return;
                 }
-                for (let c of this.memory.StructureIdData.AtowerID) {
-                    let thisTower = Game.getObjectById(c) as StructureTower
-                    if (!thisTower) {
-                        let index = this.memory.StructureIdData.AtowerID.indexOf(c); this.memory.StructureIdData.AtowerID.splice(index, 1); continue
-                    }
+                for (let thisTower of this.getStructure(STRUCTURE_TOWER) as StructureTower[]) {
+                    // let thisTower = Game.getObjectById(c) as StructureTower
+                    // if (!thisTower) {
+                    //     let index = this.memory.StructureIdData.AtowerID.indexOf(c); this.memory.StructureIdData.AtowerID.splice(index, 1); continue
+                    // }
                     if (Game.time % 2)
                         thisTower.attack(enemys[0])
                     else
@@ -89,8 +89,7 @@ export default class RoomFunctionTowerExtension extends Room {
     }
 
     public TowerRepair(): void {
-
-        if ((Game.time - global.Gtime[this.name]) % 20 != 0) { return }
+        if ((Game.time - global.Gtime[this.name]) % 20) { return }
         global.Repairlist[this.name] = []
         if (this.memory.state == 'war') {
             var repairRoad = this.find(FIND_STRUCTURES, {
@@ -105,7 +104,6 @@ export default class RoomFunctionTowerExtension extends Room {
                 }
             })
         }
-
         if (repairRoad.length > 0) {
             for (let i in repairRoad) {
                 let repairRoad_ = repairRoad[i] as Structure

@@ -2,6 +2,7 @@ import { filter_structure, isInArray, LeastHit } from "@/utils"
 import { CheckExcludeRampart } from "@/module/war/war"
 
 
+
 /* 房间原型拓展   --方法  --寻找 */
 export default class RoomFunctionFindExtension extends Room {
     /* 获取指定structureType的建筑列表 */
@@ -9,14 +10,29 @@ export default class RoomFunctionFindExtension extends Room {
         // global.getStructure[this.name]
         if (Object.keys(global.getStructure[this.name]).length < 1) {
             let find_list = this.find(FIND_MY_STRUCTURES)
-            for (let i in find_list) {
-                let structure = find_list[i];
+            for (let structure of find_list) {
+                // let structure = find_list[i];
+                // if (!isInArray([STRUCTURE_RAMPART], structure.structureType)) {
                 if (!global.getStructure[this.name][structure.structureType]) global.getStructure[this.name][structure.structureType] = []
                 global.getStructure[this.name][structure.structureType].push(structure)
+                // }
             }
         }
-
         return global.getStructure[this.name][sc] ? global.getStructure[this.name][sc] : [];
+    }
+
+
+    public getStructureData(sc: StructureConstant, key: string, id: string[]) {
+        if (!global.getStructureData[this.name][key]) {
+            global.getStructureData[this.name][key] = [];
+            let _getStructure = this.getStructure(sc)
+            for (let Structure of _getStructure) {
+                if (isInArray(id, Structure.id)) {
+                    global.getStructureData[this.name][key].push(Structure)
+                }
+            }
+        }
+        return global.getStructureData[this.name][key] ? global.getStructureData[this.name][key] : [];
     }
 
     // /* 任务lab绑定数据生成便捷函数 */
@@ -405,41 +421,43 @@ export default class RoomFunctionFindExtension extends Room {
     public StructureMission(): void {
         let structures = []
         var IdData = this.memory.StructureIdData
-        if (IdData.terminalID) {
-            let terminal = Game.getObjectById(IdData.terminalID) as StructureTerminal
-            if (!terminal) { delete IdData.terminalID }
-            else structures.push(terminal)
+        /*终端信息*/
+        let terminal = this.terminal as StructureTerminal
+        if (terminal) { structures.push(terminal) }
+
+        /*工厂信息*/
+        let factory = this.GetStruDate(STRUCTURE_FACTORY) as StructureFactory
+        if (factory) { structures.push(factory) }
+
+        /*Link信息*/
+        for (let _link of this.getStructure(STRUCTURE_LINK) as StructureLink[]) {
+            structures.push(_link)
         }
-        if (IdData.FactoryId) {
-            let factory = Game.getObjectById(IdData.FactoryId) as StructureFactory
-            if (!factory) { delete IdData.FactoryId }
-            else structures.push(factory)
-        }
-        if (IdData.center_link) {
-            let center_link = Game.getObjectById(IdData.center_link) as StructureLink
-            if (!center_link) { delete IdData.center_link }
-            else structures.push(center_link)
-        }
-        if (IdData.source_links && IdData.source_links.length > 0) {
-            for (var s of IdData.source_links) {
-                let sl = Game.getObjectById(s) as StructureLink
-                if (!sl) {
-                    var index = IdData.source_links.indexOf(s)
-                    IdData.source_links.splice(index, 1)
-                }
-                else structures.push(sl)
-            }
-        }
-        if (IdData.comsume_link && IdData.comsume_link.length > 0) {
-            for (var s of IdData.comsume_link) {
-                let sl = Game.getObjectById(s) as StructureLink
-                if (!sl) {
-                    var index = IdData.comsume_link.indexOf(s)
-                    IdData.comsume_link.splice(index, 1)
-                }
-                else structures.push(sl)
-            }
-        }
+        // if (IdData.center_link) {
+        //     let center_link = Game.getObjectById(IdData.center_link) as StructureLink
+        //     if (!center_link) { delete IdData.center_link }
+        //     else structures.push(center_link)
+        // }
+        // if (IdData.source_links && IdData.source_links.length > 0) {
+        //     for (var s of IdData.source_links) {
+        //         let sl = Game.getObjectById(s) as StructureLink
+        //         if (!sl) {
+        //             var index = IdData.source_links.indexOf(s)
+        //             IdData.source_links.splice(index, 1)
+        //         }
+        //         else structures.push(sl)
+        //     }
+        // }
+        // if (IdData.comsume_link && IdData.comsume_link.length > 0) {
+        //     for (var s of IdData.comsume_link) {
+        //         let sl = Game.getObjectById(s) as StructureLink
+        //         if (!sl) {
+        //             var index = IdData.comsume_link.indexOf(s)
+        //             IdData.comsume_link.splice(index, 1)
+        //         }
+        //         else structures.push(sl)
+        //     }
+        // }
         if (structures.length > 0) {
             for (var obj of structures) {
                 if (obj.ManageMission) {
@@ -455,50 +473,25 @@ export default class RoomFunctionFindExtension extends Room {
         if (!global.Stru) global.Stru = {}
         if (!global.Stru[this.name]) global.Stru[this.name] = {}
 
-        if (this.memory.StructureIdData.storageID) {
-            global.Stru[this.name]['storage'] = this.storage as StructureStorage
-            if (!global.Stru[this.name]['storage']) {
-                delete this.memory.StructureIdData.storageID
-            }
-        }
-        if (this.memory.StructureIdData.terminalID) {
-            global.Stru[this.name]['terminal'] = this.terminal as StructureTerminal
-            if (!global.Stru[this.name]['terminal']) {
-                delete this.memory.StructureIdData.terminalID
-            }
-        }
-        if (this.memory.StructureIdData.PowerSpawnID) {
-            global.Stru[this.name]['powerspawn'] = Game.getObjectById(this.memory.StructureIdData.PowerSpawnID) as StructurePowerSpawn
-            if (!global.Stru[this.name]['powerspawn']) {
-                delete this.memory.StructureIdData.PowerSpawnID
-            }
-        }
-        if (this.memory.StructureIdData.FactoryId) {
-            global.Stru[this.name]['factory'] = Game.getObjectById(this.memory.StructureIdData.FactoryId) as StructureFactory
-            if (!global.Stru[this.name]['factory']) {
-                delete this.memory.StructureIdData.FactoryId
-            }
-        }
-        if (this.memory.StructureIdData.NtowerID) {
-            global.Stru[this.name]['Ntower'] = Game.getObjectById(this.memory.StructureIdData.NtowerID) as StructureTower
-            if (!global.Stru[this.name]['Ntower']) {
-                delete this.memory.StructureIdData.NtowerID
-            }
-        }
-        if (this.memory.StructureIdData.AtowerID && this.memory.StructureIdData.AtowerID.length > 0) {
-            var otlist = global.Stru[this.name]['Atower'] = [] as StructureTower[]
-            for (var ti of this.memory.StructureIdData.OtowerID) {
-                var ot = Game.getObjectById(ti) as StructureTower
-                if (!ot) {
-                    var index = this.memory.StructureIdData.OtowerID.indexOf(ti)
-                    this.memory.StructureIdData.OtowerID.splice(index, 1)
-                    continue
-                }
-                otlist.push(ot)
-            }
-        }
-
-
+        // Game.rooms[this.memory.belong].GetStruDate('factory')
+        // if (this.memory.StructureIdData.NtowerID) {
+        //     global.Stru[this.name]['Ntower'] = Game.getObjectById(this.memory.StructureIdData.NtowerID) as StructureTower
+        //     if (!global.Stru[this.name]['Ntower']) {
+        //         delete this.memory.StructureIdData.NtowerID
+        //     }
+        // }
+        // if (this.memory.StructureIdData.AtowerID && this.memory.StructureIdData.AtowerID.length > 0) {
+        //     var otlist = global.Stru[this.name]['Atower'] = [] as StructureTower[]
+        //     for (var ti of this.memory.StructureIdData.OtowerID) {
+        //         var ot = Game.getObjectById(ti) as StructureTower
+        //         if (!ot) {
+        //             var index = this.memory.StructureIdData.OtowerID.indexOf(ti)
+        //             this.memory.StructureIdData.OtowerID.splice(index, 1)
+        //             continue
+        //         }
+        //         otlist.push(ot)
+        //     }
+        // }
     }
 
     /* 等级信息更新 */

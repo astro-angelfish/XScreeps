@@ -11,7 +11,7 @@ export default class CreepMissonBaseExtension extends Creep {
                 this.memory.standed = true
             else this.memory.standed = false
             if (this.ticksToLive < 10) {
-                let storage_ = Game.getObjectById(Game.rooms[this.memory.belong].memory.StructureIdData.storageID) as StructureStorage
+                let storage_ = Game.rooms[this.memory.belong].storage as StructureStorage
                 if (!storage_) return
                 if (this.store.getUsedCapacity() > 0) {
                     for (let i in this.store) {
@@ -49,7 +49,7 @@ export default class CreepMissonBaseExtension extends Creep {
                 let st = this.store
                 if (!st) return
                 for (let i of Object.keys(st)) {
-                    let storage_ = Game.getObjectById(Game.rooms[this.memory.belong].memory.StructureIdData.storageID) as StructureStorage
+                    let storage_ = Game.rooms[this.memory.belong].storage as StructureStorage
                     if (!storage_) return
                     this.say("🛒")
                     if (this.transfer(storage_, i as ResourceConstant) == ERR_NOT_IN_RANGE) this.goTo(storage_.pos, 1)

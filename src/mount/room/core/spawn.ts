@@ -9,10 +9,11 @@ export default class RoomCoreSpawnExtension extends Room {
 
     /* 孵化总函数 */
     public SpawnMain(): void {
-        this.SpawnConfigInit()
-        this.SpawnConfigModify()
-        this.SpawnManager()
-        this.Economy()
+        if ((Game.time - global.Gtime[this.name]) % 6) return;
+        this.SpawnConfigInit()/*初始化常驻爬的配置*/
+        this.SpawnConfigModify()/*处理常驻爬的部件信息*/
+        this.SpawnManager()/*检测常驻爬的孵化进程*/
+        this.Economy()/**/
     }
 
     /* 爬虫孵化配置初始化 */
@@ -58,7 +59,7 @@ export default class RoomCoreSpawnExtension extends Room {
             }
     }
 
-    /* 常驻爬虫孵化管理器 (任务爬虫是另外一个孵化函数) */
+    /* 常驻爬虫孵化管理器-常驻爬的补充模块 (任务爬虫是另外一个孵化函数) */
     public SpawnManager(): void {
         for (let role in this.memory.SpawnConfig) {
             var role_ = this.memory.SpawnConfig[role]
@@ -99,15 +100,15 @@ export default class RoomCoreSpawnExtension extends Room {
         if (!this.memory.SpawnList || this.memory.SpawnList.length <= 0) return
         // 如果没有spawn就return
         if (!this.memory.StructureIdData.spawn || this.memory.StructureIdData.spawn.length <= 0) return
-        for (let sID of this.memory.StructureIdData.spawn as string[]) {
-            let thisSpawn = Game.getObjectById(sID as Id<StructureSpawn>) as StructureSpawn
-            if (!thisSpawn) {
-                /* 没有该spawn说明spawn已经被摧毁或者被拆除了，删除structureData里的数据 */
-                var spawnMemoryList = this.memory.StructureIdData.spawn as string[]
-                var index = spawnMemoryList.indexOf(sID)
-                spawnMemoryList.splice(index, 1)
-                continue
-            }
+        for (let thisSpawn of this.find(FIND_MY_SPAWNS) as StructureSpawn[]) {
+            // let thisSpawn = Game.getObjectById(sID as Id<StructureSpawn>) as StructureSpawn
+            // if (!thisSpawn) {
+            //     /* 没有该spawn说明spawn已经被摧毁或者被拆除了，删除structureData里的数据 */
+            //     // var spawnMemoryList = this.memory.StructureIdData.spawn as string[]
+            //     // var index = spawnMemoryList.indexOf(sID)
+            //     // spawnMemoryList.splice(index, 1)
+            //     continue
+            // }
             // 正在孵化就跳过该spawn
             if (thisSpawn.spawning) continue
 

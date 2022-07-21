@@ -19,7 +19,7 @@ export default class PowerCreepMissonBase extends PowerCreep {
         if (!this.memory.role) this.memory.role = info[1]   // 角色
         if (!this.memory.shard) this.memory.shard = info[2] as shardName    // 所属shard
         if (!Game.rooms[this.memory.belong]) return
-        var thisSpawn = global.Stru[this.memory.belong]['powerspawn'] as StructurePowerSpawn
+        var thisSpawn = Game.rooms[this.memory.belong].GetStruDate('powerspawn') as StructurePowerSpawn
         if (!thisSpawn) return
         if (!this.memory.spawn) {
             this.memory.spawn = thisSpawn.id
@@ -126,7 +126,7 @@ export default class PowerCreepMissonBase extends PowerCreep {
         if (num < 200 || num < Math.ceil(this.store.getCapacity() / 4)) {
             this.usePower(PWR_GENERATE_OPS)
             // 过少就去提取ops资源
-            let terminal_ = global.Stru[this.memory.belong]['terminal'] as StructureTerminal
+            let terminal_ = this.room.terminal as StructureTerminal
             if (terminal_ && storage_.store.getUsedCapacity('ops') + terminal_.store.getUsedCapacity('ops') < 2500) {
                 // 资源调度
                 let room_ = Game.rooms[this.memory.belong]

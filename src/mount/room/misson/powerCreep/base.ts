@@ -5,37 +5,38 @@ export default class PowerCreepMisson extends Room {
     /* Pc任务管理器 */
     public PowerCreep_TaskManager(): void {
         if (this.controller.level < 8) return
-        var storage_ =this.storage  as StructureStorage
+        var storage_ = this.storage as StructureStorage
         if (!storage_) return
         var pc = Game.powerCreeps[`${this.name}/queen/${Game.shard.name}`]
-        var pcspawn = global.Stru[this.name]['powerspawn'] as StructurePowerSpawn
         // console.log(this.name,`${this.name}/queen/${Game.shard.name}`,JSON.stringify(pc))
         if (!pc)
             return
         else {
             /* 看看是否存活，没存活就孵化 */
-            if (!pc.ticksToLive && pcspawn) {
-                pc.spawn(pcspawn)
-                return
+            if (!pc.ticksToLive) {
+                var pcspawn = Game.rooms[this.name].GetStruDate('powerspawn') as StructurePowerSpawn
+                if (pcspawn) {
+                    pc.spawn(pcspawn)
+                    return
+                }
             }
         }
-        this.enhance_storage()
-        this.enhance_lab()
-        this.enhance_extension()
-        this.enhance_spawn()
-        this.enhance_tower()
+        this.enhance_storage(pc)
+        this.enhance_lab(pc)
+        this.enhance_extension(pc)
+        this.enhance_spawn(pc)
+        this.enhance_tower(pc)
         // this.enhance_factory()
-        this.enhance_powerspawn()
-        this.enhance_source()
+        this.enhance_powerspawn(pc)
+        this.enhance_source(pc)
     }
     /* 挂载增强storage的任务 适用于queen类型pc */
-    public enhance_storage(): void {
+    public enhance_storage(pc: PowerCreep): void {
         if ((Game.time - global.Gtime[this.name]) % 7) return
         if (this.memory.switch.StopEnhanceStorage) return
-        var storage_ = this.storage  as StructureStorage
+        var storage_ = this.storage as StructureStorage
         if (!storage_) return
-        let pc = Game.powerCreeps[`${this.name}/queen/${Game.shard.name}`]
-        if (!pc || !pc.powers[PWR_OPERATE_STORAGE] || pc.powers[PWR_OPERATE_STORAGE].cooldown) return
+        if (!pc.powers[PWR_OPERATE_STORAGE] || pc.powers[PWR_OPERATE_STORAGE].cooldown) return
         let effectDelay: boolean = false
         if (!storage_.effects) storage_.effects = []
         if (!isOPWR(storage_) && this.MissionNum('PowerCreep', '仓库扩容') <= 0) {
@@ -50,13 +51,12 @@ export default class PowerCreepMisson extends Room {
         }
     }
     /* 挂载增强lab的任务 适用于queen类型pc */
-    public enhance_lab(): void {
+    public enhance_lab(pc: PowerCreep): void {
         if ((Game.time - global.Gtime[this.name]) % 10) return
         if (this.memory.switch.StopEnhanceLab) return
-        var storage_ = this.storage  as StructureStorage
+        var storage_ = this.storage as StructureStorage
         if (!storage_) return
-        let pc = Game.powerCreeps[`${this.name}/queen/${Game.shard.name}`]
-        if (!pc || !pc.powers[PWR_OPERATE_LAB] || pc.powers[PWR_OPERATE_LAB].cooldown) return
+        if (!pc.powers[PWR_OPERATE_LAB] || pc.powers[PWR_OPERATE_LAB].cooldown) return
         let disTask = this.MissionName('Room', '资源合成')
         if (!disTask) return
         if (this.MissionNum('PowerCreep', '合成加速') > 0) return
@@ -83,13 +83,12 @@ export default class PowerCreepMisson extends Room {
         this.AddMission(thisTask)
     }
     /* 挂载防御塔任务 适用于queen类型pc 配合主动防御 */
-    public enhance_tower(): void {
+    public enhance_tower(pc: PowerCreep): void {
         if ((Game.time - global.Gtime[this.name]) % 11) return
         if (this.memory.switch.StopEnhanceTower) return
-        var storage_ = this.storage  as StructureStorage
+        var storage_ = this.storage as StructureStorage
         if (!storage_) return
-        let pc = Game.powerCreeps[`${this.name}/queen/${Game.shard.name}`]
-        if (!pc || !pc.powers[PWR_OPERATE_TOWER] || pc.powers[PWR_OPERATE_TOWER].cooldown) return
+        if (!pc.powers[PWR_OPERATE_TOWER] || pc.powers[PWR_OPERATE_TOWER].cooldown) return
         if (this.memory.state == 'war' && this.memory.switch.AutoDefend) {
             let towers_list = []
             if (this.memory.StructureIdData.AtowerID.length > 0)
@@ -114,13 +113,12 @@ export default class PowerCreepMisson extends Room {
         }
     }
     /* 挂载填充拓展任务 适用于queen类型pc */
-    public enhance_extension(): void {
+    public enhance_extension(pc: PowerCreep): void {
         if ((Game.time - global.Gtime[this.name]) % 25) return
         if (this.memory.switch.StopEnhanceExtension) return
-        var storage_ =this.storage  as StructureStorage
+        var storage_ = this.storage as StructureStorage
         if (!storage_ || storage_.store.getUsedCapacity('energy') < 20000) return
-        let pc = Game.powerCreeps[`${this.name}/queen/${Game.shard.name}`]
-        if (!pc || !pc.powers[PWR_OPERATE_EXTENSION] || pc.powers[PWR_OPERATE_EXTENSION].cooldown) return
+        if (!pc.powers[PWR_OPERATE_EXTENSION] || pc.powers[PWR_OPERATE_EXTENSION].cooldown) return
         if (this.energyAvailable < this.energyCapacityAvailable * 0.3 && this.MissionNum('PowerCreep', '拓展填充') <= 0) {
             var thisTask: MissionModel = {
                 name: "扩展填充",
@@ -135,13 +133,12 @@ export default class PowerCreepMisson extends Room {
 
     }
     /* 挂载spawn加速任务 适用于queen类型pc */
-    public enhance_spawn(): void {
+    public enhance_spawn(pc: PowerCreep): void {
         if ((Game.time - global.Gtime[this.name]) % 13) return
         if (this.memory.switch.StopEnhanceSpawn) return
-        var storage_ = this.storage  as StructureStorage
+        var storage_ = this.storage as StructureStorage
         if (!storage_) return
-        let pc = Game.powerCreeps[`${this.name}/queen/${Game.shard.name}`]
-        if (!pc || !pc.powers[PWR_OPERATE_SPAWN] || pc.powers[PWR_OPERATE_SPAWN].cooldown) return
+        if (!pc.powers[PWR_OPERATE_SPAWN] || pc.powers[PWR_OPERATE_SPAWN].cooldown) return
         // 在战争时期、对外战争时期，启动
         var ssss = false
         let list = ['攻防一体', '双人小队', '四人小队', '紧急支援']
@@ -161,9 +158,9 @@ export default class PowerCreepMisson extends Room {
     }
     /* 挂载升级工厂任务 适用于queen类型pc */
     public enhance_factory(): void {
-        // if ((Game.time - global.Gtime[this.name]) % 14) return
+        if ((Game.time - global.Gtime[this.name]) % 15) return
         if (this.memory.switch.StopEnhanceFactory) return
-        var storage_ = this.storage  as StructureStorage
+        var storage_ = this.storage as StructureStorage
         if (!storage_) return
         let pc = Game.powerCreeps[`${this.name}/queen/${Game.shard.name}`]
         if (!pc || !pc.powers[PWR_OPERATE_FACTORY] || pc.powers[PWR_OPERATE_FACTORY].cooldown) return
@@ -179,13 +176,12 @@ export default class PowerCreepMisson extends Room {
         this.AddMission(thisTask)
     }
     /* 挂载powerspawn增强任务 适用于queen类型pc */
-    public enhance_powerspawn(): void {
+    public enhance_powerspawn(pc: PowerCreep): void {
         if ((Game.time - global.Gtime[this.name]) % 13) return
         if (this.memory.switch.StopEnhancePowerSpawn) return
         var storage_ = this.storage as StructureStorage
         if (!storage_) return
-        let pc = Game.powerCreeps[`${this.name}/queen/${Game.shard.name}`]
-        if (!pc || !pc.powers[PWR_OPERATE_POWER] || pc.powers[PWR_OPERATE_POWER].cooldown) return
+        if (!pc.powers[PWR_OPERATE_POWER] || pc.powers[PWR_OPERATE_POWER].cooldown) return
         if (this.MissionNum("PowerCreep", 'power升级') > 0) return
         var thisTask: MissionModel = {
             name: "power强化",
@@ -198,12 +194,11 @@ export default class PowerCreepMisson extends Room {
         this.AddMission(thisTask)
     }
     /*挂载source再生任务 适用于queen类型pc */
-    public enhance_source(): void {
+    public enhance_source(pc: PowerCreep): void {
         if ((Game.time - global.Gtime[this.name]) % 6) return
         if (this.memory.switch.StopEnhanceSource) return
         if (!this.memory.StructureIdData.source) return;
-        let pc = Game.powerCreeps[`${this.name}/queen/${Game.shard.name}`]
-        if (!pc || !pc.powers[PWR_REGEN_SOURCE] || pc.powers[PWR_REGEN_SOURCE].cooldown) return
+        if (!pc.powers[PWR_REGEN_SOURCE] || pc.powers[PWR_REGEN_SOURCE].cooldown) return
         if (this.MissionNum("PowerCreep", 'source强化') > 0) return
         for (let i in this.memory.StructureIdData.source) {
             let _source_data = Game.getObjectById(this.memory.StructureIdData.source[i]) as Source

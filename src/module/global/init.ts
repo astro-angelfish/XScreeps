@@ -30,6 +30,7 @@ export const MemoryInit = function (): void {
     if (!global.Repairlist) global.Repairlist = {}
     if (!Memory.creepscpu) { Memory.creepscpu = {} }
     if (!global.getStructure) global.getStructure = {}
+    if (!global.getStructureData) global.getStructureData = {}
     if (!global.controllerData) { global.controllerData = {} }
     if (!Memory.PowerSupply) { Memory.PowerSupply = [] }
     if (!global.PowerDemand) global.PowerDemand = []
