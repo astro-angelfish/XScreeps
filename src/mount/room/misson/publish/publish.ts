@@ -584,7 +584,7 @@ export default class RoomMissonPublish extends Room {
         var thisTask: MissionModel = {
             name: 'deposit采集',
             range: 'Creep',
-            delayTick: 2000,
+            delayTick: 10000,
             level: 10,
             Data: {
                 room: disRoom,
@@ -593,7 +593,8 @@ export default class RoomMissonPublish extends Room {
                 state: 1,
                 rType: rType
             },
-            maxTime: 2
+            maxTime: 2,
+            reserve: true
         }
         // thisTask.CreepBind = { 'deposit': { num: 1, bind: [] } }
         thisTask.CreepBind = { 'deposit-harvest': { num: Num > 3 ? 3 : Num, bind: [] }, 'deposit-transfer': { num: 1, bind: [] } }

@@ -9,9 +9,10 @@ import { getDistance } from "@/utils";
 export function harvest_(creep_: Creep): void {
     if (!Game.rooms[creep_.memory.belong]) return
     creep_.workstate('energy')
-    if (!Game.rooms[creep_.memory.belong].memory.harvestData) return
+    let harvestData = Game.rooms[creep_.memory.belong].memory.harvestData;
+    if (!harvestData) return
     if (creep_.memory.working) {
-        let data = Game.rooms[creep_.memory.belong].memory.harvestData[creep_.memory.targetID]
+        let data = harvestData[creep_.memory.targetID]
         if (!data) return
         // 优先寻找link
         if (!data.containerID) {
@@ -76,13 +77,15 @@ export function harvest_(creep_: Creep): void {
     }
     else {
         // 如果不具备挖矿功能了，就自杀
-        if (creep_.getActiveBodyparts('work') <= 0) {
-            creep_.suicide()
+        if (creep_.hits < creep_.hitsMax) {
+            if (creep_.getActiveBodyparts('work') <= 0) {
+                creep_.suicide()
+            }
         }
         // 绑定矿点
         if (!creep_.memory.targetID) {
-            for (var i in Game.rooms[creep_.memory.belong].memory.harvestData) {
-                var data_ = Game.rooms[creep_.memory.belong].memory.harvestData[i]
+            for (var i in harvestData) {
+                var data_ = harvestData[i]
                 if (data_.carry == creep_.name) {
                     creep_.memory.targetID = i
                     break
@@ -99,33 +102,29 @@ export function harvest_(creep_: Creep): void {
         let source = Game.getObjectById(creep_.memory.targetID as Id<Source>) as Source
         if (!source) return
         if (!creep_.pos.isNearTo(source)) { creep_.goTo(source.pos, 1); return }
-        let data = Game.rooms[creep_.memory.belong].memory.harvestData[creep_.memory.targetID]
+        let data = harvestData[creep_.memory.targetID]
         if (!data) return
-        if (data.linkID || data.containerID) {
-            if (["somygame"].includes(creep_.owner.username)) {
-                // creep_.say("😒", true)
-            } else if (!["superbitch", "ExtraDim", "somygame"].includes(creep_.owner.username))
-                creep_.say("😒", true)
-
-            else
-                creep_.say("🌱", true)
-        }
-        // else {
-        //     creep_.say("🤪", true)
-        // }
-        if (Game.time % 5 == 0) {
+        if (!Memory.StopPixel && Game.time % 5 == 0) {
             var is = creep_.pos.findInRange(FIND_DROPPED_RESOURCES, 1)
             if (is.length > 0 && is[0].amount > 20 && is[0].resourceType == 'energy') { creep_.pickup(is[0]); return }
         }
         if (source.energy > 0) {
+            // if ((data.linkID || data.containerID) && !["somygame"].includes(creep_.owner.username)) {
+            //     if (!["superbitch", "ExtraDim"].includes(creep_.owner.username))
+            //         creep_.say("😒", true)
+
+            //     else
+            //         creep_.say("🌱", true)
+            // }
             creep_.harvest(source)
         } else {
             if (!data.containerID || !data.linkID) return
             let container = Game.getObjectById(data.containerID as Id<StructureContainer>) as StructureContainer
-            let link = Game.getObjectById(data.linkID as Id<StructureLink>) as StructureLink
-            if (!container || !link) return
+            if (!container) return
             let container_energy = container.store.getUsedCapacity(RESOURCE_ENERGY)
             if (container_energy < 1) return/*容器没有能量终止*/
+            let link = Game.getObjectById(data.linkID as Id<StructureLink>) as StructureLink
+            if (!link) return;
             let link_energy = link.store.getFreeCapacity(RESOURCE_ENERGY)
             if (link_energy < 1) return;/*link已满终止*/
             if (creep_.withdraw(container, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
@@ -218,7 +217,9 @@ export function upgrade_(creep_: Creep): void {
     creep_.workstate('energy', 0.5)
     if (creep_.memory.working) {
         creep_.upgrade_()
-        delete creep_.memory.targetID
+        if (creep_.memory.targetID) {
+            delete creep_.memory.targetID
+        }
     }
     else {
         if (Game.flags[`${creep_.memory.belong}/ruin`]) {
@@ -362,7 +363,7 @@ export function build_(creep: Creep): void {
             /*进行资源采集*/
             const target = creep.pos.findClosestByPath(FIND_SOURCES);
             if (creep.harvest(target) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(target);
+                creep.goTo(target.pos, 1);
             }
         }
 

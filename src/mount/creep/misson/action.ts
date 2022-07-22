@@ -8,13 +8,14 @@ export default class CreepMissonActionExtension extends Creep {
     public handle_repair(): void {
         let missionData = this.memory.MissionData
         let id = missionData.id
-        let mission = Game.rooms[this.memory.belong].GainMission(id)
+        let belongRoom = Game.rooms[this.memory.belong];
+        let mission = belongRoom.GainMission(id)
         if (!id) return
-        let storage_ = Game.rooms[this.memory.belong].storage as StructureStorage
+        let storage_ = belongRoom.storage as StructureStorage
         this.workstate('energy')
         /* boost检查 */
         // var a = Game.cpu.getUsed();
-        if (mission.LabBind) {
+        if (mission.LabBind && !this.memory.boostState) {
             // if (!storage_) return   // 如果是boost的，没有仓库就不刷了
             // console.log('检查boost',this.name)
             // 需要boost检查，必要情况下可以不检查
@@ -35,7 +36,7 @@ export default class CreepMissonActionExtension extends Creep {
                 }
             }
         }
-        if (Game.rooms[this.memory.belong] && Game.rooms[this.memory.belong].memory.state == 'war') {
+        if (belongRoom && belongRoom.memory.state == 'war') {
             if (this.hitsMax - this.hits > 500) this.optTower('heal', this)
         }
         // var b = Game.cpu.getUsed();
@@ -48,12 +49,14 @@ export default class CreepMissonActionExtension extends Creep {
                     var target_ = Game.getObjectById(this.memory.targetID as Id<StructureRampart>) as StructureRampart
                     if (!target_) { delete this.memory.targetID; return }
                     this.repair_(target_)
-                    let hostileCreep = this.pos.findInRange(FIND_HOSTILE_CREEPS, 3, {
-                        filter: (creep) => {
-                            return creep.getActiveBodyparts('ranged_attack') > 0
-                        }
-                    })
-                    if (hostileCreep.length > 0) this.Flee(hostileCreep[0].pos, 4)
+                    if (this.room.memory.state == 'war') {
+                        let hostileCreep = this.pos.findInRange(FIND_HOSTILE_CREEPS, 3, {
+                            filter: (creep) => {
+                                return creep.getActiveBodyparts('ranged_attack') > 0
+                            }
+                        })
+                        if (hostileCreep.length > 0) this.Flee(hostileCreep[0].pos, 4)
+                    }
                 }
                 else {
                     if (this.room.memory.state == 'peace') {
@@ -75,7 +78,9 @@ export default class CreepMissonActionExtension extends Creep {
                     }
                     this.memory.targetID = leastRam.id
                 }
-                delete this.memory.containerID
+                if (this.memory.containerID) {
+                    delete this.memory.containerID
+                }
             }
             else {
                 /* 寻找hits最小的墙 */
@@ -95,7 +100,7 @@ export default class CreepMissonActionExtension extends Creep {
                                 filter: (stru) => {
                                     return (
                                         stru.structureType == 'storage' || stru.structureType == 'terminal' ||
-                                        (stru.structureType == 'link' && isInArray(Game.rooms[this.memory.belong].memory.StructureIdData.comsume_link, stru.id))
+                                        (stru.structureType == 'link' && isInArray(belongRoom.memory.StructureIdData.comsume_link, stru.id))
                                     ) && stru.store.getUsedCapacity('energy') > this.store.getCapacity()
                                 }
                             })
@@ -119,20 +124,20 @@ export default class CreepMissonActionExtension extends Creep {
         else if (mission.Data.RepairType == 'nuker') {
             // 没有仓库和终端就不防了
             if (!storage_) {
-               
+
                 return;
             }
             // 核弹防御
             /* 防核函数  测试成功！*/
-            if (!Game.rooms[this.memory.belong].memory.nukeData) return
-            if (Object.keys(Game.rooms[this.memory.belong].memory.nukeData.damage).length <= 0) {
-                Game.rooms[this.memory.belong].DeleteMission(id)
+            if (!belongRoom.memory.nukeData) return
+            if (Object.keys(belongRoom.memory.nukeData.damage).length <= 0) {
+                belongRoom.DeleteMission(id)
                 return
             }
             /* 优先修spawn和terminal */
             if (!this.memory.targetID) {
-                for (var dmgPoint in Game.rooms[this.memory.belong].memory.nukeData.damage) {
-                    if (Game.rooms[this.memory.belong].memory.nukeData.damage[dmgPoint] <= 0) continue
+                for (var dmgPoint in belongRoom.memory.nukeData.damage) {
+                    if (belongRoom.memory.nukeData.damage[dmgPoint] <= 0) continue
                     var position_ = unzipPosition(dmgPoint)
                     if (!position_.GetStructure('rampart')) {
                         position_.createConstructionSite('rampart')
@@ -143,7 +148,7 @@ export default class CreepMissonActionExtension extends Creep {
                     this.memory.targetID = position_.GetStructure('rampart').id
                     return
                 }
-                if (!Game.rooms[this.memory.belong].DeleteMission(id)) this.memory.MissionData = {}
+                if (!belongRoom.DeleteMission(id)) this.memory.MissionData = {}
                 return
             }
             else {
@@ -160,10 +165,10 @@ export default class CreepMissonActionExtension extends Creep {
                     if (this.memory.crossLevel > 10) this.memory.crossLevel = 10 - Math.ceil(Math.random() * 10)
                     var wall_ = Game.getObjectById(this.memory.targetID as Id<StructureRampart>) as StructureRampart
                     var strPos = zipPosition(wall_.pos)
-                    if (!wall_ || wall_.hits >= Game.rooms[this.memory.belong].memory.nukeData.damage[strPos] + Game.rooms[this.memory.belong].memory.nukeData.rampart[strPos] + 500000) {
+                    if (!wall_ || wall_.hits >= belongRoom.memory.nukeData.damage[strPos] + belongRoom.memory.nukeData.rampart[strPos] + 500000) {
                         delete this.memory.targetID
-                        Game.rooms[this.memory.belong].memory.nukeData.damage[strPos] = 0
-                        Game.rooms[this.memory.belong].memory.nukeData.rampart[strPos] = 0
+                        belongRoom.memory.nukeData.damage[strPos] = 0
+                        belongRoom.memory.nukeData.rampart[strPos] = 0
                         return
                     }
                     this.repair_(wall_)
@@ -217,7 +222,7 @@ export default class CreepMissonActionExtension extends Creep {
                 }
                 if (!disWall) {
                     // 没有旗子就删除任务
-                    Game.rooms[this.memory.belong].DeleteMission(id)
+                    belongRoom.DeleteMission(id)
                     return
                 }
                 this.memory.targetID = disWall.id
@@ -778,14 +783,21 @@ export default class CreepMissonActionExtension extends Creep {
             container = Game.getObjectById(this.memory.containerID as Id<StructureContainer>) as StructureContainer
             if (!container) return
             /* container杂志清理 */
-            if (container.store && container.store.getUsedCapacity() > 0 && this.pos.isEqualTo(container)) {
-                for (var i in container.store) {
-                    this.withdraw(container, i as ResourceConstant)
+            if (container.store && container.store.getUsedCapacity() > 0) {
+                if (this.pos.isEqualTo(container)) {
+                    for (var i in container.store) {
+                        this.withdraw(container, i as ResourceConstant)
+                    }
                 }
             }
+            let getFreeCapacity = this.store.getFreeCapacity();
+            let getCapacity = this.store.getCapacity();
             if (!this.memory.working) this.memory.working = false
-            if (this.memory.working && this.store.getFreeCapacity() == this.store.getCapacity()) this.memory.working = false
-            if (!this.memory.working && this.store.getFreeCapacity() == 0) this.memory.working = true
+            if (this.memory.working && getFreeCapacity == getCapacity) {
+                this.memory.working = false
+            } else if (!this.memory.working && getFreeCapacity == 0) {
+                this.memory.working = true
+            }
             if (this.memory.working) {
                 var storage_ = Game.rooms[this.memory.belong].storage as StructureStorage
                 if (!storage_) return
@@ -800,6 +812,10 @@ export default class CreepMissonActionExtension extends Creep {
             else {
                 if (!this.pos.isEqualTo(container.pos)) { this.goTo(container.pos, 0); return }
                 else {
+                    if (!extractor.cooldown) {
+                        this.harvest(mineral)
+                        return;
+                    }
                     if (this.ticksToLive < 15) this.suicide()
                     var mineral = Game.getObjectById(Game.rooms[this.memory.belong].memory.StructureIdData.mineralID) as Mineral
                     if (!mineral.mineralAmount) {
@@ -807,7 +823,6 @@ export default class CreepMissonActionExtension extends Creep {
                         this.suicide()
                         return
                     }
-                    if (!extractor.cooldown) this.harvest(mineral)
                 }
             }
         }

@@ -49,7 +49,7 @@ export default class CreepMoveExtension extends Creep {
             let disRoomparsed = Number((/^[WE]([0-9]+)[NS]([0-9]+)$/.exec(target.roomName)));
             /* 计算距离 如果两个房间之间距离过短就不这样做 */
             let enoughDistance = Math.sqrt(Math.abs(myroomparsed[0] - disRoomparsed[0]) ** 2 + Math.abs(myroomparsed[1] - disRoomparsed[1]) ** 2)
-            if (enoughDistance > 4.3 || range > 10) swi = true
+            if (enoughDistance > 3.6 || range > 10) swi = true
             if (swi) {
                 let ret = Game.map.findRoute(this.pos.roomName, target.roomName, {
                     routeCallback(roomName) {
@@ -180,6 +180,7 @@ export default class CreepMoveExtension extends Creep {
     // 通用移动 (配合findPath 和 goByPath)
     public goTo(target: RoomPosition, range: number = 1, ops?: number, plain?: number, CustomPositionroad?: any[]): CreepMoveReturnCode | ERR_NO_PATH | ERR_NOT_IN_RANGE | ERR_INVALID_TARGET {
         //  var a = Game.cpu.getUsed()
+        if (this.fatigue) return ERR_TIRED;
         if (this.memory.moveData == undefined) this.memory.moveData = {}
         // 确认目标没有变化，如果变化了就重新规划路线
         const targetPosTag = this.standardizePos(target)

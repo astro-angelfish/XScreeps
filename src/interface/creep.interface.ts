@@ -16,7 +16,8 @@ interface CreepMemory {
     adaption?:boolean
     taskRB?:string
     msb?:boolean,
-    boostState?:boolean//boost强化状态
+    boostState?:boolean,//boost强化状态
+    notifyWhenAttacked?:boolean
 }
 
 interface BoostData{

@@ -121,9 +121,16 @@ export default class CreepMissonTransportExtension extends Creep {
     /* 物资运输任务  已测试 */
     public handle_carry(): void {
         var Data = this.memory.MissionData.Data
+        let belongRoom = Game.rooms[this.memory.belong];
         /* 数据不全拒绝执行任务 */
         if (!Data || Data.num <= 0) {
-            Game.rooms[this.memory.belong].DeleteMission(this.memory.MissionData.id)
+            belongRoom.DeleteMission(this.memory.MissionData.id)
+            return
+        }
+        var thisPos = new RoomPosition(Data.targetPosX, Data.targetPosY, Data.targetRoom)
+        var disPos = new RoomPosition(Data.sourcePosX, Data.sourcePosY, Data.sourceRoom)
+        if (!thisPos || !disPos) {
+            belongRoom.DeleteMission(this.memory.MissionData.id)
             return
         }
         if (Data.rType) {
@@ -136,13 +143,12 @@ export default class CreepMissonTransportExtension extends Creep {
                 if (r != Data.rType) {
                     this.say("🚽")
                     /* 如果是自己的房间，则优先扔到最近的storage去 */
+                    var storage = this.room.storage as StructureStorage
+                    if (!storage) return
                     if (this.room.name == this.memory.belong) {
-                        var storage = this.room.storage as StructureStorage
-                        if (!storage) return
                         if (storage.store.getFreeCapacity() > this.store.getUsedCapacity(r as ResourceConstant)) {
                             this.transfer_(storage, r as ResourceConstant)
-                        }
-                        else return
+                        } else return
                     }
                     return
                 }
@@ -150,11 +156,6 @@ export default class CreepMissonTransportExtension extends Creep {
             if (Data.num) {
                 /* 如果指定了num-- 任务结束条件：[搬运了指定num] */
                 if (this.memory.working) {
-                    var thisPos = new RoomPosition(Data.targetPosX, Data.targetPosY, Data.targetRoom)
-                    if (!thisPos) {
-                        Game.rooms[this.memory.belong].DeleteMission(this.memory.MissionData.id)
-                        return
-                    }
                     if (!this.pos.isNearTo(thisPos)) this.goTo(thisPos, 1)
                     else {
                         /* 寻找 */
@@ -163,48 +164,39 @@ export default class CreepMissonTransportExtension extends Creep {
                             var target = targets[0]
                             var capacity = this.store[Data.rType]
                             /* 如果送货正确，就减少房间主任务中的num，num低于0代表任务完成 */
-                            if (this.transfer(target, Data.rType) == OK) {
-                                var thisMisson = Game.rooms[this.memory.belong].GainMission(this.memory.MissionData.id)
+                            if (this.transfer(target, Data.rType)) {
+                                var thisMisson = belongRoom.GainMission(this.memory.MissionData.id)
                                 if (thisMisson) {
                                     thisMisson.Data.num -= capacity
                                     if (thisMisson.Data.num <= 0) {
-                                        Game.rooms[this.memory.belong].DeleteMission(this.memory.MissionData.id)
+                                        belongRoom.DeleteMission(this.memory.MissionData.id)
                                         return
                                     }
                                 }
-                            }
-                            else {
+                            } else {
                                 /* 目标满了、不是正确目标、目标消失了也代表任务完成 */
-                                Game.rooms[this.memory.belong].DeleteMission(this.memory.MissionData.id)
+                                belongRoom.DeleteMission(this.memory.MissionData.id)
                                 return
                             }
-                        }
-                        else {
-                            Game.rooms[this.memory.belong].DeleteMission(this.memory.MissionData.id)
+                        } else {
+                            /*没有建筑的情况下删除任务*/
+                            belongRoom.DeleteMission(this.memory.MissionData.id)
                             return
                         }
                     }
-
-                }
-                else {
-                    /*  */
-                    var disPos = new RoomPosition(Data.sourcePosX, Data.sourcePosY, Data.sourceRoom)
-                    if (!disPos) {
-                        Game.rooms[this.memory.belong].DeleteMission(this.memory.MissionData.id)
-                        return
-                    }
-                    if (!this.pos.isNearTo(disPos)) this.goTo(disPos, 1)
+                } else {
+                    if (!this.pos.isNearTo(disPos)) { this.goTo(disPos, 1) }
                     else {
                         var targets = disPos.GetStructureList(['terminal', 'storage', 'tower', 'powerSpawn', 'container', 'factory', 'nuker', 'lab', 'link', 'extension'])
                         if (targets.length > 0) {
                             var target = targets[0] as StructureStorage
                             if ((!target.store || target.store[Data.rType] == 0) && this.store.getUsedCapacity(Data.rType) <= 0) {
                                 /* 如果发现没资源了，就取消搬运任务 */
-                                Game.rooms[this.memory.belong].DeleteMission(this.memory.MissionData.id)
+                                belongRoom.DeleteMission(this.memory.MissionData.id)
                                 return
                             }
                             /* 如果已经没资源了 */
-                            var thisMisson = Game.rooms[this.memory.belong].GainMission(this.memory.MissionData.id)
+                            var thisMisson = belongRoom.GainMission(this.memory.MissionData.id)
                             if (thisMisson.Data.num < this.store.getCapacity() && target.store[Data.rType] && target.store[Data.rType] >= thisMisson.Data.num) {
                                 this.withdraw(target, Data.rType, thisMisson.Data.num)
                                 this.memory.working = true
@@ -221,15 +213,9 @@ export default class CreepMissonTransportExtension extends Creep {
                         }
                     }
                 }
-            }
-            else {
+            } else {
                 /* 未指定数目-- 任务结束条件：[source 空了 或 target 满了] */
                 if (this.memory.working) {
-                    var thisPos = new RoomPosition(Data.targetPosX, Data.targetPosY, Data.targetRoom)
-                    if (!thisPos) {
-                        Game.rooms[this.memory.belong].DeleteMission(this.memory.MissionData.id)
-                        return
-                    }
                     if (!this.pos.isNearTo(thisPos)) this.goTo(thisPos, 1)
                     else {
                         /* 寻找 */
@@ -239,45 +225,40 @@ export default class CreepMissonTransportExtension extends Creep {
                             var capacity = this.store[Data.rType]
                             if (this.transfer(target, Data.rType) != OK) {
                                 /* 目标满了、不是正确目标、目标消失了也代表任务完成 */
-                                Game.rooms[this.memory.belong].DeleteMission(this.memory.MissionData.id)
+                                belongRoom.DeleteMission(this.memory.MissionData.id)
                                 return
                             }
                             // 对于类似于防御塔正在使用能量的任务
                             if (target.store.getFreeCapacity() < 50) {
-                                Game.rooms[this.memory.belong].DeleteMission(this.memory.MissionData.id)
+                                belongRoom.DeleteMission(this.memory.MissionData.id)
                                 return
                             }
                         }
                         else {
-                            Game.rooms[this.memory.belong].DeleteMission(this.memory.MissionData.id)
+                            belongRoom.DeleteMission(this.memory.MissionData.id)
                             return
                         }
                     }
 
-                }
-                else {
+                } else {
                     /* 清除杂质 */
-                    for (var r in this.store) {
-                        if (r != Data.rType) {
-                            this.say("🚽")
-                            /* 如果是自己的房间，则优先扔到最近的storage去 */
-                            if (this.room.name == this.memory.belong) {
-                                var storage = this.room.storage as StructureStorage
-                                if (!storage) return
-                                if (storage.store.getUsedCapacity() > this.store.getUsedCapacity()) {
-                                    this.transfer_(storage, r as ResourceConstant)
+                    var storage = this.room.storage as StructureStorage
+                    if (storage) {
+                        for (var r in this.store) {
+                            if (r != Data.rType) {
+                                this.say("🚽")
+                                /* 如果是自己的房间，则优先扔到最近的storage去 */
+                                if (this.room.name == this.memory.belong) {
+                                    if (storage.store.getUsedCapacity() > this.store.getUsedCapacity()) {
+                                        this.transfer_(storage, r as ResourceConstant)
+                                    }
+                                    else return
                                 }
-                                else return
+                                return
                             }
-                            return
                         }
                     }
                     /*  */
-                    var disPos = new RoomPosition(Data.sourcePosX, Data.sourcePosY, Data.sourceRoom)
-                    if (!disPos) {
-                        Game.rooms[this.memory.belong].DeleteMission(this.memory.MissionData.id)
-                        return
-                    }
                     if (!this.pos.isNearTo(disPos)) this.goTo(disPos, 1)
                     else {
                         var targets = disPos.GetStructureList(['terminal', 'storage', 'tower', 'powerSpawn', 'container', 'factory', 'nuker', 'lab', 'link', 'extension'])
@@ -286,7 +267,7 @@ export default class CreepMissonTransportExtension extends Creep {
 
                             if ((!target.store || target.store[Data.rType] == 0) && this.store.getUsedCapacity(Data.rType) == 0) {
                                 /* 如果发现没资源了，就取消搬运任务 */
-                                Game.rooms[this.memory.belong].DeleteMission(this.memory.MissionData.id)
+                                belongRoom.DeleteMission(this.memory.MissionData.id)
                                 return
                             }
                             else {
@@ -306,24 +287,17 @@ export default class CreepMissonTransportExtension extends Creep {
             if (this.memory.working) {
                 if (!this.store || Object.keys(this.store).length <= 0)
                     this.memory.working = false
-            }
-            else {
+            } else {
                 if (this.store.getFreeCapacity() == 0)
                     this.memory.working = true
             }
             if (Data.num) {
                 /* 不考虑这种类型的任务 */
-                Game.rooms[this.memory.belong].DeleteMission(this.memory.MissionData.id)
+                belongRoom.DeleteMission(this.memory.MissionData.id)
                 return
-            }
-            else {
+            } else {
                 /* 只考虑这种任务 */
                 if (this.memory.working) {
-                    var thisPos = new RoomPosition(Data.targetPosX, Data.targetPosY, Data.targetRoom)
-                    if (!thisPos) {
-                        Game.rooms[this.memory.belong].DeleteMission(this.memory.MissionData.id)
-                        return
-                    }
                     if (!this.pos.isNearTo(thisPos)) this.goTo(thisPos, 1)
                     else {
                         /* 寻找 */
@@ -335,22 +309,20 @@ export default class CreepMissonTransportExtension extends Creep {
                             for (var i in this.store) {
                                 if (this.transfer(target, i as ResourceConstant) != OK) {
                                     /* 目标满了、不是正确目标、目标消失了也代表任务完成 */
-                                    Game.rooms[this.memory.belong].DeleteMission(this.memory.MissionData.id)
+                                    belongRoom.DeleteMission(this.memory.MissionData.id)
                                     return
                                 }
                             }
                         }
                         else {
-                            Game.rooms[this.memory.belong].DeleteMission(this.memory.MissionData.id)
+                            belongRoom.DeleteMission(this.memory.MissionData.id)
                             return
                         }
                     }
-
-                }
-                else {
+                } else {
                     var disPos = new RoomPosition(Data.sourcePosX, Data.sourcePosY, Data.sourceRoom)
                     if (!disPos) {
-                        Game.rooms[this.memory.belong].DeleteMission(this.memory.MissionData.id)
+                        belongRoom.DeleteMission(this.memory.MissionData.id)
                         return
                     }
                     if (!this.pos.isNearTo(disPos)) this.goTo(disPos, 1)
@@ -363,7 +335,7 @@ export default class CreepMissonTransportExtension extends Creep {
                             if (target) {
                                 if (!target.store || target.store.getUsedCapacity() == 0) {
                                     /* 如果发现没资源了，就取消搬运任务 */
-                                    Game.rooms[this.memory.belong].DeleteMission(this.memory.MissionData.id)
+                                    belongRoom.DeleteMission(this.memory.MissionData.id)
                                     return
                                 }
                                 for (var t in target.store) {
@@ -374,7 +346,7 @@ export default class CreepMissonTransportExtension extends Creep {
                             if (targetR) {
                                 if (!targetR.store || targetR.store.getUsedCapacity() == 0) {
                                     /* 如果发现没资源了，就取消搬运任务 */
-                                    Game.rooms[this.memory.belong].DeleteMission(this.memory.MissionData.id)
+                                    belongRoom.DeleteMission(this.memory.MissionData.id)
                                     return
                                 }
                                 for (var t in targetR.store) {
@@ -382,13 +354,10 @@ export default class CreepMissonTransportExtension extends Creep {
                                 }
                                 return
                             }
-
                         }
                     }
                 }
             }
-
         }
     }
-
 }

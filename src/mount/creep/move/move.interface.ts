@@ -59,7 +59,9 @@ interface CreepMemory {
     // 禁用自己对穿
     disableCross?: boolean
     // 跨多个shard数据
-    shardAffirm?: shardAffirmData[]
+    shardAffirm?: shardAffirmData[],
+    /*任务是否已经被删除*/
+    Missionstate?: boolean
 }
 
 type shardName = "shard0" | "shard1" | "shard2" | "shard3"

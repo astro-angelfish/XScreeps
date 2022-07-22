@@ -20,12 +20,13 @@ export default class CreepFunctionExtension extends Creep {
     }
 
     public harvest_(source_: Source): void {
-        if (this.harvest(source_) == ERR_NOT_IN_RANGE) {
+        if (!this.pos.isNearTo(source_)) {
             this.goTo(source_.pos, 1)
             this.memory.standed = false
+        } else {
+            this.harvest(source_)
+            this.memory.standed = true
         }
-        else this.memory.standed = true
-
     }
 
     public transfer_(distination: Structure, rType: ResourceConstant = RESOURCE_ENERGY): void {
@@ -55,12 +56,13 @@ export default class CreepFunctionExtension extends Creep {
     }
 
     public repair_(distination: Structure): void {
-        if (this.repair(distination) == ERR_NOT_IN_RANGE) {
-            this.goTo_aio(distination.pos, 1)
+        if (!this.pos.isNearTo(distination)) {
+            this.goTo(distination.pos, 1)
             this.memory.standed = false
-        }
-        else
+        } else {
+            this.repair(distination)
             this.memory.standed = true
+        }
     }
 
     public withdraw_(distination: Structure, rType: ResourceConstant = RESOURCE_ENERGY, range: number = 1): void {
@@ -72,6 +74,7 @@ export default class CreepFunctionExtension extends Creep {
 
     // 确认是否boost了,并进行相应Boost
     public BoostCheck(boostBody: string[]): boolean {
+        if (this.memory.boostState) return true;
         for (var body in this.memory.boostData) {
             if (!isInArray(boostBody, body)) continue
             if (!this.memory.boostData[body].boosted) {

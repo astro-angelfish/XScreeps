@@ -23,8 +23,9 @@ export default class CreepMissonBaseExtension extends Creep {
             }
         }
         if (Object.keys(this.memory.MissionData).length <= 0) {
+            let belongRoom = Game.rooms[this.memory.belong]
             if (this.memory.taskRB) {
-                let task_ = Game.rooms[this.memory.belong].GainMission(this.memory.taskRB)
+                let task_ = belongRoom.GainMission(this.memory.taskRB)
                 if (task_) {
                     task_.CreepBind[this.memory.role].bind.push(this.name)
                     this.memory.MissionData.id = task_.id           // 任务id
@@ -35,22 +36,23 @@ export default class CreepMissonBaseExtension extends Creep {
                 }
             }
             /* 每任务的情况下考虑领任务 */
-            if (!Game.rooms[this.memory.belong].memory.Misson['Creep'])
-                Game.rooms[this.memory.belong].memory.Misson['Creep'] = []
-            let taskList = Game.rooms[this.memory.belong].memory.Misson['Creep']
+            if (!belongRoom.memory.Misson['Creep']) belongRoom.memory.Misson['Creep'] = []
+            let taskList = belongRoom.memory.Misson['Creep']
             let thisTaskList: MissionModel[] = []
-            for (let Stask of taskList) {
-                if (Stask.CreepBind && isInArray(Object.keys(Stask.CreepBind), this.memory.role))
-                    thisTaskList.push(Stask)
+            if (taskList.length > 0) {
+                for (let Stask of taskList) {
+                    if (Stask.CreepBind && isInArray(Object.keys(Stask.CreepBind), this.memory.role))
+                        thisTaskList.push(Stask)
+                }
             }
             if (thisTaskList.length <= 0) {
                 /* 没任务就处理剩余资源 */
                 if (this.room.name != this.memory.belong) return
                 let st = this.store
                 if (!st) return
+                let storage_ = belongRoom.storage as StructureStorage
+                if (!storage_) return
                 for (let i of Object.keys(st)) {
-                    let storage_ = Game.rooms[this.memory.belong].storage as StructureStorage
-                    if (!storage_) return
                     this.say("🛒")
                     if (this.transfer(storage_, i as ResourceConstant) == ERR_NOT_IN_RANGE) this.goTo(storage_.pos, 1)
                     return
@@ -104,5 +106,5 @@ export default class CreepMissonBaseExtension extends Creep {
             }
         }
     }
- 
+
 }
