@@ -10,6 +10,7 @@ interface Memory {
     StopPixel: boolean,
     creepscpu?: { [creeps: string]: string }
     SystemEconomy: boolean,
+    SystemStopPower?:boolean
     PowerSupply: string[],/*供应Power的房间信息*/
 }
 

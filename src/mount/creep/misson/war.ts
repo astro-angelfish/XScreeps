@@ -390,7 +390,7 @@ export default class CreepMissonWarExtension extends Creep {
                 }
             })
             if (adjoinCreep.length > 0) {
-                console.log(this.name,'攻击相邻',adjoinCreep[0].name)
+                console.log(this.name, '攻击相邻', adjoinCreep[0].name)
                 this.attack(adjoinCreep[0])
             }
         }
@@ -1007,22 +1007,22 @@ export default class CreepMissonWarExtension extends Creep {
                 var thisRoom = Game.rooms[this.memory.belong]
                 /* boost检查 */
                 if (this.getActiveBodyparts('move') > 0) {
-                    if (!this.BoostCheck([, 'move'])) return
+                    if (!this.BoostCheck([, 'move'], false)) return
                 }
                 if (this.getActiveBodyparts('heal') > 0) {
-                    if (!this.BoostCheck([, 'heal'])) return
+                    if (!this.BoostCheck([, 'heal'], false)) return
                 }
                 if (this.getActiveBodyparts('work') > 0) {
-                    if (!this.BoostCheck([, 'work'])) return
+                    if (!this.BoostCheck([, 'work'], false)) return
                 }
                 if (this.getActiveBodyparts('attack') > 0) {
-                    if (!this.BoostCheck([, 'attack'])) return
+                    if (!this.BoostCheck([, 'attack'], false)) return
                 }
                 if (this.getActiveBodyparts('ranged_attack') > 0) {
-                    if (!this.BoostCheck([, 'ranged_attack'])) return
+                    if (!this.BoostCheck([, 'ranged_attack'], false)) return
                 }
                 if (this.getActiveBodyparts('tough') > 0) {
-                    if (!this.BoostCheck([, 'tough'])) return
+                    if (!this.BoostCheck([, 'tough'], false)) return
                 }
                 /* 组队检查 */
                 if (!squadID) return
@@ -1462,23 +1462,26 @@ export default class CreepMissonWarExtension extends Creep {
                     return
                 }
                 warDataInit(Game.rooms[data.disRoom])
-                /* 攻击离四格内离自己最近的爬 */
-                var enemy = this.pos.findClosestByPath(FIND_HOSTILE_CREEPS, {
-                    filter: (creep) => {
-                        return !isInArray(Memory.whitesheet, creep.owner.username) && !creep.pos.GetStructure('rampart') && (!isInArray([0, 49], creep.pos.x) && !isInArray([0, 49], creep.pos.y))
-                    }
-                })
-                if (enemy && Math.max(Math.abs(this.pos.x - enemy.pos.x), Math.abs(this.pos.y - enemy.pos.y)) <= 4) {
-                    this.goTo(enemy.pos, 1)
-                    this.attack(enemy)
-                    return
-                }
+
                 // 没有发现敌人就攻击建筑物
                 let attack_flag = this.pos.findClosestByPath(FIND_FLAGS, {
                     filter: (flag) => {
                         return flag.name.indexOf('double_attack') == 0
                     }
                 })
+                if (!attack_flag) {
+                    /* 攻击离四格内离自己最近的爬 */
+                    var enemy = this.pos.findClosestByPath(FIND_HOSTILE_CREEPS, {
+                        filter: (creep) => {
+                            return !isInArray(Memory.whitesheet, creep.owner.username) && !creep.pos.GetStructure('rampart') && (!isInArray([0, 49], creep.pos.x) && !isInArray([0, 49], creep.pos.y))
+                        }
+                    })
+                    if (enemy && Math.max(Math.abs(this.pos.x - enemy.pos.x), Math.abs(this.pos.y - enemy.pos.y)) <= 4) {
+                        this.goTo(enemy.pos, 1)
+                        this.attack(enemy)
+                        return
+                    }
+                }
                 if (!attack_flag) {
                     var Attstructure = this.pos.findClosestByPath(FIND_HOSTILE_STRUCTURES, {
                         filter: (stru) => {

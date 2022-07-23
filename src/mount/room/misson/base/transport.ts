@@ -88,7 +88,7 @@ export default class RoomMissonTransportExtension extends Room {
         let missionNum = this.RoleMissionNum('transport', '物流运输')
         if (missionNum > 3) return
         for (var thisLab of this.getStructure(STRUCTURE_LAB) as StructureLab[]) {
-            if (thisLab.store.getUsedCapacity('energy') <= 800) {
+            if (thisLab.store.getUsedCapacity('energy') <= 1800) {
                 /* 下布搬运命令 */
                 var storage_ = this.storage as StructureStorage
                 if (storage_) {

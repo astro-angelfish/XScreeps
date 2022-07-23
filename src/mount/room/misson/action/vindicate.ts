@@ -30,24 +30,29 @@ export default class RoomMissonVindicateExtension extends Room {
         if (mission.Data.maxhit && mission.CreepBind.repair.bind.length < 1) {
             /*存在最大生命判定 以及 爬已经全部死完*/
             var leastRam = this.getListHitsleast([STRUCTURE_RAMPART, STRUCTURE_WALL], 3)
-            if (leastRam.hits > mission.Data.maxhit) {
-                /*完成刷墙任务*/
-                if (!mission.Data.retain) {
-                    this.DeleteMission(mission.id)
-                } else {
-                    mission.Data.hangstate = true;
-                    if (Object.keys(mission.LabBind).length > 0) {
-                        for (var l in mission.LabBind) {
-                            // console.log('LabID: ',m.LabBind[l],'------解绑-------->MissonID: ',m.id)
-                            this.UnBindLabData(l, mission.id)
+            if (leastRam) {
+                if (leastRam.hits > mission.Data.maxhit) {
+                    /*完成刷墙任务*/
+                    if (!mission.Data.retain) {
+                        this.DeleteMission(mission.id)
+                    } else {
+                        mission.Data.hangstate = true;
+                        if (Object.keys(mission.LabBind).length > 0) {
+                            for (var l in mission.LabBind) {
+                                // console.log('LabID: ',m.LabBind[l],'------解绑-------->MissonID: ',m.id)
+                                this.UnBindLabData(l, mission.id)
+                            }
+                            mission.LabBind = {}
                         }
-                        mission.LabBind = {}
                     }
-                }
-            } else {
-                if (mission.CreepBind.repair.num < 1) {
-                    mission.CreepBind.repair.num = 1;
-                    mission.Data.hangstate = false;
+                } else {
+                    if (this.memory.state == 'war') {
+                        mission.CreepBind.repair.num = 2;
+                        mission.Data.hangstate = false;
+                    } else if (mission.CreepBind.repair.num < 1) {
+                        mission.CreepBind.repair.num = 1;
+                        mission.Data.hangstate = false;
+                    }
                 }
             }
         }

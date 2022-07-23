@@ -3,11 +3,11 @@ import { CalculateEnergy, colors, GenerateAbility } from "@/utils"
 
 export const creepRunner = function (creep: Creep): void {
   var cpu_test = false
-  switch (Game.shard.name) {
-    case 'shard3':
-      cpu_test = true
-      break;
-  }
+  // switch (Game.shard.name) {
+  //   case 'shard3':
+  //     cpu_test = true
+  //     break;
+  // }
   let cpu_list = [];
   if (cpu_test) { cpu_list.push(Game.cpu.getUsed()) }
   if (creep.spawning) {

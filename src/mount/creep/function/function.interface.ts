@@ -9,7 +9,7 @@ interface Creep {
     build_(distination: ConstructionSite): void
     repair_(distination: Structure): void
     withdraw_(distination: Structure, rType: ResourceConstant, range?: number): void
-    BoostCheck(boostBody: string[]): boolean
+    BoostCheck(boostBody: string[],state?:boolean): boolean
     optTower(otype: 'heal' | 'attack', creep: Creep, boolean?: boolean): void
     hostileCreep_atk(creep: any): void
     isInDefend(creep: Creep): boolean

@@ -413,6 +413,7 @@ export default class RoomMissonFrameExtension extends Room {
         /* 负责lab的填充 */
         var terminal = this.terminal as StructureTerminal
         var storage = this.storage as StructureStorage
+        let return_state = true;
         for (var i in misson.LabBind) {
             var All_i_Num: number
             if (tankType == 'complex') {
@@ -429,7 +430,7 @@ export default class RoomMissonFrameExtension extends Room {
             }
             if (!tank_) return false
             All_i_Num = tank_.store.getUsedCapacity(misson.LabBind[i] as ResourceConstant)
-            if (All_i_Num < 2100) {
+            if (All_i_Num < 4100) {
                 /* 资源调度 */
                 if (DispatchNum(this.name) <= 0 && this.MissionNum('Structure', '资源购买') <= 0 && !checkSend(this.name, misson.LabBind[i] as ResourceConstant)) {
                     console.log(Colorful(`[资源调度] 房间${this.name}没有足够的资源[${misson.LabBind[i] as ResourceConstant}],将执行资源调度!`, 'yellow'))
@@ -444,14 +445,16 @@ export default class RoomMissonFrameExtension extends Room {
                     }
                     Memory.ResourceDispatchData.push(dispatchTask)
                 }
-                return
+                return_state = false;
+                continue;
             }
             var disLab = Game.getObjectById(i as Id<StructureLab>) as StructureLab
             if (!disLab) // 说明找不到lab了
             {
                 let index = this.memory.StructureIdData.labs.indexOf(i)
                 this.memory.StructureIdData.labs.splice(index, 1)
-                return false
+                return_state = false;
+                continue;
             }
             // 去除无关资源
             if (disLab.mineralType && disLab.mineralType != misson.LabBind[i]) {
@@ -459,19 +462,21 @@ export default class RoomMissonFrameExtension extends Room {
                 roleData[role] = { num: 1, bind: [] }
                 var carryTask = this.public_Carry(roleData, 45, this.name, disLab.pos.x, disLab.pos.y, this.name, this.storage.pos.x, this.storage.pos.y, disLab.mineralType, disLab.store.getUsedCapacity(disLab.mineralType))
                 this.AddMission(carryTask)
-                return
+                // return_state = false;
+                continue;
             }
-            if (disLab.store.getUsedCapacity(misson.LabBind[i] as ResourceConstant) < 1000 && this.Check_Carry('transport', tank_.pos, disLab.pos, misson.LabBind[i] as ResourceConstant)) {
+            if (disLab.store.getUsedCapacity(misson.LabBind[i] as ResourceConstant) < 1800 && this.Check_Carry('transport', tank_.pos, disLab.pos, misson.LabBind[i] as ResourceConstant)) {
                 if (All_i_Num < 1500)
                     return false
                 var roleData: BindData = {}
                 roleData[role] = { num: 1, bind: [] }
                 var carryTask = this.public_Carry(roleData, 45, this.name, tank_.pos.x, tank_.pos.y, this.name, disLab.pos.x, disLab.pos.y, misson.LabBind[i] as ResourceConstant, 2000)
                 this.AddMission(carryTask)
-                return false
+                return_state = false;
+                continue;
             }
         }
-        return true
+        return return_state
     }
 
     /* 判断已经有了该类型的搬运任务 true:代表没有重复， false代表有 */

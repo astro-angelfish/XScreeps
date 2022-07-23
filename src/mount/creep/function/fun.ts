@@ -73,8 +73,8 @@ export default class CreepFunctionExtension extends Creep {
     }
 
     // 确认是否boost了,并进行相应Boost
-    public BoostCheck(boostBody: string[]): boolean {
-        if (this.memory.boostState) return true;
+    public BoostCheck(boostBody: string[],state:boolean = true): boolean {
+        if (this.memory.boostState && state) return true;
         for (var body in this.memory.boostData) {
             if (!isInArray(boostBody, body)) continue
             if (!this.memory.boostData[body].boosted) {

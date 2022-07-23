@@ -537,26 +537,25 @@ export default class RoomMissonBehaviourExtension extends Room {
         }
         // 有任务了就不发布烧帕瓦的任务
         if (this.MissionNum('Room', 'power升级') > 0) return
-
-        /* 检测类型*/
-        let SavePower = this.memory.switch.SavePower;
-        if (!SavePower && Memory.SystemEconomy && !this.memory.switch.StartPower) {
-            SavePower = true;
-        }
-        // SavePower 是节省能量的一种"熔断"机制 防止烧power致死
-
-        if (storage_.store.getUsedCapacity('energy') > (SavePower ? 250000 : 150000) && storage_number > 100) {
-            /* 发布烧power任务 */
-            var thisTask: MissionModel = {
-                name: 'power升级',
-                delayTick: 200,
-                range: 'Room',
-                state: 1
+        if (!Memory.SystemStopPower) {
+            /* 检测类型*/
+            let SavePower = this.memory.switch.SavePower;
+            if (!SavePower && Memory.SystemEconomy && !this.memory.switch.StartPower) {
+                SavePower = true;
             }
-            this.AddMission(thisTask)
+            // SavePower 是节省能量的一种"熔断"机制 防止烧power致死
+
+            if (storage_.store.getUsedCapacity('energy') > (SavePower ? 250000 : 150000) && storage_number > 100) {
+                /* 发布烧power任务 */
+                var thisTask: MissionModel = {
+                    name: 'power升级',
+                    delayTick: 200,
+                    range: 'Room',
+                    state: 1
+                }
+                this.AddMission(thisTask)
+            }
         }
-
-
     }
 
     /* 烧Power执行函数 */
