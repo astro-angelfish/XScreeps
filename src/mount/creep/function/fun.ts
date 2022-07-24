@@ -55,14 +55,13 @@ export default class CreepFunctionExtension extends Creep {
             this.memory.standed = true
     }
 
-    public repair_(distination: Structure): void {
-        if (!this.pos.isNearTo(distination)) {
-            this.goTo(distination.pos, 1)
+    public repair_(distination: Structure, ops = null): void {
+        if (this.repair(distination) == ERR_NOT_IN_RANGE) {
+            this.goTo(distination.pos, ops)
             this.memory.standed = false
-        } else {
-            this.repair(distination)
-            this.memory.standed = true
         }
+        else
+            this.memory.standed = true
     }
 
     public withdraw_(distination: Structure, rType: ResourceConstant = RESOURCE_ENERGY, range: number = 1): void {
@@ -73,7 +72,7 @@ export default class CreepFunctionExtension extends Creep {
     }
 
     // 确认是否boost了,并进行相应Boost
-    public BoostCheck(boostBody: string[],state:boolean = true): boolean {
+    public BoostCheck(boostBody: string[], state: boolean = true): boolean {
         if (this.memory.boostState && state) return true;
         for (var body in this.memory.boostData) {
             if (!isInArray(boostBody, body)) continue

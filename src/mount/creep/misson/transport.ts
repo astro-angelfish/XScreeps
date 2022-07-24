@@ -4,14 +4,6 @@ export default class CreepMissonTransportExtension extends Creep {
     public handle_feed(): void {
         // if (!this.room.memory.StructureIdData.storageID) return
         // var storage_ = Game.getObjectById(this.room.memory.StructureIdData.storageID as string) as StructureStorage
-        var cpu_test = false
-        switch (Game.shard.name) {
-          case 'shard3':
-            cpu_test = true
-            break;
-        }
-        let cpu_list = [];
-        if (cpu_test) { cpu_list.push(Game.cpu.getUsed()) }
         if (!this.room.storage && !this.room.terminal) return
         this.workstate('energy')
         if (Object.keys(this.store).length > 0) {
@@ -55,18 +47,17 @@ export default class CreepMissonTransportExtension extends Creep {
                 if (!extensions_) {
                     extensions_ = Game.getObjectById(this.memory.Extensions_id as Id<StructureExtension>) as StructureExtension
                 }
-
-                if (!extensions_) { delete this.memory.Extensions_id }
-                if (extensions_.store.getFreeCapacity('energy') < 1) {
-                    delete this.memory.Extensions_id
+                if (!extensions_) { this.memory.Extensions_id = null }
+                if (extensions_.store.getFreeCapacity(RESOURCE_ENERGY) < 1) {
+                    this.memory.Extensions_id = null
                 }
-                let transfer = this.transfer(extensions_, 'energy')
+                let transfer = this.transfer(extensions_, RESOURCE_ENERGY)
                 switch (transfer) {
                     case ERR_NOT_IN_RANGE:
-                        this.goTo(extensions_.pos, 1)
+                        this.goTo(extensions_.pos, 1, 200, 1)
                         break;
                     case OK:
-                        delete this.memory.Extensions_id
+                        this.memory.Extensions_id = null
                         break;
                 }
             }

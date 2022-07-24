@@ -48,7 +48,7 @@ export default class CreepMissonActionExtension extends Creep {
                     this.say("🛠️")
                     var target_ = Game.getObjectById(this.memory.targetID as Id<StructureRampart>) as StructureRampart
                     if (!target_) { delete this.memory.targetID; return }
-                    this.repair_(target_)
+                    this.repair_(target_, 200)
                     if (this.room.memory.state == 'war') {
                         let hostileCreep = this.pos.findInRange(FIND_HOSTILE_CREEPS, 3, {
                             filter: (creep) => {
