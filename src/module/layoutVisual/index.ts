@@ -11,9 +11,11 @@ export function layoutVisual(): void {
                     drawByConfig(flag.name);
                     break;
                 case 'LayoutVisual63':
-                    // drawByConfig63(flag.name);
-                    // let roomStructsData: StructsData | undefined = undefined //全局变量
-                    // global.roomStructsData.structMap
+                    /**
+                     * drawByConfig63(flag.name);
+                     * let roomStructsData: StructsData | undefined = undefined //全局变量
+                     * global.roomStructsData.structMap 
+                     */
                     // let p = Game.flags.p;
                     // let pa = Game.flags.pa;
                     // let pb = Game.flags.pb;
@@ -33,7 +35,7 @@ export function layoutVisual(): void {
     }
 
 }
-
+/**
 // export const drawByConfig63 = function (str: string) {
 //     // autoPlanner63.Loop();
 //     let roomStructsData: StructsData | undefined = undefined //全局变量
@@ -53,6 +55,8 @@ export function layoutVisual(): void {
 //         autoPlanner63.HelperVisual.showRoomStructures(roomStructsData.roomName, roomStructsData.structMap)
 //     }
 // }
+*/
+
 export const layoutVisualMoudle: AppLifecycleCallbacks = {
     tickEnd: layoutVisual
 }

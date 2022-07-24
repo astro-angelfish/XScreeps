@@ -560,6 +560,7 @@ export default class RoomMissonBehaviourExtension extends Room {
 
     /* 烧Power执行函数 */
     public Task_ProcessPower(misson: MissionModel): void {
+        if (Game.cpu.bucket < 6000 && Memory.StopPixel) return/*CPU不足情况下暂停*/
         let storage_ = this.storage as StructureStorage
         let powerspawn_ = Game.rooms[this.name].GetStruDate('powerspawn') as StructurePowerSpawn
         let terminal_ = this.terminal as StructureTerminal

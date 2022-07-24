@@ -11,6 +11,11 @@ export function harvest_(creep_: Creep): void {
     creep_.workstate('energy')
     let harvestData = Game.rooms[creep_.memory.belong].memory.harvestData;
     if (!harvestData) return
+    // let data = null;
+    // if (creep_.memory.targetID) {
+    //     data = harvestData[creep_.memory.targetID]
+    //     if (!data) return
+    // }
     if (creep_.memory.working) {
         let data = harvestData[creep_.memory.targetID]
         if (!data) return
@@ -28,16 +33,17 @@ export function harvest_(creep_: Creep): void {
                 }
             }
             return
-        } else {
-            /*维修操作检查*/
-            let container = Game.getObjectById(data.containerID as Id<StructureContainer>) as StructureContainer
-            if (container) {
-                if (container.hits < container.hitsMax) {
-                    creep_.repair(container)
-                    return
-                }
-            }
         }
+        // else {
+        //     /*维修操作检查*/
+        //     let container = Game.getObjectById(data.containerID as Id<StructureContainer>) as StructureContainer
+        //     if (container) {
+        //         if (container.hits < container.hitsMax) {
+        //             creep_.repair(container)
+        //             return
+        //         }
+        //     }
+        // }
         if (data.linkID) {
             let link = Game.getObjectById(data.linkID as Id<StructureLink>) as StructureLink
             if (!link) delete data.linkID
@@ -54,9 +60,7 @@ export function harvest_(creep_: Creep): void {
                     return
                 }
             }
-
         }
-
         // 其次寻找container
         if (data.containerID) {
             let container = Game.getObjectById(data.containerID as Id<StructureLink>) as StructureLink
@@ -101,23 +105,12 @@ export function harvest_(creep_: Creep): void {
         /* 寻找target附近的container */
         let source = Game.getObjectById(creep_.memory.targetID as Id<Source>) as Source
         if (!source) return
-        if (!creep_.pos.isNearTo(source)) { creep_.goTo(source.pos, 1); return }
-        let data = harvestData[creep_.memory.targetID]
-        if (!data) return
-        if (!Memory.StopPixel && Game.time % 5 == 0) {
-            var is = creep_.pos.findInRange(FIND_DROPPED_RESOURCES, 1)
-            if (is.length > 0 && is[0].amount > 20 && is[0].resourceType == 'energy') { creep_.pickup(is[0]); return }
-        }
         if (source.energy > 0) {
-            // if ((data.linkID || data.containerID) && !["somygame"].includes(creep_.owner.username)) {
-            //     if (!["superbitch", "ExtraDim"].includes(creep_.owner.username))
-            //         creep_.say("😒", true)
-
-            //     else
-            //         creep_.say("🌱", true)
-            // }
-            creep_.harvest(source)
+            if (creep_.harvest(source) == ERR_NOT_IN_RANGE) { creep_.goTo(source.pos, 1); return }
         } else {
+            if (Game.time % 2) return;
+            let data = harvestData[creep_.memory.targetID]
+            if (!data) return
             if (!data.containerID || !data.linkID) return
             let container = Game.getObjectById(data.containerID as Id<StructureContainer>) as StructureContainer
             if (!container) return

@@ -422,7 +422,6 @@ export default class CreepMissonMineExtension extends Creep {
                         if ((powerbank_.hits / 600) + 30 > this.ticksToLive) // 快没有生命了就增加爬虫数量，以方便继续采集
                         {
                             /* 填充完毕就这么干 */
-
                             if (globalMisson.CreepBind['power-attack'].num == 2 && globalMisson.CreepBind['power-attack'].num == globalMisson.CreepBind['power-attack'].bind.length && globalMisson.CreepBind['power-heal'].num == globalMisson.CreepBind['power-heal'].bind.length) {
                                 globalMisson.CreepBind['power-attack'].num = 1
                                 globalMisson.CreepBind['power-heal'].num = 1
@@ -447,8 +446,7 @@ export default class CreepMissonMineExtension extends Creep {
                         else if (enemy_creep.length > 0 && powerbank_.hits < 550000) {
                             globalMisson.Data.state = 2
                         }
-                    }
-                    else {
+                    } else {
                         /* 说明过期了，删除任务，自杀 */
                         for (var ii in globalMisson.CreepBind)
                             for (var jj of globalMisson.CreepBind[ii].bind)
@@ -616,8 +614,9 @@ export default class CreepMissonMineExtension extends Creep {
                     delete this.memory.transfercreep;
                 }
                 let User_number = this.store.getUsedCapacity();
+                let Free_number = this.store.getFreeCapacity()
                 /*检查是否容量已经超过200或者一半*/
-                if ((User_number >= 200 || User_number >= this.store.getFreeCapacity()) && this.memory.transfercreep) {
+                if ((User_number >= 200 || User_number >= Free_number) && this.memory.transfercreep) {
                     if (Game.creeps[this.memory.transfercreep].pos.roomName == this.pos.roomName) {
                         /*这里执行搬运操作*/
                         if (Game.creeps[this.memory.transfercreep].store.getFreeCapacity() > 0) {
@@ -630,33 +629,35 @@ export default class CreepMissonMineExtension extends Creep {
                         }
                     }
                 }
-                if (!this.pos.isNearTo(missonPostion)) {
-                    this.goTo(missonPostion, 1)
-                }
-                else {
-                    if (!this.memory.tick) this.memory.tick = this.ticksToLive
-                    // if (this.ticksToLive < (1500 - (this.memory.tick ? this.memory.tick : 1000) + 70)) {
-                    //     //寿命超限-准备执行退休操作
-                    //     if (User_number > 0) {
-                    //         /*等待搬运*/
-                    //     } else {
-                    //         this.suicide()/*寿命不足同时没有资源的情况下suicide操作*/
-                    //     }
-                    // }
-                    /* 开始采集 */
+                if (Free_number < 1) return;
+                if (this.pos.roomName == creepMisson.room) {
                     if (!deposit_) {
                         var deposit_ = Game.getObjectById(creepMisson.deposit_id) as Deposit
                     }
                     if (deposit_) {
-                        if (!deposit_.cooldown && this.store.getFreeCapacity() > 0) {
-                            this.harvest(deposit_)
+                        if (!this.pos.isNearTo(missonPostion)) {
+                            this.goTo(missonPostion, 1)
                         }
-                    }
-                    else {
+                        if (!deposit_.cooldown && Free_number > 0) {
+                            let harvest_state = this.harvest(deposit_)
+                            switch (harvest_state) {
+                                case OK:
+                                    if (!this.memory.tick) this.memory.tick = this.ticksToLive
+                                    break;
+                                case ERR_NOT_IN_RANGE:
+                                    this.goTo(missonPostion, 1)
+                                    break;
+                            }
+                        }
+                    } else {
                         if (this.pos.roomName == creepMisson.room) {
                             Game.rooms[this.memory.belong].DeleteMission(this.memory.MissionData.id)
                             return
                         }
+                    }
+                } else {
+                    if (!this.pos.isNearTo(missonPostion)) {
+                        this.goTo(missonPostion, 1)
                     }
                 }
                 break;
@@ -667,6 +668,9 @@ export default class CreepMissonMineExtension extends Creep {
                     if (Game.time % 10 == 0) {
                         /*地上捡垃圾*/
                         var deposit_ = Game.getObjectById(creepMisson.deposit_id) as Deposit
+                        if (this.pos.isNearTo(deposit_)) {
+                            this.Flee(deposit_.pos, 2)
+                        }
                         if (!this.memory.Missionstate && deposit_?.lastCooldown > 150) {
                             Game.rooms[this.memory.belong].DeleteMission(this.memory.MissionData.id)
                             this.memory.Missionstate = true;
@@ -677,6 +681,7 @@ export default class CreepMissonMineExtension extends Creep {
                                 this.goTo(targets[0].pos, 1);
                             }
                         }
+
                     }
                 }
                 if (!this.pos.inRangeTo(missonPostion, 2)) {

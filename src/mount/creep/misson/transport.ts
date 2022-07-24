@@ -4,28 +4,37 @@ export default class CreepMissonTransportExtension extends Creep {
     public handle_feed(): void {
         // if (!this.room.memory.StructureIdData.storageID) return
         // var storage_ = Game.getObjectById(this.room.memory.StructureIdData.storageID as string) as StructureStorage
+        var cpu_test = false
+        switch (Game.shard.name) {
+          case 'shard3':
+            cpu_test = true
+            break;
+        }
+        let cpu_list = [];
+        if (cpu_test) { cpu_list.push(Game.cpu.getUsed()) }
         if (!this.room.storage && !this.room.terminal) return
         this.workstate('energy')
-        for (var r in this.store) {
-            if (r != 'energy') {
-                this.say("🚽")
-                /* 如果是自己的房间，则优先扔到最近的storage去 */
-                if (this.room.name == this.memory.belong) {
-                    if (!this.room.storage) return
-                    var storage = this.room.storage as StructureStorage
-                    if (!storage) return
-                    if (storage.store.getUsedCapacity() > this.store.getUsedCapacity()) {
-                        this.transfer_(storage, r as ResourceConstant)
+        if (Object.keys(this.store).length > 0) {
+            for (var r in this.store) {
+                if (r != 'energy') {
+                    this.say("🚽")
+                    /* 如果是自己的房间，则优先扔到最近的storage去 */
+                    if (this.room.name == this.memory.belong) {
+                        if (!this.room.storage) return
+                        if (this.room.storage.store.getUsedCapacity() > this.store.getUsedCapacity()) {
+                            this.transfer_(this.room.storage, r as ResourceConstant)
+                        }
+                        else return
                     }
-                    else return
+                    return
                 }
-                return
             }
         }
         // console.log('资源搬运-3')
         if (this.memory.working) {
             // console.log('资源搬运-5')
             this.say("🍉")
+            let extensions_ = null;
             if (!this.memory.Extensions_id) {
                 var extensions = this.pos.findClosestByRange(FIND_MY_STRUCTURES, {
                     filter: (structure) => {
@@ -33,6 +42,7 @@ export default class CreepMissonTransportExtension extends Creep {
                     }
                 })
                 if (extensions) {
+                    extensions_ = extensions;
                     this.memory.Extensions_id = extensions.id;
                 }
                 else {
@@ -42,7 +52,10 @@ export default class CreepMissonTransportExtension extends Creep {
                 }
             }
             if (this.memory.Extensions_id) {
-                let extensions_ = Game.getObjectById(this.memory.Extensions_id as Id<StructureExtension>) as StructureExtension
+                if (!extensions_) {
+                    extensions_ = Game.getObjectById(this.memory.Extensions_id as Id<StructureExtension>) as StructureExtension
+                }
+
                 if (!extensions_) { delete this.memory.Extensions_id }
                 if (extensions_.store.getFreeCapacity('energy') < 1) {
                     delete this.memory.Extensions_id
