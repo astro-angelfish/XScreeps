@@ -109,7 +109,7 @@ export class factoryExtension extends StructureFactory {
         if (!terminal_ || !storage_) return
         if (state == 'sleep') {
             this.room.memory.productData.balanceData = {}
-            if ((Game.time - global.Gtime[this.room.name]) % 45) return
+            if ((Game.time - global.Gtime[this.room.name]) % 85) return
             delete this.room.memory.productData.producing
             let disCom = this.room.memory.productData.flowCom
             if (disCom)   // 检测是否可以直接生产商品 是否可以资源调度
@@ -186,10 +186,17 @@ export class factoryExtension extends StructureFactory {
             let low = []        // 低级商品 Wire Cell Alloy Condensate 
             let high = []       // 高等商品 Composite Crystal Liquid 
             let zipList = ['utrium_bar', 'lemergium_bar', 'keanium_bar', 'zynthium_bar', 'ghodium_melt', 'oxidant', 'reductant', 'purifier', 'battery']
+            let highlist = [
+                'composite', 'crystal', 'liquid'
+                , 'switch', 'transistor', 'microchip', 'circuit', 'device'
+                , 'phlegm', 'tissue', 'muscle', 'organoid', 'organism'
+                , 'tube', 'fixtures', 'frame', 'hydraulics', 'machine'
+                , 'concentrate', 'extract', 'spirit', 'emanation', 'essence'
+            ];
             for (var baseProduction in this.room.memory.productData.baseList) {
                 if (isInArray(zipList, baseProduction)) zip.push(baseProduction)
                 else if (isInArray(['wire', 'cell', 'alloy', 'condensate'], baseProduction)) low.push(baseProduction)
-                else if (isInArray(['composite', 'crystal', 'liquid'], baseProduction)) high.push(baseProduction)
+                else if (isInArray(highlist, baseProduction)) high.push(baseProduction)
             }
             // 检测基础商品是否满足
             for (let b of zip) {
@@ -218,7 +225,7 @@ export class factoryExtension extends StructureFactory {
                     // }
                     console.log(`[factory] 房间${this.room.name}转入base生产模式,目标商品为${l}`)
                     this.room.memory.productData.state = 'base'
-                    this.room.memory.productData.producing = { com: l, num: this.room.memory.productData.baseList[l].num}
+                    this.room.memory.productData.producing = { com: l, num: this.room.memory.productData.baseList[l].num }
                     return
                 }
             }

@@ -157,8 +157,8 @@ export default class PowerCreepMisson extends Room {
         }
     }
     /* 挂载升级工厂任务 适用于queen类型pc */
-    public enhance_factory(): void {
-        if ((Game.time - global.Gtime[this.name]) % 15) return
+    public enhance_factory(force: boolean = false): void {
+        if ((Game.time - global.Gtime[this.name]) % 15 && !force) return
         if (this.memory.switch.StopEnhanceFactory) return
         var storage_ = this.storage as StructureStorage
         if (!storage_) return

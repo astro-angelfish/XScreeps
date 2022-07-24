@@ -14,7 +14,7 @@ export default {
             /* 查看资源是否足够 */
             var terminal_ = thisRoom.terminal as StructureTerminal
             var storage_ = thisRoom.storage as StructureStorage
-            if (!terminal_ || !storage_) {  return Colorful(`[terminal] 房间${roomName}不存在终端/仓房或记忆未更新！`, 'red', true) }
+            if (!terminal_ || !storage_) { return Colorful(`[terminal] 房间${roomName}不存在终端/仓房或记忆未更新！`, 'red', true) }
             /* 查询其他资源传送任务中是否有一样的资源 */
             var Num = 0
             if (!thisRoom.memory.Misson['Structure']) thisRoom.memory.Misson['Structure'] = []
@@ -795,7 +795,7 @@ export default {
             var myRoom = Game.rooms[roomName]
             if (!myRoom) return `[factory] 未找到房间${roomName},请确认房间!`
             if (!Game.powerCreeps[`${myRoom.name}/queen/${Game.shard.name}`]) return `[factory] ${myRoom.name}此房间无pc请先孵化pc!`
-            myRoom.enhance_factory();
+            myRoom.enhance_factory(true)
             return `[factory] 房间${roomName}发布pc确定工厂等级任务成功!`
         },
         // 添加工厂基本物资合成清单
