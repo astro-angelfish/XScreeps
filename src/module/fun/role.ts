@@ -230,7 +230,7 @@ export function upgrade_(creep_: Creep): void {
         }
         if (!creep_.memory.targetID) {
             let target = null
-            if (creep_.room.controller.level < 8 && creep_.room.terminal) {
+            if (creep_.room.controller.level < 8 && creep_.room.terminal && !Game.rooms[creep_.memory.belong].memory.StructureIdData.upgrade_link) {
                 target = creep_.room.terminal
             } else {
                 if (Game.rooms[creep_.memory.belong].memory.StructureIdData.upgrade_link)       // 优先Link

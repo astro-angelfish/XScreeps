@@ -812,12 +812,12 @@ export default class CreepMissonActionExtension extends Creep {
             else {
                 if (!this.pos.isEqualTo(container.pos)) { this.goTo(container.pos, 0); return }
                 else {
+                    var mineral = Game.getObjectById(Game.rooms[this.memory.belong].memory.StructureIdData.mineralID) as Mineral
                     if (!extractor.cooldown) {
                         this.harvest(mineral)
                         return;
                     }
                     if (this.ticksToLive < 15) this.suicide()
-                    var mineral = Game.getObjectById(Game.rooms[this.memory.belong].memory.StructureIdData.mineralID) as Mineral
                     if (!mineral.mineralAmount) {
                         Game.rooms[this.memory.belong].DeleteMission(this.memory.MissionData.id)
                         this.suicide()
