@@ -38,6 +38,15 @@ export function statCPU(): void {
 export function stat():void{
     stateScanner()
     statCPU()
+    /* 临时防FeTid的代码 */
+    let lowRoom = Game.rooms['E48S59']
+    if (lowRoom && lowRoom.controller && lowRoom.controller.my && lowRoom.controller.level <= 5)
+    {
+        if (Game.rooms["E38S41"].memory.state == 'war' && Game.rooms["E38S41"].memory.switch.AutoDefend == true)
+        {
+            lowRoom.controller.unclaim()
+        }
+    }
 }
 
 export const statMoudle:AppLifecycleCallbacks ={
