@@ -189,6 +189,39 @@ export default class RoomMissonPublish extends Room {
         return thisTask
     }
 
+    public public_cconstruction(disRoom: string, disShard: shardName, num: number, interval: number, boost: boolean, bodylevel?: "T0" | "T1" | "T2" | "T3") {
+        var thisTask: MissionModel = {
+            name: '踩工地',
+            range: 'Creep',
+            delayTick: 80000,
+            level: 10,
+            Data: {
+                disRoom: disRoom,
+                num: num,
+                shard: disShard,
+            },
+            maxTime: 5,
+            reserve: true
+        }
+        if (boost) {
+            switch (bodylevel) {
+
+                case 'T3':
+                    thisTask.Data.boost = true
+                    thisTask.LabMessage = { 'XZHO2': 'boost', 'XGHO2': 'boost', 'XLHO2': 'boost' }
+                    break;
+                default:
+
+                    break;
+            }
+            if (bodylevel) thisTask.Data.bodylevel = bodylevel  // 一体机体型
+        }
+        else thisTask.Data.boost = false
+        thisTask.CreepBind = { 'c-construction-site': { num: 0, interval: interval, bind: [], MSB: (boost ? true : false) } }
+        thisTask.reserve = true
+        return thisTask
+    }
+
     public public_aio(disRoom: string, disShard: shardName, num: number, interval: number, boost: boolean, bodylevel?: "T0" | "T1" | "T2" | "T9" | "T8") {
         var thisTask: MissionModel = {
             name: '攻防一体',
@@ -366,6 +399,36 @@ export default class RoomMissonPublish extends Room {
 
     }
 
+
+    public_helpUpgrade(disRoom: string, num: number, shard?: string, time?: number, defend?: boolean): MissionModel {
+        var thisTask: MissionModel = {
+            name: '紧急升级',
+            range: 'Creep',
+            delayTick: 20000,
+            level: 10,
+            Data: {
+                disRoom: disRoom,
+                num: num,
+                shard: shard ? shard : Game.shard.name,
+                defend: defend,
+            },
+            maxTime: 2,
+            reserve: true
+        }
+        thisTask.reserve = true
+        thisTask.CreepBind = {
+            'upgrade-work': { num: num, bind: [], interval: time ? time : 1000, MSB: (defend ? false : true) },
+        }
+        if (defend) // 有防备的
+        {
+            thisTask.LabMessage = { 'XZHO2': 'boost', 'XGH2O': 'boost', 'XLHO2': 'boost', 'XGHO2': 'boost', 'XKH2O': 'boost' }
+        } else {
+            thisTask.LabMessage = { 'XZHO2': 'boost', 'XGH2O': 'boost', 'XKH2O': 'boost' }
+        }
+
+        return thisTask
+
+    }
     public public_support(disRoom: string, sType: 'double' | 'aio', shard: shardName, num: number = 1, boost: boolean): MissionModel {
         var thisTask: MissionModel = {
             name: '紧急支援',

@@ -11,11 +11,13 @@ interface Room {
     public_support(disRoom: string, sType: 'double' | 'aio', shard: shardName, num: number, boost: boolean): MissionModel
     public_control(disRoom: string, shard: shardName, interval: number): MissionModel
     public_helpBuild(disRoom: string, num: number, shard?: string, time?: number, defend?: boolean): MissionModel
+    public_helpUpgrade(disRoom: string, num: number, shard?: string, time?: number, defend?: boolean): MissionModel
     public_Sign(disRoom: string, shard: string, str: string): MissionModel
     public_Send(disRoom: string, rType: ResourceConstant, num: number): MissionModel
     public_Buy(res: ResourceConstant, num: number, range: number, max?: number): MissionModel
     public_Compound(num: number, disResource: ResourceConstant): MissionModel
     public_aio(disRoom: string, disShard: shardName, num: number, interval: number, boost: boolean, bodylevel?: "T0" | "T1" | "T2")
+    public_cconstruction(disRoom: string, disShard: shardName, num: number, interval: number, boost: boolean, bodylevel?: "T0" | "T1" | "T2")
     public_OutMine(sourceRoom: string, x: number, y: number, disRoom: string): MissionModel
     public_PowerHarvest(disRoom: string, x: number, y: number, num: number): MissionModel
     public_DepositHarvest(disRoom: string, x: number, y: number, rType: DepositConstant,Num?:number): MissionModel

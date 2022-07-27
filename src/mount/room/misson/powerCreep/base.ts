@@ -119,7 +119,7 @@ export default class PowerCreepMisson extends Room {
         var storage_ = this.storage as StructureStorage
         if (!storage_ || storage_.store.getUsedCapacity('energy') < 20000) return
         if (!pc.powers[PWR_OPERATE_EXTENSION] || pc.powers[PWR_OPERATE_EXTENSION].cooldown) return
-        if (this.energyAvailable < this.energyCapacityAvailable * 0.3 && this.MissionNum('PowerCreep', '拓展填充') <= 0) {
+        if (this.energyAvailable < this.energyCapacityAvailable * 0.5 && this.MissionNum('PowerCreep', '拓展填充') <= 0) {
             var thisTask: MissionModel = {
                 name: "扩展填充",
                 delayTick: 30,

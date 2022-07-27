@@ -58,6 +58,12 @@ export default {
     plugins: [
         // 清除上次编译成果
         clear({ targets: ["dist"] }),
+        // 打包依赖
+        resolve(),
+        // 模块化依赖
+        commonjs(),
+        // 编译 ts
+        typescript({ tsconfig: "./tsconfig.json" }),
         copy({
             targets: [
                 {
@@ -68,17 +74,10 @@ export default {
                     src: 'src/module/layoutVisual/autoPlanner63.js',
                     dest: 'dist'
                 }
-            ],
-            hook: 'writeBundle',
-            verbose: true
+            ]
         }),
-        // 打包依赖
-        resolve(),
-        // 模块化依赖
-        commonjs(),
-        // 编译 ts
-        typescript({ tsconfig: "./tsconfig.json" }),
         // 执行上传或者复制
         pluginDeploy
-    ]
+    ],
+    external: ['src/modules/layoutVisual/algo_wasm_priorityqueue.wasm'],
 };

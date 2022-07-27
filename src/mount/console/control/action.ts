@@ -286,6 +286,32 @@ export default {
             }
             return `[war] 双人小队 ${roomName} -(${shard})-> ${disRoom} 的 ${mType}任务删除失败！`
         },
+        cconstruction(roomName: string, disRoom: string, shard: shardName, CreepNum: number, time: number = 1000, boost: boolean = true, bodylevel: "T0" | "T1" | "T2" = "T0", shardData?: shardRoomData[]): string {
+            var myRoom = Game.rooms[roomName]
+            if (!myRoom) return `[war] 未找到房间${roomName},请确认房间!`
+            for (var oi of myRoom.memory.Misson['Creep'])
+                if (oi.name == '踩工地' && oi.Data.disRoom == disRoom && oi.Data.shard == shard) {
+                    return `[war] 房间${roomName}已经存在去往${disRoom}(${shard})的该类型任务了!`
+                }
+            var thisTask = myRoom.public_cconstruction(disRoom, shard, CreepNum, time, boost, bodylevel)
+            if (thisTask) {
+                if (shardData) thisTask.Data.shardData = shardData
+                if (myRoom.AddMission(thisTask))
+                    return `[war] 踩工地任务挂载成功! ${Game.shard.name}/${roomName} -> ${shard}/${disRoom} 体型等级:${bodylevel}`
+            }
+            return `[war] 踩工地挂载失败!`
+        },
+        Ccconstruction(roomName: string, disRoom: string, shard: shardName): string {
+            var myRoom = Game.rooms[roomName]
+            if (!myRoom) return `[support] 未找到房间${roomName},请确认房间!`
+            for (var i of myRoom.memory.Misson['Creep']) {
+                if (i.name == '踩工地' && i.Data.disRoom == disRoom && i.Data.shard == shard) {
+                    if (myRoom.DeleteMission(i.id))
+                        return `[war] 删除去往${shard}/${disRoom}的踩工地任务成功!`
+                }
+            }
+            return `[war] 删除去往${shard}/${disRoom}的踩工地任务失败!`
+        },
     },
     /* 升级 */
     upgrade: {
@@ -432,6 +458,28 @@ export default {
                 }
             }
             return Colorful(`[support] 房间${roomName}紧急援建任务失败`, 'red')
+        },
+        upgrade(roomName: string, disRoom: string, shard: shardName = Game.shard.name as shardName, num: number, interval: number, defend: boolean = false, shardData?: shardRoomData[]): string {
+            var thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[support] 不存在房间${roomName}`
+            let task = thisRoom.public_helpUpgrade(disRoom, num, shard, interval, defend)
+            if (task) {
+                if (shardData) task.Data.shardData = shardData
+                if (thisRoom.AddMission(task))
+                    return Colorful(`[support] 房间${roomName}挂载紧急升级任务成功 -> ${disRoom}`, 'green')
+            }
+            return Colorful(`[support] 房间${roomName}挂载紧急升级任务失败 -> ${disRoom}`, 'red')
+        },
+        Cupgrade(roomName: string, disRoom: string, shard: shardName = Game.shard.name as shardName): string {
+            var thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[support] 不存在房间${roomName}`
+            for (var i of thisRoom.memory.Misson['Creep']) {
+                if (i.name == '紧急升级' && i.Data.disRoom == disRoom && i.Data.shard == shard) {
+                    if (thisRoom.DeleteMission(i.id))
+                        return Colorful(`[support] 房间${roomName}紧急升级任务成功`, 'green')
+                }
+            }
+            return Colorful(`[support] 房间${roomName}紧急升级任务失败`, 'red')
         },
     },
     /* 核弹相关 */

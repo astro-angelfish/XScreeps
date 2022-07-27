@@ -671,7 +671,7 @@ export default class CreepMissonMineExtension extends Creep {
                         if (this.pos.isNearTo(deposit_)) {
                             this.Flee(deposit_.pos, 2)
                         }
-                        if (!this.memory.Missionstate && deposit_?.lastCooldown > 150) {
+                        if (!this.memory.Missionstate && deposit_?.lastCooldown > 110) {
                             Game.rooms[this.memory.belong].DeleteMission(this.memory.MissionData.id)
                             this.memory.Missionstate = true;
                         }

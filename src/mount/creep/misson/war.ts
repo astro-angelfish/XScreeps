@@ -754,6 +754,92 @@ export default class CreepMissonWarExtension extends Creep {
         // console.log(this.name,e-s)
     }
 
+    /*踩工地*/
+    public handle_cconstruction(): void {
+        let missionData = this.memory.MissionData
+        let id = missionData.id
+        let data = missionData.Data
+        if (!missionData) return
+        if (this.room.name == this.memory.belong && Game.shard.name == this.memory.shard) {
+            if (data.boost) {
+                switch (data.bodylevel) {
+                    case 'T3':
+                        if (!this.BoostCheck(['move', 'heal', 'tough'])) return
+                        break;
+                    default:
+                        // if (!this.BoostCheck(['move', 'heal', 'tough', 'ranged_attack'])) return
+                        break;
+                }
+            }
+        }
+
+        if ((this.room.name != data.disRoom || Game.shard.name != data.shard)) {
+            if (this.hits < this.hitsMax) {
+                switch (data.bodylevel) {
+                    case 'T3':
+                        this.heal(this)
+                        break;
+                }
+                /*检查坐标信息*/
+                if (isInArray([0, 49], this.pos.x) || isInArray([0, 49], this.pos.y)) {
+                    this.Flee(this.pos, 2)
+                }
+                /*检查是否存在敌对目标的信息*/
+                return
+            }
+            this.arriveTo(new RoomPosition(24, 24, data.disRoom), 23, data.shard, data.shardData ? data.shardData : null)
+        }
+        else {
+            // 对方开安全模式情况下 删除任务
+            if (this.room.controller && this.room.controller.safeMode && !this.room.controller.my) {
+                if (Game.shard.name == this.memory.shard) {
+                    Game.rooms[this.memory.belong].DeleteMission(id)
+                }
+                return
+            }
+            let pos_ = this.pos.findClosestByPath(FIND_HOSTILE_CONSTRUCTION_SITES)
+            if (!pos_) return
+            switch (data.bodylevel) {
+                case 'T3':
+                    warDataInit(Game.rooms[data.disRoom])
+                    let creeps = global.warData.enemy[data.disRoom].data
+                    this.heal(this)
+                    let ranged3Attack = RangeCreep(this.pos, creeps, 3, true)  // 三格内的攻击性爬虫
+                    if (ranged3Attack.length > 0) {
+                        // 防御塔伤害数据
+                        let towerData = global.warData.tower[this.room.name].data
+                        let posStr = `${this.pos.x}/${this.pos.y}`
+                        let towerHurt = towerData[posStr] ? towerData[posStr]['attack'] : 0
+                        if (!canSustain(ranged3Attack, this, towerHurt)) {
+                            this.say("危")
+                            /* 删除记忆 */
+                            let closestHurtCreep = RangeClosestCreep(this.pos, ranged3Attack, true)
+                            if (closestHurtCreep) {
+                                this.Flee(closestHurtCreep.pos, 4)
+                            }
+                        }
+                        else {
+                            if (!this.pos.isEqualTo(pos_)) {
+                                this.goTo(pos_.pos, 0)
+                            }
+                        }
+                    }
+                    else {
+                        if (!this.pos.isEqualTo(pos_)) {
+                            this.goTo(pos_.pos, 0)
+                        }
+                    }
+                    break;
+                default:
+                    this.goTo(pos_.pos, 0)
+                    break;
+            }
+
+
+        }
+    }
+
+
     // 攻防一体 已经做一定测试 目前未发现bug
     public handle_aio(): void {
         let missionData = this.memory.MissionData

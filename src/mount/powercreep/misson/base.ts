@@ -43,7 +43,7 @@ export default class PowerCreepMissonBase extends PowerCreep {
         if (!Game.rooms[this.memory.belong].memory.Misson['PowerCreep'])
             Game.rooms[this.memory.belong].memory.Misson['PowerCreep'] = []
 
-        if ((Game.time - global.Gtime[this.room.name]) % 20 == 0) {
+        if ((Game.time - global.Gtime[this.room.name]) % 200 == 0) {
             /*根据PC技能调整房间的爬体型*/
             if (!this.room.memory.UpgradespawnConfig['harvest']) { this.room.memory.UpgradespawnConfig['harvest'] = 0 }
             this.room.memory.UpgradespawnConfig['harvest'] = 1
@@ -97,7 +97,6 @@ export default class PowerCreepMissonBase extends PowerCreep {
                 this.memory.MissionData = {}
                 return
             }
-
             switch (this.memory.MissionData.name) {
                 case "仓库扩容": { this.handle_pwr_storage(); break; }
                 case '塔防增强': { this.handle_pwr_tower(); break; }

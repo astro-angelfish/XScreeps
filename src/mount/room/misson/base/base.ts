@@ -52,6 +52,7 @@ export default class RoomMissonFrameExtension extends Room {
                     case '黄球拆迁': this.Task_dismantle(misson); break;
                     case '急速冲级': this.Task_Quick_upgrade(misson); break;
                     case '紧急援建': this.Task_HelpBuild(misson); break;
+                    case '紧急升级': this.Task_HelpUpgrade(misson); break;
                     case '紧急支援': this.Task_HelpDefend(misson); break;
                     case '资源合成': this.Task_Compound(misson); break;
                     case '攻防一体': this.Task_aio(misson); break;
@@ -69,6 +70,7 @@ export default class RoomMissonFrameExtension extends Room {
                     case '扩张援建': this.Task_Expand(misson); break;
                     case '智能战争': this.Task_Aiwar(misson); break;
                     case '智能哨兵': this.Task_Aisentry(misson); break;
+                    case '踩工地':this.Task_CConstruction(misson); break;
                 }
                 // return
                 // var b = Game.cpu.getUsed()

@@ -38,6 +38,7 @@ export const RoleData: SpawnConstantData = {
     'double-dismantle': { num: 0, ability: [28, 0, 10, 0, 0, 0, 0, 12], level: 10, mark: "⚒️", must: true },
     'claim-attack': { num: 0, ability: [0, 0, 15, 0, 0, 0, 15, 0], level: 10, mark: "🟣" },
     'architect': { num: 0, ability: [15, 10, 10, 0, 0, 10, 0, 5], level: 10, mark: "🚒" },
+    'upgrade-work': { num: 0, ability: [5, 20, 10, 0, 0, 10, 0, 5], level: 10, mark: "工人" },
     'scout': { num: 0, ability: [0, 0, 1, 0, 0, 0, 0, 0], level: 15, mark: '✏️' },
     'aio': { num: 0, ability: [0, 0, 25, 0, 10, 15, 0, 0], level: 10, mark: "⚡" },
     'saio': { num: 0, ability: [0, 0, 25, 0, 10, 15, 0, 0], level: 10, mark: "⚡" }, // 支援一体机
@@ -71,6 +72,7 @@ export const RoleData: SpawnConstantData = {
     'x-aio': { num: 0, ability: [0, 0, 10, 0, 10, 20, 0, 10], level: 9, mark: "🌈", must: true, mem: { creepType: 'heal' } },
     /*Ai战争*/
     'Ai-sentry': { num: 0, ability: [0, 0, 10, 0, 0, 20, 0, 20], level: 9, mark: "哨兵", must: true, mem: { creepType: 'sentry' } },
+    'c-construction-site': { num: 0, ability: [0, 0, 1, 0, 0, 0, 0, 0], level: 9, mark: "踩", must: true },
 }
 /* 爬虫部件随房间等级变化的动态列表 */
 export const RoleLevelData = {

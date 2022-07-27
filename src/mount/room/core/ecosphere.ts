@@ -226,9 +226,6 @@ export default class RoomCoreEcosphereExtension extends Room {
                         console.log(str)
                     }
                 }
-
-
-
             }
             else return // 不遍历无关建筑
         }

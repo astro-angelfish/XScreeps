@@ -256,7 +256,7 @@ export default class RoomMissonMineExtension extends Room {
                 if (misson.Data.deposit) {
                     var deposit = Game.rooms[beforRoom].find(FIND_DEPOSITS, {
                         filter: (stru) => {
-                            return stru.ticksToDecay >= 3800 && stru.lastCooldown < 150
+                            return stru.ticksToDecay >= 3800 && stru.lastCooldown < 100
                         }
                     })
                     // console.log(this.name, beforRoom, deposit.length)

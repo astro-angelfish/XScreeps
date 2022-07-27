@@ -15,6 +15,31 @@ export default class NormalWarExtension extends Room {
         if (mission.CreepBind['dismantle'].num == 0)
             mission.CreepBind['dismantle'].num = mission.Data.num
     }
+    public Task_CConstruction(mission: MissionModel): void {
+        if (mission.Data.boost) {
+            // 体型
+            let bodylevel = mission.Data.bodylevel
+            switch (bodylevel) {
+                case 'T3':
+                    // 高级奶妈
+                    global.MSB[mission.id] = { 'c-construction-site': GenerateAbility(0, 0, 10, 0, 0, 28, 0, 12) }
+                    break;
+                default:
+                    // 默认不处理的
+                    global.MSB[mission.id] = { 'c-construction-site': GenerateAbility(0, 0, 1, 0, 0, 0, 0, 0) }
+                    break;
+
+            }
+            if ((Game.time - global.Gtime[this.name]) % 10) return
+            // boost lab填充检查
+            if (!this.Check_Lab(mission, 'transport', 'complex')) return
+        }
+        else {
+            if ((Game.time - global.Gtime[this.name]) % 10) return
+        }
+        if (mission.CreepBind['c-construction-site'].num == 0)
+            mission.CreepBind['c-construction-site'].num = mission.Data.num
+    }
 
     // 一体机
     public Task_aio(mission: MissionModel): void {
@@ -88,6 +113,6 @@ export default class NormalWarExtension extends Room {
             if (!this.Check_Lab(mission, 'transport', 'complex')) return
         }
     }
-  
+
 
 }

@@ -42,8 +42,10 @@ interface Room {
     Task_Normal_upgrade(mission: MissionModel): void
     Task_HelpDefend(mission: MissionModel): void
     Task_HelpBuild(mission: MissionModel): void
+    Task_HelpUpgrade(mission: MissionModel): void
     Task_Compound(misson: MissionModel): void
     Task_aio(mission: MissionModel): void
+    Task_CConstruction(mission: MissionModel): void
     Task_OutMine(misson: MissionModel): void
     Task_ProcessPower(misson: MissionModel): void
     Task_Cross(misson: MissionModel): void

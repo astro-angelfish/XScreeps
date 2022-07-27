@@ -107,7 +107,16 @@ export default class RoomMissonVindicateExtension extends Room {
         if (mission.LabBind) {
             if (!this.Check_Lab(mission, 'transport', 'complex')) return // 如果目标lab的t3少于 1000 发布搬运任务
         }
-
+    }
+    /*紧急升级*/
+    public Task_HelpUpgrade(mission: MissionModel): void {
+        if (!mission.Data.defend) {
+            global.MSB[mission.id] = { 'upgrade-work': GenerateAbility(10, 30, 10, 0, 0, 0, 0, 0) }
+        }
+        if ((Game.time - global.Gtime[this.name]) % 9) return
+        if (mission.LabBind) {
+            if (!this.Check_Lab(mission, 'transport', 'complex')) return // 如果目标lab的t3少于 1000 发布搬运任务
+        }
     }
 
     /* 资源转移任务 */

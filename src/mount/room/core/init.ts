@@ -439,7 +439,7 @@ export default class RoomCoreInitExtension extends Room {
             this.NumSpawn('transport', 0)
         }
         /*针对单矿房间进行定式操作*/
-        if (Object.keys(this.memory.harvestData).length <= 1) {
+        if (Object.keys(this.memory.harvestData).length <= 1 && level > 3) {
             this.NumSpawn('harvest', 1)
         }
 

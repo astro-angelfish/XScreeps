@@ -56,8 +56,9 @@ export default class CreepFunctionExtension extends Creep {
     }
 
     public repair_(distination: Structure, ops = null): void {
-        if (this.repair(distination) == ERR_NOT_IN_RANGE) {
-            this.goTo(distination.pos, ops)
+        let repair_s = this.repair(distination)
+        if (repair_s == ERR_NOT_IN_RANGE) {
+            this.goTo(distination.pos, 1, ops)
             this.memory.standed = false
         }
         else

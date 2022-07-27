@@ -48,7 +48,7 @@ export default class CreepMissonActionExtension extends Creep {
                     this.say("🛠️")
                     var target_ = Game.getObjectById(this.memory.targetID as Id<StructureRampart>) as StructureRampart
                     if (!target_) { delete this.memory.targetID; return }
-                    this.repair_(target_, 200)
+                    this.repair_(target_, 400)
                     if (this.room.memory.state == 'war') {
                         let hostileCreep = this.pos.findInRange(FIND_HOSTILE_CREEPS, 3, {
                             filter: (creep) => {
@@ -743,6 +743,40 @@ export default class CreepMissonActionExtension extends Creep {
         }
     }
 
+    public handle_helpUpgrade(): void {
+        let missionData = this.memory.MissionData
+        let id = missionData.id
+        let data = missionData.Data
+        if (!missionData) return
+        if (this.room.name == this.memory.belong && Game.shard.name == this.memory.shard) {
+            if (!this.BoostCheck(['move', 'work', 'heal', 'tough', 'carry'])) return
+            if (this.store.getUsedCapacity('energy') <= 0) {
+                let stroge_ = this.room.storage as StructureStorage
+                if (stroge_) {
+                    this.withdraw_(stroge_, 'energy')
+                    return
+                }
+            }
+        }
+        if ((this.room.name != data.disRoom || Game.shard.name != data.shard) && !this.memory.swith) {
+            this.heal(this)
+            this.arriveTo(new RoomPosition(24, 24, data.disRoom), 23, data.shard, data.shardData ? data.shardData : null)
+        }
+        else {
+            this.memory.swith = true
+            this.workstate('energy')
+            if (this.memory.working) {
+                if (this.hits < this.hitsMax) {
+                    this.heal(this)
+                }
+                this.upgrade_()
+            }
+            else {
+                this.suicide();
+            }
+        }
+    }
+
     // 房间签名
     public handle_sign(): void {
         let missionData = this.memory.MissionData
@@ -751,7 +785,6 @@ export default class CreepMissonActionExtension extends Creep {
         if (!missionData) return
         if (this.room.name != data.disRoom || Game.shard.name != data.shard) {
             this.arriveTo(new RoomPosition(24, 24, data.disRoom), 23, data.shard, data.shardData ? data.shardData : null)
-
         }
         else {
             let control = this.room.controller
