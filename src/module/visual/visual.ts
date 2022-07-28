@@ -93,7 +93,7 @@ export function showTowerData(): void {
         let tx = posXY[0]
         let ty = posXY[1]
         var Data = global.warData.tower[roomName].data[posData]
-        new RoomVisual(roomName).text(`${Data.attack}`, tx, ty-0.1, { color: 'red', font: 0.3, align: 'center' })
+        new RoomVisual(roomName).text(`${Data.attack}`, tx, ty - 0.1, { color: 'red', font: 0.3, align: 'center' })
         if (Data.avoid) {
           new RoomVisual(roomName).text(`${Data.avoid}`, tx, ty + 0.3, { color: 'yellow', font: 0.3, align: 'center' })
         }
@@ -273,8 +273,8 @@ export function processRoomDataVisual(room: Room): void {
   visual.text(`${room.name}`, 0.1, line, normalTextStyle)
   visual.text(room.memory.state === 'peace' ? '和平' : '战争', room.name.length * 0.45 + 0.3, 0.7, { ...normalTextStyle, color: room.memory.state === 'peace' ? colors.zinc : colors.red })
   const missionNum = Object.values(room.memory.Misson).reduce((a, b) => a + b.length, 0)
-  visual.text(`共 ${missionNum} 任务`, room.name.length * 0.45 + 2, 0.7, { ...normalTextStyle, color: missionNum > 20 ? colors.amber : colors.zinc })
-  visual.text(`${Object.values(global.CreepNumData[room.name] || {}).reduce((a, b) => a + b, 0)} 爬虫`, room.name.length * 0.45 + missionNum.toString().length * 0.4 + 4.6, 0.7, normalTextStyle)
+  // visual.text(`共 ${missionNum} 任务`, room.name.length * 0.45 + 2, 0.7, { ...normalTextStyle, color: missionNum > 20 ? colors.amber : colors.zinc })
+  // visual.text(`${Object.values(global.CreepNumData[room.name] || {}).reduce((a, b) => a + b, 0)} 爬虫`, room.name.length * 0.45 + missionNum.toString().length * 0.4 + 4.6, 0.7, normalTextStyle)
   // if (!global.RoomDataVisual || !Game.cpu.generatePixel) {
   // CPU
   const cpuUsed = global.UsedCpu || 0
@@ -311,38 +311,38 @@ export function processRoomDataVisual(room: Room): void {
   }
 
   // 仓库
-  let storage = room.storage as StructureStorage
-  if (storage) {
-    let storage_all = storage.store.getCapacity();
-    let storage_use = storage.store.getUsedCapacity();
-    const storageFree = Math.ceil(storage_use / 1000)
-    const storageUsedPercent = storage_use / storage_all
-    const storageFreeColor = storageUsedPercent > 0.9 ? colors.rose : storageUsedPercent > 0.7 ? colors.amber : colors.cyan
-    labelBar(visual, 0.1, line += 1.1, 1.4, 6, '仓库', `${storageFree}K`, storageUsedPercent, storageFreeColor)
-  }
+  // let storage = room.storage as StructureStorage
+  // if (storage) {
+  //   let storage_all = storage.store.getCapacity();
+  //   let storage_use = storage.store.getUsedCapacity();
+  //   const storageFree = Math.ceil(storage_use / 1000)
+  //   const storageUsedPercent = storage_use / storage_all
+  //   const storageFreeColor = storageUsedPercent > 0.9 ? colors.rose : storageUsedPercent > 0.7 ? colors.amber : colors.cyan
+  //   labelBar(visual, 0.1, line += 1.1, 1.4, 6, '仓库', `${storageFree}K`, storageUsedPercent, storageFreeColor)
+  // }
 
   // 工厂
-  let line2 = 0.7
-  if (room.controller && room.controller.level >= 8) {
-    if (room.memory.productData.producing) {
-      const producing = room.memory.productData.producing
-      if (producing.num) {
-        const producingNum = (producing.num || 0)
-        const producingPercent = (producing.num - producingNum) / producing.num
-        const producingPercentVisual = Math.min(producingPercent, 1)
-        labelBar(visual, 8, line2 += 1.1, 1.4, 6, '工厂', `${producing.com} - ${(producingPercent * 100).toFixed(1)}%`, producingPercentVisual, colors.cyan)
-      }
-      else {
-        visual.text(`工厂生产 -> ${producing.com}`, 8, line2 += 1.1, normalTextStyle)
-      }
-    }
-    if (room.memory.ComDispatchData && !_.isEmpty(room.memory.ComDispatchData)) {
-      const ress = Object.keys(room.memory.ComDispatchData) as ResourceConstant[]
-      const res = ress[ress.length - 1]
-      const resData = room.memory.ComDispatchData[res]!
-      visual.text(`合成规划 ${res} (${resData.dispatch_num})`, 8, line2 += 1.1, normalTextStyle)
-    }
-  }
+  // let line2 = 0.7
+  // if (room.controller && room.controller.level >= 8) {
+  //   if (room.memory.productData.producing) {
+  //     const producing = room.memory.productData.producing
+  //     if (producing.num) {
+  //       const producingNum = (producing.num || 0)
+  //       const producingPercent = (producing.num - producingNum) / producing.num
+  //       const producingPercentVisual = Math.min(producingPercent, 1)
+  //       labelBar(visual, 8, line2 += 1.1, 1.4, 6, '工厂', `${producing.com} - ${(producingPercent * 100).toFixed(1)}%`, producingPercentVisual, colors.cyan)
+  //     }
+  //     else {
+  //       visual.text(`工厂生产 -> ${producing.com}`, 8, line2 += 1.1, normalTextStyle)
+  //     }
+  //   }
+  //   if (room.memory.ComDispatchData && !_.isEmpty(room.memory.ComDispatchData)) {
+  //     const ress = Object.keys(room.memory.ComDispatchData) as ResourceConstant[]
+  //     const res = ress[ress.length - 1]
+  //     const resData = room.memory.ComDispatchData[res]!
+  //     visual.text(`合成规划 ${res} (${resData.dispatch_num})`, 8, line2 += 1.1, normalTextStyle)
+  //   }
+  // }
 
   // lab 资源可视化
   if (room.memory.RoomLabBind && Object.keys(room.memory.RoomLabBind).length > 0) {

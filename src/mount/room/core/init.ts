@@ -6,32 +6,13 @@ export default class RoomCoreInitExtension extends Room {
      * 房间初始化主函数
      */
     public RoomInit(): void {
-        var cpu_test = false
-        let cpu_list = [];
-        if (cpu_test) { cpu_list.push(Game.cpu.getUsed()) }
+
         this.RoomMemoryInit()
-        if (cpu_test) { cpu_list.push(Game.cpu.getUsed()) }
         this.RoomStructureInit()
-        if (cpu_test) { cpu_list.push(Game.cpu.getUsed()) }
         this.RoomSpawnListInit()
-        if (cpu_test) { cpu_list.push(Game.cpu.getUsed()) }
         /*建筑初始化已废弃*/
         // this.RoomGlobalStructure()
-        if (cpu_test) { cpu_list.push(Game.cpu.getUsed()) }
         this.RoomGlobalDynamicconfig()
-        if (cpu_test) {
-            cpu_list.push(Game.cpu.getUsed())
-            console.log(
-                'RoomMemoryInit' + (cpu_list[1] - cpu_list[0]).toFixed(3),
-                'RoomStructureInit' + (cpu_list[2] - cpu_list[1]).toFixed(3),
-                'RoomSpawnListInit' + (cpu_list[3] - cpu_list[2]).toFixed(3),
-                'RoomGlobalStructure' + (cpu_list[4] - cpu_list[3]).toFixed(3),
-                'RoomGlobalDynamicconfig' + (cpu_list[5] - cpu_list[4]).toFixed(3),
-                this.name,
-                '总计' + (cpu_list[5] - cpu_list[0]).toFixed(3),
-            )
-        }
-
     }
 
     /**
@@ -86,10 +67,7 @@ export default class RoomCoreInitExtension extends Room {
      */
     public RoomStructureInit(): void {
         let tickratio = 6;
-        if (Game.time % tickratio != 0) { return }
-        var cpu_test = false
-        let cpu_list = [];
-        if (cpu_test) { cpu_list.push(Game.cpu.getUsed()) }
+        if ((Game.time - global.Gtime[this.name]) % tickratio) { return }
         let level = this.controller.level
         let StructureData = this.memory.StructureIdData
         /* Spawn建筑记忆更新-8级之后此部分不会被重复触发 */
@@ -102,7 +80,7 @@ export default class RoomCoreInitExtension extends Room {
                 }
             }
             else if ((level == 7 && StructureData.spawn.length < 2) || (level >= 8 && StructureData.spawn.length < 3)) {
-                if (Game.time % tickratio * 2 == 0) {
+                if ((Game.time - global.Gtime[this.name]) % tickratio * 2 == 0) {
                     let ASpawn = this.find(FIND_MY_SPAWNS) as StructureSpawn[]
                     for (let sp of ASpawn) {
                         if (!isInArray(StructureData.spawn, sp.id))
@@ -111,7 +89,6 @@ export default class RoomCoreInitExtension extends Room {
                 }
             }
         }
-        if (cpu_test) { cpu_list.push(Game.cpu.getUsed()) }
         /* 中心点依赖建筑 - 正常情况下8级不应该发生触发*/
         if (Memory.RoomControlData[this.name].center.length == 2 && !this.memory.StructureIdData.NtowerID) {
             let centerlist = Memory.RoomControlData[this.name].center
@@ -123,13 +100,11 @@ export default class RoomCoreInitExtension extends Room {
                     if (getDistance(NTower.pos, position) < 7) this.memory.StructureIdData.NtowerID = NTower.id
             }
         }
-        if (cpu_test) { cpu_list.push(Game.cpu.getUsed()) }
         /* 资源矿记忆更新-不进行重复刷新*/
         if (!StructureData.mineralID) {
             let Mineral_ = this.find(FIND_MINERALS)
             if (Mineral_.length == 1) this.memory.StructureIdData.mineralID = Mineral_[0].id
         }
-        if (cpu_test) { cpu_list.push(Game.cpu.getUsed()) }
         /* 能量矿记忆更新-不进行重复刷新*/
         if (!StructureData.source) StructureData.source = []
         if (StructureData.source.length <= 0) {
@@ -138,11 +113,10 @@ export default class RoomCoreInitExtension extends Room {
             allSource.forEach(sou => sourceIDs.push(sou.id))
             StructureData.source = sourceIDs
         }
-        if (cpu_test) { cpu_list.push(Game.cpu.getUsed()) }
         /* 升级Link记忆更新 -不进行重复刷新*/
         if (!StructureData.source_links) StructureData.source_links = []
         if (level >= 6 && !StructureData.upgrade_link) {
-            if (Game.time % tickratio * 4 == 0) {
+            if ((Game.time - global.Gtime[this.name]) % tickratio * 4 == 0) {
                 let upgrade_link = this.controller.pos.getRangedStructure([STRUCTURE_LINK], 3, 0) as StructureLink[]
                 if (upgrade_link.length >= 1)
                     for (let ul of upgrade_link) {
@@ -156,7 +130,6 @@ export default class RoomCoreInitExtension extends Room {
         if (!StructureData.comsume_link) {
             StructureData.comsume_link = []
         }
-        if (cpu_test) { cpu_list.push(Game.cpu.getUsed()) }
         /* 矿点link记忆更新 */
         if (level == 5 || level == 6) {
             if (level == 5) {
@@ -205,12 +178,10 @@ export default class RoomCoreInitExtension extends Room {
                 StructureData.source_links = temp_link_list
             }
         }
-        if (cpu_test) { cpu_list.push(Game.cpu.getUsed()) }
         /* 仓库记忆更新 */
         if (level >= 4 && !this.memory.StructureIdData.storageID) {
             if (this.storage) this.memory.StructureIdData.storageID = this.storage.id
         }
-        if (cpu_test) { cpu_list.push(Game.cpu.getUsed()) }
         /* 通过仓库抓取中央link */
         if (level >= 5 && !StructureData.center_link && this.storage) {
             let storage_ = this.storage as StructureStorage
@@ -219,11 +190,8 @@ export default class RoomCoreInitExtension extends Room {
                 if (center_links.length >= 1) StructureData.center_link = center_links[0].id
             }
         }
-        if (cpu_test) {
-            cpu_list.push(Game.cpu.getUsed())
-        }
         /* 防御塔记忆更新 */
-        if (Game.time % tickratio * 25 == 0 && this.controller.level >= 3) {
+        if ((Game.time - global.Gtime[this.name]) % tickratio * 25 == 0 && this.controller.level >= 3) {
             if (!this.memory.StructureIdData.AtowerID) this.memory.StructureIdData.AtowerID = []
             this.memory.StructureIdData.AtowerID as string[]
             var ATowers = this.getStructure(STRUCTURE_TOWER) as StructureTower[]
@@ -235,22 +203,17 @@ export default class RoomCoreInitExtension extends Room {
                     }
             }
         }
-        if (cpu_test) {
-            cpu_list.push(Game.cpu.getUsed())
-        }
         /* 终端识别  -不进行重复刷新*/
         if (!this.memory.StructureIdData.terminalID && level >= 6) {
             if (this.terminal) this.memory.StructureIdData.terminalID = this.terminal.id
         }
-        if (cpu_test) { cpu_list.push(Game.cpu.getUsed()) }
         /* 提取器识别 */
         if (!this.memory.StructureIdData.extractID && this.controller.level >= 5) {
             var extract = this.getStructure(STRUCTURE_EXTRACTOR)
             if (extract.length == 1) this.memory.StructureIdData.extractID = extract[0].id
         }
-        if (cpu_test) { cpu_list.push(Game.cpu.getUsed()) }
         /* 实验室识别 */
-        if (Game.time % tickratio * 34 == 0) {
+        if ((Game.time - global.Gtime[this.name]) % tickratio * 34 == 0) {
             var ALabs = this.getStructure(STRUCTURE_LAB) as StructureLab[]
             if (ALabs.length >= 1) {
                 if (!this.memory.StructureIdData.labs) this.memory.StructureIdData.labs = []
@@ -278,8 +241,7 @@ export default class RoomCoreInitExtension extends Room {
             }
 
         }
-        if (Game.time % tickratio * 10) {
-            if (cpu_test) { cpu_list.push(Game.cpu.getUsed()) }
+        if ((Game.time - global.Gtime[this.name]) % tickratio * 10) {
             /* 观察器识别 */
             if (!this.memory.StructureIdData.ObserverID && this.controller.level >= 8) {
                 var observer_ = this.getStructure(STRUCTURE_OBSERVER)
@@ -287,14 +249,12 @@ export default class RoomCoreInitExtension extends Room {
                     this.memory.StructureIdData.ObserverID = observer_[0].id
                 }
             }
-            if (cpu_test) { cpu_list.push(Game.cpu.getUsed()) }
             /* PowerSpawn识别 */
             if (!this.memory.StructureIdData.PowerSpawnID && this.controller.level >= 8) {
                 var powerSpawn = this.getStructure(STRUCTURE_POWER_SPAWN)
                 if (powerSpawn.length > 0)
                     this.memory.StructureIdData.PowerSpawnID = powerSpawn[0].id
             }
-            if (cpu_test) { cpu_list.push(Game.cpu.getUsed()) }
             /* 核弹识别 */
             if (!this.memory.StructureIdData.NukerID && this.controller.level >= 8) {
                 var nuke_ = this.getStructure(STRUCTURE_NUKER)
@@ -302,7 +262,6 @@ export default class RoomCoreInitExtension extends Room {
                     this.memory.StructureIdData.NukerID = nuke_[0].id
                 }
             }
-            if (cpu_test) { cpu_list.push(Game.cpu.getUsed()) }
             /* 工厂识别 */
             if (!this.memory.StructureIdData.FactoryId && this.controller.level >= 8) {
                 var factory_ = this.getStructure(STRUCTURE_FACTORY)
@@ -311,7 +270,6 @@ export default class RoomCoreInitExtension extends Room {
                 }
             }
         }
-        if (cpu_test) { cpu_list.push(Game.cpu.getUsed()) }
         // harvestData 数据更新
         if (!this.memory.harvestData) {
             this.memory.harvestData = {}
@@ -319,9 +277,8 @@ export default class RoomCoreInitExtension extends Room {
                 this.memory.harvestData[source_] = {}
             }
         }
-        if (cpu_test) { cpu_list.push(Game.cpu.getUsed()) }
         let carry_num = 0;
-        if (Game.time % tickratio * 5 == 0) {
+        if ((Game.time - global.Gtime[this.name]) % tickratio * 5 == 0) {
             for (let id in this.memory.harvestData) {
                 if (!this.memory.harvestData[id].containerID) {
                     let source = Game.getObjectById(id as Id<Source>) as Source
@@ -346,16 +303,6 @@ export default class RoomCoreInitExtension extends Room {
             }
         }
         this.memory.SpawnConfig.carry.num = carry_num;
-        if (cpu_test) {
-            cpu_list.push(Game.cpu.getUsed())
-            let cpu_text = '';
-            for (let i in cpu_list) {
-                if (Number(i) > 0) {
-                    cpu_text += "模块" + i + "[" + (cpu_list[i] - cpu_list[Number(i) - 1]).toFixed(3) + "]"
-                }
-            }
-            console.log(this.name, cpu_text)
-        }
     }
 
     /**
@@ -397,7 +344,7 @@ export default class RoomCoreInitExtension extends Room {
      * 房间自适应动态配置
      */
     public RoomGlobalDynamicconfig(): void {
-        if (Game.time % 50 != 0) { return }
+        if ((Game.time - global.Gtime[this.name]) % 50 != 0) { return }
         let level = this.controller.level
         if (this.memory.DynamicConfig.Dynamicupgrade && level < 8) {
             let room_energy = 0;

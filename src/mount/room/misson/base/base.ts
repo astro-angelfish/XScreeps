@@ -7,8 +7,14 @@ import { Colorful, compare, generateID, isInArray } from "@/utils"
 export default class RoomMissonFrameExtension extends Room {
     /* 任务管理器 */
     public MissionManager(): void {
-        var cpu_test = true
+        var cpu_test = false
+        // switch (Game.shard.name) {
+        //     case 'shard3':
+        //         cpu_test = true
+        //         break;
+        // }
         let cpu_list = [];
+        // if (cpu_test) { cpu_list.push(Game.cpu.getUsed()) }
         // 冷却监测
         this.CoolDownCaculator()
         // 超时监测
@@ -21,6 +27,7 @@ export default class RoomMissonFrameExtension extends Room {
         this.Update_Lab()
         /* PC任务管理器 */
         this.PowerCreep_TaskManager()
+        // if (cpu_test) { cpu_list.push(Game.cpu.getUsed()) }
 
         /* [全自动] 任务挂载区域 需要按照任务重要程度进行排序 */
         this.Spawn_Feed()    // 虫卵填充任务 
@@ -44,7 +51,7 @@ export default class RoomMissonFrameExtension extends Room {
         /* 基本任务监控区域 */
         for (var index in this.memory.Misson) {
             for (var misson of this.memory.Misson[index]) {
-                // var a = Game.cpu.getUsed()
+                var a = Game.cpu.getUsed()
                 switch (misson.name) {
                     case "物流运输": this.Task_Carry(misson); break;
                     case "位面运输": this.Task_Carrysenior(misson); break;
@@ -70,15 +77,36 @@ export default class RoomMissonFrameExtension extends Room {
                     case '扩张援建': this.Task_Expand(misson); break;
                     case '智能战争': this.Task_Aiwar(misson); break;
                     case '智能哨兵': this.Task_Aisentry(misson); break;
-                    case '踩工地':this.Task_CConstruction(misson); break;
+                    case '踩工地': this.Task_CConstruction(misson); break;
                 }
                 // return
-                // var b = Game.cpu.getUsed()
-                // if (b - a > 0.005) {
-                //     console.log(misson.name, b - a, this.name)
-                // }
+                if (cpu_test) {
+                    var b = Game.cpu.getUsed()
+                    if (b - a > 0.005) {
+                        console.log(misson.name, b - a, this.name)
+                    }
+                }
             }
         }
+        // if (cpu_test) {
+        //     cpu_list.push(Game.cpu.getUsed())
+        //     console.log(
+        //         // room.name,
+        //         // '初始化' + (cpu_list[1] - cpu_list[0]).toFixed(3),
+        //         // '房间布局' + (cpu_list[2] - cpu_list[1]).toFixed(3),
+        //         // '孵化管理' + (cpu_list[3] - cpu_list[2]).toFixed(3),
+
+        //         '任务管理' + (cpu_list[4] - cpu_list[3]).toFixed(3),
+        //         // '孵化爬虫' + (cpu_list[5] - cpu_list[4]).toFixed(3),
+        //         // '防御塔' + (cpu_list[6] - cpu_list[5]).toFixed(3),
+
+        //         'T-L-F' + (cpu_list[7] - cpu_list[6]).toFixed(3),
+        //         // '资源调度' + (cpu_list[8] - cpu_list[7]).toFixed(3),
+        //         // '房间可视' + (cpu_list[9] - cpu_list[8]).toFixed(3),
+
+        //         '总计' + (cpu_list[10] - cpu_list[0]).toFixed(3),
+        //     )
+        // }
     }
 
     /* 添加任务 */
@@ -416,6 +444,7 @@ export default class RoomMissonFrameExtension extends Room {
         var terminal = this.terminal as StructureTerminal
         var storage = this.storage as StructureStorage
         let return_state = true;
+        let _DispatchNum = DispatchNum(this.name);
         for (var i in misson.LabBind) {
             var All_i_Num: number
             if (tankType == 'complex') {
@@ -434,7 +463,7 @@ export default class RoomMissonFrameExtension extends Room {
             All_i_Num = tank_.store.getUsedCapacity(misson.LabBind[i] as ResourceConstant)
             if (All_i_Num < 4100) {
                 /* 资源调度 */
-                if (DispatchNum(this.name) <= 0 && this.MissionNum('Structure', '资源购买') <= 0 && !checkSend(this.name, misson.LabBind[i] as ResourceConstant)) {
+                if (_DispatchNum <= 0 && this.MissionNum('Structure', '资源购买') <= 0 && !checkSend(this.name, misson.LabBind[i] as ResourceConstant)) {
                     console.log(Colorful(`[资源调度] 房间${this.name}没有足够的资源[${misson.LabBind[i] as ResourceConstant}],将执行资源调度!`, 'yellow'))
                     let dispatchTask: RDData = {
                         sourceRoom: this.name,
@@ -468,8 +497,8 @@ export default class RoomMissonFrameExtension extends Room {
                 continue;
             }
             if (disLab.store.getUsedCapacity(misson.LabBind[i] as ResourceConstant) < 1800 && this.Check_Carry('transport', tank_.pos, disLab.pos, misson.LabBind[i] as ResourceConstant)) {
-                if (All_i_Num < 1500)
-                    return false
+                if (All_i_Num < 1500) continue;
+
                 var roleData: BindData = {}
                 roleData[role] = { num: 1, bind: [] }
                 var carryTask = this.public_Carry(roleData, 45, this.name, tank_.pos.x, tank_.pos.y, this.name, disLab.pos.x, disLab.pos.y, misson.LabBind[i] as ResourceConstant, 2000)

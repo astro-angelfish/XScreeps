@@ -118,8 +118,7 @@ export default class RoomCoreEcosphereExtension extends Room {
         /* 自动重建 */
         if (Game.shard.name == 'shard3') { if (Game.time % 50) return }
         else { if (Game.time % 10) return }
-        if (this.memory.state == 'peace' || Game.time % 100 == 0) {
-
+        if (this.memory.state == 'peace') {
             /* cpu过少就不进行自动重建 */
             if (Game.cpu.bucket < 4000) return
             /* 仅仅在和平情况下才会打开自动重建 */
@@ -142,6 +141,8 @@ export default class RoomCoreEcosphereExtension extends Room {
         }
         else if (this.memory.state == 'war' || Game.time % 200 == 0) {
             /* 战争状态 */
+            /* cpu过少就不进行自动重建 */
+            if (Game.cpu.bucket < 4000) return
             // 仅检测城墙、spawn、仓库、终端、实验室的数量，检测到缺损就自动开启安全模式
             let currentNum = this.find(FIND_MY_STRUCTURES, {
                 filter: (structure) => {
