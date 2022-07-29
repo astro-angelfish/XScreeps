@@ -168,7 +168,7 @@ export default class CreepMissonTransportExtension extends Creep {
                             var target = targets[0]
                             var capacity = this.store[Data.rType]
                             /* 如果送货正确，就减少房间主任务中的num，num低于0代表任务完成 */
-                            if (this.transfer(target, Data.rType)) {
+                            if (this.transfer(target, Data.rType) == OK) {
                                 var thisMisson = belongRoom.GainMission(this.memory.MissionData.id)
                                 if (thisMisson) {
                                     thisMisson.Data.num -= capacity

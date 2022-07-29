@@ -230,8 +230,21 @@ export class factoryExtension extends StructureFactory {
                 }
             }
             // 检测高级商品是否满足
+            LoopJ:
             for (let h of high) {
                 if (storage_.store.getUsedCapacity(h) < this.room.memory.productData.baseList[h].num - 300) {
+                    if (!COMMODITIES[h]) continue;
+                    if (COMMODITIES[h].level > 0) {
+                        let frequency_number = Math.ceil(1000 / COMMODITIES[h])
+                        for (var i in COMMODITIES[h].components) {
+                            let minList = ['energy', 'L', 'O', 'H', 'U', 'K', 'Z', 'X', 'G']
+                            if (!isInArray(minList, i) &&
+                                storage_.store.getUsedCapacity(i as ResourceConstant) < COMMODITIES[h].components[i] &&
+                                ResourceCanDispatch(this.room, i as ResourceConstant, COMMODITIES[h].components[i] * frequency_number) == 'no') {
+                                continue LoopJ
+                            }
+                        }
+                    }
                     console.log(`[factory] 房间${this.room.name}转入base生产模式,目标商品为${h}`)
                     this.room.memory.productData.state = 'base'
                     this.room.memory.productData.producing = { com: h, num: this.room.memory.productData.baseList[h].num }
