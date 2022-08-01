@@ -57,6 +57,26 @@ export default class RoomMissonVindicateExtension extends Room {
             }
         }
     }
+    public Task_HelpRepair(mission: MissionModel): void {
+        let level = mission.Data.level
+        if (!level) mission.Data.level = 'T0'
+        if (level == 'T3') {
+            global.MSB[mission.id] = { 'repair-work': GenerateAbility(30, 10, 10, 0, 0, 0, 0, 0) }
+        }
+        else if (level == 'T2') {
+            global.MSB[mission.id] = { 'repair-work': GenerateAbility(6, 4, 10, 0, 0, 0, 0, 0) }
+        }
+        else if (level == 'T1') {
+            global.MSB[mission.id] = { 'repair-work': GenerateAbility(20, 10, 15, 0, 0, 0, 0, 0) }
+        }
+        else if (level == 'T0') {
+            // 默认配置
+        }
+        if ((Game.time - global.Gtime[this.name]) % 8) return
+        if (mission.LabBind) {
+            if (!this.Check_Lab(mission, 'transport', 'complex')) { }
+        }
+    }
 
     /* 急速冲级 */
     public Task_Quick_upgrade(mission: MissionModel): void {

@@ -235,15 +235,26 @@ export function ResourceLimitUpdate(thisRoom: Room): void {
         // 基础合成物品也做一定限制
         // global.ResourceLimit[thisRoom.name][b] = Math.ceil(thisRoom.memory.productData.baseList[b].num / 2)
         // 所有基础合成物品的底物也做一定限制
+        let highlist = [
+            'composite', 'crystal', 'liquid'
+            , 'switch', 'transistor', 'microchip', 'circuit', 'device'
+            , 'phlegm', 'tissue', 'muscle', 'organoid', 'organism'
+            , 'tube', 'fixtures', 'frame', 'hydraulics', 'machine'
+            , 'concentrate', 'extract', 'spirit', 'emanation', 'essence'
+        ];
         LoopC:
         for (let row in COMMODITIES[b].components) {
-            if (isInArray(['L', 'G', 'H', 'O', 'Z', 'U', 'Z'], row)) global.ResourceLimit[thisRoom.name][row] = 15000
-            else if (row == 'energy') continue LoopC
+            if (isInArray(['L', 'G', 'H', 'O', 'Z', 'U', 'Z'], row)) {
+                global.ResourceLimit[thisRoom.name][row] = 15000
+            } else if (isInArray(highlist, row)) {
+                global.ResourceLimit[thisRoom.name][row] = 0;
+            } else if (row == 'energy') continue LoopC
             else {
-                if (!isInArray(Object.keys(thisRoom.memory.productData.baseList), row)) {
-                    global.ResourceLimit[thisRoom.name][row] = 5000
-                }
-                else continue LoopC
+                global.ResourceLimit[thisRoom.name][row] = 5000
+                // if (!isInArray(Object.keys(thisRoom.memory.productData.baseList), row)) {
+                //     global.ResourceLimit[thisRoom.name][row] = 5000
+                // }
+                // else continue LoopC
             }
         }
     }

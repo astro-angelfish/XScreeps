@@ -251,6 +251,9 @@ export default class CreepMissonActionExtension extends Creep {
         }
     }
 
+
+
+
     // C计划
     public handle_planC(): void {
         let mission = this.memory.MissionData
@@ -771,8 +774,9 @@ export default class CreepMissonActionExtension extends Creep {
             this.workstate('energy')
             if (this.memory.working) {
                 if (this.hits < this.hitsMax) {
-                    this.heal(this)
+                    this.optTower('heal', this, true)
                 }
+                if (!this.pos.inRangeTo(this.room.controller, 3)) this.goTo(this.room.controller.pos, 3)
                 this.upgrade_()
             }
             else {
@@ -780,6 +784,116 @@ export default class CreepMissonActionExtension extends Creep {
             }
         }
     }
+
+    /*紧急墙体*/
+    public handle_helpRepair(): void {
+        let missionData = this.memory.MissionData
+        let id = missionData.id
+        let data = missionData.Data
+        let belongRoom = Game.rooms[this.memory.belong];
+        if (!id) return
+        this.workstate('energy')
+        /* boost检查 */
+        // var a = Game.cpu.getUsed();
+        if (this.room.name == this.memory.belong && Game.shard.name == this.memory.shard) {
+            switch (missionData.Data.level) {
+                case 'T3':
+                    if (!this.BoostCheck(['work', 'move', 'carry'])) return
+                    break;
+                default:
+                    if (!this.BoostCheck(['work'])) return
+                    break;
+            }
+            // if (!this.BoostCheck(['move', 'work', 'heal', 'tough', 'carry'])) return
+            // if (this.store.getUsedCapacity('energy') <= 0) {
+            //     let stroge_ = this.room.storage as StructureStorage
+            //     if (stroge_) {
+            //         this.withdraw_(stroge_, 'energy')
+            //         return
+            //     }
+            // }
+        }
+        // if (mission.LabBind && !this.memory.boostState) {
+        //     // if (!storage_) return   // 如果是boost的，没有仓库就不刷了
+        //     // console.log('检查boost',this.name)
+        //     // 需要boost检查，必要情况下可以不检查
+        //     let boo = false
+        //     for (var ids in mission.LabBind) {
+        //         var lab_ = Game.getObjectById(ids as Id<StructureLab>) as StructureLab
+        //         if (!lab_ || !lab_.mineralType || lab_.store.getUsedCapacity(lab_.mineralType) < 500)
+        //             boo = true
+        //     }
+        //     if (!boo) {
+
+        //     }
+        // }
+        if (belongRoom && belongRoom.memory.state == 'war') {
+            if (this.hitsMax - this.hits > 500) this.optTower('heal', this)
+        }
+        if ((this.room.name != data.disRoom || Game.shard.name != data.shard)) {
+            // if (this.hits < this.hitsMax) {
+            //     this.heal(this)
+            // }
+            if (this.memory.targetID) delete this.memory.targetID
+            this.arriveTo(new RoomPosition(24, 24, data.disRoom), 23, data.shard, data.shardData ? data.shardData : null)
+        }
+        else {
+            // this.memory.swith = true
+            // console.log('工人信息', this.memory.working)
+            if (this.memory.working) {
+                if (this.hits < this.hitsMax) {
+                    this.optTower('heal', this, true)
+                }
+                if (this.memory.targetID) {
+                    this.say("🛠️")
+                    var target_ = Game.getObjectById(this.memory.targetID as Id<StructureRampart>) as StructureRampart
+                    if (!target_) { delete this.memory.targetID; return }
+                    this.repair_(target_, 400)
+                    if (this.room.memory.state == 'war') {
+                        let hostileCreep = this.pos.findInRange(FIND_HOSTILE_CREEPS, 3, {
+                            filter: (creep) => {
+                                return creep.getActiveBodyparts('ranged_attack') > 0
+                            }
+                        })
+                        if (hostileCreep.length > 0) this.Flee(hostileCreep[0].pos, 4)
+                    }
+                }
+                else {
+                    if (this.room.memory.state == 'peace') {
+                        var construction = this.pos.findClosestByRange(FIND_MY_CONSTRUCTION_SITES)
+                        if (construction) {
+                            this.build_(construction)
+                            return;
+                        }
+                    }
+                    var leastRam = this.room.getListHitsleast([STRUCTURE_RAMPART, STRUCTURE_WALL], 3)
+                    if (!leastRam) return
+                    this.memory.targetID = leastRam.id
+                }
+                if (this.memory.containerID) {
+                    delete this.memory.containerID
+                }
+            }
+            else {
+                /* 寻找hits最小的墙 */
+                // var leastRam = this.room.getListHitsleast([STRUCTURE_RAMPART, STRUCTURE_WALL], 3)
+                // if (!leastRam) return
+                if(!Game.rooms[data.disRoom])console.log('错误的房间信息')
+                if (this.memory.targetID) delete this.memory.targetID
+                if (Game.rooms[data.disRoom].terminal && Game.rooms[data.disRoom].terminal.store.getUsedCapacity('energy') >= 60000) {
+                    var tank_ = Game.rooms[data.disRoom].terminal as Structure;
+                } else if (Game.rooms[data.disRoom].storage && Game.rooms[data.disRoom].storage.store.getUsedCapacity('energy') >= this.store.getCapacity()) {
+                    var tank_ = Game.rooms[data.disRoom].storage as Structure;
+                }
+                // console.log('取货目标',tank_.id)
+                this.withdraw_(tank_, 'energy')
+            }
+        }
+
+        // var b = Game.cpu.getUsed();
+        // console.log(this.name, '刷墙', this.memory.working, b - a)
+    }
+
 
     // 房间签名
     public handle_sign(): void {

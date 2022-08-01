@@ -92,6 +92,8 @@ export default class CreepMissonBaseExtension extends Creep {
                 case '控制攻击': { this.handle_control(); break }
                 case '紧急援建': { this.handle_helpBuild(); break }
                 case '紧急升级': { this.handle_helpUpgrade(); break }
+                case '紧急墙体': { this.handle_helpRepair(); break; }
+
                 case '房间签名': { this.handle_sign(); break }
                 case '攻防一体': { this.handle_aio(); break }
                 case '踩工地': { this.handle_cconstruction(); break }

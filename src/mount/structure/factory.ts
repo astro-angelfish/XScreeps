@@ -235,13 +235,19 @@ export class factoryExtension extends StructureFactory {
                 if (storage_.store.getUsedCapacity(h) < this.room.memory.productData.baseList[h].num - 300) {
                     if (!COMMODITIES[h]) continue;
                     if (COMMODITIES[h].level > 0) {
-                        let frequency_number = Math.ceil(1000 / COMMODITIES[h])
+                        let frequency_number = Math.ceil(1000 / COMMODITIES[h].cooldown)
                         for (var i in COMMODITIES[h].components) {
                             let minList = ['energy', 'L', 'O', 'H', 'U', 'K', 'Z', 'X', 'G']
-                            if (!isInArray(minList, i) &&
-                                storage_.store.getUsedCapacity(i as ResourceConstant) < COMMODITIES[h].components[i] &&
-                                ResourceCanDispatch(this.room, i as ResourceConstant, COMMODITIES[h].components[i] * frequency_number) == 'no') {
-                                continue LoopJ
+                            let storage_number = storage_.store.getUsedCapacity(i as ResourceConstant)
+                            let _need_number = COMMODITIES[h].components[i] * frequency_number;
+                            if (!isInArray(minList, i)) {
+                                if (storage_number > _need_number) {/*仓库有足够资源的情况下监测下一个资源*/
+                                    continue;
+                                }
+                                if (ResourceCanDispatch(this.room, i as ResourceConstant, _need_number) == 'no') {
+                                    // console.log(this.room.name, h, i, '监测调度错误', _need_number)
+                                    continue LoopJ
+                                }
                             }
                         }
                     }
@@ -282,15 +288,19 @@ export class factoryExtension extends StructureFactory {
                 else {
                     // 其他资源的话，看看能不能调度
                     this.room.memory.productData.balanceData[i] = { num: COMMODITIES[disCom].components[i] * 10, fill: true }
-                    if (this.room.RoleMissionNum('manage', '物流运输') <= 0)
+                    if (this.room.RoleMissionNum('manage', '物流运输') <= 0) {
+                        let _number_t = 100;
+                        if (COMMODITIES[disCom].level > 0) {
+                            _number_t = Math.ceil(1000 / COMMODITIES[disCom].cooldown)
+                        }
                         if (this.store.getUsedCapacity(i as ResourceConstant) + storage_.store.getUsedCapacity(i as ResourceConstant) < COMMODITIES[disCom].components[i]) {
-                            let identify = ResourceCanDispatch(this.room, i as ResourceConstant, COMMODITIES[disCom].components[i] * 100)
+                            let identify = ResourceCanDispatch(this.room, i as ResourceConstant, COMMODITIES[disCom].components[i] * _number_t)
                             if (identify == 'can') {
                                 console.log(`[dispatch]<factory> 房间${this.room.name}将进行资源为${i}的资源调度!`)
                                 let dispatchTask: RDData = {
                                     sourceRoom: this.room.name,
                                     rType: i as ResourceConstant,
-                                    num: COMMODITIES[disCom].components[i] * 100,
+                                    num: COMMODITIES[disCom].components[i] * _number_t,
                                     delayTick: 200,
                                     conditionTick: 35,
                                     buy: false,
@@ -304,6 +314,8 @@ export class factoryExtension extends StructureFactory {
                                 return
                             }
                         }
+                    }
+
                 }
             }
             // 合成

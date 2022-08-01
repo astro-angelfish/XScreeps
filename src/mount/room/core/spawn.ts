@@ -9,9 +9,9 @@ export default class RoomCoreSpawnExtension extends Room {
 
     /* 孵化总函数 */
     public SpawnMain(): void {
-        if ((Game.time - global.Gtime[this.name]) % 6) return;
         this.SpawnConfigInit()/*初始化常驻爬的配置*/
         this.SpawnConfigModify()/*处理常驻爬的部件信息*/
+        if ((Game.time - global.Gtime[this.name]) % 6) return;
         this.SpawnManager()/*检测常驻爬的孵化进程*/
         this.Economy()/**/
     }
@@ -50,13 +50,14 @@ export default class RoomCoreSpawnExtension extends Room {
             }
         }
         /* 数量信息二次加工 */
-        if (this.controller.level != this.memory.originLevel)
+        if (this.controller.level != this.memory.originLevel) {
             for (let role in this.memory.SpawnConfig) {
                 var role_ = this.memory.SpawnConfig[role]
                 if (!role_.manual && RoleLevelData[role] && RoleLevelData[role][this.controller.level]) {
                     role_.num = RoleLevelData[role][this.controller.level].num
                 }
             }
+        }
     }
 
     /* 常驻爬虫孵化管理器-常驻爬的补充模块 (任务爬虫是另外一个孵化函数) */

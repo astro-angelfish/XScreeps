@@ -61,6 +61,7 @@ export default class RoomMissonFrameExtension extends Room {
                     case '紧急援建': this.Task_HelpBuild(misson); break;
                     case '紧急升级': this.Task_HelpUpgrade(misson); break;
                     case '紧急支援': this.Task_HelpDefend(misson); break;
+                    case "紧急墙体": this.Task_HelpRepair(misson); break;
                     case '资源合成': this.Task_Compound(misson); break;
                     case '攻防一体': this.Task_aio(misson); break;
                     case '外矿开采': this.Task_OutMine(misson); break;
@@ -567,6 +568,11 @@ export default class RoomMissonFrameExtension extends Room {
                 basic_num = 8000;
                 if (isInArray(t3, rType)) { basic_num = 8000 }
                 else if (isInArray(['X', 'L', 'Z', 'U', 'K', 'O', 'H', 'ops'], rType)) { basic_num = 15000 }
+                else if (isInArray(['composite', 'crystal', 'liquid'
+                    , 'switch', 'transistor', 'microchip', 'circuit', 'device'
+                    , 'phlegm', 'tissue', 'muscle', 'organoid', 'organism'
+                    , 'tube', 'fixtures', 'frame', 'hydraulics', 'machine'
+                    , 'concentrate', 'extract', 'spirit', 'emanation', 'essence'], rType)) { basic_num = 0 }
 
                 if (global.ResourceLimit[Roomname]) {
                     if (global.ResourceLimit[Roomname][rType]) {

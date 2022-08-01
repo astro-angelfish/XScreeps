@@ -440,6 +440,11 @@ export default {
         build(roomName: string, disRoom: string, shard: shardName = Game.shard.name as shardName, num: number, interval: number, defend: boolean = false, shardData?: shardRoomData[]): string {
             var thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[support] 不存在房间${roomName}`
+            for (var i of thisRoom.memory.Misson['Creep']) {
+                if (i.name == '紧急援建' && i.Data.disRoom == disRoom && i.Data.shard == shard) {
+                    return Colorful(`[support] 房间${roomName}紧急援建任务存在重复任务`, 'green')
+                }
+            }
             let task = thisRoom.public_helpBuild(disRoom, num, shard, interval, defend)
             if (task) {
                 if (shardData) task.Data.shardData = shardData
@@ -462,6 +467,11 @@ export default {
         upgrade(roomName: string, disRoom: string, shard: shardName = Game.shard.name as shardName, num: number, interval: number, defend: boolean = false, shardData?: shardRoomData[]): string {
             var thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[support] 不存在房间${roomName}`
+            for (var i of thisRoom.memory.Misson['Creep']) {
+                if (i.name == '紧急升级' && i.Data.disRoom == disRoom && i.Data.shard == shard) {
+                    return Colorful(`[support] 房间${roomName}紧急升级存在重复任务`, 'green')
+                }
+            }
             let task = thisRoom.public_helpUpgrade(disRoom, num, shard, interval, defend)
             if (task) {
                 if (shardData) task.Data.shardData = shardData
@@ -480,6 +490,33 @@ export default {
                 }
             }
             return Colorful(`[support] 房间${roomName}紧急升级任务失败`, 'red')
+        },
+        repair(roomName: string, disRoom: string, shard: shardName = Game.shard.name as shardName, num: number, interval: number, defend: boolean = false, shardData?: shardRoomData[]): string {
+            var thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[support] 不存在房间${roomName}`
+            for (var i of thisRoom.memory.Misson['Creep']) {
+                if (i.name == '紧急墙体' && i.Data.disRoom == disRoom && i.Data.shard == shard) {
+                    return Colorful(`[support] 房间${roomName}紧急墙体存在重复任务`, 'green')
+                }
+            }
+            let task = thisRoom.public_helpRepair(disRoom, num, shard, interval, 'XLH2O', 'T3')
+            if (task) {
+                if (shardData) task.Data.shardData = shardData
+                if (thisRoom.AddMission(task))
+                    return Colorful(`[support] 房间${roomName}挂载紧急墙体任务成功 -> ${disRoom}`, 'green')
+            }
+            return Colorful(`[support] 房间${roomName}挂载紧急墙体任务失败 -> ${disRoom}`, 'red')
+        },
+        Crepair(roomName: string, disRoom: string, shard: shardName = Game.shard.name as shardName): string {
+            var thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[support] 不存在房间${roomName}`
+            for (var i of thisRoom.memory.Misson['Creep']) {
+                if (i.name == '紧急墙体' && i.Data.disRoom == disRoom && i.Data.shard == shard) {
+                    if (thisRoom.DeleteMission(i.id))
+                        return Colorful(`[support] 房间${roomName}紧急墙体任务成功`, 'green')
+                }
+            }
+            return Colorful(`[support] 房间${roomName}紧急墙体任务失败`, 'red')
         },
     },
     /* 核弹相关 */

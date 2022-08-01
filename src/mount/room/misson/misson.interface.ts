@@ -43,6 +43,7 @@ interface Room {
     Task_HelpDefend(mission: MissionModel): void
     Task_HelpBuild(mission: MissionModel): void
     Task_HelpUpgrade(mission: MissionModel): void
+    Task_HelpRepair(mission: MissionModel): void
     Task_Compound(misson: MissionModel): void
     Task_aio(mission: MissionModel): void
     Task_CConstruction(mission: MissionModel): void

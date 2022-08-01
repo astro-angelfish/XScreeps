@@ -12,6 +12,7 @@ interface Room {
     public_control(disRoom: string, shard: shardName, interval: number): MissionModel
     public_helpBuild(disRoom: string, num: number, shard?: string, time?: number, defend?: boolean): MissionModel
     public_helpUpgrade(disRoom: string, num: number, shard?: string, time?: number, defend?: boolean): MissionModel
+    public_helpRepair(disRoom: string, num: number, shard?: string, time?: number, boostType?: ResourceConstant,level?: 'T0' | 'T1' | 'T2' | 'T3' | 'T4'): MissionModel
     public_Sign(disRoom: string, shard: string, str: string): MissionModel
     public_Send(disRoom: string, rType: ResourceConstant, num: number): MissionModel
     public_Buy(res: ResourceConstant, num: number, range: number, max?: number): MissionModel

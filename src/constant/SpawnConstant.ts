@@ -39,6 +39,7 @@ export const RoleData: SpawnConstantData = {
     'claim-attack': { num: 0, ability: [0, 0, 15, 0, 0, 0, 15, 0], level: 10, mark: "🟣" },
     'architect': { num: 0, ability: [15, 10, 10, 0, 0, 10, 0, 5], level: 10, mark: "🚒" },
     'upgrade-work': { num: 0, ability: [5, 20, 10, 0, 0, 10, 0, 5], level: 10, mark: "工人" },
+    'repair-work': { num: 0, ability: [1, 1, 1, 0, 0, 0, 0, 0], level: 8, mark: "🧱", must: true },     // 刷墙
     'scout': { num: 0, ability: [0, 0, 1, 0, 0, 0, 0, 0], level: 15, mark: '✏️' },
     'aio': { num: 0, ability: [0, 0, 25, 0, 10, 15, 0, 0], level: 10, mark: "⚡" },
     'saio': { num: 0, ability: [0, 0, 25, 0, 10, 15, 0, 0], level: 10, mark: "⚡" }, // 支援一体机

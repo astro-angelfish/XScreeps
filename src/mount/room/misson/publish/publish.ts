@@ -369,6 +369,45 @@ export default class RoomMissonPublish extends Room {
         return thisTask
     }
 
+    public public_helpRepair(disRoom: string, num: number, shard?: string, time?: number, boostType?: ResourceConstant, level?: 'T0' | 'T1' | 'T2' | 'T3' | 'T4'): MissionModel {
+        var thisTask: MissionModel = {
+            name: '紧急墙体',
+            range: 'Creep',
+            delayTick: 20000,
+            level: 10,
+            Data: {
+                disRoom: disRoom,
+                num: num,
+                shard: shard ? shard : Game.shard.name,
+                level: level
+            },
+            maxTime: 2,
+            reserve: true
+        }
+        thisTask.reserve = true
+        thisTask.CreepBind = { 'repair-work': { num: num, bind: [], interval: time ? time : 1000, MSB: (level ? true : false) } }
+        if (boostType) {
+            if (boostType == 'LH') {
+                thisTask.LabMessage = { 'LH': 'boost' }
+            }
+            else if (boostType == 'LH2O') {
+                thisTask.LabMessage = { 'LH2O': 'boost' }
+            }
+            else if (boostType == 'XLH2O') {
+                thisTask.LabMessage = { 'XLH2O': 'boost' }
+            }
+        }
+        switch (level) {
+            case 'T3':
+                thisTask.LabMessage = { 'XLH2O': 'boost', 'XKH2O': 'boost', 'XZHO2': 'boost' }
+                break;
+            case 'T4':
+                break;
+        }
+        thisTask.maxTime = 3
+        return thisTask
+    }
+
     public public_helpBuild(disRoom: string, num: number, shard?: string, time?: number, defend?: boolean): MissionModel {
         var thisTask: MissionModel = {
             name: '紧急援建',

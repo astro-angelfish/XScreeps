@@ -17,6 +17,7 @@ interface Creep{
     handle_control():void
     handle_helpBuild():void
     handle_helpUpgrade():void
+    handle_helpRepair():void
     handle_sign():void
     handle_aio():void
     handle_cconstruction():void

@@ -52,6 +52,16 @@ export default class RoomFunctionTowerExtension extends Room {
                     }
                 }
                 return
+            } else {
+                if (Game.flags[`${this.name}/repair`]) {
+                    var towers = this.find(FIND_MY_STRUCTURES, {
+                        filter: (stru) => {
+                            return stru.structureType == 'tower' && stru.id != this.memory.StructureIdData.NtowerID
+                        }
+                    }) as StructureTower[]
+                    var ramparts = this.getListHitsleast(['rampart', 'constructedWall'], 3)
+                    for (var t of towers) if (t.store.getUsedCapacity('energy') > 400) t.repair(ramparts)
+                }
             }
             /* 没有主动防御下的防御塔逻辑 */
             let enemys = this.find(FIND_HOSTILE_CREEPS, {
