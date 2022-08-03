@@ -517,6 +517,14 @@ export default class CreepMissonActionExtension extends Creep {
                 this.upgrade_()
             }
             else {
+                if (this.room.controller.level >= 8) {
+                    if (missionData.Data.shard == this.memory.shard) {
+                        let mission = Game.rooms[this.memory.belong].GainMission(id)
+                        if (!mission) return
+                        Game.rooms[this.memory.belong].DeleteMission(id)
+                        return;
+                    }
+                }
                 // 以withdraw开头的旗帜  例如： withdraw_0
                 let withdrawFlag = this.room.find(FIND_FLAGS, {
                     filter: (flag) => {
@@ -878,7 +886,7 @@ export default class CreepMissonActionExtension extends Creep {
                 /* 寻找hits最小的墙 */
                 // var leastRam = this.room.getListHitsleast([STRUCTURE_RAMPART, STRUCTURE_WALL], 3)
                 // if (!leastRam) return
-                if(!Game.rooms[data.disRoom])console.log('错误的房间信息')
+                if (!Game.rooms[data.disRoom]) console.log('错误的房间信息')
                 if (this.memory.targetID) delete this.memory.targetID
                 if (Game.rooms[data.disRoom].terminal && Game.rooms[data.disRoom].terminal.store.getUsedCapacity('energy') >= 60000) {
                     var tank_ = Game.rooms[data.disRoom].terminal as Structure;
