@@ -185,6 +185,15 @@ export default class RoomCoreSpawnExtension extends Room {
                 }
                 name = processName()
             }
+            else if (["Morningtea"].includes(thisSpawn.owner.username)) {
+                let int32 = Math.pow(2, 32)
+                let timestr = (Game.time + body.length * 3 + (body.includes(CLAIM) ? 599 : 1499)).toString().substr(-4)
+                let randomId = () => _.padLeft(Math.ceil(Math.random() * int32).toString(16).toLocaleUpperCase(), 6, "0")
+                let processName = function () {
+                    return randomId() + `/` + timestr
+                }
+                name = processName()
+            }
             else {
                 name = `【${mark}】${randomStr}|${timestr}`
             }

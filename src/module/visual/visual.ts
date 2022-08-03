@@ -1,4 +1,5 @@
 import { CompoundColor } from "@/constant/ResourceConstant"
+import { RoleData } from "@/constant/SpawnConstant"
 import { colors } from "@/utils"
 import { AppLifecycleCallbacks } from "../framework/types"
 import { unzipXandY } from "../fun/funtion"
@@ -93,7 +94,7 @@ export function showTowerData(): void {
         let tx = posXY[0]
         let ty = posXY[1]
         var Data = global.warData.tower[roomName].data[posData]
-        new RoomVisual(roomName).text(`${Data.attack}`, tx, ty - 0.1, { color: 'red', font: 0.3, align: 'center' })
+        new RoomVisual(roomName).text(`${Data.attack}`, tx, ty-0.1, { color: 'red', font: 0.3, align: 'center' })
         if (Data.avoid) {
           new RoomVisual(roomName).text(`${Data.avoid}`, tx, ty + 0.3, { color: 'yellow', font: 0.3, align: 'center' })
         }
@@ -261,6 +262,14 @@ function labelBar(visual: RoomVisual, x: number, y: number, labelSpace: number, 
   visual.text(content, x + labelSpace + 0.1 + w / 2, y - 0.05, { color, font: 0.5, align: 'center' })
 }
 
+
+function creepColor(visual: RoomVisual, creep: Creep) {
+  const x = creep.pos.x, y = creep.pos.y
+  const color = '#' + creep.name.substring(0, 6)
+  visual.circle(x, y, {radius: 0.55, stroke: color, strokeWidth: 0.1, fill: "", opacity: 1})
+  visual.text(RoleData[creep.memory.role].mark, x, y + 0.16, {font: 0.5, opacity: 1, align: "center"})
+}
+
 /**
  * 房间日常数据可视化
  * 瞬时cpu 平均cpu 房间状态 任务数 bucket等
@@ -358,6 +367,12 @@ export function processRoomDataVisual(room: Room): void {
         `${room.memory.RoomLabBind[i].rType}`,
         lab.pos.x, lab.pos.y,
         { color: CompoundColor[room.memory.RoomLabBind[i].rType as keyof typeof CompoundColor], font: 0.3, align: 'center', strokeWidth: 0.2 })
+    }
+  }
+
+  if (["Morningtea"].includes(room.controller.owner.username)) {
+    for (const creep of room.find(FIND_MY_CREEPS)) {
+      creepColor(visual, creep)
     }
   }
 }
