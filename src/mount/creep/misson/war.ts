@@ -133,6 +133,18 @@ export default class CreepMissonWarExtension extends Creep {
             this.attack(nearCreep)
             this.optTower('attack', nearCreep)
         }
+    
+        // var nearCreep_A = this.pos.findInRange(FIND_HOSTILE_CREEPS, 1, {
+        //     filter: (creep) => {
+        //         return !isInArray(Memory.whitesheet, creep.name)
+        //     }
+        // })
+        // if(nearCreep_A.length>0)
+        // {
+        //     this.attack(nearCreep_A[0])
+        //     this.optTower('attack', nearCreep_A[0])
+        //     return;
+        // }
 
         /* 寻路去距离敌对爬虫最近的rampart */
         var hostileCreep = Game.rooms[this.memory.belong].find(FIND_HOSTILE_CREEPS, {
@@ -162,7 +174,9 @@ export default class CreepMissonWarExtension extends Creep {
                 return
             }
         }
-        else return
+        else {
+
+        }
         // 以gather_attack开头的旗帜  例如： defend_attack_0 优先前往该旗帜附近
         let gatherFlag = this.pos.findClosestByPath(FIND_FLAGS, {
             filter: (flag) => {

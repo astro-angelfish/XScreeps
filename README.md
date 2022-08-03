@@ -12,14 +12,13 @@ Screeps游戏个人代码，Screeps是一款硬核大型多人在线编程游戏
 7.  商业行为
 
 #### 分支及作者
-本分支为master分支，作者为：superbitch
-同时感谢E19N2和somygame的代码修改意见,以及Monero的测试和bug反馈。
+本分支为somygame分支，作者：superbitch，维护者：somygame
+同时感谢superbitch、E19N2、Morningtea的代码修改意见,以及Monero的测试和bug反馈。
 
 #### 其他
 1. 源码可以随意修改
 2. 不可用来欺负萌新 （太欠收拾的除外）
-3. 有bug请反馈
+3. 有bug可以在Q群进行反馈 欢迎@
 4. 如何创造编译环境，请百度搜索 hoho的screeps教程
-5. 项目地址路径\node_modules\@types\screeps\index.d.ts 里4132行Poly函数定义改为：poly(points: any, style?: PolyStyle): RoomVisual
 
 

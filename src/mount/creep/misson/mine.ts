@@ -620,8 +620,11 @@ export default class CreepMissonMineExtension extends Creep {
                     if (Game.creeps[this.memory.transfercreep].pos.roomName == this.pos.roomName) {
                         /*这里执行搬运操作*/
                         if (Game.creeps[this.memory.transfercreep].store.getFreeCapacity() > 0) {
+                            /*检查是否达到回归时效*/
+                            var T_creepMisson = Game.creeps[this.memory.transfercreep].memory.MissionData.Data;
+                            if (Game.creeps[this.memory.transfercreep].ticksToLive <= T_creepMisson.creeptime) return;
                             if (!this.pos.isNearTo(Game.creeps[this.memory.transfercreep])) {
-                                this.goTo(Game.creeps[this.memory.transfercreep].pos, 1)
+                                Game.creeps[this.memory.transfercreep].goTo(this.pos, 1)
                                 return;
                             }
                             this.transfer(Game.creeps[this.memory.transfercreep], Object.keys(this.store)[0] as ResourceConstant)

@@ -206,6 +206,7 @@ export default class RoomMissonMineExtension extends Room {
     /* 过道采集监控发布任务 */
     public Task_Cross(misson: MissionModel): void {
         if (this.controller.level < 8 || !this.memory.StructureIdData.ObserverID) return
+        if (Game.cpu.bucket < 10000 && Memory.StopPixel) return/*CPU不足情况下不进行任务发布*/
         if (this.memory.switch.StopCross) return
         var observer_ = Game.getObjectById(this.memory.StructureIdData.ObserverID) as StructureObserver
         if (!observer_) { delete this.memory.StructureIdData.ObserverID; return }

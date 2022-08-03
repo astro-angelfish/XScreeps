@@ -399,7 +399,7 @@ export default class RoomMissonPublish extends Room {
         }
         switch (level) {
             case 'T3':
-                thisTask.LabMessage = { 'XLH2O': 'boost', 'XKH2O': 'boost', 'XZHO2': 'boost' }
+                thisTask.LabMessage = { 'LH2O': 'boost', 'KH2O': 'boost', 'XZHO2': 'boost' }
                 break;
             case 'T4':
                 break;

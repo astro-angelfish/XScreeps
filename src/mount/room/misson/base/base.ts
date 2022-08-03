@@ -498,11 +498,10 @@ export default class RoomMissonFrameExtension extends Room {
                 continue;
             }
             if (disLab.store.getUsedCapacity(misson.LabBind[i] as ResourceConstant) < 1800 && this.Check_Carry('transport', tank_.pos, disLab.pos, misson.LabBind[i] as ResourceConstant)) {
-                if (All_i_Num < 1500) continue;
-
+                if (All_i_Num < 1000) continue;
                 var roleData: BindData = {}
                 roleData[role] = { num: 1, bind: [] }
-                var carryTask = this.public_Carry(roleData, 45, this.name, tank_.pos.x, tank_.pos.y, this.name, disLab.pos.x, disLab.pos.y, misson.LabBind[i] as ResourceConstant, 2000)
+                var carryTask = this.public_Carry(roleData, 45, this.name, tank_.pos.x, tank_.pos.y, this.name, disLab.pos.x, disLab.pos.y, misson.LabBind[i] as ResourceConstant, All_i_Num >= 2000 ? 2000 : All_i_Num)
                 this.AddMission(carryTask)
                 return_state = false;
                 continue;

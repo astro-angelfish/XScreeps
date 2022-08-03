@@ -61,7 +61,7 @@ export function ResourceDispatch(thisRoom: Room): void {
                     }
                     // t3
                     else if (isInArray(t3, i.rType)) {
-                        let task = thisRoom.public_Buy(i.rType, i.num, 50, 150);
+                        let task = thisRoom.public_Buy(i.rType, i.num, 50, 300);
                         if (task) { thisRoom.AddMission(task); i.delayTick = 0 }; continue
                     }
                     // power
@@ -71,7 +71,7 @@ export function ResourceDispatch(thisRoom: Room): void {
                     }
                     // t1 t2
                     else if (isInArray(t2, i.rType) || isInArray(t1, i.rType)) {
-                        let task = thisRoom.public_Buy(i.rType, i.num, 20, 65);
+                        let task = thisRoom.public_Buy(i.rType, i.num, 20, 100);
                         if (task) { thisRoom.AddMission(task); i.delayTick = 0 }; continue
                     }
                     // 其他商品类资源 bar类资源
