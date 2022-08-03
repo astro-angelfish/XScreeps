@@ -238,7 +238,7 @@ function ReclaimNode(node) {
 }
 
 // @ts-ignore
-const binary = require('algo_wasm_priorityqueue');   // 读取二进制文件
+const binary = require('./algo_wasm_priorityqueue.wasm');   // 读取二进制文件
 const wasmModule = new WebAssembly.Module(binary);  // 初始化为wasm类
 
 /**
