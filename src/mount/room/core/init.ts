@@ -241,7 +241,7 @@ export default class RoomCoreInitExtension extends Room {
             }
 
         }
-        if ((Game.time - global.Gtime[this.name]) % tickratio * 10) {
+        if ((Game.time - global.Gtime[this.name]) % tickratio * 10 == 0) {
             /* 观察器识别 */
             if (!this.memory.StructureIdData.ObserverID && this.controller.level >= 8) {
                 var observer_ = this.getStructure(STRUCTURE_OBSERVER)
