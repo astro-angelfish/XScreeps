@@ -111,7 +111,7 @@ export default {
                         _loss_number = 550;
                     }
                     if (Data_.hitsMax > 700000) {
-                        _loss_number = 1650;
+                        _loss_number = 16500;
                     }
 
                     let _heal = Math.ceil(_loss_number / _heal_number);
