@@ -106,9 +106,12 @@ export default {
                     }
                     _heal_number = _heal_number < 200 ? 200 : _heal_number;
                     /*获取偏差数值*/
-                    let _loss_number = 1100;
+                    let _loss_number = 110;
                     if (Data_.hitsMax > 20000) {
-                        _loss_number = 5500;
+                        _loss_number = 550;
+                    }
+                    if (Data_.hitsMax > 700000) {
+                        _loss_number = 1650;
                     }
 
                     let _heal = Math.ceil(_loss_number / _heal_number);
