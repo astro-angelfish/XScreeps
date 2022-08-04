@@ -100,11 +100,11 @@ export default {
                     let to_pos = `W${Data_.pos.x}N${Data_.pos.y}`
                     let _number = Game.map.getRoomLinearDistance(from_pos, to_pos)
                     /*计算healnumber*/
-                    let _heal_number = 400;
+                    let _heal_number = 800;
                     if (_number > 5) {
-                        _heal_number -= (_number - 5) * 20
+                        _heal_number -= (_number - 5) * 40
                     }
-                    _heal_number = _heal_number < 100 ? 100 : _heal_number;
+                    _heal_number = _heal_number < 200 ? 200 : _heal_number;
                     /*获取偏差数值*/
                     let _loss_number = 1100;
                     if (Data_.hitsMax > 20000) {
