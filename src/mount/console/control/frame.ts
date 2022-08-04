@@ -1,4 +1,5 @@
 import { resourceComDispatch } from "@/constant/ResourceConstant"
+import { RoleData, RoleLevelData } from "@/constant/SpawnConstant"
 import { RecognizeLab, unzipXandY } from "@/module/fun/funtion"
 import { Colorful, isInArray } from "@/utils"
 import { object } from "lodash"
@@ -201,6 +202,17 @@ export default {
                 return `[spawn] 任务${misson.name}<id:${id}>孵化信息已经初始化!`
             }
             return `[spawn] 找不到id为${id}的任务!`
+        },
+        UpspawnConfig(roomName: string, role: string, num: number): string {
+            let thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[spawn] 不存在房间${roomName}`
+            let level = thisRoom.controller.level;
+            if (num > 2 || num < 1) return `[spawn] 没有更多的配置信息`
+            if (!RoleLevelData[role]) return `[spawn] ${role} 角色等级配置不存在`
+            if (!RoleLevelData[role][level]) return `[spawn] ${role} 角色等级配置不存在`
+            if (!RoleLevelData[role][level].upbodypart) return `[spawn] ${role} 没有角色配置`
+            thisRoom.memory.UpgradespawnConfig[role] = num;
+            return `[spawn] 房间${roomName} 角色 ${role} 变更成功`
         }
     },
     link: {
