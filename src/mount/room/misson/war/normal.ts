@@ -22,7 +22,7 @@ export default class NormalWarExtension extends Room {
             switch (bodylevel) {
                 case 'T3':
                     // 高级奶妈
-                    global.MSB[mission.id] = { 'c-construction-site': GenerateAbility(0, 0, 10, 0, 0, 28, 0, 12) }
+                    global.MSB[mission.id] = { 'c-construction-site': GenerateAbility(0, 0, 10, 0, 1, 27, 0, 12) }
                     break;
                 default:
                     // 默认不处理的

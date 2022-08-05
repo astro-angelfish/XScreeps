@@ -208,7 +208,7 @@ export default class RoomMissonPublish extends Room {
 
                 case 'T3':
                     thisTask.Data.boost = true
-                    thisTask.LabMessage = { 'XZHO2': 'boost', 'XGHO2': 'boost', 'XLHO2': 'boost' }
+                    thisTask.LabMessage = { 'XZHO2': 'boost', 'XGHO2': 'boost', 'XLHO2': 'boost', 'XKHO2': 'boost' }
                     break;
                 default:
 

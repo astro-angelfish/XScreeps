@@ -94,7 +94,7 @@ export function GenerateAbility(work?: number, carry?: number, move?: number, at
 // 用于对bodypartconstant[] 列表进行自适应化，使得爬虫房间能生产该爬虫，具体逻辑为寻找该bodypart中数量最多的，对其进行减法运算，直到达到目的，但数量到1时将不再减少
 export function adaption_body(arr: BodyPartConstant[], critical_num: number): BodyPartConstant[] {
   while (CalculateEnergy(arr) > critical_num) {
-    if (critical_num <= 100) return arr
+    if (critical_num < 300) return arr
     let m_body = most_body(arr)
     if (!m_body) { return arr }
     var index = arr.indexOf(m_body)

@@ -285,7 +285,7 @@ export default {
                 }
                 if (bR) {
                     thisRoom.memory.market['order'].push({ rType: rType, num: num, unit: unit, price: price, mTyep: 'buy' })
-                    return `[market] 房间${roomName}成功下达order的资源采购指令,type:sell,rType:${rType},num:${num},unit:${unit},price:${price}`
+                    return `[market] 房间${roomName}成功下达order的资源采购指令,type:buy,rType:${rType},num:${num},unit:${unit},price:${price}`
                 }
                 else return `[market] 房间${roomName}已经存在${rType}的订单了`
             }
@@ -298,7 +298,7 @@ export default {
                 }
                 if (bR) {
                     thisRoom.memory.market['deal'].push({ rType: rType, num: num, price: price, unit: unit, mTyep: 'buy' })
-                    return `[market] 房间${roomName}成功下达deal的资源采购指令,type:sell,rType:${rType},num:${num},price:${price},unit:${unit}`
+                    return `[market] 房间${roomName}成功下达deal的资源采购指令,type:buy,rType:${rType},num:${num},price:${price},unit:${unit}`
                 }
                 else return `[market] 房间${roomName}已经存在${rType}的订单了`
             }

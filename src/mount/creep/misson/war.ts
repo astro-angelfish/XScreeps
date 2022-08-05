@@ -133,7 +133,7 @@ export default class CreepMissonWarExtension extends Creep {
             this.attack(nearCreep)
             this.optTower('attack', nearCreep)
         }
-    
+
         // var nearCreep_A = this.pos.findInRange(FIND_HOSTILE_CREEPS, 1, {
         //     filter: (creep) => {
         //         return !isInArray(Memory.whitesheet, creep.name)
@@ -778,7 +778,7 @@ export default class CreepMissonWarExtension extends Creep {
             if (data.boost) {
                 switch (data.bodylevel) {
                     case 'T3':
-                        if (!this.BoostCheck(['move', 'heal', 'tough'])) return
+                        if (!this.BoostCheck(['move', 'heal', 'tough', 'ranged_attack'])) return
                         break;
                     default:
                         // if (!this.BoostCheck(['move', 'heal', 'tough', 'ranged_attack'])) return
@@ -811,13 +811,18 @@ export default class CreepMissonWarExtension extends Creep {
                 }
                 return
             }
-            let pos_ = this.pos.findClosestByPath(FIND_HOSTILE_CONSTRUCTION_SITES)
-            if (!pos_) return
+            if (Game.flags['cconstruction_flags']) {
+                if (!this.pos.inRangeTo(Game.flags['cconstruction_flags'], 1)) {
+                    this.goTo(Game.flags['cconstruction_flags'].pos, 0)
+                }
+            }
+            if (this.getActiveBodyparts(HEAL)) {
+                this.heal(this)
+            }
             switch (data.bodylevel) {
                 case 'T3':
                     warDataInit(Game.rooms[data.disRoom])
                     let creeps = global.warData.enemy[data.disRoom].data
-                    this.heal(this)
                     let ranged3Attack = RangeCreep(this.pos, creeps, 3, true)  // 三格内的攻击性爬虫
                     if (ranged3Attack.length > 0) {
                         // 防御塔伤害数据
@@ -830,21 +835,35 @@ export default class CreepMissonWarExtension extends Creep {
                             let closestHurtCreep = RangeClosestCreep(this.pos, ranged3Attack, true)
                             if (closestHurtCreep) {
                                 this.Flee(closestHurtCreep.pos, 4)
-                            }
-                        }
-                        else {
-                            if (!this.pos.isEqualTo(pos_)) {
-                                this.goTo(pos_.pos, 0)
+                                return;
                             }
                         }
                     }
-                    else {
+                    var pos_ = this.pos.findClosestByPath(FIND_HOSTILE_CONSTRUCTION_SITES)
+                    if (pos_) {
                         if (!this.pos.isEqualTo(pos_)) {
                             this.goTo(pos_.pos, 0)
+                        }
+                    } else {
+                        if (this.getActiveBodyparts(RANGED_ATTACK)) {
+                            let creeps = this.pos.findClosestByRange(FIND_HOSTILE_CREEPS, {
+                                filter: (creep) => {
+                                    return creep.getActiveBodyparts(WORK) && !creep.getActiveBodyparts(ATTACK) && !creep.getActiveBodyparts(RANGED_ATTACK)
+                                }
+                            })
+                            if (creeps) {
+                                if (!this.pos.inRangeTo(creeps, 1)) {
+                                    this.goTo(creeps.pos, 1)
+                                }
+                                this.rangedMassAttack()
+                                return;
+                            }
                         }
                     }
                     break;
                 default:
+                    var pos_ = this.pos.findClosestByPath(FIND_HOSTILE_CONSTRUCTION_SITES)
+                    if (!pos_) return
                     this.goTo(pos_.pos, 0)
                     break;
             }
