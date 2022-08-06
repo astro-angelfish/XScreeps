@@ -27,6 +27,7 @@ export default class CreepMissonActionExtension extends Creep {
             }
             if (!boo) {
                 switch (missionData.Data.level) {
+                    case 'T1':
                     case 'T3':
                         if (!this.BoostCheck(['work', 'move', 'carry'])) return
                         break;
