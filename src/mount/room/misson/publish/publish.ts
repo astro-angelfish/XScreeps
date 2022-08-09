@@ -59,6 +59,12 @@ export default class RoomMissonPublish extends Room {
             case 'T3':
                 thisTask.LabMessage = { 'XKH2O': 'boost', 'XZHO2': 'boost' }
                 break;
+            case 'T2':
+                thisTask.LabMessage = { 'KH2O': 'boost', 'ZHO2': 'boost' }
+                break;
+            case 'T1':
+                thisTask.LabMessage = { 'KH': 'boost', 'ZO': 'boost' }
+                break;
         }
         return thisTask
     }

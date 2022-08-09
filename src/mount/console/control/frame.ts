@@ -86,7 +86,7 @@ export default {
     frame:
     {
         // 添加控制某房间 [添加了房间才会运行代码]
-        add(roomName: string, plan: 'man' | 'dev' |'hoho', x: number, y: number): string {
+        add(roomName: string, plan: 'man' | 'dev' | 'hoho', x: number, y: number): string {
             let thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[frame] 不存在房间${roomName}`
             Memory.RoomControlData[roomName] = { arrange: plan, center: [x, y] }
@@ -167,6 +167,16 @@ export default {
                 return `[frame] 关闭全局经济模式(自动烧帕瓦)`
             }
             return `[frame] 启用全局经济模式(自动烧帕瓦)`
+        },
+        speedup(roomName): string {
+            var myRoom = Game.rooms[roomName]
+            if (!myRoom) return `[frame] 未找到房间${roomName},请确认房间!`
+            if (myRoom.controller.level > 6 && !myRoom.memory.switch.speedstate) return `[frame] controller等级过高无法开启`
+            myRoom.memory.switch.speedstate = !myRoom.memory.switch.speedstate
+            if (!myRoom.memory.switch.speedstate) {
+                return `[frame] 新房快速初始化关闭`
+            }
+            return `[frame] 新房快速初始化开启`
         }
     },
     spawn:

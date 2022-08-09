@@ -129,8 +129,9 @@ export default class CreepMoveExtension extends Creep {
                     if ((creep.memory.crossLevel && creep.memory.crossLevel > this.memory.crossLevel) || creep.memory.standed) {
                         costs.set(creep.pos.x, creep.pos.y, 255)
                     }
-                    // else
-                    //     costs.set(creep.pos.x, creep.pos.y, 3)
+                    else {
+                        costs.set(creep.pos.x, creep.pos.y, 3)
+                    }
                 })
 
                 if (ExcludePosition) {

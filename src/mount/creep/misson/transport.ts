@@ -87,6 +87,8 @@ export default class CreepMissonTransportExtension extends Creep {
             if (this.room.name == this.memory.belong) {
                 switch (missionData.Data.level) {
                     case 'T3':
+                    case 'T2':
+                    case 'T1':
                         if (!this.BoostCheck(['move', 'carry'])) return
                         break;
                 }
@@ -103,15 +105,33 @@ export default class CreepMissonTransportExtension extends Creep {
             if ((this.room.name != data.disRoom || Game.shard.name != data.shard)) {
                 this.arriveTo(new RoomPosition(24, 24, data.disRoom), 23, data.shard, data.shardData ? data.shardData : null)
             } else {
-                let storage_ = Game.rooms[data.disRoom].storage
-                if (storage_) {
-                    let transfer = this.transfer(storage_, data.rType)
-                    switch (transfer) {
-                        case ERR_NOT_IN_RANGE:
-                            this.goTo(storage_.pos, 1)
-                            break;
+                if (Game.rooms[data.disRoom].controller.my) {
+                    let storage_ = Game.rooms[data.disRoom].storage
+                    if (storage_) {
+                        let transfer = this.transfer(storage_, data.rType)
+                        switch (transfer) {
+                            case ERR_NOT_IN_RANGE:
+                                this.goTo(storage_.pos, 1)
+                                break;
+                        }
+                        this.workstate(data.rType)
                     }
-                    this.workstate(data.rType)
+                } else {
+                    /*搜索spawn*/
+                    var find_spawn = this.pos.findClosestByRange(FIND_HOSTILE_SPAWNS)
+                    if (!find_spawn) return;
+                    if (this.pos.inRangeTo(find_spawn, 3)) {
+                        var find_dropped_resources = this.room.find(FIND_DROPPED_RESOURCES, {
+                            filter: (res) => {
+                                return res.amount > 1000 && res.resourceType == 'energy'
+                            }
+                        })
+                        if (find_dropped_resources.length < 1) {
+                            this.suicide();
+                        }
+                    } else {
+                        this.goTo(find_spawn.pos, 1)
+                    }
                 }
             }
         } else {
@@ -120,7 +140,6 @@ export default class CreepMissonTransportExtension extends Creep {
         }
 
     }
-
 
     /* 物资运输任务  已测试 */
     public handle_carry(): void {

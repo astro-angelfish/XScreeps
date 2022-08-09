@@ -19,8 +19,16 @@ export default class RoomMissonBehaviourExtension extends Room {
         // 没有任务数据 或者数据不全就取消任务
         if (mission.CreepBind.truckshard.num > 0) {
             let level = mission.Data.level
-            if (level == 'T3') {
-                global.MSB[mission.id] = { 'truckshard': GenerateAbility(0, 40, 10, 0, 0, 0, 0, 0) }
+            switch (level) {
+                case 'T3':
+                    global.MSB[mission.id] = { 'truckshard': GenerateAbility(0, 40, 10, 0, 0, 0, 0, 0) }
+                    break;
+                case 'T2':
+                    global.MSB[mission.id] = { 'truckshard': GenerateAbility(0, 37, 13, 0, 0, 0, 0, 0) }
+                    break;
+                case 'T1':
+                    global.MSB[mission.id] = { 'truckshard': GenerateAbility(0, 32, 16, 0, 0, 0, 0, 0) }
+                    break;
             }
             if ((Game.time - global.Gtime[this.name]) % 8) return
             if (mission.LabBind) {
@@ -561,7 +569,7 @@ export default class RoomMissonBehaviourExtension extends Room {
     /* 烧Power执行函数 */
     public Task_ProcessPower(misson: MissionModel): void {
         if (Game.cpu.bucket < 6000 && Memory.StopPixel) return/*CPU不足情况下暂停*/
-        if(!Game.rooms[this.name].memory.StructureIdData.PowerSpawnID) return;
+        if (!Game.rooms[this.name].memory.StructureIdData.PowerSpawnID) return;
         let storage_ = this.storage as StructureStorage
         // let powerspawn_ = Game.rooms[this.name].GetStruDate('powerspawn') as StructurePowerSpawn
         let powerspawn_ = Game.getObjectById(Game.rooms[this.name].memory.StructureIdData.PowerSpawnID) as StructurePowerSpawn;

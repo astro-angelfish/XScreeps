@@ -1,4 +1,4 @@
-import { build_, carry_, harvest_, upgrade_ } from "@/module/fun/role"
+import { build_, carry_, harvest_, upgrade_, initial_speed_ } from "@/module/fun/role"
 
 interface SpawnConstantData {
     [role: string]: {
@@ -23,6 +23,7 @@ export const RoleData: SpawnConstantData = {
     'build': { num: 0, ability: [1, 1, 2, 0, 0, 0, 0, 0], level: 10, mark: "🔨", init: true, fun: build_, must: true },   // 建筑工
     'manage': { num: 0, ability: [0, 1, 1, 0, 0, 0, 0, 0], level: 1, mark: "🗃️", init: true, must: true, adaption: true },   // 中央搬运工
     'transport': { num: 0, ability: [0, 2, 2, 0, 0, 0, 0, 0], level: 2, mark: "📦", init: true, must: true, adaption: true },  // 房间物流搬运工
+    'initial_speed': { num: 0, ability: [1, 1, 2, 0, 0, 0, 0, 0], adaption: true, level: 3, mark: "⛏️", must: false, init: true, fun: initial_speed_ },  // 新房间冲级专用
     'repair': { num: 0, ability: [1, 1, 1, 0, 0, 0, 0, 0], level: 8, mark: "🧱", must: true },     // 刷墙
     'cclaim': { num: 0, ability: [0, 0, 1, 0, 0, 0, 1, 0], level: 10, mark: "🐱" },           // 开房sf
     'cupgrade': { num: 0, ability: [2, 5, 7, 0, 0, 0, 0, 0], level: 11, mark: "🐱" },
@@ -87,6 +88,13 @@ export const RoleLevelData = {
         7: { bodypart: [10, 2, 5, 0, 0, 0, 0, 0], num: 2 },
         8: { bodypart: [10, 2, 10, 0, 0, 0, 0, 0], num: 2, upbodypart: [20, 4, 10, 0, 0, 0, 0, 0] },
     },
+    'initial_speed': {
+        1: { bodypart: [1, 1, 2, 0, 0, 0, 0, 0], num: 2 },
+        2: { bodypart: [3, 2, 3, 0, 0, 0, 0, 0], num: 2 },
+        3: { bodypart: [4, 4, 4, 0, 0, 0, 0, 0], num: 2 },
+        4: { bodypart: [4, 4, 8, 0, 0, 0, 0, 0], num: 1 },
+        5: { bodypart: [7, 2, 4, 0, 0, 0, 0, 0], num: 0 },
+    },
     'carry': {
         1: { bodypart: [0, 2, 2, 0, 0, 0, 0, 0], num: 2 },
         2: { bodypart: [0, 3, 3, 0, 0, 0, 0, 0], num: 2 },
@@ -108,9 +116,9 @@ export const RoleLevelData = {
         8: { bodypart: [15, 15, 15, 0, 0, 0, 0, 0], num: 1 },
     },
     'build': {
-        1: { bodypart: [1, 1, 2, 0, 0, 0, 0, 0], num: 1 },
-        2: { bodypart: [2, 2, 4, 0, 0, 0, 0, 0], num: 2 },
-        3: { bodypart: [3, 3, 6, 0, 0, 0, 0, 0], num: 1 },
+        1: { bodypart: [1, 1, 2, 0, 0, 0, 0, 0], num: 0 },
+        2: { bodypart: [2, 2, 4, 0, 0, 0, 0, 0], num: 0 },
+        3: { bodypart: [3, 3, 6, 0, 0, 0, 0, 0], num: 0 },
         4: { bodypart: [4, 4, 8, 0, 0, 0, 0, 0], num: 1 },
         5: { bodypart: [4, 4, 8, 0, 0, 0, 0, 0], num: 0 },
         6: { bodypart: [5, 5, 10, 0, 0, 0, 0, 0], num: 0 },

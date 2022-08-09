@@ -15,6 +15,7 @@ export default class RoomMissonFrameExtension extends Room {
         // }
         let cpu_list = [];
         // if (cpu_test) { cpu_list.push(Game.cpu.getUsed()) }
+        this.SpeedUpcontroller()
         // 冷却监测
         this.CoolDownCaculator()
         // 超时监测
@@ -217,6 +218,35 @@ export default class RoomMissonFrameExtension extends Room {
         }
         console.log(Colorful(`任务删除失败 ID:${id} Room:${this.name}`, 'red'))
         return false
+    }
+
+    /*新房快速起步模块*/
+    public SpeedUpcontroller(): void {
+        if (Game.time % 20) return
+        if (!this.memory.switch.speedstate) return;
+        if (this.controller.level > 6) {
+            this.memory.switch.speedstate = false;
+            this.memory.SpawnConfig['initial_speed'].num = 0
+            return;
+        }
+        let new_n = 0;
+        switch (this.controller.level) {
+            case 1:
+                new_n = 2;
+                break;
+            case 2:
+                new_n = 6;
+                break;
+            case 3:
+                new_n = 6;
+                break;
+            case 4:
+                new_n = 4;
+                break;
+        }
+        if (this.memory.SpawnConfig['initial_speed'].num != new_n) {
+            this.memory.SpawnConfig['initial_speed'].num = new_n;
+        }
     }
 
     /* 冷却计时器 */
