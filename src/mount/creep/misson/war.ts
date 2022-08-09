@@ -887,7 +887,7 @@ export default class CreepMissonWarExtension extends Creep {
                         if (!this.BoostCheck(['move', 'heal', 'ranged_attack'])) return
                         break;
                     default:
-                        if (!this.BoostCheck(['move', 'heal', 'tough', 'ranged_attack'])) return
+                        if (!this.BoostCheck(['move', 'ranged_attack', 'heal', 'tough'])) return
                         break;
                 }
             }
