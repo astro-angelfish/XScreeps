@@ -23,9 +23,9 @@ declare module "autoPlanner63" {
         structMap:StructMap
     }
 
-    // export type StructMap = {
-    //     [key:string]:[number,number][]
-    // }
+    export type StructMap = {
+        [key:string]:[number,number][]
+    }
 }
 
 

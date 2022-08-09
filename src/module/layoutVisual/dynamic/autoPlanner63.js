@@ -59,8 +59,6 @@ let pa = Game.flags.pa;
 let pb = Game.flags.pb;
 let pc = Game.flags.pc;
 let pm = Game.flags.pm;
-
-Game.flags.storagePos // 代表自定义是 storage 的位置
 if(p) {
     roomStructsData = ManagerPlanner.computeManor(p.pos.roomName,[pc,pm,pa,pb])
     Game.flags.p.remove()
@@ -72,15 +70,15 @@ if(roomStructsData){
 
 
  */
-
+ 
 /**
  *  wasm 优先队列
  *  帮你加速涉及优先级的调度算法
- *
+ *  
  *  author: Scorpior
  *  version: v1.1.0
- *
- *  usage:
+ *  
+ *  usage: 
  *  1. add .js and .wasm modules
  *  2. require .js module and use
  *
@@ -88,7 +86,8 @@ if(roomStructsData){
  */
 
 
-global.structuresShape = {
+
+ global.structuresShape= {
     "spawn": "◎",
     "extension": "ⓔ",
     "link": "◈",
@@ -106,7 +105,7 @@ global.structuresShape = {
     "nuker": "▲",
     "factory": "☭"
 }
-global.structuresColor = {
+global.structuresColor= {
     "spawn": "cyan",
     "extension": "#0bb118",
     "link": "yellow",
@@ -124,72 +123,54 @@ global.structuresColor = {
     "nuker": "cyan",
     "factory": "yellow"
 }
-helpervisual = {
+helpervisual={
     //线性同余随机数
-    rnd: function (seed) {
-        return (seed * 9301 + 49297) % 233280; //为何使用这三个数?
+    rnd : function( seed ){
+    return ( seed * 9301 + 49297 ) % 233280; //为何使用这三个数?
     },
     // seed 的随机颜色
-    randomColor: function (seed) {
+    randomColor : function (seed){
         seed = parseInt(seed)
         let str = "12334567890ABCDEF"
         let out = "#"
-        for (let i = 0; i < 6; i++) {
-            seed = helpervisual.rnd(seed + Game.time % 100)
-            out += str[parseInt(seed) % str.length]
+        for(let i=0;i<6;i++){
+            seed = helpervisual.rnd(seed+Game.time%100)
+            out+=str[parseInt(seed)%str.length]
         }
         return out
     },
-    roomMap: {},
-    getRoomVisual(roomNameOrObj) {
-        let roomName = roomNameOrObj.name || roomNameOrObj
-        if (!helpervisual.roomMap[roomName]) {
-            helpervisual.roomMap[roomName] = new RoomVisual(roomNameOrObj.name || roomNameOrObj)
-        }
-        return helpervisual.roomMap[roomName]
-    },
-    showText(roomNameOrObj, text, objOrPos, color = 'red', font = 1) {
-        if (roomNameOrObj.pos || roomNameOrObj.x) {
-            if (!roomNameOrObj.x) objOrPos = roomNameOrObj.pos
-            else objOrPos = roomNameOrObj
-            roomNameOrObj = objOrPos.roomName
-        }
-        let visual = helpervisual.getRoomVisual(roomNameOrObj)
-        let pos = objOrPos.pos || objOrPos
-        visual.text(text, pos.x, pos.y + 0.35, { color: color, opacity: 0.75, font: font })
-    },
     // 大概消耗1 CPU！ 慎用！
-    showRoomStructures: function (roomName, structMap) {
+    showRoomStructures : function (roomName,structMap){
         let roomStructs = new RoomArray().init()
         const visual = new RoomVisual(roomName);
-        structMap["road"].forEach(e => roomStructs.set(e[0], e[1], "road"))
-        _.keys(CONTROLLER_STRUCTURES).forEach(struct => {
-            if (struct == "road") {
-                structMap[struct].forEach(e => {
-                    roomStructs.forNear((x, y, val) => {
-                        if (val == "road" && ((e[0] >= x && e[1] >= y) || (e[0] > x && e[1] < y))) visual.line(x, y, e[0], e[1], { color: structuresColor[struct] })
-                    }, e[0], e[1]);
-                    visual.text(structuresShape[struct], e[0], e[1] + 0.25, { color: structuresColor[struct], opacity: 0.75, fontSize: 7 })
+        structMap["road"].forEach(e=>roomStructs.set(e[0],e[1],"road"))
+        _.keys(CONTROLLER_STRUCTURES).forEach(struct=>{
+            if(struct=="road"){
+                structMap[struct].forEach(e=>{
+                    roomStructs.forNear((x,y,val)=>{
+                        if(val =="road"&&((e[0]>=x&&e[1]>=y)||(e[0]>x&&e[1]<y)))visual.line(x,y,e[0],e[1],{color:structuresColor[struct]})
+                    },e[0],e[1]);
+                    visual.text(structuresShape[struct], e[0],e[1]+0.25, {color: structuresColor[struct],opacity:0.75,fontSize: 7})
                 })
             }
-            else structMap[struct].forEach(e => visual.text(structuresShape[struct], e[0], e[1] + 0.25, { color: structuresColor[struct], opacity: 0.75, fontSize: 7 }))
+            else structMap[struct].forEach(e=>visual.text(structuresShape[struct], e[0],e[1]+0.25, {color: structuresColor[struct],opacity:0.75,fontSize: 7}))
         })
     },
 }
 
-global.HelperVisual = helpervisual
+global.HelperVisual=helpervisual
 
 
-class UnionFind {
+class UnionFind{
 
     constructor(size) {
-        this.size = size
+        this.size  = size
     }
     init() {
-        if (!this.parent)
+        if(!this.parent)
             this.parent = new Array(this.size)
-        for (let i = 0; i < this.size; i++) {
-            this.parent[i] = i;
+        for(let i=0;i<this.size;i++){
+            this.parent[i]=i;
         }
     }
     find(x) {
@@ -202,26 +183,26 @@ class UnionFind {
         }
         return x;
     }
-    union(a, b) {
+    union(a,b){
         a = this.find(a)
         b = this.find(b)
-        if (a > b) this.parent[a] = b;
-        else if (a != b) this.parent[b] = a;
+        if(a>b)this.parent[a]=b;
+        else if(a!=b) this.parent[b]=a;
     }
-    same(a, b) {
-        return this.find(a) == this.find(b)
+    same(a,b){
+        return this.find(a) ==  this.find(b)
     }
 }
 
 
 global.UnionFind = UnionFind
 
-let NodeCache = []
-function NewNode(k, x, y, v) {
+let NodeCache= []
+function NewNode(k,x,y,v){
     let t
-    if (NodeCache.length) {
+    if(NodeCache.length){
         t = NodeCache.pop()
-    } else {
+    }else{
         t = {}
     }
     t.k = k
@@ -232,20 +213,20 @@ function NewNode(k, x, y, v) {
 }
 
 
-function ReclaimNode(node) {
-    if (NodeCache.length < 10000)
+function ReclaimNode(node){
+    if(NodeCache.length<10000)
         NodeCache.push(node)
 }
 
 // @ts-ignore
-const binary = require('./algo_wasm_priorityqueue.wasm');   // 读取二进制文件
+const binary = require('algo_wasm_priorityqueue');   // 读取二进制文件
 const wasmModule = new WebAssembly.Module(binary);  // 初始化为wasm类
 
 /**
- *
+ * 
  * @typedef {Object} node
  * @property {number} k 优先级实数（可负）
- *
+ * 
  * @typedef {{
  *      memory:{
  *          buffer: ArrayBuffer
@@ -297,7 +278,7 @@ class PriorityQueue extends BaseQueue {
     /**
      * @param {boolean} isMinRoot 优先级方向，true则pop()时得到数字最小的，否则pop()出最大的
      */
-    constructor(isMinRoot = false) {
+    constructor(isMinRoot=false) {
         super();
         /**@type {cppQueue} */
         let instance;
@@ -318,7 +299,7 @@ class PriorityQueue extends BaseQueue {
         instance.init(+!!isMinRoot);  // !!转化为boolean, +转为数字
 
         /**
-         * @param {node} node
+         * @param {node} node 
          */
         this.push = (node) => {
             try {
@@ -332,7 +313,7 @@ class PriorityQueue extends BaseQueue {
                 }
             }
         }
-        /**
+        /** 
          *  @returns {node|undefined}
          */
         this.pop = () => {
@@ -363,7 +344,7 @@ class PriorityQueue extends BaseQueue {
          *  @returns {undefined}
          */
         this.whileNoEmpty = (func) => {
-            while (!this.isEmpty()) {
+            while (!this.isEmpty()){
                 let node = this.pop();
                 func(node)
                 ReclaimNode(node)
@@ -379,7 +360,7 @@ class PriorityQueue extends BaseQueue {
      * @param {node} node 待插入对象，至少含有priority:k属性
      */
     push(node) { }
-    /**
+    /** 
      *  查看顶端节点，空队列返回undefined
      *  @returns {node|undefined}
      */
@@ -399,68 +380,68 @@ global.ReclaimNode = ReclaimNode
 // }
 
 
-let RoomArray_proto = {
-    exec(x, y, val) {
-        let tmp = this.arr[x * 50 + y]
-        this.set(x, y, val);
+let RoomArray_proto= {
+    exec(x,y,val){
+        let tmp = this.arr[x*50+y]
+        this.set(x,y,val);
         return tmp
     },
-    get(x, y) {
-        return this.arr[x * 50 + y];
+    get(x,y){
+        return this.arr[x*50+y];
     },
-    set(x, y, value) {
-        this.arr[x * 50 + y] = value;
+    set(x,y,value){
+        this.arr[x*50+y]=value;
     },
-    init() {
-        if (!this.arr)
-            this.arr = new Array(50 * 50)
-        for (let i = 0; i < 2500; i++) {
-            this.arr[i] = 0;
+    init(){
+        if(!this.arr)
+            this.arr = new Array(50*50)
+        for(let i=0;i<2500;i++){
+            this.arr[i]=0;
         }
         return this;
     },
-    forEach(func) {
-        for (let y = 0; y < 50; y++) {
-            for (let x = 0; x < 50; x++) {
-                func(x, y, this.get(x, y))
+    forEach(func){
+        for(let y = 0; y < 50; y++) {
+            for(let x = 0; x < 50; x++) {
+                func(x,y,this.get(x,y))
             }
         }
     },
-    for4Direction(func, x, y, range = 1) {
-        for (let e of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
-            let xt = x + e[0]
-            let yt = y + e[1]
-            if (xt >= 0 && yt >= 0 && xt <= 49 && yt <= 49)
-                func(xt, yt, this.get(xt, yt))
+    for4Direction(func,x,y,range=1){
+        for(let e of [[1,0],[-1,0],[0,1],[0,-1]]){
+            let xt=x+e[0]
+            let yt=y+e[1]
+            if(xt>=0&&yt>=0&&xt<=49&&yt<=49)
+                func(xt,yt,this.get(xt,yt))
         }
     },
-    forNear(func, x, y, range = 1) {
-        for (let i = -range; i <= range; i++) {
-            for (let j = -range; j <= range; j++) {
-                let xt = x + i
-                let yt = y + j
-                if ((i || j) && xt >= 0 && yt >= 0 && xt <= 49 && yt <= 49)
-                    func(xt, yt, this.get(xt, yt))
+    forNear(func,x,y,range=1){
+        for(let i=-range;i<=range;i++){
+            for(let j=-range;j<=range;j++){
+                let xt=x+i
+                let yt=y+j
+                if((i||j)&&xt>=0&&yt>=0&&xt<=49&&yt<=49)
+                    func(xt,yt,this.get(xt,yt))
             }
         }
     },
-    forBorder(func, range = 1) {
-        for (let y = 0; y < 50; y++) {
-            func(0, y, this.get(0, y))
-            func(49, y, this.get(49, y))
+    forBorder(func,range=1){
+        for(let y = 0; y < 50; y++) {
+            func(0,y,this.get(0,y))
+            func(49,y,this.get(49,y))
         }
-        for (let x = 1; x < 49; x++) {
-            func(x, 0, this.get(x, 0))
-            func(x, 49, this.get(x, 49))
+        for(let x = 1; x < 49; x++) {
+            func(x,0,this.get(x,0))
+            func(x,49,this.get(x,49))
         }
     },
-    initRoomTerrainWalkAble(roomName) {
+    initRoomTerrainWalkAble(roomName){
         let terrain = new Room.Terrain(roomName);
-        this.forEach((x, y) => this.set(x, y, terrain.get(x, y) == 1 ? 0 : terrain.get(x, y) == 0 ? 1 : 2))
+        this.forEach((x,y)=> this.set(x,y, terrain.get(x,y)==1?0:terrain.get(x,y)==0?1:2))
     }
 }
 class RoomArray {
-    constructor() {
+    constructor(){
         this.__proto__ = RoomArray_proto
     }
 }
@@ -653,9 +634,10 @@ let pro={
      * 插值，计算区块的预处理和合并需求
      * @param roomName
      */
-    computeBlock (roomName,blocked){
+    computeBlock (roomName){
         const visual = new RoomVisual(roomName);
 
+        roomWalkable.initRoomTerrainWalkAble(roomName)
         roomWalkable.initRoomTerrainWalkAble(roomName)
 
         //计算距离山体要多远
@@ -750,12 +732,6 @@ let pro={
             if(val&&roomWalkable.get(x,y))nearWallWithInterpolation.set(x,y,val+value*0.1)
         })
 
-        if(blocked){
-            blocked.forEach((x,y,val)=>{
-                if(val)nearWallWithInterpolation.set(x,y,0)
-            })
-        }
-
 
         // 计算距离出口多远
         visited.init()
@@ -781,16 +757,12 @@ let pro={
 
         // 分块，将地图分成一小块一小块
         visited.init()
-        for(let i=0;i<2500;i++){
+        for(let i=0;i<100000;i++){
             if(startPoint.isEmpty())break;
             let cnt = 0
             // let color = randomColor(i)
             let nd = startPoint.pop()
             let currentPos = nd.x*50+nd.y
-            if(blocked&&blocked.get(nd.x,nd.y)){
-                unionFind.union(currentPos,0)
-                continue;
-            }
             let posSeq = []
 
             //搜索分块
@@ -802,14 +774,11 @@ let pro={
                             dfsFindDown(roomArray,x1,y1)
                         }
                     },x,y)
+                    cnt++
                     // visual.circle(x,y, {fill: color, radius: 0.5 ,opacity : 0.5})
                     let pos = x*50+y
-                    if(unionFind.find(pos)&&unionFind.find(currentPos)&&(!blocked||!blocked.get(x,y))){
-                        unionFind.union(currentPos,pos)
-                        posSeq.push(pos)
-                        cnt++
-                    }
-                    else if(blocked)unionFind.union(pos,0)
+                    posSeq.push(pos)
+                    unionFind.union(currentPos,pos)
                 }
             }
 
@@ -825,14 +794,11 @@ let pro={
                             dfsFindDown(roomArray,x1,y1)
                         }
                     },x,y)
+                    cnt++
                     // visual.circle(x,y, {fill: color, radius: 0.5 ,opacity : 0.5})
                     let pos = x*50+y
-                    if(unionFind.find(pos)&&unionFind.find(currentPos)&&(!blocked||!blocked.get(x,y))){
-                        unionFind.union(currentPos,pos)
-                        posSeq.push(pos)
-                        cnt++
-                    }
-                    else if(blocked)unionFind.union(pos,0)
+                    posSeq.push(pos)
+                    unionFind.union(currentPos,pos)
                 }
             }
             dfsFindUp(nearWallWithInterpolation,nd.x,nd.y)
@@ -860,7 +826,6 @@ let pro={
                 if(sizeMap[pos]) delete sizeMap[pos]
             }
         })
-        delete sizeMap[0]
 
         let putAbleCacheMap = {}
         let allCacheMap = {}
@@ -978,7 +943,7 @@ let pro={
         //     if(sizeMap[e]>0)visual.text(parseInt(cnt*10)/10, x,y+0.25, {color: color,opacity:0.99,font: 7})
         // })
 
-        roomWalkable.forEach((x, y, val)=>{if(val>0&&sizeMap[unionFind.find(x*50+y)]>0)visual.circle(x, y, {fill: HelperVisual.randomColor(unionFind.find(x*50+y)), radius: 0.5 ,opacity : 0.15})})
+        // roomWalkable.forEach((x, y, val)=>{if(val>0&&sizeMap[unionFind.find(x*50+y)]>0)visual.circle(x, y, {fill: randomColor(unionFind.find(x*50+y)), radius: 0.5 ,opacity : 0.15})})
 
 
         // 打印中间变量
@@ -995,13 +960,13 @@ let pro={
      * @param points [flagController,flagMineral,flagSourceA,flagSourceB]
      * @return result { roomName:roomName,storagePos:{x,y},labPos:{x,y},structMap:{ "rampart" : [[x1,y1],[x2,y2] ...] ...} }
      */
-    computeManor (roomName,points,blocked){
+    computeManor (roomName,points){
         pro.init()
         for(let p of points){
             if(p.pos&&p.pos.roomName==roomName)objects.push(p.pos)
         }
         // const visual = new RoomVisual(roomName);
-        let blockArray = pro.computeBlock(roomName,blocked)
+        let blockArray = pro.computeBlock(roomName)
         let unionFind = blockArray[0]
         let sizeMap = blockArray[1]
         let wallMap = {}
@@ -1033,12 +998,10 @@ let pro={
         let centerY = undefined;
         _.keys(sizeMap).forEach(pos=>{
             // if(sizeMap[pos]<150)return
-
             pro.getBlockPutAbleCnt(roomWalkable, visited, queMin, unionFind, pos,putAbleCacheMap,allCacheMap)
             let currentPutAbleList = putAbleCacheMap[pos]
             let allList = allCacheMap[pos]
             if(currentPutAbleList.length<minPlaneCnt)return
-            if(Game.flags.storagePos&&!currentPutAbleList.find(e => e.x == Game.flags.storagePos.pos.x && e.y == Game.flags.storagePos.pos.y)) return;
 
             wallMap[pos] = []
 
@@ -1050,7 +1013,7 @@ let pro={
             allList.forEach(e=>{
                 roomManor.set(e.x,e.y,1)
             })
-            // currentPutAbleList.forEach(e=>visual.text(e.k, e.x,e.y+0.25, {color: 'red',opacity:0.99,font: 1}))
+            // currentPutAbleList.forEach(e=>visual.text(e.k, e.x,e.y+0.25, {color: 'red',opacity:0.99,font: 7}))
 
             queMin.whileNoEmpty(nd=>{
                 if(!roomManor.get(nd.x,nd.y))
@@ -1093,13 +1056,8 @@ let pro={
                 innerPutAbleList = currentInnerPutAbleList
                 wallCnt = currentWallCnt
                 finalPos = pos
-                if(Game.flags.storagePos){
-                    centerX = Game.flags.storagePos.pos.x
-                    centerY = Game.flags.storagePos.pos.y
-                }else {
-                    centerX = currentPutAbleList.map(e=>e.x).reduce((a,b)=>a+b)/currentPutAbleList.length;
-                    centerY = currentPutAbleList.map(e=>e.y).reduce((a,b)=>a+b)/currentPutAbleList.length;
-                }
+                centerX = currentPutAbleList.map(e=>e.x).reduce((a,b)=>a+b)/currentPutAbleList.length;
+                centerY = currentPutAbleList.map(e=>e.y).reduce((a,b)=>a+b)/currentPutAbleList.length;
             }
 
             // allCacheMap[pos].forEach(t=>{
@@ -1175,7 +1133,7 @@ let pro={
                 if(labDistance<=distance) return;
                 let checkCnt = 0;
                 let check=function (x,y){
-                    if(roomManor.get(x,y)>0&&Math.max(Math.abs(x+0.5-storageX),Math.abs(y+0.5-storageY))>2.5){
+                    if(roomManor.get(x,y)>0&&Math.abs(x-storageX)+Math.abs(y-storageY)>2){
                         checkCnt+=1;
                     }
                 }
@@ -1392,7 +1350,7 @@ let pro={
         extensionPos = extensionPos.sort(cmpFunc);
         let oriStruct = [];
         let putList=[];
-        ["spawn","nuker","powerSpawn","tower", "observer"].forEach(struct=>{
+        ["spawn","powerSpawn","nuker","tower", "observer"].forEach(struct=>{
             for(let i=0;i<CONTROLLER_STRUCTURES[struct][8];i++){
                 oriStruct.push(struct)
             }
@@ -1541,7 +1499,7 @@ let pro={
 
 global.ManagerPlanner = pro;
 
-loop = function () {
+module.exports.loop = function () {
     let roomStructsData = undefined //放全局变量
 
     let p = Game.flags.p; // 触发器
@@ -1549,18 +1507,12 @@ loop = function () {
     let pb = Game.flags.pb;
     let pc = Game.flags.pc;
     let pm = Game.flags.pm;
-    if (p) {
-        roomStructsData = ManagerPlanner.computeManor(p.pos.roomName, [pc, pm, pa, pb])
+    if(p) {
+        roomStructsData = ManagerPlanner.computeManor(p.pos.roomName,[pc,pm,pa,pb])
         Game.flags.p.remove()
     }
-    if (roomStructsData) {
+    if(roomStructsData){
         //这个有点消耗cpu 不看的时候记得关
-        HelperVisual.showRoomStructures(roomStructsData.roomName, roomStructsData.structMap)
+        HelperVisual.showRoomStructures(roomStructsData.roomName,roomStructsData.structMap)
     }
-}
-
-module.exports = {
-    HelperVisual: helpervisual,
-    ManagerPlanner: pro,
-    // Loop:loop
 }

@@ -23,11 +23,11 @@ const pluginDeploy = config && config.copyPath ?
                 dest: config.copyPath
             },
             {
-                src: 'src/module/layoutVisual/algo_wasm_priorityqueue.wasm',
+                src: 'src/module/layoutVisual/dynamic/algo_wasm_priorityqueue.wasm',
                 dest: config.copyPath
             },
             {
-                src: 'src/module/layoutVisual/autoPlanner63.js',
+                src: 'src/module/layoutVisual/dynamic/autoPlanner63.js',
                 dest: config.copyPath
             },
             {
@@ -67,11 +67,11 @@ export default {
         copy({
             targets: [
                 {
-                    src: 'src/module/layoutVisual/algo_wasm_priorityqueue.wasm',
+                    src: 'src/module/layoutVisual/dynamic/algo_wasm_priorityqueue.wasm',
                     dest: 'dist'
                 },
                 {
-                    src: 'src/module/layoutVisual/autoPlanner63.js',
+                    src: 'src/module/layoutVisual/dynamic/autoPlanner63.js',
                     dest: 'dist'
                 }
             ]

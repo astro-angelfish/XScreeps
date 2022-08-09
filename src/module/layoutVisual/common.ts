@@ -1,15 +1,21 @@
 import { isInArray } from '@/utils'
-import dev from './dev'
+import dev from './static/dev/dev'
+import hoho from './static/hoho/hoho'
 import RoomVisual from './RoomVisual'
 export const drawByConfig = function (str: string) {
 
     let data: any
     let xx: number
     let yy: number
-    if (str == 'LayoutVisual') {
+    if (str == 'LayoutVisualDev') {
         xx = -25;
         yy = -25;
         data = dev;
+    }
+    if (str == 'LayoutVisualHoho') {
+        xx = -25;
+        yy = -25;
+        data = hoho;
     }
     let flag = Game.flags[str];
     if (!flag) {
