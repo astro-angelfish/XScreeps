@@ -121,6 +121,7 @@ export default {
             /*开始统计孵化开销*/
             for (let cof in thisRoom.memory.SpawnConfig) {
                 let role = thisRoom.memory.SpawnConfig[cof]
+                if (role.num === 0) continue
                 let bd = global.CreepBodyData[thisRoom.name][cof];
                 let body = GenerateAbility(bd[0], bd[1], bd[2], bd[3], bd[4], bd[5], bd[6], bd[7])
                 let energy_ = CalculateEnergy(body)
