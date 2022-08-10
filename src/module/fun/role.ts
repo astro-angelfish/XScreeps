@@ -166,6 +166,17 @@ export function carry_(creep_: Creep): void {
         }
     }
     if (creep_.memory.working) {
+        if (creep_.room.memory.switch.speedstate && creep_.room.controller.level < 5) {
+            var target_c = creep_.pos.findClosestByRange(FIND_STRUCTURES, {
+                filter: (stru: StructureTower | StructureSpawn) => {
+                    return isInArray(['tower', 'spawn', 'extension'], stru.structureType) && stru.store.getFreeCapacity('energy') > 0
+                }
+            })
+            if (target_c) {
+                creep_.transfer_(target_c, 'energy')
+                return
+            }
+        }
         let target = null
         if (Game.rooms[creep_.memory.belong].storage)  // 优先仓库
         {
@@ -215,7 +226,7 @@ export function upgrade_(creep_: Creep): void {
         }
     }
     else {
-        if (creep_.room.controller.level < 4 && creep_.room.memory.switch.speedstate) {
+        if (creep_.room.controller.level < 6 && creep_.room.memory.switch.speedstate) {
             var find_tombstones = creep_.pos.findClosestByRange(FIND_TOMBSTONES, {
                 filter: (structure) => {
                     return structure.store.getUsedCapacity('energy') > 0
@@ -395,14 +406,16 @@ export function initial_speed_(creep: Creep): void {
                 return
             }
         } else {
-            var target = creep.pos.findClosestByRange(FIND_STRUCTURES, {
-                filter: (stru: StructureTower | StructureSpawn) => {
-                    return isInArray(['tower', 'spawn'], stru.structureType) && stru.store.getFreeCapacity('energy') > 0
+            if (thisRoom.controller.level < 4) {
+                var target = creep.pos.findClosestByRange(FIND_STRUCTURES, {
+                    filter: (stru: StructureTower | StructureSpawn) => {
+                        return isInArray(['tower', 'spawn'], stru.structureType) && stru.store.getFreeCapacity('energy') > 0
+                    }
+                })
+                if (target) {
+                    creep.transfer_(target, 'energy')
+                    return
                 }
-            })
-            if (target) {
-                creep.transfer_(target, 'energy')
-                return
             }
         }
         /*检查是否有工地*/
@@ -410,7 +423,12 @@ export function initial_speed_(creep: Creep): void {
         if (construction) {
             creep.build_(construction)
         } else {
-            creep.upgrade_()
+            if (creep.pos.inRangeTo(creep.room.controller, 3)) {
+                creep.upgrade_()
+            } else {
+                creep.goTo(creep.room.controller.pos, 2)
+            }
+
         }
     } else {
         /*搜索掉落的资源*/
@@ -448,6 +466,13 @@ export function initial_speed_(creep: Creep): void {
                 creep.moveTo(find_ruins);
             }
             return;
+        }
+        if (creep.room.storage) {
+            if (creep.room.storage.store.getUsedCapacity('energy') > 1000) {
+                if (creep.withdraw(creep.room.storage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                    creep.moveTo(creep.room.storage);
+                }
+            }
         }
         /*进行采集*/
         var find_sources = creep.pos.findClosestByRange(FIND_SOURCES, {

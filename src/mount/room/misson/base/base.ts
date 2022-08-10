@@ -235,12 +235,11 @@ export default class RoomMissonFrameExtension extends Room {
                 new_n = 2;
                 break;
             case 2:
-                new_n = 6;
-                break;
             case 3:
+            case 4:
                 new_n = 6;
                 break;
-            case 4:
+            case 5:
                 new_n = 4;
                 break;
         }

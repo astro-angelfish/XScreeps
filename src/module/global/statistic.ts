@@ -36,7 +36,7 @@ export function CreepNumStatistic(): void {
         if (!global.CreepNumData[creep_.memory.belong][creep_.memory.role])
             global.CreepNumData[creep_.memory.belong][creep_.memory.role] = 0
         /* 添加统计数目 */
-        if (["carry", "harvest", "out-car", "manage"].includes(creep_.memory.role)) {
+        if (["carry", "harvest", "out-car", "manage","initial_speed"].includes(creep_.memory.role)) {
             if (Object.keys(creep_.body).length * 3 >= creep_.ticksToLive) continue;
         }
         global.CreepNumData[creep_.memory.belong][creep_.memory.role] += 1
