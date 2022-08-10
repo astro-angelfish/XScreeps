@@ -42,7 +42,7 @@ export default class CreepNameManager {
         let isNamesEmpty = false;               // 标记，判断原神角色名可用是否为空
         let creepName;
 
-        while (Game.creeps[room.name + ' ' + nameManeger.names[nameManeger.index]]) {
+        while (Game.creeps[Game.shard.name + room.name + ' ' + nameManeger.names[nameManeger.index]]) {
             nameManeger.index = (nameManeger.index + 1) % nameManeger.names.length;
             // 转回来了说明原神角色名用完了
             if (firstIndex == nameManeger.index) {
@@ -58,11 +58,11 @@ export default class CreepNameManager {
             // 拼一个随机的名字
             while (true) {
                 creepName = nameManeger.names[Math.floor(Math.random() * 100) % nameManeger.names.length] + Math.floor(Math.random() * 10);
-                if (!Game.creeps[room.name + ' ' + creepName]) break;
+                if (!Game.creeps[Game.shard.name + room.name + ' ' + creepName]) break;
             }
         }
         // 注意返回值已经包装好了房间名
-        return room.name + ' ' + creepName;
+        return Game.shard.name + room.name + ' ' + creepName;
     }
 
     /**

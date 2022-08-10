@@ -95,11 +95,12 @@ export function GenerateAbility(work?: number, carry?: number, move?: number, at
 export function adaption_body(arr: BodyPartConstant[], critical_num: number): BodyPartConstant[] {
   // 先统计其他部件和move部件比值
   let move_num = arr.filter(part => part === 'move').length
+  let other_num = arr.length - move_num
   // 处理没有move部件的爬，比如某些挖过道的爬
-  let ratio = move_num ? Math.ceil((arr.length - move_num) / move_num) : 10000
+  let ratio = move_num ? Math.ceil(other_num / move_num) : 10000
   // 处理只有move部件的爬
   ratio = ratio < 1 ? 1 : ratio
-  let del_num = 0
+
   while (CalculateEnergy(arr) > critical_num) {
     // 这里有个隐藏bug，某个部件可能会被减没，不过一般没事，摆烂了
     if (critical_num < 300) return arr
@@ -109,21 +110,18 @@ export function adaption_body(arr: BodyPartConstant[], critical_num: number): Bo
     if (index > -1) {
       arr.splice(index, 1)
       // 如果最多的部件已经是move部件了，不再重复进行下面move部件的删除
-      // 同时del_num置0，不必过多减少move部件
-      if (m_body == 'move') {
+      if (m_body === 'move') {
         move_num--
-        del_num = 0
         continue
       }
-      del_num++
+      other_num--
     }
     // 同时删除move部件，至少留一个move部件
-    if (del_num >= ratio && move_num > 1) {
+    if (move_num > 1 && (other_num / (move_num - 1) <= ratio)) {
       let move_index = arr.indexOf('move')
       if (move_index > -1) {
         arr.splice(move_index, 1)
         move_num--
-        del_num = 0
       }
     }
   }
