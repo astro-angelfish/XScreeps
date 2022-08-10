@@ -95,9 +95,9 @@ export function GenerateAbility(work?: number, carry?: number, move?: number, at
 export function adaption_body(arr: BodyPartConstant[], critical_num: number): BodyPartConstant[] {
   // 先统计其他部件和move部件比值
   let move_num = arr.filter(part => part === 'move').length
-  let radio = Math.ceil((arr.length - move_num) / move_num);
+  let radio = Math.ceil((arr.length - move_num) / move_num)
   radio = radio < 1 ? 1 : radio
-  let del_num = 0;
+  let del_num = 0
   while (CalculateEnergy(arr) > critical_num) {
     // 这里有个隐藏bug，某个部件可能会被减没，不过一般没事，摆烂了
     if (critical_num < 300) return arr
@@ -105,15 +105,17 @@ export function adaption_body(arr: BodyPartConstant[], critical_num: number): Bo
     if (!m_body) { return arr }
     var index = arr.indexOf(m_body)
     if (index > -1) {
-      arr.splice(index, 1);
-      del_num++;
+      arr.splice(index, 1)
+      if (m_body == 'move') move_num--
+      del_num++
     }
-    // 同时删除move部件，至少留一个部件
-    if (del_num >= radio && arr.length > 1) {
+    // 同时删除move部件，至少留一个move部件
+    if (del_num >= radio && arr.length > 1 && move_num > 1) {
       let move_index = arr.indexOf('move')
       if (move_index > -1) {
-        arr.splice(move_index, 1);
-        del_num = 0;
+        arr.splice(move_index, 1)
+        move_num--
+        del_num = 0
       }
     }
   }
