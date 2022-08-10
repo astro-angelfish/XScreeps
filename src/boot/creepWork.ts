@@ -2,6 +2,11 @@ import { RoleData, RoleLevelData } from "@/constant/SpawnConstant"
 import { CalculateEnergy, colors, GenerateAbility } from "@/utils"
 
 export const creepRunner = function (creep: Creep): void {
+  // 模仿原神角色说话，要求爬命名时必须使用shenli的命名方法
+  if (creep.owner.username === 'shenli' && Math.random() < 0.4) {
+    creep.sayHi(creep.room.memory.state);
+  }
+
   var cpu_test = false
   // switch (Game.shard.name) {
   //   case 'shard3':

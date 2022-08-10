@@ -93,13 +93,28 @@ export function GenerateAbility(work?: number, carry?: number, move?: number, at
 
 // 用于对bodypartconstant[] 列表进行自适应化，使得爬虫房间能生产该爬虫，具体逻辑为寻找该bodypart中数量最多的，对其进行减法运算，直到达到目的，但数量到1时将不再减少
 export function adaption_body(arr: BodyPartConstant[], critical_num: number): BodyPartConstant[] {
+  // 先统计其他部件和move部件比值
+  let move_num = arr.filter(part => part === 'move').length
+  let radio = Math.ceil((arr.length - move_num) / move_num);
+  radio = radio < 1 ? 1 : radio
+  let del_num = 0;
   while (CalculateEnergy(arr) > critical_num) {
+    // 这里有个隐藏bug，某个部件可能会被减没，不过一般没事，摆烂了
     if (critical_num < 300) return arr
     let m_body = most_body(arr)
     if (!m_body) { return arr }
     var index = arr.indexOf(m_body)
     if (index > -1) {
       arr.splice(index, 1);
+      del_num++;
+    }
+    // 同时删除move部件，至少留一个部件
+    if (del_num >= radio && arr.length > 1) {
+      let move_index = arr.indexOf('move')
+      if (move_index > -1) {
+        arr.splice(move_index, 1);
+        del_num = 0;
+      }
     }
   }
   return arr

@@ -1,6 +1,7 @@
 /* 爬虫原型拓展   --功能  --功能 */
 
 import { BoostedPartData } from "@/constant/BoostConstant";
+import CreepNameManager from "@/module/creepNameManager";
 import { isInArray } from "@/utils";
 
 
@@ -213,5 +214,124 @@ export default class CreepFunctionExtension extends Creep {
             }
         }
         return null;
+    }
+
+    /**
+    * 统计爬的某类身体部件数目并缓存
+    */
+    public countBodyPart(bodyType: BodyPartConstant): number {
+        if (!this.memory.bodyPartCount) this.memory.bodyPartCount = {};
+        if (!this.memory.bodyPartCount[bodyType]) {
+            this.memory.bodyPartCount[bodyType] = this.getActiveBodyparts(bodyType);
+        }
+        return this.memory.bodyPartCount[bodyType];
+    }
+
+    /**
+     * 说话，原神中的台词，所有人可见
+     * 
+     * @param type 说话类型，日常语音和战时语音 daily or war
+     */
+    public sayHi(type: stateType = 'peace') {
+        // 第一次说话
+        if (!this.memory.sayHi) {
+            this.memory.sayHi = {
+                // 上一次说话所处的状态
+                state: type,
+                // 上一次所说的话
+                saying: ''
+            }
+        }
+
+        // 判断是否可以说原神台词
+        if (this.memory.sayHi.canSay === undefined) {
+            const nameParts = this.name.split(' ');
+            // 不符合命名格式
+            if (nameParts.length <= 1) {
+                this.memory.sayHi.canSay = false;
+                return;
+            }
+            // 获取原神角色名
+            const yuanshenName = nameParts[1];
+            if (!CreepNameManager.isYuanshenName(yuanshenName)) {
+                this.memory.sayHi.canSay = false;
+                return;
+            }
+            this.memory.sayHi.yuanshenName = yuanshenName;
+            this.memory.sayHi.canSay = true;
+        }
+
+        if (!this.memory.sayHi.canSay) return;
+
+        const lexicon = CreepNameManager.getLexicon(this.memory.sayHi.yuanshenName, type);
+
+        let index;
+        let last;   // 标记是否是继续说上一次没说完的话
+
+        if (this.memory.sayHi.lastIndex && this.memory.sayHi.state == type) {
+            index = this.memory.sayHi.lastIndex;
+            last = true;
+        }
+        else {
+            index = Math.floor(Math.random() * lexicon.length);
+            last = false;
+        }
+
+        this.memory.sayHi.state = type;
+
+        let setence = lexicon[index];
+        if (!setence) {
+            delete this.memory.sayHi.lastIndex;
+            delete this.memory.sayHi.saying;
+            return;
+        }
+        if (last) {
+            if (this.memory.sayHi.saying) {
+                setence = setence.slice(setence.lastIndexOf(this.memory.sayHi.saying) + this.memory.sayHi.saying.length);
+                // 去除首部特殊符号
+                if (setence.length && ['。', '？', '…', '，', '！', '~', '——'].includes(setence[0])) {
+                    setence = setence.slice(1);
+                }
+            }
+            else {
+                delete this.memory.sayHi.lastIndex;
+                return;
+            }
+        }
+        const words = setence.split(/[。？…，！~——]/);
+        if (words.length <= 1) {
+            if (setence.length) {
+                this.say(setence, true);
+                this.memory.sayHi.saying = setence;
+            }
+            else {
+                delete this.memory.sayHi.lastIndex;
+                delete this.memory.sayHi.saying;
+            }
+            return;
+        }
+        let len = words[0].length;
+        let ii = 1;
+        // +1 是因为要计入标点符号
+        while (ii < words.length && len + words[ii].length + 1 <= 10) {
+            len += words[ii++].length + 1;
+        }
+        ii--;
+        while (ii && !words[ii]) ii--;
+        if (ii >= words.length) {
+            if (setence.length) {
+                this.say(setence, true);
+            }
+            delete this.memory.sayHi.lastIndex;
+            delete this.memory.sayHi.saying;
+        }
+        else {
+            const w = setence.slice(0, setence.indexOf(words[ii]) + words[ii].length);
+            if (w.length) {
+                this.say(w, true);
+                this.memory.sayHi.saying = w;
+            }
+            this.memory.sayHi.lastIndex = index;
+        }
     }
 }

@@ -7,6 +7,7 @@
     "build": "rollup -cw",
     "push": "rollup -cw --environment DEST:somygame",
     "peasantry": "rollup -cw --environment DEST:peasantry",
+    "shenli": "rollup -cw --environment DEST:shenli",
     "local": "rollup -cw --environment DEST:local",
     "localsf": "rollup -cw --environment DEST:localsf",
     "localMo": "rollup -cw --environment DEST:localMo",

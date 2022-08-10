@@ -15,4 +15,6 @@ interface Creep {
     isInDefend(creep: Creep): boolean
     closestCreep(creep: Creep[], hurt?: boolean): Creep
     SearchHostilecreeps(range?: number): Creep | null
+    sayHi(type?: stateType): void,
+    countBodyPart(bodyType: BodyPartConstant): number
 }

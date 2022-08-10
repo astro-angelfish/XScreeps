@@ -2,6 +2,7 @@
  * *************** 此文件代码无需理解,只需会用即可 ***************
  */
 import { RoleData, RoleLevelData } from "@/constant/SpawnConstant"
+import CreepNameManager from "@/module/creepNameManager";
 import { adaption_body, CalculateEnergy, compare, GenerateAbility } from "@/utils"
 
 /* 房间原型拓展   --内核  --房间孵化 */
@@ -193,6 +194,9 @@ export default class RoomCoreSpawnExtension extends Room {
                     return randomId() + `/` + timestr
                 }
                 name = processName()
+            }
+            else if (["shenli"].includes(thisSpawn.owner.username)) {
+                name = CreepNameManager.registerName(this);
             }
             else {
                 name = `【${mark}】${randomStr}|${timestr}`

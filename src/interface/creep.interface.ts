@@ -9,22 +9,35 @@ interface CreepMemory {
     role: string        // 爬虫角色
     working: boolean
     /* 每个爬虫都必须有该记忆，方便boost */
-    boostData:BoostData   
+    boostData: BoostData
     /* 目标Id */
-    targetID?:string
-    containerID?:string
-    adaption?:boolean
-    taskRB?:string
-    msb?:boolean,
-    boostState?:boolean,//boost强化状态
-    notifyWhenAttacked?:boolean
+    targetID?: string
+    containerID?: string
+    adaption?: boolean
+    taskRB?: string
+    msb?: boolean,
+    boostState?: boolean,//boost强化状态
+    notifyWhenAttacked?: boolean,
+    // 爬说话
+    sayHi?: SayHi,
+    // 初始身体部件统计
+    bodyPartCount?: {
+        [bodyType in BodyPartConstant]?: number
+    }
 }
 
-interface BoostData{
-    [body:string]:Boosted
+interface BoostData {
+    [body: string]: Boosted
 }
-interface Boosted{
-    boosted?:boolean
-    type?:ResourceConstant
-    num?:number
+interface Boosted {
+    boosted?: boolean
+    type?: ResourceConstant
+    num?: number
+}
+interface SayHi {
+    state: stateType,
+    saying: string,
+    canSay?: boolean | undefined,
+    yuanshenName?: string,
+    lastIndex?: number
 }
