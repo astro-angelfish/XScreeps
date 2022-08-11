@@ -240,7 +240,7 @@ export default class RoomMissonFrameExtension extends Room {
                 new_n = 6;
                 break;
             case 5:
-                new_n = 4;
+                new_n = 5;
                 break;
         }
         if (this.memory.SpawnConfig['initial_speed'].num != new_n) {

@@ -93,7 +93,7 @@ export const RoleLevelData = {
         2: { bodypart: [3, 2, 3, 0, 0, 0, 0, 0], num: 2 },
         3: { bodypart: [4, 4, 4, 0, 0, 0, 0, 0], num: 2 },
         4: { bodypart: [5, 5, 10, 0, 0, 0, 0, 0], num: 1 },
-        5: { bodypart: [7, 2, 4, 0, 0, 0, 0, 0], num: 0 },
+        5: { bodypart: [10, 6, 10, 0, 0, 0, 0, 0], num: 0 },
     },
     'carry': {
         1: { bodypart: [0, 2, 2, 0, 0, 0, 0, 0], num: 2 },
@@ -110,7 +110,7 @@ export const RoleLevelData = {
         2: { bodypart: [2, 2, 4, 0, 0, 0, 0, 0], num: 3 },
         3: { bodypart: [3, 3, 6, 0, 0, 0, 0, 0], num: 3 },
         4: { bodypart: [4, 4, 8, 0, 0, 0, 0, 0], num: 2 },
-        5: { bodypart: [4, 4, 8, 0, 0, 0, 0, 0], num: 2 },
+        5: { bodypart: [6, 6, 12, 0, 0, 0, 0, 0], num: 2 },
         6: { bodypart: [7, 7, 14, 0, 0, 0, 0, 0], num: 2 },
         7: { bodypart: [10, 10, 10, 0, 0, 0, 0, 0], num: 2 },
         8: { bodypart: [15, 15, 15, 0, 0, 0, 0, 0], num: 1 },

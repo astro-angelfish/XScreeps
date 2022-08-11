@@ -166,7 +166,7 @@ export function carry_(creep_: Creep): void {
         }
     }
     if (creep_.memory.working) {
-        if (creep_.room.memory.switch.speedstate && creep_.room.controller.level < 5) {
+        if (creep_.room.memory.switch.speedstate && creep_.room.controller.level < 6) {
             var target_c = creep_.pos.findClosestByRange(FIND_STRUCTURES, {
                 filter: (stru: StructureTower | StructureSpawn) => {
                     return isInArray(['tower', 'spawn', 'extension'], stru.structureType) && stru.store.getFreeCapacity('energy') > 0
@@ -472,6 +472,7 @@ export function initial_speed_(creep: Creep): void {
                 if (creep.withdraw(creep.room.storage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                     creep.moveTo(creep.room.storage);
                 }
+                return;
             }
         }
         /*进行采集*/
