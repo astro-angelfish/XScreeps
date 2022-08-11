@@ -272,7 +272,7 @@ export default {
             return result
         },
         // 下买订单
-        buy(roomName: string, rType: ResourceConstant, mType: 'deal' | 'order', price: number, num: number, unit: number = 2000): string {
+        buy(roomName: string, rType: ResourceConstant, mType: 'deal' | 'order', num: number, price: number, unit: number = 2000): string {
             var thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[support] 不存在房间${roomName}`
             if (!thisRoom.memory.market) thisRoom.memory.market = {}
@@ -366,7 +366,7 @@ export default {
             return result
         },
         // 取消卖资源
-        cancel(roomName: string, mtype: 'order' | 'deal', rType: ResourceConstant): string {
+        cancel(roomName: string, rType: ResourceConstant, mtype: 'order' | 'deal'): string {
             var thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[support] 不存在房间${roomName}`
             for (let i of thisRoom.memory.market[mtype]) {
@@ -391,17 +391,17 @@ export default {
             }
             return Colorful(`[market] 房间${roomName}取消资源[${rType}----${mtype}]卖出配置失败`, 'red')
         },
-        reviseprice(roomName: string, mtype: 'order' | 'deal', mTyep: 'sell' | 'buy', rType: ResourceConstant, price: number): string {
+        revise(roomName: string, rType: ResourceConstant, mtype: 'order' | 'deal', mType: 'sell' | 'buy', price: number): string {
             var thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[support] 不存在房间${roomName}`
             for (let i of thisRoom.memory.market[mtype]) {
-                if (i.rType == rType && i.mTyep == mTyep) {
+                if (i.rType == rType && i.mTyep == mType) {
                     i.price = price
                     i.changePrice = true;
-                    return Colorful(`[market] 房间${roomName}资源[${rType}-${mtype}-${mTyep}]改价成功-${price}`, 'blue')
+                    return Colorful(`[market] 房间${roomName}资源[${rType}-${mtype}-${mType}]改价成功-${price}`, 'blue')
                 }
             }
-            return Colorful(`[market] 房间${roomName}资源[${rType}-${mtype}-${mTyep}]改价失败`, 'red')
+            return Colorful(`[market] 房间${roomName}资源[${rType}-${mtype}-${mType}]改价失败`, 'red')
         }
 
     },

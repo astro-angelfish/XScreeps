@@ -17,9 +17,12 @@ export default [
                 ...projectTitle.map(line => colorful(line, 'green', true)),
                 '\n',
                 '使用前请详细阅读如下规则:',
-                '1.使用frame.add时,如果布局为man,房间的中心点需要两格内有1个link和1个tower(如果刚开局，以后有就行了).',
-                '2.如果布局为dev,中心点在你第一个spawn往上两格.',
-                '3.能力越大责任越大，不要使用该框架欺负萌新!',
+                '1.使用frame.add时,如果布局为man,房间的中心点需要两格内有1个link和1个tower(如果刚开局,以后有就行了).',
+                '2.预设布局有不同的控制中心点:',
+                '   2.1如果布局为dev,中心点在你第一个spawn向右两格.',
+                '   2.2如果布局为tea,中心点在你第一个spawn向右五格.',
+                '   2.3如果布局为hoho,中心点在你第一个spawn向右三格,向下两格.',
+                '3.能力越大责任越大,不要使用该框架欺负萌新!',
                 '4.急速冲级代码不了解使用方法不要使用,否则有宕机风险!',
                 '5.本框架攻击模块具备各类型攻击代码及多次跨shard打击能力(超时空军团),除非自保,否则不要滥用!',
                 '6.不保证该代码没有Bug,遇到bug欢迎QQ群里找Mikebraton交流报告.',
@@ -34,7 +37,6 @@ export default [
         exec: function (): string {
             return[
                 ...projectTitle.map(line => colorful(line, 'blue', true)),
-                `\n`,
                 createHelp(
                     {
                         name: '《帮助手册及使用指南》',
@@ -207,8 +209,8 @@ export default [
                                 describe: '例: frame.add("W1N1","man",14,23)',
                                 params: [
                                     { name: 'roomName', desc: '想控制的房间' },
-                                    { name: 'plan', desc: '布局 man: 手动布局 dev:一种中心布局(参考superbitch)' },
-                                    { name: 'x', desc: '中心点的x坐标 注意:dev布局中心点请详见输入help' },
+                                    { name: 'plan', desc: '布局 man: 手动布局 dev | tea | hoho: 预设布局' },
+                                    { name: 'x', desc: '中心点的x坐标 注意: 预设布局中心点请详见输入help' },
                                     { name: 'y', desc: '中心点的y坐标 中心点选取请慎重,详见help' },
                                 ],
                                 functionName: 'frame.add'
@@ -292,7 +294,7 @@ export default [
                                     { name: 'roomName', desc: '源房间' },
                                     { name: 'disRoom', desc: '目标房间' },
                                     { name: 'rType(可选)', desc: '资源类型【不选表示除energy和ops外所有资源】' },
-                                    { name: 'num(可选)', desc: '资源数量【不限制数量】，不选表示全部数量' },
+                                    { name: 'num(可选)', desc: '资源数量【不限制数量】,不选表示全部数量' },
                                 ],
                                 functionName: 'logistic.send'
                             },
@@ -377,18 +379,20 @@ export default [
                                 describe: '查询市场上的订单 例: market.look("GH2O","sell")',
                                 params: [
                                     { name: 'rType', desc: '资源类型' },
-                                    { name: 'mtype', desc: '交易类型: buy | sell' },
+                                    { name: 'mType', desc: '交易类型: buy | sell' },
                                 ],
                                 functionName: 'market.look'
                             },
                             {
                                 title: '下单买某类型资源:',
-                                describe: '例: market.buy("w1n1","GH2O",35,20000)',
+                                describe: '例: market.buy("W1N1","GH2O","order",20000,35)',
                                 params: [
                                     { name: 'roomName', desc: '房间名' },
                                     { name: 'rType', desc: '资源类型' },
-                                    { name: 'price', desc: '价格' },
+                                    { name: 'mtype', desc: '交易类型: deal | order' },
                                     { name: 'num', desc: '数量' },
+                                    { name: 'price', desc: '价格' },
+                                    { name: 'unit', desc: '(可选) 单次购入数量' },
                                 ],
                                 functionName: 'market.buy'
                             },
@@ -402,11 +406,23 @@ export default [
                                 functionName: 'market.ave'
                             },
                             {
+                                title: '查询是否有订单:',
+                                describe: '例: market.have("W1N1,"GH2O","buy",50,10)',
+                                params: [
+                                    { name: 'roomName', desc: '房间名' },
+                                    { name: 'rType', desc: '资源类型' },
+                                    { name: 'mType', desc: '交易类型: buy | sell' },
+                                    { name: 'price', desc: '(可选) 价格' },
+                                    { name: 'range', desc: '(可选) 浮动区间' },
+                                ],
+                                functionName: 'market.have'
+                            },
+                            {
                                 title: '查询市场上某类型资源的最高价格:',
                                 describe: '例: market.highest("GH2O","sell",100)',
                                 params: [
                                     { name: 'rType', desc: '资源类型' },
-                                    { name: 'mtype', desc: '交易类型: buy | sell' },
+                                    { name: 'mType', desc: '交易类型: buy | sell' },
                                     { name: 'limit', desc: '(可选) 价格上限' },
                                 ],
                                 functionName: 'market.highest'
@@ -420,7 +436,7 @@ export default [
                                     { name: 'mtype', desc: '交易类型: deal | order' },
                                     { name: 'num', desc: '想卖掉的数量' },
                                     { name: 'price', desc: '(可选) 对于deal来说的最低价格' },
-                                    { name: 'unit', desc: '(可选) 资源平衡数量' },
+                                    { name: 'unit', desc: '(可选) 单次卖出数量' },
                                 ],
                                 functionName: 'market.sell'
                             },
@@ -437,10 +453,22 @@ export default [
                                 describe: '例: market.cancel("W1N1","deal","GH2O")',
                                 params: [
                                     { name: 'roomName', desc: '房间名' },
-                                    { name: 'mtype', desc: '交易类型: deal | order' },
                                     { name: 'rType', desc: '资源类型' },
+                                    { name: 'mtype', desc: '交易类型: deal | order' },
                                 ],
                                 functionName: 'market.cancel'
+                            },
+                            {
+                                title: '更改订单价格:',
+                                describe: '例: market.revise("W1N1","deal","GH2O")',
+                                params: [
+                                    { name: 'roomName', desc: '房间名' },
+                                    { name: 'rType', desc: '资源类型' },
+                                    { name: 'mtype', desc: '交易类型: deal | order' },
+                                    { name: 'mType', desc: '交易类型: buy | sell' },
+                                    { name: 'price', desc: '新价格' },
+                                ],
+                                functionName: 'market.revise'
                             },
                         ]
                     },
@@ -1075,7 +1103,6 @@ export default [
         exec: function (): string {
             return [
                 ...projectTitle.map(line => colorful(line, 'blue', true)),
-                `\n    ${colorful('superbitch bot', 'yellow', true)}`,
                 '这里列出一些可能用到的旗帜及其作用 统一规定xx为任何字符串 [xx]为房间名',
                 '旗帜名: [xx]/repair 房间内所有防御塔参与维修',
                 '旗帜名: [xx]/stop 房间内所有防御塔停止攻击',
