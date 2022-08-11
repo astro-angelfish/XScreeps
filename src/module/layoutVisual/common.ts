@@ -1,6 +1,7 @@
 import { isInArray } from '@/utils'
 import dev from './static/dev/dev'
 import hoho from './static/hoho/hoho'
+import tea from './static/tea/tea'
 import RoomVisual from './RoomVisual'
 export const drawByConfig = function (str: string) {
 
@@ -16,6 +17,11 @@ export const drawByConfig = function (str: string) {
         xx = -25;
         yy = -25;
         data = hoho;
+    }
+    if (str == 'LayoutVisualTea') {
+        xx = -25;
+        yy = -25;
+        data = tea;
     }
     let flag = Game.flags[str];
     if (!flag) {

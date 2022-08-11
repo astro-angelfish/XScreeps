@@ -13,7 +13,7 @@ interface Memory {
 interface RoomControlData {
     [roomName:string]:{
         // 房间布局 手动布局 | hoho布局 | dev布局 | om布局 | 自动布局
-        arrange: 'man' | 'hoho' | 'dev' 
+        arrange: 'man' | 'hoho' | 'dev'  | 'tea'
         
         // 中心点
         center: [number,number]
