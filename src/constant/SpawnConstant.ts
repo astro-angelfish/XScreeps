@@ -23,7 +23,7 @@ export const RoleData: SpawnConstantData = {
     'build': { num: 0, ability: [1, 1, 2, 0, 0, 0, 0, 0], level: 10, mark: "🔨", init: true, fun: build_, must: true },   // 建筑工
     'manage': { num: 0, ability: [0, 1, 1, 0, 0, 0, 0, 0], level: 1, mark: "🗃️", init: true, must: true, adaption: true },   // 中央搬运工
     'transport': { num: 0, ability: [0, 2, 2, 0, 0, 0, 0, 0], level: 2, mark: "📦", init: true, must: true, adaption: true },  // 房间物流搬运工
-    'initial_speed': { num: 0, ability: [1, 1, 2, 0, 0, 0, 0, 0], level: 3, mark: "⛏️", must: false, init: true, fun: initial_speed_ },  // 新房间冲级专用
+    'initial_speed': { num: 0, ability: [1, 1, 2, 0, 0, 0, 0, 0], level: 5, mark: "⛏️", must: false, init: true, fun: initial_speed_ },  // 新房间冲级专用
     'repair': { num: 0, ability: [1, 1, 1, 0, 0, 0, 0, 0], level: 8, mark: "🧱", must: true },     // 刷墙
     'cclaim': { num: 0, ability: [0, 0, 1, 0, 0, 0, 1, 0], level: 10, mark: "🐱" },           // 开房sf
     'cupgrade': { num: 0, ability: [2, 5, 7, 0, 0, 0, 0, 0], level: 11, mark: "🐱" },
@@ -89,10 +89,10 @@ export const RoleLevelData = {
         8: { bodypart: [10, 2, 10, 0, 0, 0, 0, 0], num: 2, upbodypart: [20, 4, 10, 0, 0, 0, 0, 0] },
     },
     'initial_speed': {
-        1: { bodypart: [1, 1, 2, 0, 0, 0, 0, 0], num: 2 },
-        2: { bodypart: [3, 2, 3, 0, 0, 0, 0, 0], num: 2 },
-        3: { bodypart: [4, 4, 4, 0, 0, 0, 0, 0], num: 2 },
-        4: { bodypart: [5, 5, 10, 0, 0, 0, 0, 0], num: 1 },
+        1: { bodypart: [1, 1, 2, 0, 0, 0, 0, 0], num: 0 },
+        2: { bodypart: [3, 2, 3, 0, 0, 0, 0, 0], num: 0 },
+        3: { bodypart: [4, 4, 4, 0, 0, 0, 0, 0], num: 0 },
+        4: { bodypart: [5, 5, 10, 0, 0, 0, 0, 0], num: 0 },
         5: { bodypart: [10, 6, 10, 0, 0, 0, 0, 0], num: 0 },
     },
     'carry': {
@@ -111,8 +111,8 @@ export const RoleLevelData = {
         3: { bodypart: [3, 3, 6, 0, 0, 0, 0, 0], num: 3 },
         4: { bodypart: [4, 4, 8, 0, 0, 0, 0, 0], num: 2 },
         5: { bodypart: [6, 6, 12, 0, 0, 0, 0, 0], num: 2 },
-        6: { bodypart: [7, 7, 14, 0, 0, 0, 0, 0], num: 2 },
-        7: { bodypart: [10, 10, 10, 0, 0, 0, 0, 0], num: 2 },
+        6: { bodypart: [7, 7, 14, 0, 0, 0, 0, 0], num: 1 },
+        7: { bodypart: [10, 10, 10, 0, 0, 0, 0, 0], num: 1 },
         8: { bodypart: [15, 15, 15, 0, 0, 0, 0, 0], num: 1 },
     },
     'build': {
@@ -141,8 +141,8 @@ export const RoleLevelData = {
         3: { bodypart: [0, 2, 2, 0, 0, 0, 0, 0], num: 0 },
         4: { bodypart: [0, 2, 2, 0, 0, 0, 0, 0], num: 1 },
         5: { bodypart: [0, 10, 5, 0, 0, 0, 0, 0], num: 1 },
-        6: { bodypart: [0, 15, 5, 0, 0, 0, 0, 0], num: 1 },
-        7: { bodypart: [0, 20, 10, 0, 0, 0, 0, 0], num: 1 },
+        6: { bodypart: [0, 30, 15, 0, 0, 0, 0, 0], num: 1 },
+        7: { bodypart: [0, 32, 15, 0, 0, 0, 0, 0], num: 1 },
         8: { bodypart: [0, 32, 16, 0, 0, 0, 0, 0], num: 1 },
     },
     'repair': {

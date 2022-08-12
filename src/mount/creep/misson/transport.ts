@@ -285,17 +285,31 @@ export default class CreepMissonTransportExtension extends Creep {
                     if (!this.pos.isNearTo(disPos)) this.goTo(disPos, 1)
                     else {
                         var targets = disPos.GetStructureList(['terminal', 'storage', 'tower', 'powerSpawn', 'container', 'factory', 'nuker', 'lab', 'link', 'extension'])
-                        if (targets.length > 0) {
+                        var ruin = disPos.GetRuin()
+                        if (targets.length > 0 || ruin) {
                             var target = targets[0]
-
-                            if ((!target.store || target.store[Data.rType] == 0) && this.store.getUsedCapacity(Data.rType) == 0) {
-                                /* 如果发现没资源了，就取消搬运任务 */
-                                belongRoom.DeleteMission(this.memory.MissionData.id)
-                                return
+                            var targetR = ruin as Ruin
+                            if (target) {
+                                if ((!target.store || target.store[Data.rType] == 0) && this.store.getUsedCapacity(Data.rType) == 0) {
+                                    /* 如果发现没资源了，就取消搬运任务 */
+                                    belongRoom.DeleteMission(this.memory.MissionData.id)
+                                    return
+                                }
+                                else {
+                                    this.withdraw(target, Data.rType)
+                                    this.memory.working = true
+                                }
                             }
-                            else {
-                                this.withdraw(target, Data.rType)
-                                this.memory.working = true
+                            if (targetR) {
+                                if (!targetR.store || targetR.store.getUsedCapacity() == 0) {
+                                    /* 如果发现没资源了，就取消搬运任务 */
+                                    belongRoom.DeleteMission(this.memory.MissionData.id)
+                                    return
+                                }
+                                for (var t in targetR.store) {
+                                    this.withdraw(targetR, t as ResourceConstant)
+                                }
+                                return
                             }
                         }
                     }
@@ -327,6 +341,7 @@ export default class CreepMissonTransportExtension extends Creep {
                         var targets = thisPos.GetStructureList(['terminal', 'storage', 'tower', 'powerSpawn', 'container', 'factory', 'nuker', 'lab', 'link', 'extension'])
                         if (targets.length > 0) {
                             var target = targets[0]
+
                             var capacity = this.store[Data.rType]
                             /* 如果送货正确，就减少房间主任务中的num，num低于0代表任务完成 */
                             for (var i in this.store) {
@@ -336,6 +351,11 @@ export default class CreepMissonTransportExtension extends Creep {
                                     return
                                 }
                             }
+                            if (target.store.getFreeCapacity() < 40000) {
+                                /* 目标满了、不是正确目标、目标消失了也代表任务完成 */
+                                belongRoom.DeleteMission(this.memory.MissionData.id)
+                                this.suicide();
+                            }
                         }
                         else {
                             belongRoom.DeleteMission(this.memory.MissionData.id)
@@ -343,6 +363,10 @@ export default class CreepMissonTransportExtension extends Creep {
                         }
                     }
                 } else {
+                    if (this.ticksToLive < 10) {
+                        this.suicide();
+                        return;
+                    }
                     var disPos = new RoomPosition(Data.sourcePosX, Data.sourcePosY, Data.sourceRoom)
                     if (!disPos) {
                         belongRoom.DeleteMission(this.memory.MissionData.id)

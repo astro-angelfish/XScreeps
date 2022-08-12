@@ -433,6 +433,7 @@ export default {
             }
             return Colorful(`[carry] 房间${roomName}位面搬运人物失败`, 'red')
         },
+        
     },
     /* 支援 */
     support: {

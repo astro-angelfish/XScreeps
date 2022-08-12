@@ -166,7 +166,7 @@ export function carry_(creep_: Creep): void {
         }
     }
     if (creep_.memory.working) {
-        if (creep_.room.memory.switch.speedstate && creep_.room.controller.level < 6) {
+        if (creep_.room.controller.level < 7) {
             var target_c = creep_.pos.findClosestByRange(FIND_STRUCTURES, {
                 filter: (stru: StructureTower | StructureSpawn) => {
                     return isInArray(['tower', 'spawn', 'extension'], stru.structureType) && stru.store.getFreeCapacity('energy') > 0

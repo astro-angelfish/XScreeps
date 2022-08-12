@@ -141,7 +141,11 @@ export default class RoomMissonVindicateExtension extends Room {
 
     /* 资源转移任务 */
     public Task_Resource_transfer(mission: MissionModel): void {
-        if ((Game.time - global.Gtime[this.name]) % 50) return
+        if (this.controller.level >= 8) {
+            if ((Game.time - global.Gtime[this.name]) % 50) return
+        } else {
+            if ((Game.time - global.Gtime[this.name]) % 5) return
+        }
         let storage_ = this.storage as StructureStorage
         let terminal_ = this.terminal as StructureTerminal
         if (!storage_ || !terminal_) {
@@ -149,7 +153,10 @@ export default class RoomMissonVindicateExtension extends Room {
             return
         }
         if (this.MissionNum('Structure', '资源传送') > 0) return //有传送任务就先不执行
-        if (storage_.store.getUsedCapacity('energy') < 200000) return   // 仓库资源太少不执行
+        let _all_store = 0;
+        if (storage_) _all_store += storage_.store.getUsedCapacity('energy');
+        if (terminal_) _all_store += terminal_.store.getUsedCapacity('energy');
+        if (_all_store < 100000) return   // 仓库资源太少不执行
         // 不限定资源代表除了能量和ops之外所有资源都要转移
         if (!mission.Data.rType) {
             for (var i in storage_.store) {
@@ -160,8 +167,10 @@ export default class RoomMissonVindicateExtension extends Room {
                     return
 
             }
-            // 代表已经没有资源了
-            this.DeleteMission(mission.id)
+            // 代表已经没有资源了 - 8级控制器终止任务
+            if (this.controller.level >= 8) {
+                this.DeleteMission(mission.id)
+            }
             return
         }
         else {

@@ -98,6 +98,9 @@ export default class terminalExtension extends StructureTerminal {
         let storeNum = this.room.storage.store.getUsedCapacity('energy') + this.store.getUsedCapacity('energy')
         let Demandlevel = 0;
         let addnumber = 20000;
+        if (this.room.controller.level < 8) {
+            addnumber = 100000;
+        }
         if (this.store.getFreeCapacity('energy') < addnumber) {
             addnumber = this.store.getFreeCapacity('energy')
         }
@@ -226,16 +229,22 @@ export default class terminalExtension extends StructureTerminal {
                 */
                 let up_tick = 500;
                 let drop_tick = 300;
-                switch (order_data.Demandlevel) {
-                    case 1:
-                        up_tick = 100;
-                        drop_tick = 40;
-                        break;
-                    case 2:
-                        up_tick = 150;
-                        drop_tick = 60;
-                        break;
+                if (this.room.controller.level >= 8) {
+                    switch (order_data.Demandlevel) {
+                        case 1:
+                            up_tick = 100;
+                            drop_tick = 40;
+                            break;
+                        case 2:
+                            up_tick = 150;
+                            drop_tick = 60;
+                            break;
+                    }
+                } else {
+                    up_tick = 50;
+                    drop_tick = 50;
                 }
+
                 if (!global.Marketorder[this.room.name]) { break; }
                 let Gatorder = global.Marketorder[this.room.name][order_data.order_id] as any;
                 if (!Gatorder) {
