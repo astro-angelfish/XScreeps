@@ -99,7 +99,12 @@ export default class terminalExtension extends StructureTerminal {
         let Demandlevel = 0;
         let addnumber = 20000;
         if (this.room.controller.level < 8) {
-            addnumber = 100000;
+            addnumber = 1e5;
+            let lastDayAve = avePrice('energy',1);
+            let threeDayAve = avePrice('energy',3);
+            let lastWeekAve = avePrice('energy',7);
+            addnumber -= Math.floor(7.5e4 / (1 + Math.exp(-3 * (lastDayAve - threeDayAve))));
+            addnumber -= Math.floor(2.5e4 / (1 + Math.exp(-1 * (lastDayAve - lastWeekAve))));
         }
         if (this.store.getFreeCapacity('energy') < addnumber) {
             addnumber = this.store.getFreeCapacity('energy')
@@ -113,7 +118,7 @@ export default class terminalExtension extends StructureTerminal {
                 let dispatchTask: RDData = {
                     sourceRoom: this.room.name,
                     rType: 'energy',
-                    num: 50000,
+                    num: addnumber,
                     delayTick: 300,
                     conditionTick: 20,
                     buy: true,
@@ -123,8 +128,8 @@ export default class terminalExtension extends StructureTerminal {
                 // Game.market.deal('62643960d8dac7fd5f21810b', 100000, this.room.name);
                 return;
             } else {
-                if (Game.market.credits) {
-                    if (Game.market.credits < 1000000) return
+                if (Game.market.credits && Game.market.credits < 1e6) {
+                    return
                 }
             }
             /*检索房间内的所有订单，同时进行匹配,*/
