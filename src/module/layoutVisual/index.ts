@@ -4,7 +4,7 @@ import { AppLifecycleCallbacks } from '../framework/types';
 import { drawByConfig } from './common'
 
 export function layoutVisual(): void {
-    for (let name of ['LayoutVisualDev', 'LayoutVisual63','LayoutVisualHoho']) {
+    for (let name of ['LayoutVisualDev','LayoutVisual63','LayoutVisualHoho','LayoutVisualTea']) {
         let flag = Game.flags[name];
         if (flag) {
             switch (name) {
@@ -12,6 +12,9 @@ export function layoutVisual(): void {
                     drawByConfig(flag.name);
                     break;
                 case 'LayoutVisualHoho':
+                    drawByConfig(flag.name);
+                    break;
+                case 'LayoutVisualTea':
                     drawByConfig(flag.name);
                     break;
                 case 'LayoutVisual63':

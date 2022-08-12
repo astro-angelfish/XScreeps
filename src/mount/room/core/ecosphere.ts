@@ -1,4 +1,4 @@
-import { devPlanConstant } from "@/constant/PlanConstant"
+import { devPlanConstant, hohoPlanConstant, teaPlanConstant } from "@/constant/PlanConstant"
 import { Colorful, isInArray } from "@/utils"
 
 /* 房间原型拓展   --内核  --房间生态 */
@@ -19,7 +19,8 @@ export default class RoomCoreEcosphereExtension extends Room {
             let LayOutPlan = Memory.RoomControlData[this.name].arrange
             switch (LayOutPlan) {
                 case 'man': { break; }
-                case 'hoho': { break; }
+                case 'hoho': { this.RoomRuleLayout(level, hohoPlanConstant); break; }
+                case 'tea': {this.RoomRuleLayout(level, teaPlanConstant); break;}
                 case 'dev': { this.RoomRuleLayout(level, devPlanConstant); break; }
             }
 
