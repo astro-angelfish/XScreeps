@@ -117,29 +117,29 @@ export default [
                             },
                             {
                                 title: '添加白名单:',
-                                describe: '例: whitesheet.add("")',
+                                describe: '例: whitelist.add("")',
                                 params: [
                                     { name: 'username', desc: '添加的用户名' },
                                 ],
-                                functionName: 'whitesheet.add'
+                                functionName: 'whitelist.add'
                             },
                             {
                                 title: '查看白名单:',
-                                describe: '例: whitesheet.show()',
-                                functionName: 'whitesheet.show'
+                                describe: '例: whitelist.show()',
+                                functionName: 'whitelist.show'
                             },
                             {
                                 title: '清空白名单:',
-                                describe: '例: whitesheet.clean()',
-                                functionName: 'whitesheet.clean'
+                                describe: '例: whitelist.clean()',
+                                functionName: 'whitelist.clean'
                             },
                             {
                                 title: '移除白名单:',
-                                describe: '例: whitesheet.remove("")',
+                                describe: '例: whitelist.remove("")',
                                 params: [
                                     { name: 'username', desc: '移除的用户名' },
                                 ],
-                                functionName: 'whitesheet.remove'
+                                functionName: 'whitelist.remove'
                             },
                             {
                                 title: '忽略控制台任务输出:',
@@ -201,7 +201,7 @@ export default [
                 createHelp(
                     // 框架控制
                     {
-                        name: '房间控制、监控相关',
+                        name: '房间控制、监控',
                         describe: '* 涉及房间管理、控制的命令',
                         api: [
                             {
@@ -235,12 +235,26 @@ export default [
                                 functionName: 'frame.del'
                             },
                             {
+                                title: '房间所有建筑拆除:',
+                                describe: '仅拆除敌对建筑;例: frame.delType("W1N1","road") 千万不能手动拆自己房间内除了wall之外的任何建筑',
+                                params: [
+                                    { name: 'roomName', desc: '我所控制的房间' },
+                                    { name: 'structureType', desc: '要拆除的建筑类型' },
+                                ],
+                                functionName: 'frame.delType'
+                            },
+                            {
                                 title: '房间进入经济模式:',
                                 describe: '例: frame.economy("W1N1") 8级房能用,进入经济模式后,不会一直升级,节省能量和cpu',
                                 params: [
                                     { name: 'roomName', desc: '我所控制的房间' },
                                 ],
                                 functionName: 'frame.economy'
+                            },
+                            {
+                                title: '所有房间进入经济模式:',
+                                describe: '例: frame.allEconomy() 所有8级房进入经济模式',
+                                functionName: 'frame.allEconomy'
                             },
                             {
                                 title: '查询房间内当前存在的任务:',
@@ -250,11 +264,19 @@ export default [
                                 ],
                                 functionName: 'frame.task'
                             },
+                            {
+                                title: '新房快速初始化:',
+                                describe: '例: frame.speedup("W1N1")',
+                                params: [
+                                    { name: 'roomName', desc: '我所控制的房间' },
+                                ],
+                                functionName: 'frame.speedup'
+                            },
                         ]
                     },
                     // 日常维护
                     {
-                        name: '日常维护相关',
+                        name: '日常维护',
                         describe: '* 例如爬虫数量的调整、任务的手动删除等',
                         api: [
                             {
@@ -286,6 +308,16 @@ export default [
                                     { name: 'id', desc: '任务id' },
                                 ],
                                 functionName: 'spawn.restart'
+                            },
+                            {
+                                title: '启用替代爬虫配置:',
+                                describe: '例:spawn.altConfig("W1N1","transport",1)',
+                                params: [
+                                    { name: 'roomName', desc: '房间名' },
+                                    { name: 'role', desc: '爬虫类型' },
+                                    { name: 'num', desc: '爬虫数量' },
+                                ],
+                                functionName: 'spawn.altConfig'
                             },
                             {
                                 title: '资源转移:【推荐】',
@@ -341,6 +373,14 @@ export default [
                                 functionName: 'terminal.show'
                             },
                             {
+                                title: '查看房间资源调度上限:',
+                                describe: 'dispatch.show("W1N1")',
+                                params: [
+                                    { name: 'roomName', desc: '源房间' },
+                                ],
+                                functionName: 'dispatch.show'
+                            },
+                            {
                                 title: '注册消费link:',
                                 describe: '让中央link自动向某link传送能量 例:link.comsume("W1N1","6204890bedf59067e60b4df3")',
                                 params: [
@@ -361,7 +401,7 @@ export default [
                     },
                     // 市场行为
                     {
-                        name: '市场行为相关',
+                        name: '市场行为',
                         describe: '与市场有关的各类命令',
                         api: [
                             {
@@ -418,7 +458,7 @@ export default [
                                 functionName: 'market.have'
                             },
                             {
-                                title: '查询市场上某类型资源的最高价格:',
+                                title: '查询市场上资源的最高价格:',
                                 describe: '例: market.highest("GH2O","sell",100)',
                                 params: [
                                     { name: 'rType', desc: '资源类型' },
@@ -449,7 +489,7 @@ export default [
                                 functionName: 'market.query'
                             },
                             {
-                                title: '取消某类型资源的卖出任务:',
+                                title: '取消资源的卖出任务:',
                                 describe: '例: market.cancel("W1N1","deal","GH2O")',
                                 params: [
                                     { name: 'roomName', desc: '房间名' },
@@ -478,6 +518,80 @@ export default [
                         describe: '房间一些日常行为的控制',
                         api: 
                         [     
+                            // outmine
+                            {
+                                title: '外矿采集:',
+                                describe: '例: mine.harvest("W1N1",14,23,"W1N2")',
+                                params: [
+                                    { name: 'roomName', desc: '房间名' },
+                                    { name: 'X', desc: '自己房间内采集起始点的x坐标(用于自动造路)' },
+                                    { name: 'Y', desc: '自己房间内采集起始点的y坐标(用于自动造路)' },
+                                    { name: 'disRoom', desc: '目标房间名' },
+                                ],
+                                functionName: 'mine.harvest'
+                            },
+                            {
+                                title: '取消外矿采集:',
+                                describe: '例: mine.Charvest("W1N1","W1N2")',
+                                params: [
+                                    { name: 'roomName', desc: '房间名' },
+                                    { name: 'disRoom', desc: '目标房间名' },
+                                ],
+                                functionName: 'mine.Charvest'
+                            },
+                            {
+                                title: '更新外矿路径信息:',
+                                describe: '例: mine.update("W1N1","W1N2")',
+                                params: [
+                                    { name: 'roomName', desc: '房间名' },
+                                    { name: 'disRoom', desc: '目标房间名' },
+                                ],
+                                functionName: 'mine.update'
+                            },
+                            {
+                                title: '强制更新外矿路径信息:',
+                                describe: '例: mine.forceUpdate("W1N1","W1N2")',
+                                params: [
+                                    { name: 'roomName', desc: '房间名' },
+                                    { name: 'disRoom', desc: '目标房间名' },
+                                ],
+                                functionName: 'mine.forceUpdate'
+                            },
+                            {
+                                title: '删除外矿路径信息:',
+                                describe: '例: mine.delRoad("W1N1","W1N2")',
+                                params: [
+                                    { name: 'roomName', desc: '房间名' },
+                                    { name: 'disRoom', desc: '目标房间名' },
+                                ],
+                                functionName: 'mine.delRoad'
+                            },
+                            // nuke
+                            {
+                                title: '核弹发射:',
+                                describe: '例: nuke.launch("W1N1","W1N2",12,34)',
+                                params: [
+                                    { name: 'roomName', desc: '房间名' },
+                                    { name: 'disRoom', desc: '目标房间名' },
+                                    { name: 'X', desc: '核弹着弹点x坐标' },
+                                    { name: 'Y', desc: '核弹着弹点y坐标' },
+                                ],
+                                functionName: 'nuke.launch'
+                            },
+                            {
+                                title: '开/关核弹自动填充:',
+                                describe: '例: nuke.switch("W1N1")',
+                                params: [
+                                    { name: 'roomName', desc: '房间名' },
+                                ],
+                                functionName: 'nuke.switch'
+                            },
+                        ]
+                    },
+                    {
+                        name: '实验室',
+                        describe: '控制房间内实验室的行为',
+                        api: [
                             // lab                       
                             {
                                 title: 'lab初始化 (新造的lab必须初始化):',
@@ -520,10 +634,218 @@ export default [
                                 title: '取消资源合成规划:',
                                 describe: '取消资源合成规划,配合lab.Ccompound使用 例: lab.Cdispatch("W1N1")',
                                 params: [
-                                    { name: 'roomName', desc: '目标房间' },
+                                    { name: 'roomName', desc: '房间名' },
                                 ],
                                 functionName: 'lab.Cdispatch'
                             },
+                            {
+                                title: '实验室自动合成:',
+                                describe: '实验室会在房间储量低于一定值时自动合成, 例: lab.addAuto("W1N1","G",10000)',
+                                params: [
+                                    { name: 'roomName', desc: '房间名' },
+                                    { name: 'type', desc: '资源类型' },
+                                    { name: 'num', desc: '资源数量' },
+                                ],
+                                functionName: 'lab.addAuto'
+                            },
+                            {
+                                title: '取消实验室自动合成:',
+                                describe: '例: lab.delAuto("W1N1","G")',
+                                params: [
+                                    { name: 'roomName', desc: '房间名' },
+                                    { name: 'type', desc: '资源类型' },
+                                ],
+                                functionName: 'lab.delAuto'
+                            },
+                            {
+                                title: '取消所有自动合成:',
+                                describe: '例: lab.cancelAuto("W1N1")',
+                                params: [
+                                    { name: 'roomName', desc: '房间名' },
+                                ],
+                                functionName: 'lab.cancelAuto'
+                            },
+                        ]
+                    },
+                    {
+                        name: '工厂',
+                        describe: '控制房间内工厂的行为',
+                        api: [
+                            // factory
+                            {
+                                title: '工厂等级初始化:',
+                                describe: '如果工厂有pc,并且有工厂等级,需要初始化工厂等级',
+                                params: [
+                                    { name: 'roomName', desc: '房间名' },
+                                ],
+                                functionName: 'factory.level'
+                            },
+                            {
+                                title: '启动/关闭 工厂:',
+                                describe: '默认开启',
+                                params: [
+                                    { name: 'roomName', desc: '房间名' },
+                                ],
+                                functionName: 'factory.switch'
+                            },
+                            {
+                                title: '输出工厂目前工作状态:',
+                                describe: '例: factory.show("W1N1")',
+                                params: [
+                                    { name: 'roomName', desc: '房间名' },
+                                ],
+                                functionName: 'factory.show'
+                            },
+                            {
+                                title: '添加工厂基本商品生产列表:',
+                                describe: '基本商品生产列表 例: factory.add("W1N1","utrium_bar",10000)',
+                                params: [
+                                    { name: 'roomName', desc: '房间名' },
+                                    { name: 'cType', desc: '商品类型' },
+                                    { name: 'num', desc: '数量' },
+                                ],
+                                functionName: 'factory.add'
+                            },
+                            {
+                                title: '删除工厂基本商品生产:',
+                                describe: ' 例: factory.remove("W1N1","utrium_bar")',
+                                params: [
+                                    { name: 'roomName', desc: '房间名' },
+                                    { name: 'cType', desc: '商品类型' },
+                                ],
+                                functionName: 'factory.remove'
+                            },
+                            {
+                                title: '设置工厂流水线商品:',
+                                describe: '只能是流水线商品 例: factory.set("W1N1","machine") ',
+                                params: [
+                                    { name: 'roomName', desc: '房间名' },
+                                    { name: 'cType', desc: '商品类型' },
+                                ],
+                                functionName: 'factory.set'
+                            },
+                            {
+                                title: '删除工厂流水线商品:',
+                                describe: '例: factory.del("W1N1","machine")',
+                                params: [
+                                    { name: 'roomName', desc: '房间名' },
+                                    { name: 'cType', desc: '商品类型' },
+                                ],
+                                functionName: 'factory.del'
+                            },
+                            {
+                                title: '解压特定商品:',
+                                describe: '例: factory.decompress("W1N1","keanium_bar",10000)',
+                                params: [
+                                    { name: 'roomName', desc: '房间名' },
+                                    { name: 'cType', desc: '商品类型' },
+                                    { name: 'num', desc: '数量' },
+                                ],
+                                functionName: 'factory.decompress'
+                            },
+                            {
+                                title: '取消解压特定商品:',
+                                describe: '例: factory.decompress("W1N1","keanium_bar")',
+                                params: [
+                                    { name: 'roomName', desc: '房间名' },
+                                    { name: 'cType', desc: '商品类型' },
+                                ],
+                                functionName: 'factory.decompress'
+                            },
+                            {
+                                title: '切换自动解压所有商品:',
+                                describe: '例: factory.autoDecompress("W1N1")',
+                                params: [
+                                    { name: 'roomName', desc: '房间名' },
+                                ],
+                                functionName: 'factory.autoDecompress'
+                            },
+                        ]
+                    },
+                    {
+                        name: '过道',
+                        describe: '控制房间的过道采集任务',
+                        api: [
+                            // cross
+                            {
+                                title: '初始化过道采集任务(此前未初始化必须初始化):',
+                                describe: '例: cross.init("W1N1",["W1N0","W2N0","W3N0"])',
+                                params: [
+                                    { name: 'roomName', desc: '房间名' },
+                                    { name: 'realteRooms', desc: '想采集的过道房间列表' },
+                                ],
+                                functionName: 'cross.init'
+                            },
+                            {
+                                title: '开启/关闭过道:',
+                                describe: '例: cross.switch("W1N1")',
+                                params: [
+                                    { name: 'roomName', desc: '房间名' },
+                                ],
+                                functionName: 'cross.switch'
+                            },
+                            {
+                                title: '增加过道房间:',
+                                describe: '例: cross.add("W1N1","W4N0")',
+                                params: [
+                                    { name: 'roomName', desc: '房间名' },
+                                ],
+                                functionName: 'cross.add'
+                            },
+                            {
+                                title: '删除过道房间:',
+                                describe: '例: cross.remove("W1N1","W4N0")',
+                                params: [
+                                    { name: 'roomName', desc: '房间名' },
+                                ],
+                                functionName: 'cross.remove'
+                            },
+                            {
+                                title: '开启/关闭 power采集:',
+                                describe: '例: cross.power("W1N1")',
+                                params: [
+                                    { name: 'roomName', desc: '房间名' },
+                                ],
+                                functionName: 'cross.power'
+                            },
+                            {
+                                title: '删除特定power采集任务:',
+                                describe: '例: cross.delPower("W1N1","W2N0")',
+                                params: [
+                                    { name: 'roomName', desc: '房间名' },
+                                ],
+                                functionName: 'cross.delPower'
+                            },
+                            {
+                                title: '开启/关闭 deposit采集:',
+                                describe: '例: cross.deposit("W1N1")',
+                                params: [
+                                    { name: 'roomName', desc: '房间名' },
+                                ],
+                                functionName: 'cross.deposit'
+                            },
+                            {
+                                title: '展示过道采集情况:',
+                                describe: '例: cross.show("W1N1")',
+                                params: [
+                                    { name: 'roomName', desc: '房间名' },
+                                ],
+                                functionName: 'cross.show'
+                            },
+                            {
+                                title: '取消过道采集任务:',
+                                describe: '例: cross.cancel("W1N1")',
+                                params: [
+                                    { name: 'roomName', desc: '房间名' },
+                                ],
+                                functionName: 'cross.cancel'
+                            },
+                        ]
+                    },
+                    {
+                        name: '帕瓦',
+                        describe: '控制房间的帕瓦消耗',
+                        api: [
                             // power
                             {
                                 title: '启动/关闭 GPL升级:',
@@ -575,172 +897,57 @@ export default [
                                 ],
                                 functionName: 'power.del'
                             },
-                            // factory
                             {
-                                title: '工厂等级初始化:',
-                                describe: '如果工厂有pc,并且有工厂等级,需要初始化工厂等级',
+                                title: '添加帕瓦供应:',
+                                describe: ' 例:power.add("W1N1")',
                                 params: [
                                     { name: 'roomName', desc: '房间名' },
                                 ],
-                                functionName: 'factory.level'
+                                functionName: 'powerSupply.add'
                             },
                             {
-                                title: '启动/关闭 工厂:',
-                                describe: '默认开启',
+                                title: '移除帕瓦供应:',
+                                describe: ' 例:power.remove("W1N1")',
                                 params: [
                                     { name: 'roomName', desc: '房间名' },
                                 ],
-                                functionName: 'factory.switch'
+                                functionName: 'powerSupply.remove'
                             },
                             {
-                                title: '添加工厂基本商品生产列表:',
-                                describe: '基本商品生产列表 例: factory.add("W1N1","utrium_bar",10000)',
-                                params: [
-                                    { name: 'roomName', desc: '房间名' },
-                                    { name: 'rType', desc: '商品类型' },
-                                    { name: 'num', desc: '数量' },
-                                ],
-                                functionName: 'factory.add'
+                                title: '查看帕瓦供应列表:',
+                                describe: ' 例:power.show()',
+                                functionName: 'powerSupply.show'
                             },
                             {
-                                title: '删除工厂基本商品生产:',
-                                describe: ' 例: factory.remove("W1N1","utrium_bar")',
+                                title: '清空帕瓦供应列表:',
+                                describe: ' 例:power.clean()',
+                                functionName: 'powerSupply.clean'
+                            },
+                        ]
+                    },
+                    {
+                        name: '主动防御',
+                        describe: '控制战争时主动防御的行为',
+                        api: [
+                            {
+                                title: '忽略指定ram:',
+                                describe: '例: rampart.add("W1N1",25,25)',
                                 params: [
                                     { name: 'roomName', desc: '房间名' },
+                                    { name: 'x', desc: '忽略ram的x坐标' },
+                                    { name: 'y', desc: '忽略ram的y坐标' },
                                 ],
-                                functionName: 'factory.remove'
+                                functionName: 'rampart.add'
                             },
                             {
-                                title: '设置工厂流水线商品:',
-                                describe: '只能是流水线商品 例: factory.set("W1N1","machine") ',
+                                title: '取消忽略指定ram:',
+                                describe: '例: rampart.remove("W1N1",25,25)',
                                 params: [
                                     { name: 'roomName', desc: '房间名' },
-                                    { name: 'rType', desc: '商品类型' },
+                                    { name: 'x', desc: '取消忽略ram的x坐标' },
+                                    { name: 'y', desc: '取消忽略ram的y坐标' },
                                 ],
-                                functionName: 'factory.set'
-                            },
-                            {
-                                title: '删除工厂流水线商品:',
-                                describe: '例: factory.del("W1N1","machine")',
-                                params: [
-                                    { name: 'roomName', desc: '房间名' },
-                                ],
-                                functionName: 'factory.del'
-                            },
-                            {
-                                title: '输出工厂目前工作状态:',
-                                describe: '例: factory.show("W1N1")',
-                                params: [
-                                    { name: 'roomName', desc: '房间名' },
-                                ],
-                                functionName: 'factory.show'
-                            },
-                            // cross
-                            {
-                                title: '初始化过道采集任务(此前未初始化必须初始化):',
-                                describe: '例: cross.init("W1N1",["W1N0","W2N0","W3N0"])',
-                                params: [
-                                    { name: 'roomName', desc: '房间名' },
-                                    { name: 'realteRooms', desc: '想采集的过道房间列表' },
-                                ],
-                                functionName: 'cross.init'
-                            },
-                            {
-                                title: '增加过道房间:',
-                                describe: '例: cross.add("W1N1","W4N0")',
-                                params: [
-                                    { name: 'roomName', desc: '房间名' },
-                                ],
-                                functionName: 'cross.add'
-                            },
-                            {
-                                title: '开启/关闭过道:',
-                                describe: '例: cross.switch("W1N1")',
-                                params: [
-                                    { name: 'roomName', desc: '房间名' },
-                                ],
-                                functionName: 'cross.switch'
-                            },
-                            {
-                                title: '删除过道房间:',
-                                describe: '例: cross.remove("W1N1","W4N0")',
-                                params: [
-                                    { name: 'roomName', desc: '房间名' },
-                                ],
-                                functionName: 'cross.remove'
-                            },
-                            {
-                                title: '开启/关闭 power采集:',
-                                describe: '例: cross.power("W1N1")',
-                                params: [
-                                    { name: 'roomName', desc: '房间名' },
-                                ],
-                                functionName: 'cross.power'
-                            },
-                            {
-                                title: '开启/关闭 deposit采集:',
-                                describe: '例: cross.deposit("W1N1")',
-                                params: [
-                                    { name: 'roomName', desc: '房间名' },
-                                ],
-                                functionName: 'cross.deposit'
-                            },
-                            {
-                                title: '展示过道采集情况:',
-                                describe: '例: cross.show("W1N1")',
-                                params: [
-                                    { name: 'roomName', desc: '房间名' },
-                                ],
-                                functionName: 'cross.show'
-                            },
-                            {
-                                title: '取消过道采集任务:',
-                                describe: '例: cross.cancel("W1N1")',
-                                params: [
-                                    { name: 'roomName', desc: '房间名' },
-                                ],
-                                functionName: 'cross.cancel'
-                            },
-                            // outmine
-                            {
-                                title: '外矿采集:',
-                                describe: '例: mine.harvest("W1N1",14,23,"W1N2")',
-                                params: [
-                                    { name: 'roomName', desc: '房间名' },
-                                    { name: 'X', desc: '自己房间内采集起始点的x坐标(用于自动造路)' },
-                                    { name: 'Y', desc: '自己房间内采集起始点的y坐标(用于自动造路)' },
-                                    { name: 'disRoom', desc: '目标房间名' },
-                                ],
-                                functionName: 'mine.harvest'
-                            },
-                            {
-                                title: '取消外矿采集:',
-                                describe: '例: mine.Charvest("W1N1","W1N2")',
-                                params: [
-                                    { name: 'roomName', desc: '房间名' },
-                                    { name: 'disRoom', desc: '目标房间名' },
-                                ],
-                                functionName: 'mine.Charvest'
-                            },
-                            // nuke
-                            {
-                                title: '核弹发射:',
-                                describe: '例: nuke.launch("W1N1","W1N2",12,34)',
-                                params: [
-                                    { name: 'roomName', desc: '房间名' },
-                                    { name: 'disRoom', desc: '目标房间名' },
-                                    { name: 'X', desc: '核弹着弹点x坐标' },
-                                    { name: 'Y', desc: '核弹着弹点y坐标' },
-                                ],
-                                functionName: 'nuke.launch'
-                            },
-                            {
-                                title: '开/关核弹自动填充:',
-                                describe: '例: nuke.switch("W1N1")',
-                                params: [
-                                    { name: 'roomName', desc: '房间名' },
-                                ],
-                                functionName: 'nuke.switch'
+                                functionName: 'rampart.remove'
                             },
                         ]
                     },

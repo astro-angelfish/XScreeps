@@ -14,7 +14,7 @@ export default {
             /* 查看资源是否足够 */
             var terminal_ = thisRoom.terminal as StructureTerminal
             var storage_ = thisRoom.storage as StructureStorage
-            if (!terminal_ || !storage_) { return Colorful(`[terminal] 房间${roomName}不存在终端/仓房或记忆未更新！`, 'red', true) }
+            if (!terminal_ || !storage_) { return Colorful(`[terminal] 房间${roomName}不存在终端/仓房或记忆未更新!`, 'red', true) }
             /* 查询其他资源传送任务中是否有一样的资源 */
             var Num = 0
             if (!thisRoom.memory.Misson['Structure']) thisRoom.memory.Misson['Structure'] = []
@@ -23,14 +23,14 @@ export default {
             }
             /* 计算资源是否满足 */
             if (terminal_.store.getUsedCapacity(rType) + storage_.store.getUsedCapacity(rType) - Num < num)
-                return Colorful(`[terminal] 房间${roomName} 资源${rType} 数量总合少于 ${num}，传送任务挂载失败！`, 'yellow', true)
+                return Colorful(`[terminal] 房间${roomName} 资源${rType} 数量总合少于 ${num}, 传送任务挂载失败!`, 'yellow', true)
             /* 计算路费 */
             var cost = Game.market.calcTransactionCost(num, roomName, disRoom)
             if (terminal_.store.getUsedCapacity('energy') + storage_.store.getUsedCapacity('energy') < cost || cost > 150000)
-                return Colorful(`[terminal] 房间${roomName}-->${disRoom}资源${rType}所需路费少于 ${cost}或大于150000，传送任务挂载失败！`, 'yellow', true)
+                return Colorful(`[terminal] 房间${roomName}-->${disRoom}资源${rType}所需路费少于 ${cost}或大于150000, 传送任务挂载失败!`, 'yellow', true)
             if (thisRoom.AddMission(thisTask))
-                return Colorful(`[terminal] 房间${roomName}-->${disRoom}资源${rType}传送挂载成功！数量：${num}；路费：${cost}`, 'green', true)
-            return Colorful(`[terminal] 房间${roomName}-->${disRoom}资源${rType}传送 不明原因挂载失败！`, 'red', true)
+                return Colorful(`[terminal] 房间${roomName}-->${disRoom}资源${rType}传送挂载成功! 数量：${num}；路费：${cost}`, 'green', true)
+            return Colorful(`[terminal] 房间${roomName}-->${disRoom}资源${rType}传送 不明原因挂载失败!`, 'red', true)
         },
         Csend(roomName: string, disRoom: string, rType: ResourceConstant): string {
             var thisRoom = Game.rooms[roomName]
@@ -40,7 +40,7 @@ export default {
                     if (thisRoom.DeleteMission(tM.id)) return Colorful(`[terminal] 房间${roomName}-->${disRoom}资源${rType}传送任务删除成功!`, 'blue', true)
                 }
             }
-            return Colorful(`[terminal] 房间${roomName}-->${disRoom}资源${rType}传送 不明原因删除失败！`, 'red', true)
+            return Colorful(`[terminal] 房间${roomName}-->${disRoom}资源${rType}传送 不明原因删除失败!`, 'red', true)
         },
         /* 查看目前房间/全局的资源传送任务 */
         show(roomName?: string): string {
@@ -52,9 +52,9 @@ export default {
                     roomList.push(rN)
                 }
             }
-            if (roomList.length <= 0) return `[terminal] 未发现房间！`
+            if (roomList.length <= 0) return `[terminal] 未发现房间!`
             for (var rN of roomList) {
-                if (!Game.rooms[rN]) return `[terminal] 不存在房间${rN}！`
+                if (!Game.rooms[rN]) return `[terminal] 不存在房间${rN}!`
             }
             var str = ''
             for (var rN of roomList) {
@@ -67,7 +67,7 @@ export default {
                     }
                 }
             }
-            if (str == '') return `[terminal] 未发现资源传送任务！`
+            if (str == '') return `[terminal] 未发现资源传送任务!`
             return str
         },
     },
@@ -114,7 +114,7 @@ export default {
             if (!thisRoom) return `[logistic] 不存在房间${roomName}`
             let thisTask = thisRoom.public_resource_transfer(disRoom, rType ? rType : null, num ? num : null)
             if (thisTask && thisRoom.AddMission(thisTask))
-                return Colorful(`[logistic] 房间${roomName} --> ${disRoom}资源转移任务已经下达，资源类型:${rType ? rType : "所有资源"} | 数量:${num ? num : "所有"}`, 'green')
+                return Colorful(`[logistic] 房间${roomName} --> ${disRoom}资源转移任务已经下达, 资源类型:${rType ? rType : "所有资源"} | 数量:${num ? num : "所有"}`, 'green')
             return Colorful(`[logistic] 房间${roomName} --> ${disRoom}资源转移任务已经下达失败!`, 'red')
         },
         Csend(roomName: string, disRoom: string): string {
@@ -150,8 +150,8 @@ export default {
             if (!thisRoom) return `[mine] 不存在房间${roomName}`
             var thisTask = thisRoom.public_OutMine(roomName, x, y, disRoom)
             thisTask.maxTime = 8
-            if (thisRoom.AddMission(thisTask)) return `[mine] ${roomName} -> ${disRoom} 的外矿任务挂载成功！`
-            return `[mine] ${roomName} -> ${disRoom} 的外矿任务挂载失败！`
+            if (thisRoom.AddMission(thisTask)) return `[mine] ${roomName} -> ${disRoom} 的外矿任务挂载成功!`
+            return `[mine] ${roomName} -> ${disRoom} 的外矿任务挂载失败!`
         },
         // 取消采集
         Charvest(roomName: string, disRoom: string): string {
@@ -161,14 +161,14 @@ export default {
                 if (i.name == '外矿开采' && i.Data.disRoom == disRoom) {
                     if (thisRoom.DeleteMission(i.id)) {
                         if (Memory.outMineData[disRoom]) delete Memory.outMineData[disRoom]
-                        return `[mine] ${roomName} -> ${disRoom} 的外矿任务删除成功！`
+                        return `[mine] ${roomName} -> ${disRoom} 的外矿任务删除成功!`
                     }
                 }
             }
-            return `[mine] ${roomName} -> ${disRoom} 的外矿任务删除失败！`
+            return `[mine] ${roomName} -> ${disRoom} 的外矿任务删除失败!`
         },
         // 更新外矿road信息
-        road(roomName: string, disRoom: string): string {
+        update(roomName: string, disRoom: string): string {
             if (!Game.rooms[disRoom]) return `[mine] 不存在相应视野`
             let roads = Game.rooms[disRoom].find(FIND_STRUCTURES, {
                 filter: (stru) => {
@@ -197,7 +197,7 @@ export default {
             }
             return `[mine] 已经更新房间${disRoom}的外矿信息!`
         },
-        uproad(roomName: string, disRoom: string, roadUpdatedforce?: boolean): string {
+        forceUpdate(roomName: string, disRoom: string, roadUpdatedforce?: boolean): string {
             var thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[mine] 不存在房间${roomName}`
             for (var i of thisRoom.memory.Misson['Creep']) {
@@ -205,12 +205,12 @@ export default {
                     i.Data.roadUpdatedforce = roadUpdatedforce ? true : false;
                     i.Data.roadUpdated = false;
                     i.Data.state = 1;
-                    return `[mine] ${roomName} -> ${disRoom} 的外矿任务更新成功！`
+                    return `[mine] ${roomName} -> ${disRoom} 的外矿任务更新成功!`
                 }
             }
-            return `[mine] ${roomName} -> ${disRoom} 的外矿任务更新失败！`
+            return `[mine] ${roomName} -> ${disRoom} 的外矿任务更新失败!`
         },
-        Delroad(roomName: string, x: number, y: number): string {
+        delRoad(roomName: string, x: number, y: number): string {
             var thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[mine] 不存在房间${roomName}`
             let road_t = `${x}/${y}/${roomName}`
@@ -458,17 +458,17 @@ export default {
             for (var i of resourceComDispatch[res]) {
                 myRoom.memory.ComDispatchData[i] = { res: i, dispatch_num: num }
             }
-            return `[lab] 已经修改房间${roomName}的合成规划数据，为${resourceComDispatch[res]}，数量：${num}`
+            return `[lab] 已经修改房间${roomName}的合成规划数据, 为${resourceComDispatch[res]}, 数量：${num}`
         },
         // 取消lab合成规划
         Cdispatch(roomName: string): string {
             var myRoom = Game.rooms[roomName]
             if (!myRoom) return `[lab] 未找到房间${roomName},请确认房间!`
             myRoom.memory.ComDispatchData = {}
-            return `[lab] 已经修改房间${roomName}的合成规划数据，为{}.本房见现已无资源合成调度`
+            return `[lab] 已经修改房间${roomName}的合成规划数据, 为{}.本房见现已无资源合成调度`
         },
         /*增加lab合成保持任务*/
-        Addautomatic(roomName: string, res: ResourceConstant, num: number): string {
+        addAuto(roomName: string, res: ResourceConstant, num: number): string {
             if (num < 10000) return `[lab] 自动任务挂载不少于10000,请重新确认数量!`
             var myRoom = Game.rooms[roomName]
             if (!myRoom) return `[lab] 未找到房间${roomName},请确认房间!`
@@ -477,9 +477,9 @@ export default {
                 if (Data.Type == res) {
                     if (Data.Num != num) {
                         myRoom.memory.Labautomatic.automaticData[i].Num = num;
-                        return `[lab] 房间${roomName}的自动合成调整，已调整${res}自动合成，数量：${num}`
+                        return `[lab] 房间${roomName}的自动合成调整, 已调整${res}自动合成, 数量：${num}`
                     }
-                    return `[lab] 房间${roomName}的自动合成调整，已有${res}自动合成`
+                    return `[lab] 房间${roomName}的自动合成调整, 已有${res}自动合成`
                 }
             }
             let Level = LabLevel[res];
@@ -489,10 +489,10 @@ export default {
             myRoom.memory.Labautomatic.automaticState = true;
             /*清空自动规划任务*/
             myRoom.memory.ComDispatchData = {}
-            return `[lab] 房间${roomName}的自动合成调整，新增${res}自动合成`
+            return `[lab] 房间${roomName}的自动合成调整, 新增${res}自动合成`
         },
         /*删除lab合成保持任务*/
-        Delautomatic(roomName: string, res: ResourceConstant): string {
+        delAuto(roomName: string, res: ResourceConstant): string {
             var myRoom = Game.rooms[roomName]
             if (!myRoom) return `[lab] 未找到房间${roomName},请确认房间!`
             for (var i in myRoom.memory.Labautomatic.automaticData) {
@@ -504,18 +504,18 @@ export default {
                     });
 
                     myRoom.memory.Labautomatic.automaticData = filtered
-                    return `[lab] 房间${roomName}的自动合成调整，已删除${res}自动合成`
+                    return `[lab] 房间${roomName}的自动合成调整, 已删除${res}自动合成`
                 }
             }
             return `[lab] 房间${roomName}的自动合成调整失败`
         },
         /*清空lab合成保持任务*/
-        Cautomatic(roomName: string): string {
+        cancelAuto(roomName: string): string {
             var myRoom = Game.rooms[roomName]
             if (!myRoom) return `[lab] 未找到房间${roomName},请确认房间!`
             myRoom.memory.Labautomatic.automaticData = [];
             myRoom.memory.Labautomatic.automaticState = false
-            return `[lab] 已经清空房间${roomName}的自动合成数据，已关闭Lab自动合成`
+            return `[lab] 已经清空房间${roomName}的自动合成数据, 已关闭Lab自动合成`
         }
 
     },
@@ -587,7 +587,7 @@ export default {
             if (!myRoom) return `[power] 未找到房间${roomName},请确认房间!`
             if (!['queen'].includes(pcType)) return `[power] 不存在该类型pc!`
             if (Game.powerCreeps[`${roomName}/${pcType}/${Game.shard.name}`])
-                return `[power] 已经存在名为${roomName}/${pcType}/${Game.shard.name}的pc了! `
+                return `[power] 已经存在名为${roomName}/${pcType}/${Game.shard.name}的pc了!`
             let result
             if (pcType == 'queen')
                 result = PowerCreep.create(`${roomName}/${pcType}/${Game.shard.name}`, POWER_CLASS.OPERATOR);
@@ -600,6 +600,7 @@ export default {
         del(name: string, pass?: boolean): string {
             if (!Game.powerCreeps[name]) return `[power] 不存在名称为${name}的pc!`
             if (!pass) return `[power] 未确认,验证不通过!`
+            Game.powerCreeps[name].suicide()
             Game.powerCreeps[name].delete()
             return `[power] 名称为${name}的pc已经删除! 如非测试模式,可能未立即删除!请等候24小时!`
         }
@@ -612,7 +613,7 @@ export default {
             relateRoom = relateRoom // ['start'].concat(relateRoom)
             var thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[cross] 不存在房间${roomName}`
-            if (thisRoom.controller.level < 8) return `[cross] 房间${roomName}控制器等级不足！`
+            if (thisRoom.controller.level < 8) return `[cross] 房间${roomName}控制器等级不足!`
             var thisTask: MissionModel = {
                 name: "过道采集",
                 range: 'Room',
@@ -623,8 +624,8 @@ export default {
                     relateRooms: relateRoom
                 }
             }
-            if (thisRoom.AddMission(thisTask)) return `[cross] 房间${roomName}初始化过道采集任务成功！ 房间：${relateRoom}`
-            else return `[cross] 房间${roomName}初始化过道采集任务失败！请检查房间内是否已经存在该任务！`
+            if (thisRoom.AddMission(thisTask)) return `[cross] 房间${roomName}初始化过道采集任务成功! 房间：${relateRoom}`
+            else return `[cross] 房间${roomName}初始化过道采集任务失败! 请检查房间内是否已经存在该任务!`
         },
         switch(roomName): string {
             var thisRoom = Game.rooms[roomName]
@@ -647,7 +648,7 @@ export default {
                         return Colorful(`[cross] 房间${roomName}过道采集任务的power属性已经更改为${i.Data.power}`, 'yellow')
                 }
             }
-            return `[cross] 房间${roomName}更改过道采集任务power属性失败！请检查房间内是否已经存在该任务！`
+            return `[cross] 房间${roomName}更改过道采集任务power属性失败! 请检查房间内是否已经存在该任务!`
         },
         deposit(roomName: string): string {
             var thisRoom = Game.rooms[roomName]
@@ -661,7 +662,7 @@ export default {
                         return Colorful(`[cross] 房间${roomName}过道采集任务的deposit属性已经更改为${i.Data.deposit}`, 'yellow')
                 }
             }
-            return `[cross] 房间${roomName}更改过道采集任务deposit属性失败！请检查房间内是否已经存在该任务！`
+            return `[cross] 房间${roomName}更改过道采集任务deposit属性失败! 请检查房间内是否已经存在该任务!`
         },
         room(roomName: string, roomData: string[]): string {
             roomData = roomData
@@ -673,7 +674,7 @@ export default {
                     return `[cross] 房间${roomName}过道采集任务的房间已经更改为${roomData}`
                 }
             }
-            return `[cross] 房间${roomName}更改过道采集任务deposit属性失败！请检查房间内是否已经存在该任务！`
+            return `[cross] 房间${roomName}更改过道采集任务deposit属性失败! 请检查房间内是否已经存在该任务!`
         },
         /* 删除某个房间 */
         remove(roomName: string, delRoomName: string): string {
@@ -687,13 +688,13 @@ export default {
                             var list = i.Data.relateRooms as string[]
                             var index = list.indexOf(j)
                             list.splice(index, 1)
-                            return `[cross] 房间${roomName}的过道采集清单里已经删除房间${j}！ 现有房间列表为${i.Data.relateRooms}`
+                            return `[cross] 房间${roomName}的过道采集清单里已经删除房间${j}! 现有房间列表为${i.Data.relateRooms}`
                         }
                     }
                     return `[cross] 房间${roomName}过道采集任务的房间清单未找到房间${delRoomName}`
                 }
             }
-            return `[cross] 房间${roomName}更改过道采集任务房间清单失败！请检查房间内是否已经存在该任务！`
+            return `[cross] 房间${roomName}更改过道采集任务房间清单失败! 请检查房间内是否已经存在该任务!`
         },
         /* 增加某个房间 */
         add(roomName: string, addRoomName: string): string {
@@ -706,22 +707,22 @@ export default {
                         return `[cross] 房间${roomName}过道采集任务的房间清单已经存在房间${addRoomName}`
                     else {
                         i.Data.relateRooms.push(addRoomName)
-                        return `[cross] 房间${roomName}过道采集任务的房间清单已经添加房间${addRoomName}！以下为房间清单：${i.Data.relateRooms}`
+                        return `[cross] 房间${roomName}过道采集任务的房间清单已经添加房间${addRoomName}! 以下为房间清单：${i.Data.relateRooms}`
                     }
                 }
             }
-            return `[cross] 房间${roomName}更改过道采集任务房间清单失败！请检查房间内是否已经存在该任务！`
+            return `[cross] 房间${roomName}更改过道采集任务房间清单失败! 请检查房间内是否已经存在该任务!`
         },
         /* 删除某个具体power任务 */
-        delpower(roomName: string, disRoom: string): string {
+        delPower(roomName: string, disRoom: string): string {
             var thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[cross] 不存在房间${roomName}`
             for (var i of thisRoom.memory.Misson['Creep']) {
                 if (i.name == 'power采集' && i.Data.room == disRoom) {
                     if (thisRoom.DeleteMission(i.id))
-                        return `[cross] 删除${roomName}-->${disRoom}的power采集任务成功！`
+                        return `[cross] 删除${roomName}-->${disRoom}的power采集任务成功!`
                     else
-                        return `[cross] 删除${roomName}-->${disRoom}的power采集任务失败！`
+                        return `[cross] 删除${roomName}-->${disRoom}的power采集任务失败!`
                 }
             }
             return `[cross] 未找到${roomName}-->${disRoom}的power采集任务`
@@ -746,7 +747,7 @@ export default {
                     return str
                 }
             }
-            return `[cross] 房间${roomName}展示过道采集任务失败！请检查房间内是否已经存在该任务！`
+            return `[cross] 房间${roomName}展示过道采集任务失败! 请检查房间内是否已经存在该任务!`
         },
         /* 取消过道采集开关 */
         cancel(roomName: string): string {
@@ -755,10 +756,10 @@ export default {
             for (var i of thisRoom.memory.Misson['Room']) {
                 if (i.name == '过道采集') {
                     thisRoom.DeleteMission(i.id)
-                    return `[cross] 房间${roomName}已经取消过道采集任务！`
+                    return `[cross] 房间${roomName}已经取消过道采集任务!`
                 }
             }
-            return `[cross] 房间${roomName}取消过道采集任务失败！请检查房间内是否已经存在该任务！`
+            return `[cross] 房间${roomName}取消过道采集任务失败! 请检查房间内是否已经存在该任务!`
         },
     },
 
@@ -830,16 +831,16 @@ export default {
             if (!factory_) return Colorful(`[factory] 未找到房间${roomName}的工厂!`, 'red', true)
             return factory_.del(cType)
         },
-        unzip(roomName: string, cType: CommodityConstant, num: number): string {
+        decompress(roomName: string, cType: CommodityConstant, num: number): string {
             var myRoom = Game.rooms[roomName]
             if (!myRoom) return `[factory] 未找到房间${roomName},请确认房间!`
             let factory_ = myRoom.GetStruDate(STRUCTURE_FACTORY) as StructureFactory
             if (!factory_) return Colorful(`[factory] 未找到房间${roomName}的工厂!`, 'red', true)
             if (myRoom.memory.productData.unzip[cType]) return Colorful(`[factory] 房间${roomName}已经存在${cType}的解压缩任务!`, 'red', true)
             myRoom.memory.productData.unzip[cType] = { num: num }
-            return Colorful(`[factory] 房间${roomName}已经设置${cType}的解压缩任务，数量:${num}!`, 'blue', true)
+            return Colorful(`[factory] 房间${roomName}已经设置${cType}的解压缩任务, 数量:${num}!`, 'blue', true)
         },
-        Cunzip(roomName: string, cType: CommodityConstant): string {
+        Cdecompress(roomName: string, cType: CommodityConstant): string {
             var myRoom = Game.rooms[roomName]
             if (!myRoom) return `[factory] 未找到房间${roomName},请确认房间!`
             let factory_ = myRoom.GetStruDate(STRUCTURE_FACTORY) as StructureFactory
@@ -848,7 +849,7 @@ export default {
             delete myRoom.memory.productData.unzip[cType]
             return Colorful(`[factory] 房间${roomName} ${cType}的解压缩任务已经删除!`, 'blue', true)
         },
-        Dynamicfactoryuncondense(roomName: string) {
+        autoDecompress(roomName: string) {
             var myRoom = Game.rooms[roomName]
             if (!myRoom) return `[factory] 未找到房间${roomName},请确认房间!`
             let factory_ = myRoom.GetStruDate(STRUCTURE_FACTORY) as StructureFactory
