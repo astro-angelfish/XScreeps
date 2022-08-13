@@ -229,23 +229,6 @@ export default class RoomMissonFrameExtension extends Room {
             this.memory.SpawnConfig['initial_speed'].num = 0
             return;
         }
-        let new_n = 0;
-        switch (this.controller.level) {
-            case 1:
-                new_n = 2;
-                break;
-            case 2:
-            case 3:
-            case 4:
-                new_n = 6;
-                break;
-            case 5:
-                new_n = 5;
-                break;
-        }
-        if (this.memory.SpawnConfig['initial_speed'].num != new_n) {
-            this.memory.SpawnConfig['initial_speed'].num = new_n;
-        }
     }
 
     /* 冷却计时器 */

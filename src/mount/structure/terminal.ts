@@ -96,15 +96,16 @@ export default class terminalExtension extends StructureTerminal {
 
         // 确定当前的能量数量信息
         let storeNum = this.room.storage.store.getUsedCapacity('energy') + this.store.getUsedCapacity('energy')
+        if (storeNum >= 250000) return
         let Demandlevel = 0;
         let addnumber = 20000;
         if (this.room.controller.level < 8) {
-            addnumber = 1e5;
-            let lastDayAve = avePrice('energy',1);
-            let threeDayAve = avePrice('energy',3);
-            let lastWeekAve = avePrice('energy',7);
-            addnumber -= Math.floor(7.5e4 / (1 + Math.exp(-3 * (lastDayAve - threeDayAve))));
-            addnumber -= Math.floor(2.5e4 / (1 + Math.exp(-1 * (lastDayAve - lastWeekAve))));
+            addnumber = 100000;
+            let lastDayAve = avePrice('energy', 1);
+            let threeDayAve = avePrice('energy', 3);
+            let lastWeekAve = avePrice('energy', 7);
+            addnumber -= Math.floor(75000 / (1 + Math.exp(-3 * (lastDayAve - threeDayAve))));
+            addnumber -= Math.floor(25000 / (1 + Math.exp(-1 * (lastDayAve - lastWeekAve))));
         }
         if (this.store.getFreeCapacity('energy') < addnumber) {
             addnumber = this.store.getFreeCapacity('energy')

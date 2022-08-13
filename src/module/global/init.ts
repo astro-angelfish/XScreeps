@@ -39,6 +39,7 @@ export const MemoryInit = function (): void {
     global.Adaption = {}
     global.RoomResource = {}
     global.HostileCreepsData = {}
+    global.MarketAveprice = {}
     // Memory.SystemEconomy = false;
     if (Game.time % 100) {
         for (let rooms in Memory.rooms) {

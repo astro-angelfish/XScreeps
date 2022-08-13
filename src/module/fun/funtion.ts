@@ -12,7 +12,14 @@ export function avePrice(res: ResourceConstant, day: number): number {
     }
     if (day > 14) return 0  // 0
     let allprice: number = 0
-    let history = Game.market.getHistory(res)
+    let history = null;
+    if (global.MarketAveprice[res]) {
+        history = global.MarketAveprice[res]
+    } else {
+        history = Game.market.getHistory(res)
+        global.MarketAveprice[res] = history;
+    }
+
     for (var ii = 14 - day; ii < 14; ii++) {
         if (history[ii]) allprice += history[ii].avgPrice
     }

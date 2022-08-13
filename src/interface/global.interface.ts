@@ -22,6 +22,9 @@ declare module NodeJS {
         HostileCreepsData: {
             [creep_name: string]: { [creep: string]: any }
         },
+        MarketAveprice: {
+            [Res: string]: string
+        },
         HostileGroup: {
             [roomName: string]: { [creep: string]: any }
         },
