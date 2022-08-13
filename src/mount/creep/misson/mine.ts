@@ -60,6 +60,8 @@ export default class CreepMissonMineExtension extends Creep {
                     if (this.room.controller && (!this.room.controller.sign || (Game.time - this.room.controller.sign.time) > 100000)) {
                         if (["somygame"].includes(this.owner.username)) {
                             this.signController(this.room.controller, `麻了，麻了，彻底麻了`)
+                        } else if (["Morningtea"].includes(this.owner.username)) {
+                            this.signController(this.room.controller, ``)
                         } else if (!["superbitch", "ExtraDim"].includes(this.owner.username)) {
                             this.signController(this.room.controller, `${this.owner.username}'s 🌾 room!  Auto clean, Please keep distance!`)
                         } else {

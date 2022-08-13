@@ -345,8 +345,9 @@ export default class RoomMissonPublish extends Room {
         var thisTask: MissionModel = {
             name: '扩张援建',
             range: 'Creep',
-            delayTick: 40000,
+            delayTick: 99999,
             level: 10,
+            maxTime: 2,
             Data: {
                 disRoom: disRoom,
                 shard: shard,

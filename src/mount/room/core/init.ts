@@ -353,7 +353,7 @@ export default class RoomCoreInitExtension extends Room {
             if (this.terminal) {
                 room_energy += this.terminal.store.getUsedCapacity(RESOURCE_ENERGY)
             }
-            let creep_num = Math.floor(room_energy / 100000) + 1;
+            let creep_num = Math.floor(room_energy / 100000);
             creep_num = creep_num > 5 ? 5 : creep_num
             if (room_energy < 50000) creep_num = 0;
             if (this.memory.SpawnConfig.upgrade.num != creep_num) { console.log(this.name, 'upgrade动态调整', creep_num); }
@@ -365,8 +365,6 @@ export default class RoomCoreInitExtension extends Room {
                 } else {
                     if (level >= 8) {
                         this.memory.SpawnConfig.upgrade.num = 1;
-                    } else {
-                        this.memory.SpawnConfig.upgrade.num = 2;
                     }
                 }
             }
