@@ -414,9 +414,7 @@ export function initial_speed_(creep: Creep): void {
                 })
 
                 if (target) {
-                    let from_pos = `W${target.pos.x}N${target.pos.y}`
-                    let to_pos = `W${creep.pos.x}N${creep.pos.y}`
-                    let _number = Game.map.getRoomLinearDistance(from_pos, to_pos)
+                    let _number = getDistance(target.pos, creep.pos)
                     if (_number < 7) {
                         creep.transfer_(target, 'energy')
                         return
