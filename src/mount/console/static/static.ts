@@ -47,8 +47,8 @@ export default {
         }
     },
     /* 任务输出调试屏蔽 */
-    MissionVisual: {
-        add(name: string): string {
+    missionInfo: {
+        ignore(name: string): string {
             if (!isInArray(Memory.ignoreMissonName, name))
                 Memory.ignoreMissonName.push(name)
             return `[ignore] 已经将任务${name}添加进输出调试的忽略名单里!`
@@ -64,7 +64,7 @@ export default {
         },
     },
     /*左上角显示操作*/
-    Visualdisplay: {
+    visual: {
         change(roomName: string): string {
             let thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[Visual] 不存在房间${roomName}`
@@ -72,7 +72,9 @@ export default {
             return `[Visual] ${thisRoom} 可视化显示${thisRoom.memory.Visualdisplay}`
 
         },
-        clearflagall(): string {
+    },
+    flag: {
+        clear(): string {
             for (let flags_key in Game.flags) {
                 Game.flags[flags_key].remove()
             }
@@ -80,8 +82,8 @@ export default {
         }
     },
     /*房间维护开销的计算*/
-    Maintain: {
-        roommaintain(roomName: string): string {
+    maintain: {
+        cost(roomName: string): string {
             let thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[Visual] 不存在房间${roomName}`
             /*筛选出所有的道路*/

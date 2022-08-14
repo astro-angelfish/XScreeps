@@ -146,14 +146,14 @@ export default [
                                 params: [
                                     { name: 'name', desc: '任务名字' },
                                 ],
-                                functionName: 'MissionVisual.add'
+                                functionName: 'missionInfo.ignore'
                             },
                             {
                                 title: '恢复控制台任务输出:',
                                 params: [
                                     { name: 'name', desc: '任务名字' },
                                 ],
-                                functionName: 'MissionVisual.remove'
+                                functionName: 'missionInfo.remove'
                             },
                             {
                                 title: '开启/关闭自动搓像素(默认开启):',
@@ -184,6 +184,15 @@ export default [
                                     { name: 'res', desc: '目标资源类型' },
                                 ],
                                 functionName: 'give.remove'
+                            },
+                            {
+                                title: '删除所有旗帜:',
+                                describe: '此操作会删除游戏内所有旗帜, 包括手动插的',
+                                params: [
+                                    { name: 'roomName', desc: '目标房间' },
+                                    { name: 'res', desc: '目标资源类型' },
+                                ],
+                                functionName: 'flag.clear'
                             },
                         ]
                     },
@@ -272,6 +281,14 @@ export default [
                                 ],
                                 functionName: 'frame.speedup'
                             },
+                            {
+                                title: '房间可视化切换:',
+                                describe: '例: visual.change("W1N1")',
+                                params: [
+                                    { name: 'roomName', desc: '房间名' },
+                                ],
+                                functionName: 'visual.change'
+                            },
                         ]
                     },
                     // 日常维护
@@ -279,6 +296,14 @@ export default [
                         name: '日常维护',
                         describe: '* 例如爬虫数量的调整、任务的手动删除等',
                         api: [
+                            {
+                                title: '计算房间日常开销:',
+                                describe: '例: maintain.cost("W1N1")',
+                                params: [
+                                    { name: 'roomName', desc: '房间名' },
+                                ],
+                                functionName: 'maintain.cost'
+                            },
                             {
                                 title: '常驻爬虫数量调整:',
                                 describe: '只适用于upgrade harvest carry transport manage build类型爬虫;例:spawn.num("W1N1","carry",1)',
@@ -586,6 +611,26 @@ export default [
                                 ],
                                 functionName: 'nuke.switch'
                             },
+                            {
+                                title: '主防忽略指定ram:',
+                                describe: '例: rampart.add("W1N1",25,25)',
+                                params: [
+                                    { name: 'roomName', desc: '房间名' },
+                                    { name: 'x', desc: '忽略ram的x坐标' },
+                                    { name: 'y', desc: '忽略ram的y坐标' },
+                                ],
+                                functionName: 'rampart.add'
+                            },
+                            {
+                                title: '取消忽略指定ram:',
+                                describe: '例: rampart.remove("W1N1",25,25)',
+                                params: [
+                                    { name: 'roomName', desc: '房间名' },
+                                    { name: 'x', desc: '取消忽略ram的x坐标' },
+                                    { name: 'y', desc: '取消忽略ram的y坐标' },
+                                ],
+                                functionName: 'rampart.remove'
+                            },
                         ]
                     },
                     {
@@ -745,12 +790,12 @@ export default [
                             },
                             {
                                 title: '取消解压特定商品:',
-                                describe: '例: factory.decompress("W1N1","keanium_bar")',
+                                describe: '例: factory.Cdecompress("W1N1","keanium_bar")',
                                 params: [
                                     { name: 'roomName', desc: '房间名' },
                                     { name: 'cType', desc: '商品类型' },
                                 ],
-                                functionName: 'factory.decompress'
+                                functionName: 'factory.Cdecompress'
                             },
                             {
                                 title: '切换自动解压所有商品:',
@@ -922,32 +967,6 @@ export default [
                                 title: '清空帕瓦供应列表:',
                                 describe: ' 例:power.clean()',
                                 functionName: 'powerSupply.clean'
-                            },
-                        ]
-                    },
-                    {
-                        name: '主动防御',
-                        describe: '控制战争时主动防御的行为',
-                        api: [
-                            {
-                                title: '忽略指定ram:',
-                                describe: '例: rampart.add("W1N1",25,25)',
-                                params: [
-                                    { name: 'roomName', desc: '房间名' },
-                                    { name: 'x', desc: '忽略ram的x坐标' },
-                                    { name: 'y', desc: '忽略ram的y坐标' },
-                                ],
-                                functionName: 'rampart.add'
-                            },
-                            {
-                                title: '取消忽略指定ram:',
-                                describe: '例: rampart.remove("W1N1",25,25)',
-                                params: [
-                                    { name: 'roomName', desc: '房间名' },
-                                    { name: 'x', desc: '取消忽略ram的x坐标' },
-                                    { name: 'y', desc: '取消忽略ram的y坐标' },
-                                ],
-                                functionName: 'rampart.remove'
                             },
                         ]
                     },
@@ -1336,16 +1355,16 @@ export default [
  * 帮助文档中的标题
  */
 const projectTitle = [
-    String.raw`    ███████╗██╗   ██╗██████╗ ███████╗██████╗ ██████╗ ██╗████████╗ ██████╗██╗  ██╗`,
-    String.raw`    ██╔════╝██║   ██║██╔══██╗██╔════╝██╔══██╗██╔══██╗██║╚══██╔══╝██╔════╝██║  ██║`,
-    String.raw`    ███████╗██║   ██║██████╔╝█████╗  ██████╔╝██████╔╝██║   ██║   ██║     ███████║`,
-    String.raw`    ╚════██║██║   ██║██╔═══╝ ██╔══╝  ██╔══██╗██╔══██╗██║   ██║   ██║     ██╔══██║`,
-    String.raw`    ███████║╚██████╔╝██║     ███████╗██║  ██║██████╔╝██║   ██║   ╚██████╗██║  ██`,
-    String.raw`    ╚══════╝ ╚═════╝ ╚═╝     ╚══════╝╚═╝  ╚═╝╚═════╝ ╚═╝   ╚═╝    ╚═════╝╚═╝  ╚═╝`,
-    String.raw`                             ██████╗  ██████╗ ████████╗`,
-    String.raw`                             ██╔══██╗██╔═══██╗╚══██╔══╝`,
-    String.raw`                             ██████╔╝██║   ██║   ██║   `,
-    String.raw`                             ██╔══██╗██║   ██║   ██║   `,
-    String.raw`                             ██████╔╝╚██████╔╝   ██║   `,
-    String.raw`                             ╚═════╝  ╚═════╝    ╚═╝   `,
+    // String.raw`    ███████╗██╗   ██╗██████╗ ███████╗██████╗ ██████╗ ██╗████████╗ ██████╗██╗  ██╗`,
+    // String.raw`    ██╔════╝██║   ██║██╔══██╗██╔════╝██╔══██╗██╔══██╗██║╚══██╔══╝██╔════╝██║  ██║`,
+    // String.raw`    ███████╗██║   ██║██████╔╝█████╗  ██████╔╝██████╔╝██║   ██║   ██║     ███████║`,
+    // String.raw`    ╚════██║██║   ██║██╔═══╝ ██╔══╝  ██╔══██╗██╔══██╗██║   ██║   ██║     ██╔══██║`,
+    // String.raw`    ███████║╚██████╔╝██║     ███████╗██║  ██║██████╔╝██║   ██║   ╚██████╗██║  ██`,
+    // String.raw`    ╚══════╝ ╚═════╝ ╚═╝     ╚══════╝╚═╝  ╚═╝╚═════╝ ╚═╝   ╚═╝    ╚═════╝╚═╝  ╚═╝`,
+    // String.raw`                             ██████╗  ██████╗ ████████╗`,
+    // String.raw`                             ██╔══██╗██╔═══██╗╚══██╔══╝`,
+    // String.raw`                             ██████╔╝██║   ██║   ██║   `,
+    // String.raw`                             ██╔══██╗██║   ██║   ██║   `,
+    // String.raw`                             ██████╔╝╚██████╔╝   ██║   `,
+    // String.raw`                             ╚═════╝  ╚═════╝    ╚═╝   `,
 ]
