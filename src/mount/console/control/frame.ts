@@ -223,6 +223,15 @@ export default {
             if (!RoleLevelData[role][level].upbodypart) return `[spawn] ${role} 没有角色配置`
             thisRoom.memory.UpgradespawnConfig[role] = num;
             return `[spawn] 房间${roomName} 角色 ${role} 变更成功`
+        },
+        extraTransport(roomName: string, num: number | null = null): string {
+            var thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[repair] 不存在房间${roomName}`
+            thisRoom.memory.DynamicConfig.Dynamictransport = num
+            if (num) {
+                return `[spawn] 房间${roomName}启用额外transport,数量${num}!`
+            }
+            return `[spawn] 房间${roomName}关闭额外transport!`
         }
     },
     link: {

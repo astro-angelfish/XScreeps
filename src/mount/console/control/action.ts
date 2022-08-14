@@ -75,7 +75,7 @@ export default {
             /* 计算路费 */
             var cost = Game.market.calcTransactionCost(num, roomName, disRoom)
             if (terminal_.store.getUsedCapacity('energy') + storage_.store.getUsedCapacity('energy') < cost || cost > 150000)
-                return Colorful(`[plan] 房间${roomName}-->${disRoom}资源${'Z'}所需路费少于 ${cost}或大于150000，传送任务挂载失败！`, 'yellow', true)
+                return Colorful(`[plan] 房间${roomName}-->${disRoom}资源${'Z'}所需路费少于 ${cost}或大于150000, 传送任务挂载失败！`, 'yellow', true)
             if (thisRoom.AddMission(thisTask))
                 return Colorful(`[plan] 房间${roomName}-->${disRoom}资源${'Z'}传送挂载成功！数量：${num}；路费：${cost}`, 'green', true)
             return Colorful(`[plan] 房间${roomName}-->${disRoom}资源${'Z'}传送 不明原因挂载失败！`, 'red', true)
@@ -286,7 +286,7 @@ export default {
             }
             return `[war] 双人小队 ${roomName} -(${shard})-> ${disRoom} 的 ${mType}任务删除失败！`
         },
-        cconstruction(roomName: string, disRoom: string, shard: shardName, CreepNum: number, time: number = 1000, boost: boolean = true, bodylevel: "T0" | "T1" | "T2" = "T0", shardData?: shardRoomData[]): string {
+        site(roomName: string, disRoom: string, shard: shardName, CreepNum: number, time: number = 1000, boost: boolean = true, bodylevel: "T0" | "T1" | "T2" = "T0", shardData?: shardRoomData[]): string {
             var myRoom = Game.rooms[roomName]
             if (!myRoom) return `[war] 未找到房间${roomName},请确认房间!`
             for (var oi of myRoom.memory.Misson['Creep'])
@@ -301,7 +301,7 @@ export default {
             }
             return `[war] 踩工地挂载失败!`
         },
-        Ccconstruction(roomName: string, disRoom: string, shard: shardName): string {
+        Csite(roomName: string, disRoom: string, shard: shardName): string {
             var myRoom = Game.rooms[roomName]
             if (!myRoom) return `[support] 未找到房间${roomName},请确认房间!`
             for (var i of myRoom.memory.Misson['Creep']) {
@@ -361,7 +361,7 @@ export default {
                 }
             return `[upgrade] 房间${roomName}删除普通冲级任务失败!`
         },
-        Dynamicquick(roomName: string, boolean: boolean): string {
+        adaptive(roomName: string, boolean: boolean): string {
             var thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[repair] 不存在房间${roomName}`
             thisRoom.memory.DynamicConfig.Dynamicupgrade = boolean
@@ -370,15 +370,6 @@ export default {
             }
             return `[upgrade] 房间${roomName}关闭动态升级!`
         },
-        Dynamictransport(roomName: string, num: number | null = null): string {
-            var thisRoom = Game.rooms[roomName]
-            if (!thisRoom) return `[repair] 不存在房间${roomName}`
-            thisRoom.memory.DynamicConfig.Dynamictransport = num
-            if (num) {
-                return `[upgrade] 房间${roomName}启用额外transport,数量${num}!`
-            }
-            return `[upgrade] 房间${roomName}关闭额外transport!`
-        }
     },
     /* 搬运 */
     carry: {
@@ -414,7 +405,7 @@ export default {
                 }
             return `[carry] 房间${roomName}删除搬运任务失败`
         },
-        senior(roomName: string, disRoom: string, shard: shardName = Game.shard.name as shardName, res: ResourceConstant, CreepNum: number, interval: number, level: 'T0' | 'T3', shardData?: shardRoomData[]): string {
+        shard(roomName: string, disRoom: string, shard: shardName = Game.shard.name as shardName, res: ResourceConstant, CreepNum: number, interval: number, level: 'T0' | 'T3', shardData?: shardRoomData[]): string {
             let thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[carry] 不存在房间${roomName}`
             var thisTask = thisRoom.public_Carrysenior(disRoom, CreepNum, shard, res, interval, level)
@@ -422,7 +413,7 @@ export default {
             if (thisRoom.AddMission(thisTask)) return `[carry] 房间${roomName}挂载位面搬运任务成功`
             return `[carry] 房间${roomName}删除位面搬运任务失败`
         },
-        Csenior(roomName: string, disRoom: string, shard: shardName = Game.shard.name as shardName): string {
+        Cshard(roomName: string, disRoom: string, shard: shardName = Game.shard.name as shardName): string {
             var thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[carry] 不存在房间${roomName}`
             for (var i of thisRoom.memory.Misson['Creep']) {
@@ -431,7 +422,7 @@ export default {
                         return Colorful(`[carry] 房间${roomName}位面搬运删除成功`, 'green')
                 }
             }
-            return Colorful(`[carry] 房间${roomName}位面搬运人物失败`, 'red')
+            return Colorful(`[carry] 房间${roomName}位面搬运任务失败`, 'red')
         },
         
     },
@@ -525,7 +516,7 @@ export default {
         /* 发射核弹 */
         launch(roomName: string, disRoom: string, x_: number, y_: number): string {
             var myRoom = Game.rooms[roomName]
-            if (!myRoom) return `[nuke]房间错误，请确认房间${roomName}！`
+            if (!myRoom) return `[nuke]房间错误, 请确认房间${roomName}！`
             var nuke_ = Game.getObjectById(myRoom.memory.StructureIdData.NukerID as Id<StructureNuker>) as StructureNuker
             if (!nuke_) return `[nuke]核弹查询错误!`
             if (nuke_.launchNuke(new RoomPosition(x_, y_, disRoom)) == OK)
@@ -536,7 +527,7 @@ export default {
         /* 自动填充核弹开关 */
         switch(roomName: string): string {
             var myRoom = Game.rooms[roomName]
-            if (!myRoom) return `[nuke]房间错误，请确认房间${roomName}！`
+            if (!myRoom) return `[nuke]房间错误, 请确认房间${roomName}！`
             if (myRoom.memory.switch.StopFillNuker) myRoom.memory.switch.StopFillNuker = false
             else myRoom.memory.switch.StopFillNuker = true
             if (myRoom.memory.switch.StopFillNuker) return `[nuke] 房间${roomName}停止自动核弹填充!`
@@ -544,7 +535,7 @@ export default {
         },
         switchprotect(roomName: string): string {
             var myRoom = Game.rooms[roomName]
-            if (!myRoom) return `[nuke]房间错误，请确认房间${roomName}！`
+            if (!myRoom) return `[nuke]房间错误, 请确认房间${roomName}！`
             if (myRoom.memory.switch.Stopnukeprotect) myRoom.memory.switch.Stopnukeprotect = false
             else myRoom.memory.switch.Stopnukeprotect = true
             if (myRoom.memory.switch.Stopnukeprotect) return `[nuke] 房间${roomName}停止自动核弹防护!`

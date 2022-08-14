@@ -65,7 +65,7 @@ export default {
     },
     /*左上角显示操作*/
     visual: {
-        change(roomName: string): string {
+        toggle(roomName: string): string {
             let thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[Visual] 不存在房间${roomName}`
             thisRoom.memory.Visualdisplay = !thisRoom.memory.Visualdisplay

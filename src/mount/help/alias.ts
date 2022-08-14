@@ -283,11 +283,11 @@ export default [
                             },
                             {
                                 title: '房间可视化切换:',
-                                describe: '例: visual.change("W1N1")',
+                                describe: '例: visual.toggle("W1N1")',
                                 params: [
                                     { name: 'roomName', desc: '房间名' },
                                 ],
-                                functionName: 'visual.change'
+                                functionName: 'visual.toggle'
                             },
                         ]
                     },
@@ -343,6 +343,15 @@ export default [
                                     { name: 'num', desc: '爬虫数量' },
                                 ],
                                 functionName: 'spawn.altConfig'
+                            },
+                            {
+                                title: '孵化额外transport:',
+                                describe: '例:spawn.extraTransport("W1N1",1)',
+                                params: [
+                                    { name: 'roomName', desc: '房间名' },
+                                    { name: 'num', desc: '爬虫数量' },
+                                ],
+                                functionName: 'spawn.extraTransport'
                             },
                             {
                                 title: '资源转移:【推荐】',
@@ -1030,6 +1039,15 @@ export default [
                                 functionName: 'expand.remove'
                             },
                             {
+                                title: '自适应冲级:',
+                                describe: '例: upgrade.adaptive("W1N1",true)',
+                                params: [
+                                    { name: 'roomName', desc: '房间名' },
+                                    { name: 'option', desc: '是否启用自适应冲级 true | false' },
+                                ],
+                                functionName: 'upgrade.adaptive'
+                            },
+                            {
                                 title: '急速冲级:',
                                 describe: '例: upgrade.quick("W1N1",5,"GH2O")',
                                 params: [
@@ -1090,24 +1108,60 @@ export default [
                             },
                             {
                                 title: '指定资源搬运:',
-                                describe: '例: carry.special("W1N1","energy",new RoomPosition(10,10,"W1N2"),new RoomPosition(14,13,"W2N2",2,100000))',
+                                describe: '例: carry.special("W1N1","energy","Flag1","Flag2",2,100000)',
                                 params: [
                                     { name: 'roomName', desc: '房间名' },
                                     { name: 'rType', desc: '搬运的资源类型' },
-                                    { name: 'souP', desc: '抽取资源的建筑的位置' },
-                                    { name: 'disP', desc: '存放资源的建筑位置' },
-                                    { name: 'num', desc: '搬运爬数量' },
-                                    { name: 'resourcenum', desc: '搬运的资源数量' },
+                                    { name: 'src', desc: '起始点旗帜名称' },
+                                    { name: 'dest', desc: '终点旗帜名称' },
+                                    { name: 'num(可选)', desc: '搬运爬数量' },
+                                    { name: 'resourcenum(可选)', desc: '搬运的资源数量' },
                                 ],
                                 functionName: 'carry.special'
                             },
                             {
-                                title: '取消指定资源搬运:',
-                                describe: '例: carry.Cspecial("W1N1")',
+                                title: '搬运所有资源:',
+                                describe: '例: carry.all("W1N1","Flag1","Flag2",2)',
+                                params: [
+                                    { name: 'roomName', desc: '房间名' },
+                                    { name: 'src', desc: '起始点旗帜名称' },
+                                    { name: 'dest', desc: '终点旗帜名称' },
+                                    { name: 'num(可选)', desc: '搬运爬数量' },
+                                ],
+                                functionName: 'carry.all'
+                            },
+                            {
+                                title: '取消搬运资源:',
+                                describe: '例: carry.cancel("W1N1")',
                                 params: [
                                     { name: 'roomName', desc: '房间名' },
                                 ],
-                                functionName: 'carry.Cspecial'
+                                functionName: 'carry.cancel'
+                            },
+                            {
+                                title: '跨shard搬运资源:',
+                                describe: '例: carry.shard("W1N1","E3N5","shard3","power",3,1000,"T0")',
+                                params: [
+                                    { name: 'roomName', desc: '房间名' },
+                                    { name: 'disRoom', desc: '目标房间名' },
+                                    { name: 'shard', desc: 'shard名' },
+                                    { name: 'rType', desc: '搬运的资源类型' },
+                                    { name: 'num', desc: '搬运爬数量' },
+                                    { name: 'interval', desc: '孵化间隔' },
+                                    { name: 'level', desc: '体型等级 T0 | T3' },
+                                    { name: 'shardData(可选)', desc: '多次跨shard参数' },
+                                ],
+                                functionName: 'carry.shard'
+                            },
+                            {
+                                title: '取消跨shard搬运资源:',
+                                describe: '例: carry.shard("W1N1","E3N5","shard3")',
+                                params: [
+                                    { name: 'roomName', desc: '房间名' },
+                                    { name: 'disRoom', desc: '目标房间名' },
+                                    { name: 'shard', desc: 'shard名' },
+                                ],
+                                functionName: 'carry.Cshard'
                             },
                             {
                                 title: '紧急援建:',
@@ -1118,20 +1172,68 @@ export default [
                                     { name: 'shard', desc: '目标房间所在shard' },
                                     { name: 'num', desc: '爬虫数量' },
                                     { name: 'interval', desc: '出爬时间间隔' },
-                                    { name: 'defend', desc: '(boolean) 是否需要一定防御能力 默认 false' },
+                                    { name: 'defend(可选)', desc: '(boolean) 是否需要一定防御能力 默认 false' },
                                     { name: 'shardData(可选)', desc: '多次跨shard参数' },
                                 ],
                                 functionName: 'support.build'
                             },
                             {
                                 title: '取消紧急援建:',
-                                describe: '例: support.build("W1N1","W2N2","shard3")',
+                                describe: '例: support.Cbuild("W1N1","W2N2","shard3")',
                                 params: [
                                     { name: 'roomName', desc: '房间名' },
                                     { name: 'disRoom', desc: '目标房间' },
                                     { name: 'shard', desc: '目标房间所在shard' },
                                 ],
                                 functionName: 'support.Cbuild'
+                            },
+                            {
+                                title: '紧急升级:',
+                                describe: '例: support.upgrade("W1N1","W2N2","shard3",1,1000)',
+                                params: [
+                                    { name: 'roomName', desc: '房间名' },
+                                    { name: 'disRoom', desc: '目标房间' },
+                                    { name: 'shard', desc: '目标房间所在shard' },
+                                    { name: 'num', desc: '爬虫数量' },
+                                    { name: 'interval', desc: '出爬时间间隔' },
+                                    { name: 'defend(可选)', desc: '(boolean) 是否需要一定防御能力 默认 false' },
+                                    { name: 'shardData(可选)', desc: '多次跨shard参数' },
+                                ],
+                                functionName: 'support.upgrade'
+                            },
+                            {
+                                title: '取消紧急升级:',
+                                describe: '例: support.Cupgrade("W1N1","W2N2","shard3")',
+                                params: [
+                                    { name: 'roomName', desc: '房间名' },
+                                    { name: 'disRoom', desc: '目标房间' },
+                                    { name: 'shard', desc: '目标房间所在shard' },
+                                ],
+                                functionName: 'support.Cupgrade'
+                            },
+                            {
+                                title: '紧急修墙:',
+                                describe: '例: support.repair("W1N1","W2N2","shard3",1,1000)',
+                                params: [
+                                    { name: 'roomName', desc: '房间名' },
+                                    { name: 'disRoom', desc: '目标房间' },
+                                    { name: 'shard', desc: '目标房间所在shard' },
+                                    { name: 'num', desc: '爬虫数量' },
+                                    { name: 'interval', desc: '出爬时间间隔' },
+                                    { name: 'defend(可选)', desc: '(boolean) 是否需要一定防御能力 默认 false' },
+                                    { name: 'shardData(可选)', desc: '多次跨shard参数' },
+                                ],
+                                functionName: 'support.repair'
+                            },
+                            {
+                                title: '取消紧急升级:',
+                                describe: '例: support.Crepair("W1N1","W2N2","shard3")',
+                                params: [
+                                    { name: 'roomName', desc: '房间名' },
+                                    { name: 'disRoom', desc: '目标房间' },
+                                    { name: 'shard', desc: '目标房间所在shard' },
+                                ],
+                                functionName: 'support.Crepair'
                             },
                         ]
                     },
@@ -1284,6 +1386,31 @@ export default [
                                     { name: 'type', desc: '紧急支援类型: double:双人小队 |aio:一体机' },
                                 ],
                                 functionName: 'war.Csupport'
+                            },
+                            {
+                                title: '踩工地:',
+                                describe: '例: war.site("W1N1","W1N12","shard3",1,1000,true,"T1")',
+                                params: [
+                                    { name: 'roomName', desc: '所在房间' },
+                                    { name: 'disRoom', desc: '目标房间' },
+                                    { name: 'shard', desc: '目标房间所在shard' },
+                                    { name: 'num', desc: '爬虫数量' },
+                                    { name: 'interval', desc: '出爬时间间隔' },
+                                    { name: 'boost', desc: '是否boost' },
+                                    { name: 'bodyLevel', desc: 'T0 | T1 | T2 越高防御力越弱,攻击力越强' },
+                                    { name: 'shardData(可选)', desc: '多次跨shard参数' },
+                                ],
+                                functionName: 'war.site'
+                            },
+                            {
+                                title: '取消踩工地:',
+                                describe: '例: war.Csite("W1N1","W1N12","shard3")',
+                                params: [
+                                    { name: 'roomName', desc: '目标房间' },
+                                    { name: 'disRoom', desc: '目标房间' },
+                                    { name: 'shard', desc: '目标房间所在shard' },
+                                ],
+                                functionName: 'war.Csite'
                             },
                         ]
                     },
