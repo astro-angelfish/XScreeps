@@ -129,13 +129,13 @@ export default class RoomMissonTransportExtension extends Room {
         var storage_ = this.storage as StructureStorage
         if (!nuker) { delete this.memory.StructureIdData.NukerID; return }
         // if (!storage_) { delete this.memory.StructureIdData.storageID; return }
-        if (nuker.store.getUsedCapacity('G') < 5000 && storage_.store.getUsedCapacity('G') >= 5000) {
+        if (nuker.store.getUsedCapacity('G') < 5000 && (storage_.store.getUsedCapacity('G') + nuker.store.getUsedCapacity('G')) >= 5000) {
             var thisTask = this.public_Carry({ 'transport': { num: 1, bind: [] } }, 40, this.name, storage_.pos.x, storage_.pos.y, this.name, nuker.pos.x, nuker.pos.y, 'G', 5000 - nuker.store.getUsedCapacity('G'))
             this.AddMission(thisTask)
             return
         }
-        if (nuker.store.getUsedCapacity('energy') < 300000 && storage_.store.getUsedCapacity('energy') > 130000) {
-            var thisTask = this.public_Carry({ 'transport': { num: 1, bind: [] } }, 40, this.name, storage_.pos.x, storage_.pos.y, this.name, nuker.pos.x, nuker.pos.y, 'energy', 300000 - nuker.store.getUsedCapacity('energy'))
+        if (nuker.store.getUsedCapacity('energy') < 300000 && storage_.store.getUsedCapacity('energy') > 200000) {
+            var thisTask = this.public_Carry({ 'transport': { num: 1, bind: [] } }, 40, this.name, storage_.pos.x, storage_.pos.y, this.name, nuker.pos.x, nuker.pos.y, 'energy', Math.min(300000 - nuker.store.getUsedCapacity('energy'), storage_.store.getUsedCapacity('energy') - 200000))
             this.AddMission(thisTask)
             return
         }
