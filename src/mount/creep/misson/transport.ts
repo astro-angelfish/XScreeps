@@ -118,9 +118,7 @@ export default class CreepMissonTransportExtension extends Creep {
                     }
                 } else {
                     /*搜索spawn*/
-                    var find_spawn = this.pos.findClosestByRange(FIND_HOSTILE_SPAWNS)
-                    if (!find_spawn) return;
-                    if (this.pos.inRangeTo(find_spawn, 3)) {
+                    if (this.pos.inRangeTo(this.room.controller, 3)) {
                         var find_dropped_resources = this.room.find(FIND_DROPPED_RESOURCES, {
                             filter: (res) => {
                                 return res.amount > 1000 && res.resourceType == 'energy'
@@ -130,8 +128,23 @@ export default class CreepMissonTransportExtension extends Creep {
                             this.suicide();
                         }
                     } else {
-                        this.goTo(find_spawn.pos, 1)
+                        this.goTo(this.room.controller.pos, 1)
                     }
+
+                    // var find_spawn = this.pos.findClosestByRange(FIND_HOSTILE_SPAWNS)
+                    // if (!find_spawn) return;
+                    // if (this.pos.inRangeTo(find_spawn, 3)) {
+                    //     var find_dropped_resources = this.room.find(FIND_DROPPED_RESOURCES, {
+                    //         filter: (res) => {
+                    //             return res.amount > 1000 && res.resourceType == 'energy'
+                    //         }
+                    //     })
+                    //     if (find_dropped_resources.length < 1) {
+                    //         this.suicide();
+                    //     }
+                    // } else {
+                    //     this.goTo(find_spawn.pos, 1)
+                    // }
                 }
             }
         } else {

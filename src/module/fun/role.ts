@@ -412,9 +412,15 @@ export function initial_speed_(creep: Creep): void {
                         return isInArray(['tower', 'spawn'], stru.structureType) && stru.store.getFreeCapacity('energy') > 0
                     }
                 })
+
                 if (target) {
-                    creep.transfer_(target, 'energy')
-                    return
+                    let from_pos = `W${target.pos.x}N${target.pos.y}`
+                    let to_pos = `W${creep.pos.x}N${creep.pos.y}`
+                    let _number = Game.map.getRoomLinearDistance(from_pos, to_pos)
+                    if (_number < 7) {
+                        creep.transfer_(target, 'energy')
+                        return
+                    }
                 }
             }
         }
