@@ -83,6 +83,7 @@ export default class CreepMissonBaseExtension extends Creep {
                 case '虫卵填充': { this.handle_feed(); break; }
                 case '物流运输': { this.handle_carry(); break; }
                 case '位面运输': { this.handle_carrysenior(); break; }
+                case '拾荒者':{this.handle_carrygleaner(); break; }
                 case '墙体维护': { this.handle_repair(); break; }
                 case 'C计划': { this.handle_planC(); break; }
                 case '黄球拆迁': { this.handle_dismantle(); break; }

@@ -2,6 +2,7 @@ interface Room {
     Check_Lab(misson: MissionModel, role: string, tankType: 'storage' | 'terminal' | 'complex')
     public_Carry(creepData: BindData, delayTick: number, sR: string, sX: number, sY: number, tR: string, tX: number, tY: number, rType?: ResourceConstant, num?: number): MissionModel
     public_Carrysenior(disRoom: string, CreepNum: number, shard: shardName, res: ResourceConstant, interval?: number, level?: 'T0' | 'T3'): MissionModel
+    public_Carrygleaner(disRoom: string, CreepNum: number, suicide: number, interval?: number, level?: 'T0' | 'T3'): MissionModel
     public_repair(Rtype: 'global' | 'special' | 'nuker', num: number, boostType: ResourceConstant, level?: 'T0' | 'T1' | 'T2' | 'T3' | 'T4', maxhit?: number, retain?: boolean): MissionModel
     public_planC(disRoom: string, Cnum: number, upNum: number, shard?: shardName,): MissionModel
     public_link(structure: string[], disStructure: string, level: number, delayTick?: number): MissionModel
@@ -12,7 +13,7 @@ interface Room {
     public_control(disRoom: string, shard: shardName, interval: number): MissionModel
     public_helpBuild(disRoom: string, num: number, shard?: string, time?: number, defend?: boolean): MissionModel
     public_helpUpgrade(disRoom: string, num: number, shard?: string, time?: number, defend?: boolean): MissionModel
-    public_helpRepair(disRoom: string, num: number, shard?: string, time?: number, boostType?: ResourceConstant,level?: 'T0' | 'T1' | 'T2' | 'T3' | 'T4'): MissionModel
+    public_helpRepair(disRoom: string, num: number, shard?: string, time?: number, boostType?: ResourceConstant, level?: 'T0' | 'T1' | 'T2' | 'T3' | 'T4'): MissionModel
     public_Sign(disRoom: string, shard: string, str: string): MissionModel
     public_Send(disRoom: string, rType: ResourceConstant, num: number): MissionModel
     public_Buy(res: ResourceConstant, num: number, range: number, max?: number): MissionModel
@@ -21,7 +22,7 @@ interface Room {
     public_cconstruction(disRoom: string, disShard: shardName, num: number, interval: number, boost: boolean, bodylevel?: "T0" | "T1" | "T2")
     public_OutMine(sourceRoom: string, x: number, y: number, disRoom: string): MissionModel
     public_PowerHarvest(disRoom: string, x: number, y: number, num: number): MissionModel
-    public_DepositHarvest(disRoom: string, x: number, y: number, rType: DepositConstant,Num?:number): MissionModel
+    public_DepositHarvest(disRoom: string, x: number, y: number, rType: DepositConstant, Num?: number): MissionModel
     public_red_defend(num: number, bodylevel?: "T0" | "T1" | "T2" | "T3"): MissionModel
     public_blue_defend(num: number, bodylevel?: "T0" | "T1" | "T2" | "T3"): MissionModel
     public_double_defend(num: number, bodylevel?: "T0" | "T1" | "T2" | "T3"): MissionModel

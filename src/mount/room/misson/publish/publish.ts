@@ -40,8 +40,34 @@ export default class RoomMissonPublish extends Room {
         return thisTask
     }
 
+    public public_Carrygleaner(disRoom: string, CreepNum: number, suicide: number, interval: number, level: 'T0' | 'T1' | 'T2' | 'T3' = 'T0'): MissionModel {
+        var thisTask: MissionModel =
+        {
+            name: '拾荒者',
+            range: 'Creep',
+            delayTick: 99999,
+            Data: {
+                disRoom: disRoom,
+                level: level,
+                suicide: suicide
+            }
+        }
+        thisTask.CreepBind = { 'gleaner': { num: CreepNum, interval: interval, bind: [], MSB: (level ? true : false) } }
+        switch (level) {
+            case 'T3':
+                thisTask.LabMessage = { 'XKH2O': 'boost', 'XZHO2': 'boost' }
+                break;
+            case 'T2':
+                thisTask.LabMessage = { 'KH2O': 'boost', 'ZHO2': 'boost' }
+                break;
+            case 'T1':
+                thisTask.LabMessage = { 'KH': 'boost', 'ZO': 'boost' }
+                break;
+        }
+        return thisTask
+    }
+
     public public_Carrysenior(disRoom: string, CreepNum: number, shard: shardName, res: ResourceConstant, interval: number, level: 'T0' | 'T1' | 'T2' | 'T3' = 'T0'): MissionModel {
-        console.log('开始创建任务')
         var thisTask: MissionModel =
         {
             name: '位面运输',

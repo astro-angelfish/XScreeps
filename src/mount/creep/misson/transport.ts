@@ -154,6 +154,119 @@ export default class CreepMissonTransportExtension extends Creep {
 
     }
 
+    public handle_carrygleaner(): void {
+        let missionData = this.memory.MissionData
+        let id = missionData.id
+        let data = missionData.Data
+        if (this.room.name == this.memory.belong && this.memory.shard == Game.shard.name && !this.memory.boostState) {
+            if (this.room.name == this.memory.belong) {
+                switch (missionData.Data.level) {
+                    case 'T3':
+                    case 'T2':
+                    case 'T1':
+                        if (!this.BoostCheck(['move', 'carry'])) return
+                        break;
+                    case 'T0':
+                        this.memory.boostState = true;
+                        break;
+                }
+                return
+            }
+        }
+
+        if (!this.memory.working) this.memory.working = false;
+        if (this.memory.working && this.store.getUsedCapacity() == 0) {
+            this.memory.working = false;
+        }
+        if (!this.memory.working && (this.store.getFreeCapacity() == 0)) {
+            this.memory.working = true;
+        }
+        if (this.memory.working) {
+            if (this.memory.belong != this.room.name) {
+                this.arriveTo(new RoomPosition(24, 24, this.memory.belong), 23, data.shard, data.shardData ? data.shardData : null)
+                return;
+            }
+            if (data.suicide * 2 > this.ticksToLive && this.store.getUsedCapacity() < 1) {
+                this.suicide();
+            }
+            // if (this.room.storage) {
+            //     let transfer = this.transfer(this.room.storage, data.rType)
+            //     switch (transfer) {
+            //         case ERR_NOT_IN_RANGE:
+            //             this.goTo(this.room.storage.pos, 1)
+            //             break;
+            //     }
+            // } else if (this.room.terminal) {
+            //     let transfer = this.transfer(this.room.terminal, data.rType)
+            //     switch (transfer) {
+            //         case ERR_NOT_IN_RANGE:
+            //             this.goTo(this.room.terminal.pos, 1)
+            //             break;
+            //     }
+            // }
+            if (Object.keys(this.store).length > 0) {
+                for (var r in this.store) {
+                    this.say("🚽")
+                    /* 如果是自己的房间，则优先扔到最近的storage去 */
+                    if (this.room.name == this.memory.belong) {
+                        if (!this.room.storage) return
+                        if (this.room.storage.store.getUsedCapacity() > this.store.getUsedCapacity()) {
+                            this.transfer_(this.room.storage, r as ResourceConstant)
+                        }
+                        else return
+                    }
+                    return
+                }
+            }
+
+        } else {
+            if (data.suicide > this.ticksToLive && this.store.getUsedCapacity() > 0) {
+                this.memory.working = true;
+            }
+            if (data.disRoom != this.room.name) {
+                this.arriveTo(new RoomPosition(24, 24, data.disRoom), 23, data.shard, data.shardData ? data.shardData : null)
+                return;
+            }
+            var find_dropped_resources = this.pos.findClosestByRange(FIND_DROPPED_RESOURCES, {
+                filter: (res) => {
+                    return res.amount > 0
+                }
+            })
+            if (find_dropped_resources) {
+                if (!this.pos.isNearTo(find_dropped_resources)) this.goTo(find_dropped_resources.pos, 1)
+                else this.pickup(find_dropped_resources)
+                return;
+            }
+            /*搜索墓碑*/
+            var find_tombstones = this.pos.findClosestByRange(FIND_TOMBSTONES, {
+                filter: (structure) => {
+                    return structure.store.getUsedCapacity() > 0
+                }
+            })
+            if (find_tombstones) {
+                // console.log('存在目的信息')
+                /*进行资源遍历操作*/
+                if (!this.pos.isNearTo(find_tombstones)) {
+                    this.goTo(find_tombstones.pos, 1)
+                    return;
+                }
+                if (Object.keys(find_tombstones.store).length > 0) {
+                    for (var r in find_tombstones.store) {
+                        if (find_tombstones.store[r] > 0) {
+                            this.withdraw(find_tombstones, r as ResourceConstant)
+                            return;
+                        }
+                    }
+                }
+                if (this.withdraw(find_tombstones, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                    this.moveTo(find_tombstones);
+                }
+                return;
+            }
+
+        }
+    }
+
     /* 物资运输任务  已测试 */
     public handle_carry(): void {
         var Data = this.memory.MissionData.Data

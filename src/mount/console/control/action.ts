@@ -411,7 +411,7 @@ export default {
             var thisTask = thisRoom.public_Carrysenior(disRoom, CreepNum, shard, res, interval, level)
             if (shardData) thisTask.Data.shardData = shardData
             if (thisRoom.AddMission(thisTask)) return `[carry] 房间${roomName}挂载位面搬运任务成功`
-            return `[carry] 房间${roomName}删除位面搬运任务失败`
+            return `[carry] 房间${roomName}挂载位面搬运任务失败`
         },
         Cshard(roomName: string, disRoom: string, shard: shardName = Game.shard.name as shardName): string {
             var thisRoom = Game.rooms[roomName]
@@ -424,7 +424,23 @@ export default {
             }
             return Colorful(`[carry] 房间${roomName}位面搬运任务失败`, 'red')
         },
-        
+        gleaner(roomName: string, disRoom: string, CreepNum: number, suicide: number, interval?: number, level?: 'T0' | 'T3'): string {
+            let thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[carry] 不存在房间${roomName}`
+            var thisTask = thisRoom.public_Carrygleaner(disRoom, CreepNum, suicide, interval, level)
+            if (thisRoom.AddMission(thisTask)) return `[carry] 房间${roomName}挂载拾荒者任务成功`
+            return `[carry] 房间${roomName}挂载拾荒者任务失败`
+        },
+        Cgleaner(roomName: string): string {
+            let thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[carry] 不存在房间${roomName}`
+            for (var i of thisRoom.memory.Misson['Creep'])
+                if (i.name == '拾荒者') {
+                    if (thisRoom.DeleteMission(i.id))
+                        return `[upgrade] 房间${roomName}删除拾荒者任务成功`
+                }
+            return `[carry] 房间${roomName}删除拾荒者任务失败`
+        },
     },
     /* 支援 */
     support: {

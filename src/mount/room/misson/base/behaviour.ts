@@ -39,6 +39,33 @@ export default class RoomMissonBehaviourExtension extends Room {
         if (!mission.Data) this.DeleteMission(mission.id)
         if (!mission.CreepBind) this.DeleteMission(mission.id)
     }
+
+    public Task_Carrygleaner(mission: MissionModel): void {
+        /* 搬运任务需求 sourcePosX,Y sourceRoom targetPosX,Y targetRoom num  rType  */
+        // 没有任务数据 或者数据不全就取消任务
+        if (mission.CreepBind.gleaner.num > 0) {
+            let level = mission.Data.level
+            switch (level) {
+                case 'T3':
+                    global.MSB[mission.id] = { 'gleaner': GenerateAbility(0, 40, 10, 0, 0, 0, 0, 0) }
+                    break;
+                case 'T2':
+                    global.MSB[mission.id] = { 'gleaner': GenerateAbility(0, 37, 13, 0, 0, 0, 0, 0) }
+                    break;
+                case 'T1':
+                    global.MSB[mission.id] = { 'gleaner': GenerateAbility(0, 32, 16, 0, 0, 0, 0, 0) }
+                    break;
+            }
+            if ((Game.time - global.Gtime[this.name]) % 8) return
+            if (mission.LabBind) {
+                if (!this.Check_Lab(mission, 'transport', 'complex')) { }
+            }
+        }
+
+        if (!mission.Data) this.DeleteMission(mission.id)
+        if (!mission.CreepBind) this.DeleteMission(mission.id)
+    }
+
     // 建造任务
     public Constru_Build(): void {
         if (Game.time % 51) return

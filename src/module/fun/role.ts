@@ -427,12 +427,19 @@ export function initial_speed_(creep: Creep): void {
         if (construction) {
             creep.build_(construction)
         } else {
-            if (creep.pos.inRangeTo(creep.room.controller, 3)) {
-                creep.upgrade_()
-            } else {
+            if (!creep.pos.inRangeTo(creep.room.controller, 2)) {
                 creep.goTo(creep.room.controller.pos, 2)
+            } else {
+                creep.upgrade_()
             }
-
+            // if (creep.room.controller) {
+            //     if (creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE) {
+            //         // this.goTo(this.room.controller.pos, 3)
+            //         creep.memory.standed = false
+            //     }
+            //     else creep.memory.standed = true
+            // }
+            // 
         }
     } else {
         /*搜索掉落的资源*/
