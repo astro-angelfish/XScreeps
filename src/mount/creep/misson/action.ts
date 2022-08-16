@@ -432,6 +432,7 @@ export default class CreepMissonActionExtension extends Creep {
                 })
                 if (withdrawFlag.length > 0) {
                     let tank_ = withdrawFlag[0].pos.GetStructureList(['storage', 'terminal', 'container', 'tower'])
+                    let ruin_ = withdrawFlag[0].pos.GetRuin()
                     // console.log(this.name, tank_.length)
                     if (tank_.length > 0) {
                         /*扫描周围如果有八个爬 默认为已经占满 执行2空格策略*/
@@ -452,6 +453,13 @@ export default class CreepMissonActionExtension extends Creep {
                             this.withdraw_(tank_[0], 'energy');
                         }
                         return
+                    } else if (ruin_ && ruin_.store['energy'] > 0) {
+                        if (this.pos.isNearTo(ruin_)) {
+                            this.withdraw(ruin_, 'energy');
+                        } else {
+                            this.goTo(ruin_.pos, 1);
+                        }
+                        return           
                     }
                 }
                 if (this.room.storage && this.room.storage.my && this.room.terminal) {
@@ -534,6 +542,7 @@ export default class CreepMissonActionExtension extends Creep {
                 })
                 if (withdrawFlag.length > 0) {
                     let tank_ = withdrawFlag[0].pos.GetStructureList(['storage', 'terminal', 'container', 'tower'])
+                    let ruin_ = withdrawFlag[0].pos.GetRuin()
                     // console.log(this.name, tank_.length)
                     if (tank_.length > 0) {
                         /*扫描周围如果有八个爬 默认为已经占满 执行2空格策略*/
@@ -553,6 +562,13 @@ export default class CreepMissonActionExtension extends Creep {
                         } else {
                             this.withdraw_(tank_[0], 'energy');
                         }
+                        return
+                    } else if (ruin_ && ruin_.store['energy'] > 0) {
+                        if (this.pos.isNearTo(ruin_)) {
+                            this.withdraw(ruin_, 'energy');
+                        } else {
+                            this.goTo(ruin_.pos, 1);
+                        } 
                         return
                     }
                 }
