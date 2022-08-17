@@ -67,7 +67,7 @@ export default class CreepMissonActionExtension extends Creep {
                             return;
                         }
                     }
-                    var leastRam = this.room.getListHitsleast([STRUCTURE_RAMPART, STRUCTURE_WALL], 3)
+                    var leastRam = this.room.getListHitsleast([STRUCTURE_RAMPART], 3)
                     if (!leastRam) return
                     if (mission.Data.maxhit) {
                         /*检查是否已经完成所有的刷墙任务*/

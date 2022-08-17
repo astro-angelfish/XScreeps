@@ -195,6 +195,12 @@ export default class RoomCoreSpawnExtension extends Room {
                 }
                 name = processName()
             }
+            else if (["CalvinG"].includes(thisSpawn.owner.username)) {
+                let processName = function () {
+                    return `${mark}-` + `${thisSpawn.room.name}-`+`${Game.time}`
+                }
+                name = processName()
+            }
             else if (["shenli"].includes(thisSpawn.owner.username)) {
                 name = CreepNameManager.registerName(this);
             }
