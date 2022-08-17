@@ -1,75 +1,69 @@
-/*
-63超级扣位置自动布局 单文件傻瓜版用法
-1 设置4个flag，分别为对应房间的
-pc 控制器
-pm 矿
-pa pb 能量源
-2 下载63大佬的超级扣位置自动布局，解压并导入wasm二进制模块，命名（不要后缀）：algo_wasm_priorityqueue
-3 复制这个文件所有内容到main.js并上传
-4 运行（注意截图）
-5 放一个flag名字为p，随便放哪，运行会自动检测，检测到有p这个flag就会运行，运行完成会自动删掉
-显示的时间非常短，注意截图，消失了再放一个p又会重新运行一遍，不要反复折腾完，很耗CPU
-
-感谢63！
-
-*/
-
 /**
- * 超级抠位置自动布局：
+ * 63超级扣位置自动布局
  * 能覆盖95% 地地形布局的覆盖
- * 对畸形图效果较好，对于大房间可以使用固定布局的效果不怎么好（一般水平
- *
- * 原理：能跑就行有空 写篇简书
- * 代码：挺乱的 如果有机会在整理一下代码
- *
- * 第一版本就先这样吧，大半夜的，睡觉！
- *
- * ！！警告！！ 确保你的bucket和可运行CPU超过100个 ！！警告！！
- * ！！警告！！ 确保你的bucket和可运行CPU超过100个 ！！警告！！
- * ！！警告！！ 确保你的bucket和可运行CPU超过100个 ！！警告！！
- * ！！警告！！ 确保你的bucket和可运行CPU超过100个 ！！警告！！
- * ！！警告！！ 确保你的bucket和可运行CPU超过100个 ！！警告！！
- * ！！警告！！ 确保你的bucket和可运行CPU超过100个 ！！警告！！
- *
- * 结果说明：
- * roomName:roomName
- * storagePos: storage集群中心位置
- * labPos: lab中心位置
- * structMap：{
- *     "建筑类型，直接用没问题的":[[x1,y1]]
- *     //建造的时候按顺序就可以了 ，顺序是距离 storagePos 排序过后的（除了road）
- *     //具体建造多少个，使用 CONTROLLER_STRUCTURES 获取当前可以造多少
+ * 
+ * author：6g3y,Scorpior,Scokranotes,ChenyangDu
+ * version:1.0.8
+ * 
+ * 【使用方法（傻瓜版）】
+ * 1.设置4个flag，分别为对应房间的
+ *     pc 控制器
+ *     pm 矿
+ *     pa pb 能量源
+ * 2.下载63大佬的超级扣位置自动布局，解压并导入wasm二进制模块，
+ *   命名（不要后缀）：algo_wasm_priorityqueue，确保此时文件夹中应当增了以下两个文件
+ *     + 63超级扣位置自动布局_改良版.js
+ *     + algo_wasm_priorityqueue.wasm
+ * 
+ * 3.在主循环代码的末尾，也就是main.js的module.exports.loop中最后一行添加
+ *      require("63超级扣位置自动布局_改良版").run()
+ * 
+ * 4.运行（注意截图）
+ * 5.放一个flag名字为p，随便放哪，运行会自动检测，检测到有p这个flag就会运行，运行完成会自动删掉
+ *   显示的时间非常短，注意截图，消失了再放一个p又会重新运行一遍，不要反复折腾完，很耗CPU
+ * 
+ * 【使用方法（高级版）】
+ * 1.计算位置
+ *  [flagController,flagMineral,flagSourceA,flagSourceB]
+ *  必须包含.pos对象 {{{ p.pos.x|y }}}
+ * >> roomStructsData = ManagerPlanner.computeManor(p.pos.roomName,[pc,pm,pa,pb])
+ * 
+ * 2.可视化显示
+ * >> HelperVisual.showRoomStructures(roomStructsData.roomName,roomStructsData.structMap)
+ * 
+ * 【结果说明】
+ * {
+ *       roomName: roomName
+ *       storagePos: {x,y} //storage集群中心位置
+ *       labPos: {x,y} //lab中心位置
+ *       structMap:{ "rampart" : [[x1,y1],[x2,y2] ...] ...} 
+ *           "建筑类型，直接用没问题的":[[x1,y1]]
+ *           //建造的时候按顺序就可以了 ，顺序是距离 storagePos 排序过后的（除了road）
+ *           //具体建造多少个，使用 CONTROLLER_STRUCTURES 获取当前可以造多少
  * }
- * 使用代码样例:
- * >> ManagerPlanner.computeManor(p.pos.roomName,[pc,pm,pa,pb])
-
-
-
-// 返回结果
-// { roomName:roomName,storagePos:{x,y},labPos:{x,y},structMap:{ "rampart" : [[x1,y1],[x2,y2] ...] ...} }
-
-// 使用方法:
-// [flagController,flagMineral,flagSourceA,flagSourceB]
-// 必须包含.pos对象 {{{ p.pos.x|y }}}
-
-let roomStructsData = undefined //放全局变量
-
-let p = Game.flags.p; // 触发器
-let pa = Game.flags.pa;
-let pb = Game.flags.pb;
-let pc = Game.flags.pc;
-let pm = Game.flags.pm;
-if(p) {
-    roomStructsData = ManagerPlanner.computeManor(p.pos.roomName,[pc,pm,pa,pb])
-    Game.flags.p.remove()
-}
-if(roomStructsData){
-    //这个有点消耗cpu 不看的时候记得关
-    HelperVisual.showRoomStructures(roomStructsData.roomName,roomStructsData.structMap)
-}
-
-
+ * 
+ * 
+ * 【警告】
+ * ！！警告！！ 确保你的bucket和可运行CPU超过100个 ！！警告！！
+ * ！！警告！！ 确保你的bucket和可运行CPU超过100个 ！！警告！！
+ * ！！警告！！ 确保你的bucket和可运行CPU超过100个 ！！警告！！
+ * ！！警告！！ 确保你的bucket和可运行CPU超过100个 ！！警告！！
+ * ！！警告！！ 确保你的bucket和可运行CPU超过100个 ！！警告！！
+ * ！！警告！！ 确保你的bucket和可运行CPU超过100个 ！！警告！！
+ * 
+ * 
+ * 【原理】：能跑就行有空 写篇简书
+ * 【代码】：挺乱的 如果有机会在整理一下代码
+ * 
+ * 【更新说明】：
+ * 1.优化了外矿的寻路
+ * 2.优化了塔的布局
+ * 3.更新了说明文档
+ * 
+ * 感谢63！
+ * 
  */
+
 
 /**
  *  wasm 优先队列
@@ -84,8 +78,6 @@ if(roomStructsData){
  *
  *  本人有改动！
  */
-
-
 
 global.structuresShape = {
     "spawn": "◎",
@@ -217,7 +209,6 @@ function ReclaimNode(node) {
     if (NodeCache.length < 10000)
         NodeCache.push(node)
 }
-
 const tryRequire = (path) => {
     try {
         return require(`${path}`);
@@ -226,9 +217,9 @@ const tryRequire = (path) => {
     }
 };
 // @ts-ignore
-const binary = tryRequire('algo_wasm_priorityqueue.wasm') ? require('algo_wasm_priorityqueue.wasm') : require('algo_wasm_priorityqueue');   // 读取二进制文件
-// console.log('algo_wasm_priorityqueue', binary.access())
+const binary = tryRequire('algo_wasm_priorityqueue.wasm') ? require('algo_wasm_priorityqueue.wasm').default : require('algo_wasm_priorityqueue');   // 读取二进制文件
 const wasmModule = new WebAssembly.Module(binary);  // 初始化为wasm类
+
 /**
  * 
  * @typedef {Object} node
@@ -712,6 +703,7 @@ let pro = {
         }
         for (let i = 0; i < objects.length; i++) {
             let pos = objects[i]
+            console.log(JSON.stringify(pos))
             //container 位置
             let p = getObjectPos(pos.x, pos.y, "container")
 
@@ -724,8 +716,8 @@ let pro = {
                 roomObjectCache.extractor = [[pos.x, pos.y]]
             }
             roomObjectCache.container = roomObjectCache.container || []
-            if (i != 1) roomObjectCache.container.unshift(p) //如果是 mineral 最后一个
-            else roomObjectCache.container.push(p)
+            // if (i != 1) roomObjectCache.container.unshift(p) //如果是 mineral 最后一个
+            // else roomObjectCache.container.push(p)
         }
 
         //插值，这里用拉普拉斯矩阵，对nearWall 插值 成 nearWallWithInterpolation
@@ -1219,6 +1211,9 @@ let pro = {
             "☢-☢-",
             "-☢-☢",
             "☢-☢☢"
+            // "☢☢☢☢☢",
+            // "-----",
+            // "☢☢☢☢☢"
         ]
         let labChangeDirection = false;
         if ((storageX - labX) * (storageY - labY) < 0) {
@@ -1427,52 +1422,130 @@ let pro = {
             }, x, y)
         })
 
-        // 连接外矿的全部道路
-        _.keys(CONTROLLER_STRUCTURES).forEach(struct => structMap[struct].forEach(e => roomStructs.set(e[0], e[1], struct)))
-
-        costRoad.forEach((x, y, val) => costRoad.set(x, y, 100))//初始化100
-        visited.init()
-        queMin.push(NewNode(0, storageX, storageY))//以 storage为中心
-        visited.exec(storageX, storageY, 1)
-        queMin.whileNoEmpty(nd => {
-            roomStructs.forNear((x, y, val) => {
-                let roadCost = roomWalkable.get(x, y);
-                if (!visited.exec(x, y, 1) && (!val || val == 'road' || val == 'rampart') && roadCost) {
-                    queMin.push(NewNode(nd.k + (val == 'road' ? 0 : roadCost == 2 ? 5 : 1), x, y))
-                }
-            }, nd.x, nd.y)
-            costRoad.set(nd.x, nd.y, nd.k)
-            // visual.text(costRoad.get(nd.x,nd.y),nd.x,nd.y+0.25, {color: "pink",opacity:0.99,font: 7})
+        // 处理塔的位置，让塔尽量靠外
+        let getRange = function (a, b) {
+            return Math.max(Math.abs(a[0] - b[0]), Math.abs(a[1] - b[1]))
+        }
+        let poses = []
+        let types = ["nuker", "tower", "observer"]
+        types.forEach(type => {
+            structMap[type].forEach(e => {
+                let dis = 0
+                structMap["rampart"].forEach(e_ramp => {
+                    dis += getRange(e_ramp, e)
+                })
+                poses.push({ pos: e, type, dis })
+            })
         })
+        poses.sort((a, b) => (a.dis - b.dis))
 
-        //将dp的位置进行递归回去
-        let border = visited //边界不能放路
-        border.init()
-        visited.forBorder((x, y, val) => { visited.set(x, y, 1) })
-        structMap["container"].forEach(e => {
-            let dfsBack = function (x, y) {
-                let minVal = 500;
-                let finalX = 0;
-                let finalY = 0;
-                costRoad.forNear((x, y, val) => {
-                    let struct = roomStructs.get(x, y)
-                    if (minVal > val && !visited.get(x, y) && val >= 0 && roomWalkable.get(x, y) && (!struct || struct == 'road' || struct == 'rampart')) {
-                        minVal = val
-                        finalX = x
-                        finalY = y
-                    }
-                }, x, y)
-                if (minVal) {
-                    if ("road" != roomStructs.exec(finalX, finalY, "road")) {
-                        structMap["road"].push([finalX, finalY]);
-                        dfsBack(finalX, finalY)
-                    }
-                }
-                // visual.text(minVal,finalX,finalY+0.25, {color: "pink",opacity:0.99,font: 7})
+        for (let i = 0; i < 6; i++) {
+            if (poses[i].type == "tower") continue;
+            for (let j = 6; j < poses.length; j++) {
+                if (poses[j].type != "tower") continue;
+                poses[j].type = poses[i].type
+                poses[i].type = "tower"
             }
-            dfsBack(e[0], e[1])
-            structMap["road"].forEach(e => costRoad.set(e[0], e[1], 0))
+        }
+        types.forEach(type => { structMap[type] = [] })
+        poses.forEach(pos => {
+            structMap[pos.type].push(pos.pos)
         })
+
+        //#region 新的连接外矿方式
+
+        let costs = new PathFinder.CostMatrix;
+        let terrain = new Room.Terrain(roomName);
+        for (let i = 0; i < 50; i++) {
+            for (let j = 0; j < 50; j++) {
+                let te = terrain.get(i, j)
+                costs.set(i, j, te == TERRAIN_MASK_WALL ? 255 : (te == TERRAIN_MASK_SWAMP ? 4 : 2))
+            }
+        }
+        for (let struct of OBSTACLE_OBJECT_TYPES) {
+            if (structMap[struct]) {
+                structMap[struct].forEach(e => {
+                    costs.set(e[0], e[1], 255)
+                })
+            }
+        }
+        structMap["road"].forEach(e => {
+            costs.set(e[0], e[1], 1)
+        })
+        for (let i = 0; i < 50; i++) {
+            for (let j = 0; j < 50; j++) {
+                // new RoomVisual(roomName).text(costs.get(i,j),new RoomPosition(i,j,roomName))
+            }
+        }
+        structMap["container"].forEach(e => {
+            let ret = PathFinder.search(
+                new RoomPosition(centerX, centerY, roomName),
+                { pos: new RoomPosition(e[0], e[1], roomName), range: 1 },
+                {
+                    roomCallback: () => { return costs },
+                    maxRooms: 1
+                }
+            )
+            ret.path.forEach(pos => {
+                if (costs.get(pos.x, pos.y) != 1) {
+                    structMap['road'].push([pos.x, pos.y])
+                    costs.set(pos.x, pos.y, 1)
+                }
+            })
+
+        })
+        //#endregion
+
+        //#region 旧的连接外矿道路
+
+        // // 连接外矿的全部道路
+        // _.keys(CONTROLLER_STRUCTURES).forEach(struct=>structMap[struct].forEach(e=>roomStructs.set(e[0],e[1],struct)))
+
+        // costRoad.forEach((x,y,val)=>costRoad.set(x,y,100))//初始化100
+        // visited.init()
+        // queMin.push(NewNode(0,storageX,storageY))//以 storage为中心
+        // visited.exec(storageX,storageY,1)
+        // queMin.whileNoEmpty(nd=>{
+        //     roomStructs.forNear((x,y,val)=>{
+        //         let roadCost = roomWalkable.get(x,y);
+        //         if(!visited.exec(x,y,1)&&(!val||val=='road'||val=='rampart')&&roadCost){
+        //             queMin.push(NewNode(nd.k+(val=='road'?0:roadCost==2?4:2),x,y))
+        //         }
+        //     },nd.x,nd.y)
+        //     costRoad.set(nd.x,nd.y,nd.k)
+        //     // visual.text(costRoad.get(nd.x,nd.y),nd.x,nd.y+0.25, {color: "pink",opacity:0.99,font: 7})
+        // })
+
+        // // 将dp的位置进行递归回去
+        // let border = visited //边界不能放路
+        // border.init()
+        // visited.forBorder((x,y,val)=>{visited.set(x,y,1)})
+        // structMap["container"].forEach(e=>{
+        //     let dfsBack = function (x,y){
+        //         let minVal =500;
+        //         let finalX = 0;
+        //         let finalY = 0;
+        //         costRoad.forNear((x,y,val)=>{
+        //             let struct = roomStructs.get(x,y)
+        //             if(minVal>val&&!visited.get(x,y)&&val>=0&&roomWalkable.get(x,y)&&(!struct||struct=='road'||struct=='rampart')) {
+        //                 minVal = val
+        //                 finalX = x
+        //                 finalY = y
+        //             }
+        //         },x,y)
+        //         if(minVal){
+        //             if("road"!=roomStructs.exec(finalX,finalY,"road")){
+        //                 structMap["road"].push([finalX,finalY]);
+        //                 dfsBack(finalX,finalY)
+        //             }
+        //         }
+        //         // visual.text(minVal,finalX,finalY+0.25, {color: "pink",opacity:0.99,font: 7})
+        //     }
+        //     dfsBack(e[0],e[1])
+        //     structMap["road"].forEach(e=>costRoad.set(e[0],e[1],0))
+        // })
+
+        //#endregion
 
         // 可视化部分
         // allCacheMap[finalPos].forEach(t=>{
@@ -1505,21 +1578,27 @@ let pro = {
 };
 
 global.ManagerPlanner = pro;
+// module.exports = {
+//     run(){
+//         let roomStructsData = undefined //放全局变量
 
-module.exports.loop = function () {
-    let roomStructsData = undefined //放全局变量
-
-    let p = Game.flags.p; // 触发器
-    let pa = Game.flags.pa;
-    let pb = Game.flags.pb;
-    let pc = Game.flags.pc;
-    let pm = Game.flags.pm;
-    if (p) {
-        roomStructsData = ManagerPlanner.computeManor(p.pos.roomName, [pc, pm, pa, pb])
-        Game.flags.p.remove()
-    }
-    if (roomStructsData) {
-        //这个有点消耗cpu 不看的时候记得关
-        HelperVisual.showRoomStructures(roomStructsData.roomName, roomStructsData.structMap)
-    }
+//         let p = Game.flags.p; // 触发器
+//         let pa = Game.flags.pa;
+//         let pb = Game.flags.pb;
+//         let pc = Game.flags.pc;
+//         let pm = Game.flags.pm;
+//         if(p) {
+//             roomStructsData = ManagerPlanner.computeManor(p.pos.roomName,[pc,pm,pa,pb])
+//             Game.flags.p.remove()
+//         }
+//         if(roomStructsData){
+//             //这个有点消耗cpu 不看的时候记得关
+//             HelperVisual.showRoomStructures(roomStructsData.roomName,roomStructsData.structMap)
+//         }
+//     }
+// }
+module.exports = {
+    HelperVisual: helpervisual,
+    ManagerPlanner: pro,
+    // Loop:loop
 }

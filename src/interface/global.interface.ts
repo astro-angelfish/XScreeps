@@ -61,7 +61,8 @@ declare module NodeJS {
             roomName?: string,
             storagePos?: { x: number, y: number },
             labPos?: { x: number, y: number },
-            structMap?: StructMap
+            structMap?: StructMap,
+            structMaplv?: StructMap,
         } | null
     }
 }
