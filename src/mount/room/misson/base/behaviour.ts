@@ -14,7 +14,7 @@ export default class RoomMissonBehaviourExtension extends Room {
     }
 
     // 搬运基本任务
-    public Task_Carrysenior(mission: MissionModel): void {
+    public Task_Carryshard(mission: MissionModel): void {
         /* 搬运任务需求 sourcePosX,Y sourceRoom targetPosX,Y targetRoom num  rType  */
         // 没有任务数据 或者数据不全就取消任务
         if (mission.CreepBind.truckshard.num > 0) {

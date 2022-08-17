@@ -79,7 +79,7 @@ export default class CreepMissonTransportExtension extends Creep {
     }
 
     /*位面物资运输*/
-    public handle_carrysenior(): void {
+    public handle_Carryshard(): void {
         let missionData = this.memory.MissionData
         let id = missionData.id
         let data = missionData.Data
