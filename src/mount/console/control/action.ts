@@ -6,7 +6,7 @@ import { Colorful, compare, isInArray, unzipPosition, zipPosition } from "@/util
 export default {
     /* 修墙 */
     repair: {
-        set(roomName: string, rtype: 'global' | 'special', num: number, boost: null | ResourceConstant, level?: 'T0' | 'T1' | 'T2' | 'T3' | 'T4', maxhit?: number, retain?: boolean): string {
+        set(roomName: string, rtype: 'global' | 'globalrampart' | 'globalwall' | 'special', num: number, boost: null | ResourceConstant, level?: 'T0' | 'T1' | 'T2' | 'T3' | 'T4', maxhit?: number, retain?: boolean): string {
             let thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[repair] 不存在房间${roomName}`
             for (var i of thisRoom.memory.Misson['Creep'])
@@ -18,7 +18,7 @@ export default {
                 return `[repair] 房间${roomName}挂载类型为${rtype}刷墙任务成功`
             return `[repair] 房间${roomName}挂载类型为${rtype}刷墙任务失败`
         },
-        remove(roomName: string, Rtype: 'global' | 'special'): string {
+        remove(roomName: string, Rtype: 'global' | 'globalrampart' | 'globalwall' | 'special'): string {
             var thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[repair] 不存在房间${roomName}`
             for (var i of thisRoom.memory.Misson['Creep'])

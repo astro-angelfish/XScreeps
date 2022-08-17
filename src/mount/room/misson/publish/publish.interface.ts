@@ -3,7 +3,7 @@ interface Room {
     public_Carry(creepData: BindData, delayTick: number, sR: string, sX: number, sY: number, tR: string, tX: number, tY: number, rType?: ResourceConstant, num?: number): MissionModel
     public_Carrysenior(disRoom: string, CreepNum: number, shard: shardName, res: ResourceConstant, interval?: number, level?: 'T0' | 'T3'): MissionModel
     public_Carrygleaner(disRoom: string, CreepNum: number, suicide: number, interval?: number, level?: 'T0' | 'T3'): MissionModel
-    public_repair(Rtype: 'global' | 'special' | 'nuker', num: number, boostType: ResourceConstant, level?: 'T0' | 'T1' | 'T2' | 'T3' | 'T4', maxhit?: number, retain?: boolean): MissionModel
+    public_repair(Rtype: 'global' | 'globalrampart' | 'globalwall' | 'special' | 'nuker', num: number, boostType: ResourceConstant, level?: 'T0' | 'T1' | 'T2' | 'T3' | 'T4', maxhit?: number, retain?: boolean): MissionModel
     public_planC(disRoom: string, Cnum: number, upNum: number, shard?: shardName,): MissionModel
     public_link(structure: string[], disStructure: string, level: number, delayTick?: number): MissionModel
     public_dismantle(disRoom: string, shard: shardName, num: number, interval?: number, boost?: boolean): MissionModel
