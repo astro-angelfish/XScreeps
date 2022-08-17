@@ -154,6 +154,16 @@ export default class PowerCreepMissonBase extends PowerCreep {
                 if (this.withdraw(storage_, 'ops', max_pc_number) == ERR_NOT_IN_RANGE) {
                     this.goTo(storage_.pos, 1)
                 }
+
+            } else if (terminal_.store.getUsedCapacity('ops') > 0) {
+                var max_pc_number = Number(this.store.getCapacity()) / 2;
+                if (this.store.getFreeCapacity() < max_pc_number) {
+                    max_pc_number = this.store.getFreeCapacity();
+                }
+                // max_pc_number = max_pc_number < 200 ? 200 : max_pc_number;
+                if (this.withdraw(terminal_, 'ops', max_pc_number) == ERR_NOT_IN_RANGE) {
+                    this.goTo(terminal_.pos, 1)
+                }
             }
             return false
         }

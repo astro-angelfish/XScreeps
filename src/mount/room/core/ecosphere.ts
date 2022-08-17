@@ -176,7 +176,7 @@ export default class RoomCoreEcosphereExtension extends Room {
         // 每10tick观察一次房间状态，如果发现敌人，房间状态变为war，否则为peace
         if (Game.time % 10 == 0) {
             // 安全模式下和平模式
-            if (this.controller.safeMode) {
+            if (this.controller.safeMode && this.controller.level >=8) {
                 this.memory.state = 'peace'
                 return
             }

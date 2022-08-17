@@ -294,6 +294,23 @@ export function build_(creep: Creep): void {
     if (!creep.memory.standed) creep.memory.standed = false
     creep.workstate('energy')
     if (creep.memory.working) {
+
+        if (thisRoom.controller.level < 8) {
+            var target = creep.pos.findClosestByRange(FIND_STRUCTURES, {
+                filter: (stru: StructureTower | StructureSpawn) => {
+                    return isInArray(['tower', 'spawn'], stru.structureType) && stru.store.getFreeCapacity('energy') > 0
+                }
+            })
+
+            if (target) {
+                let _number = getDistance(target.pos, creep.pos)
+                if (_number < 7) {
+                    creep.transfer_(target, 'energy')
+                    return
+                }
+            }
+        }
+
         var construction = creep.pos.findClosestByRange(FIND_MY_CONSTRUCTION_SITES)
         if (construction) {
             creep.build_(construction)

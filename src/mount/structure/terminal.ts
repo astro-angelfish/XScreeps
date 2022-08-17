@@ -17,10 +17,11 @@ export default class terminalExtension extends StructureTerminal {
         if (allmyTask.length >= 1)
             allmyTask.sort(compare('level'))
         thisTask = allmyTask[0]
+        this.ModifypriceMarket();/*价格调整工具*/
+        this.EnergyreplenishMarket();/*动态报价工具*/
         if (!thisTask || !isInArray(['资源传送'], thisTask.name)) {
             /* terminal默认操作*/
             this.ResourceBalance()  // 资源平衡
-            this.ModifypriceMarket();/*价格调整工具*/
             this.ResourceMarket()   // 资源买卖
             if (!thisTask) return
         }
@@ -93,7 +94,7 @@ export default class terminalExtension extends StructureTerminal {
      * 负责各种情况下能量不足的市场调度操作
      */
     public EnergyreplenishMarket(): void {
-
+        if ((Game.time - global.Gtime[this.room.name]) % 27) return
         // 确定当前的能量数量信息
         let storeNum = this.room.storage.store.getUsedCapacity('energy') + this.store.getUsedCapacity('energy')
         if (storeNum >= 250000) return
@@ -247,8 +248,8 @@ export default class terminalExtension extends StructureTerminal {
                             break;
                     }
                 } else {
-                    up_tick = 50;
-                    drop_tick = 50;
+                    up_tick = 40;
+                    drop_tick = 30;
                 }
 
                 if (!global.Marketorder[this.room.name]) { break; }
@@ -362,9 +363,9 @@ export default class terminalExtension extends StructureTerminal {
         let order_: any = [];
         for (let orders_data of orders) {
             if (orders_data.price < market_deal.price) continue;/*价格不满足*/
-            if (orders_data.amount < a) continue;/*订单数量过少*/
+            if (orders_data.amount < a && market_deal.num >= a) continue;/*订单数量过少*/
             let cost = Game.market.calcTransactionCost(1000, orders_data.roomName, this.room.name);
-            if (cost / 1000 > toll) continue;/*运费过高*/
+            if (cost / 1000 > toll && market_deal.num >= a) continue;/*运费过高*/
             let energy_cr = avePrice('energy', 1)
             order_.push({
                 id: orders_data.id,
@@ -399,7 +400,7 @@ export default class terminalExtension extends StructureTerminal {
         // }
         if (!this.room.storage) { console.log(`['${this.room.name}]不存在storage!`); return }
         let storage_ = this.room.storage
-        this.EnergyreplenishMarket();/*动态报价工具*/
+
         /* 仓库资源过于饱和就卖掉能量 超出则不卖(考虑到pc技能间隔) */
         if (storage_.store.getFreeCapacity() < 50000 && storage_.store.getCapacity() >= storage_.store.getUsedCapacity() && this.room.controller.level >= 8) {
             /* 如果仓库饱和(小于200k空间)，而且仓库能量超过400K,就卖能量 */
@@ -572,7 +573,11 @@ export default class terminalExtension extends StructureTerminal {
         }
         if (!task.state) task.state = 1     // 1状态下，搜集资源
         if (task.state == 1) {
-            if (Game.time % 10) return  /* 每10tick监测一次 */
+            if (this.room.controller.level < 8) {
+                if (Game.time % 5) return  /* 每10tick监测一次 */
+            } else {
+                if (Game.time % 10) return  /* 每10tick监测一次 */
+            }
             if (task.Data.num <= 0 || task.Data.num == undefined) this.room.DeleteMission(task.id)
             if (this.room.RoleMissionNum('manage', '物流运输') > 0) return // manage爬虫有任务时就不管
             // 路费

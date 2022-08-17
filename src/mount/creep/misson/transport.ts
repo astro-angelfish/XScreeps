@@ -182,12 +182,19 @@ export default class CreepMissonTransportExtension extends Creep {
             this.memory.working = true;
         }
         if (this.memory.working) {
+            if (!Game.rooms[this.memory.belong]) {
+                console.log('操作存在异常的情况')
+            }
             if (this.memory.belong != this.room.name) {
-                this.arriveTo(new RoomPosition(24, 24, this.memory.belong), 23, data.shard, data.shardData ? data.shardData : null)
+                this.goTo(Game.rooms[this.memory.belong].storage.pos, 1)
+                // this.arriveTo(new RoomPosition(24, 24, this.memory.belong), 23, data.shard, data.shardData ? data.shardData : null)
                 return;
             }
             if (data.suicide * 2 > this.ticksToLive && this.store.getUsedCapacity() < 1) {
                 this.suicide();
+            }
+            if (this.hits < this.hitsMax && this.room.memory.state == 'peace') {
+                this.optTower('heal', this);
             }
             // if (this.room.storage) {
             //     let transfer = this.transfer(this.room.storage, data.rType)
@@ -224,7 +231,8 @@ export default class CreepMissonTransportExtension extends Creep {
                 this.memory.working = true;
             }
             if (data.disRoom != this.room.name) {
-                this.arriveTo(new RoomPosition(24, 24, data.disRoom), 23, data.shard, data.shardData ? data.shardData : null)
+                this.goTo(new RoomPosition(24, 24, data.disRoom), 23)
+                // this.arriveTo(new RoomPosition(24, 24, data.disRoom), 23, data.shard, data.shardData ? data.shardData : null)
                 return;
             }
             var find_dropped_resources = this.pos.findClosestByRange(FIND_DROPPED_RESOURCES, {
@@ -388,7 +396,6 @@ export default class CreepMissonTransportExtension extends Creep {
                             return
                         }
                     }
-
                 } else {
                     /* 清除杂质 */
                     var storage = this.room.storage as StructureStorage
@@ -477,6 +484,7 @@ export default class CreepMissonTransportExtension extends Creep {
                                     return
                                 }
                             }
+
                             if (target.store.getFreeCapacity() < 40000) {
                                 /* 目标满了、不是正确目标、目标消失了也代表任务完成 */
                                 belongRoom.DeleteMission(this.memory.MissionData.id)
@@ -518,7 +526,7 @@ export default class CreepMissonTransportExtension extends Creep {
                             }
                             if (targetR) {
                                 if (!targetR.store || targetR.store.getUsedCapacity() == 0) {
-                                    /* 如果发现没资源了，就取消搬运任务 */
+                                    /* 如果发现没资源了，就取消搬运任务 */ 
                                     belongRoom.DeleteMission(this.memory.MissionData.id)
                                     return
                                 }
@@ -527,6 +535,7 @@ export default class CreepMissonTransportExtension extends Creep {
                                 }
                                 return
                             }
+                            this.memory.working = true;
                         }
                     }
                 }
