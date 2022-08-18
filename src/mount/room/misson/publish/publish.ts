@@ -67,7 +67,7 @@ export default class RoomMissonPublish extends Room {
         return thisTask
     }
 
-    public public_Carrysenior(disRoom: string, CreepNum: number, shard: shardName, res: ResourceConstant, interval: number, level: 'T0' | 'T1' | 'T2' | 'T3' = 'T0'): MissionModel {
+    public public_Carryshard(disRoom: string, CreepNum: number, shard: shardName, res: ResourceConstant, interval: number, level: 'T0' | 'T1' | 'T2' | 'T3' = 'T0'): MissionModel {
         var thisTask: MissionModel =
         {
             name: '位面运输',

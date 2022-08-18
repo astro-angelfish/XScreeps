@@ -7,7 +7,7 @@ interface Creep{
     // 任务
     handle_feed():void
     handle_carry():void
-    handle_carrysenior():void
+    handle_Carryshard():void
     handle_carrygleaner():void
     handle_repair():void
     handle_planC():void

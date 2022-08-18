@@ -1002,7 +1002,7 @@ export default [
                                 describe: '例: repair.set("W1N1","global",1,"LH","T0")',
                                 params: [
                                     { name: 'roomName', desc: '房间名' },
-                                    { name: 'type', desc: '刷墙类型 global(全局刷墙) | special(只刷旗子下的墙)' },
+                                    { name: 'type', desc: '刷墙类型 global | globalrampart | globalwall | special(只刷旗子下的墙)' },
                                     { name: 'num', desc: '刷墙爬数量' },
                                     { name: 'boost', desc: 'boost类型 null | LH | LH2O | XLH2O' },
                                     { name: 'level', desc: '体型 T0 | T1 | T2 越高体型越小' },
@@ -1014,7 +1014,7 @@ export default [
                                 describe: '例: repair.remove("W1N1","global")',
                                 params: [
                                     { name: 'roomName', desc: '房间名' },
-                                    { name: 'type', desc: '刷墙类型 global(全局刷墙) | special(只刷旗子下的墙)' },
+                                    { name: 'type', desc: '刷墙类型 global | globalrampart | globalwall | special(只刷旗子下的墙)' },
                                 ],
                                 functionName: 'repair.remove'
                             },
@@ -1151,7 +1151,7 @@ export default [
                                     { name: 'rType', desc: '搬运的资源类型' },
                                     { name: 'num', desc: '搬运爬数量' },
                                     { name: 'interval', desc: '孵化间隔' },
-                                    { name: 'level', desc: '体型等级 T0 | T3' },
+                                    { name: 'level', desc: '强化等级 T0 | T1 | T2 | T3' },
                                     { name: 'shardData(可选)', desc: '多次跨shard参数' },
                                 ],
                                 functionName: 'carry.shard'
@@ -1165,6 +1165,27 @@ export default [
                                     { name: 'shard', desc: 'shard名' },
                                 ],
                                 functionName: 'carry.Cshard'
+                            },
+                            {
+                                title: '搬运指定房间内资源:',
+                                describe: '例: carry.gleaner("W1N1","E3N5",3,500,1000,"T0")',
+                                params: [
+                                    { name: 'roomName', desc: '房间名' },
+                                    { name: 'destRoom', desc: '目标房间名' },
+                                    { name: 'num', desc: '搬运爬数量' },
+                                    { name: 'suicide', desc: '在寿命低于此数值时自杀, 避免资源掉落浪费' },
+                                    { name: 'interval(可选)', desc: '孵化间隔' },
+                                    { name: 'level(可选)', desc: '强化等级 T0 | T1 | T2 | T3' },
+                                ],
+                                functionName: 'carry.gleaner'
+                            },
+                            {
+                                title: '取消搬运指定房间内资源:',
+                                describe: '例: carry.Cgleaner("W1N1")',
+                                params: [
+                                    { name: 'roomName', desc: '房间名' },
+                                ],
+                                functionName: 'carry.Cgleaner'
                             },
                             {
                                 title: '紧急援建:',
