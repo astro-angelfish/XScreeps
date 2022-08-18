@@ -28,7 +28,7 @@ interface Room {
     public_double_defend(num: number, bodylevel?: "T0" | "T1" | "T2" | "T3"): MissionModel
     public_squad(disRoom: string, shard: shardName, interval: number, RNum: number, ANum: number, DNum: number, HNum: number, AIONum: number, flag: string): MissionModel
     public_Double(disRoom: string, shard: shardName, CreepNum: number, cType: 'dismantle' | 'attack', interval: number): MissionModel
-    public_resource_transfer(disRoom: string, resource?: ResourceConstant, num?: number): MissionModel
+    public_resource_transfer(disRoom: string, resource?: ResourceConstant, num?: number, whitelist?: ResourceConstant[]): MissionModel
     public_normal(num: number, boostType: ResourceConstant | null): MissionModel
 
     public_Aidestroy(disRoom: string, shard: string, boost?: boolean, bodylevel?: "T0" | "T1" | "T2" | "T3")

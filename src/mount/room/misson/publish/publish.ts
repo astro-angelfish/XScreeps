@@ -847,7 +847,7 @@ export default class RoomMissonPublish extends Room {
 
 
     /* 资源转移任务发布函数 */
-    public public_resource_transfer(disRoom: string, resource?: ResourceConstant, num?: number): MissionModel {
+    public public_resource_transfer(disRoom: string, resource?: ResourceConstant, num?: number, whitelist?: ResourceConstant[]): MissionModel {
         var thisTask: MissionModel = {
             name: '资源转移',
             range: 'Room',
@@ -857,6 +857,7 @@ export default class RoomMissonPublish extends Room {
                 disRoom: disRoom,
                 rType: resource ? resource : null,
                 num: num ? num : 8000000,
+                whitelist: whitelist ? whitelist : []
             },
             maxTime: 1,
         }
