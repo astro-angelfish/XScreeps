@@ -27,7 +27,8 @@ interface LittleMarketData {
     id?: string      // 交易ID
     continue?: boolean   // 卖完了一批次是否填充
     changePrice?: boolean    // 是否需要修改价格
-    time?: number
+    time?: number,
+    retain?: boolean,
 }
 
 // interface Factory {
