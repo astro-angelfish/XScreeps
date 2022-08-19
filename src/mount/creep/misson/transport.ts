@@ -515,11 +515,11 @@ export default class CreepMissonTransportExtension extends Creep {
                             var target = targets[0] as StructureStorage
                             var targetR = ruin as Ruin
                             if (target) {
-                                // if (!target.store || target.store.getUsedCapacity() == 0) {
-                                //     /* 如果发现没资源了，就取消搬运任务 */
-                                //     belongRoom.DeleteMission(this.memory.MissionData.id)
-                                //     return
-                                // }
+                                if (!target.store || target.store.getUsedCapacity() == 0) {
+                                    /* 如果发现没资源了，就取消搬运任务 */
+                                    belongRoom.DeleteMission(this.memory.MissionData.id)
+                                    return
+                                }
                                 for (var t in target.store) {
                                     this.withdraw(target, t as ResourceConstant)
                                 }

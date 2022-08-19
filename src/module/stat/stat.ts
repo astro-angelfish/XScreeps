@@ -1,6 +1,5 @@
 
 import { AppLifecycleCallbacks } from "../framework/types"
-import { StatsManager } from "./manager.stats"
 export function stateScanner():void  {
     // 每 20 tick 运行一次
     if (Game.time % 20) return 
@@ -37,9 +36,8 @@ export function statCPU(): void {
 }
 
 export function stat():void{
-    //stateScanner()
+    stateScanner()
     statCPU()
-    StatsManager.runForAllRooms()
 }
 
 export const statMoudle:AppLifecycleCallbacks ={
