@@ -92,22 +92,22 @@ export default class RoomMissonVindicateExtension extends Room {
         if (creeps.length >= 8) mission.Data.standed = false
         else mission.Data.standed = true
         if (!this.Check_Lab(mission, 'transport', 'complex')) return
-        if (Game.time % 40) return
-        if (terminal_.store.getUsedCapacity('energy') < 100000 && Game.market.credits >= 1000000) {
-            let ave = avePrice('energy', 2)
-            let highest = highestPrice('energy', 'buy', ave + 6)
-            if (!haveOrder(this.name, 'energy', 'buy', highest, -0.2)) {
-                let result = Game.market.createOrder({
-                    type: ORDER_BUY,
-                    resourceType: 'energy',
-                    price: highest + 0.1,
-                    totalAmount: 100000,
-                    roomName: this.name
-                });
-                if (result != OK) { console.log("创建能量订单出错,房间", this.name) }
-                console.log(Colorful(`[急速冲级]房间${this.name}创建energy订单,价格:${highest + 0.01};数量:100000`, 'green', true))
-            }
-        }
+        // if (Game.time % 40) return
+        // if (terminal_.store.getUsedCapacity('energy') < 100000 && Game.market.credits >= 1000000) {
+        //     let ave = avePrice('energy', 2)
+        //     let highest = highestPrice('energy', 'buy', ave + 6)
+        //     if (!haveOrder(this.name, 'energy', 'buy', highest, -0.2)) {
+        //         let result = Game.market.createOrder({
+        //             type: ORDER_BUY,
+        //             resourceType: 'energy',
+        //             price: highest + 0.1,
+        //             totalAmount: 100000,
+        //             roomName: this.name
+        //         });
+        //         if (result != OK) { console.log("创建能量订单出错,房间", this.name) }
+        //         console.log(Colorful(`[急速冲级]房间${this.name}创建energy订单,价格:${highest + 0.01};数量:100000`, 'green', true))
+        //     }
+        // }
     }
 
     /* 普通冲级 */
