@@ -135,5 +135,63 @@ export default {
             return `[Maintain]  ${thisRoom} 道路维护 ${road_maintain_energy},基础孵化 ${role_maintain_energy} 300tick ${(road_maintain_energy + role_maintain_energy) / 5}`
         }
 
-    }
+    },
+
+    pixel: {
+        //开关搓像素
+        switch(): string {
+            Memory.StopPixel = !Memory.StopPixel
+            return `[pixel] 自动搓像素改为${!Memory.StopPixel}`
+        },
+        //自动买像素
+        buy(num: number, price: number): string {
+            //查找现有订单
+            let buyOrder: string;
+            for (let i in Game.market.orders) {
+                let order = Game.market.getOrderById(i);
+                if (order.resourceType === PIXEL && order.type === ORDER_BUY){
+                    buyOrder = order.id;
+                    break;
+                }
+            }
+            if (!Game.market.getOrderById(buyOrder)) {
+                //创建新订单
+                Memory.pixelInfo.buyNum = num - 1;
+                Memory.pixelInfo.buyPrice = price;
+                Game.market.createOrder({type: ORDER_BUY, resourceType: PIXEL, price: price, totalAmount: 1});
+                return `[Pixel] 创建像素购买订单! 数量${num}, 价格${price}`
+            } else {
+                //更改现有订单
+                Memory.pixelInfo.buyNum += num - 1;
+                Memory.pixelInfo.buyPrice = price;
+                Game.market.changeOrderPrice(buyOrder, price);
+                return `[Pixel] 追加像素购买订单! 数量${num}, 价格${price}, 总量${Memory.pixelInfo.buyNum}`
+            }
+        },
+        //自动卖像素
+        sell(num: number, price: number): string {
+            //查找现有订单
+            let sellOrder: string;
+            for (let i in Game.market.orders) {
+                let order = Game.market.getOrderById(i);
+                if (order.resourceType === PIXEL && order.type === ORDER_SELL){
+                    sellOrder = order.id;
+                    break;
+                }
+            }
+            if (!Game.market.getOrderById(sellOrder)) {
+                //创建新订单
+                Memory.pixelInfo.sellNum = num - 1;
+                Memory.pixelInfo.sellPrice = price;
+                Game.market.createOrder({type: ORDER_SELL, resourceType: PIXEL, price: price, totalAmount: 1});
+                return `[Pixel] 创建像素出售订单! 数量${num}, 价格${price}`
+            } else {
+                //更改现有订单
+                Memory.pixelInfo.sellNum += num - 1;
+                Memory.pixelInfo.sellPrice = price;
+                Game.market.changeOrderPrice(sellOrder, price);
+                return `[Pixel] 追加像素出售订单! 数量${num}, 价格${price}, 总量${Memory.pixelInfo.sellNum}`
+            }
+        }
+    },
 }

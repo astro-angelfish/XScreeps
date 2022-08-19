@@ -92,6 +92,7 @@ export default class CreepMissonWarExtension extends Creep {
             else {
                 if (control.owner) this.attackController(control)
                 else this.reserveController(control)
+                if (control.upgradeBlocked > this.ticksToLive) this.suicide()
             }
         }
     }

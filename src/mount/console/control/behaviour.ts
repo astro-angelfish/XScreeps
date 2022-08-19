@@ -862,10 +862,5 @@ export default {
             myRoom.memory.DynamicConfig.Dynamicfactoryuncondense = true
             return Colorful(`[factory] 房间${roomName} 的bar自动解压启动!`, 'blue', true)
         }
-    },
-
-    pixel(): string {
-        Memory.StopPixel = !Memory.StopPixel
-        return `[pixel] 自动搓像素改为${!Memory.StopPixel}`
     }
 }

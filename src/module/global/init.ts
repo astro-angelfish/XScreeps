@@ -27,6 +27,7 @@ export const MemoryInit = function (): void {
     if (!global.warData) global.warData = { tower: {}, enemy: {}, flag: {}, structure: {} }
     if (!global.MSB) global.MSB = {}
     if (!Memory.StopPixel) Memory.StopPixel = false
+    if (!Memory.pixelInfo) Memory.pixelInfo = {sellNum: 0, buyNum: 0, buyPrice: 0, sellPrice: 0}
     if (!global.Repairlist) global.Repairlist = {}
     if (!Memory.creepscpu) { Memory.creepscpu = {} }
     if (!global.getStructure) global.getStructure = {}

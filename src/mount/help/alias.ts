@@ -157,7 +157,25 @@ export default [
                             },
                             {
                                 title: '开启/关闭自动搓像素(默认开启):',
-                                functionName: 'pixel'
+                                functionName: 'pixel.switch'
+                            },
+                            {
+                                title: '自动买像素:',
+                                describe: '例: pixel.buy(100,25000)',
+                                params: [
+                                    { name: 'num', desc: '数量' },
+                                    { name: 'price', desc: '价格' },
+                                ],
+                                functionName: 'pixel.buy'
+                            },
+                            {
+                                title: '自动卖像素:',
+                                describe: '例: pixel.sell(100,30000)',
+                                params: [
+                                    { name: 'num', desc: '数量' },
+                                    { name: 'price', desc: '价格' },
+                                ],
+                                functionName: 'pixel.sell'
                             },
                         ]
                     },
