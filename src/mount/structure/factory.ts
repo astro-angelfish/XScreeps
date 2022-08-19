@@ -232,7 +232,12 @@ export class factoryExtension extends StructureFactory {
             // 检测高级商品是否满足
             LoopJ:
             for (let h of high) {
-                if (storage_.store.getUsedCapacity(h) < this.room.memory.productData.baseList[h].num - 300) {
+                let _start_number = 300;
+                let _comm = COMMODITIES[h]
+                if (_comm.level && _comm.level > 3) {
+                    _start_number = 10
+                }
+                if (storage_.store.getUsedCapacity(h) < this.room.memory.productData.baseList[h].num - _start_number) {
                     if (!COMMODITIES[h]) continue;
                     if (COMMODITIES[h].level > 0) {
                         let frequency_number = Math.ceil(1000 / COMMODITIES[h].cooldown)
