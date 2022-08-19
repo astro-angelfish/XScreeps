@@ -1,5 +1,5 @@
 import { resourceComDispatch } from "@/constant/ResourceConstant"
-import { avePrice, haveOrder, highestPrice, RecognizeLab } from "@/module/fun/funtion"
+import { avePrice, haveOrder, highestPrice, lowestPrice, RecognizeLab } from "@/module/fun/funtion"
 import { Colorful, compare, isInArray, unzipPosition, zipPosition } from "@/utils"
 import { LabLevel } from "@/constant/ResourceConstant"
 import { result } from "lodash"
@@ -237,7 +237,7 @@ export default {
             return Game.market.deal(id, amount, roomName);
         },
         // 查询订单
-        look(rType: ResourceConstant, marType: "buy" | "sell"): string {
+        look(rType: MarketResourceConstant, marType: "buy" | "sell"): string {
             var HistoryList = Game.market.getHistory(rType)
             var allNum: number = 0
             for (var ii of HistoryList) {
@@ -304,7 +304,7 @@ export default {
             }
         },
         // 查询平均价格
-        ave(rType: ResourceConstant, day: number = 1): string {
+        ave(rType: MarketResourceConstant, day: number = 1): string {
             return `[market] 资源${rType}在近${day}天内的平均价格为${avePrice(rType, day)}`
         },
         // 查询是否有订单
@@ -316,12 +316,20 @@ export default {
                 return `[market] 房间:${roomName};资源:${res};类型:${mtype}的单子--->${result ? "有" : "没有"}`
         },
         // 查询市场上的最高价格
-        highest(rType: ResourceConstant, mtype: 'sell' | 'buy', mprice: number = 0): string {
+        highest(rType: MarketResourceConstant, mtype: 'sell' | 'buy', mprice: number = 0): string {
             let result = highestPrice(rType, mtype, mprice)
             if (mprice)
                 return `[market] 资源:${rType};类型:${mtype} 最高价格${result}[低于${mprice}]`
             else
                 return `[market] 资源:${rType};类型:${mtype} 最高价格${result}`
+        },
+        // 查询市场上的最低价格
+        lowest(rType: MarketResourceConstant, mtype: 'sell' | 'buy', mprice: number = 0): string {
+            let result = lowestPrice(rType, mtype, mprice)
+            if (mprice)
+                return `[market] 资源:${rType};类型:${mtype} 最低价格${result}[高于${mprice}]`
+            else
+                return `[market] 资源:${rType};类型:${mtype} 最低价格${result}`
         },
         // 卖资源
         sell(roomName: string, rType: ResourceConstant, mType: 'deal' | 'order', num: number, price?: number, unit: number = 2000, retain?: boolean): string {

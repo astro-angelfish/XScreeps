@@ -161,19 +161,31 @@ export default [
                             },
                             {
                                 title: '自动买像素:',
-                                describe: '例: pixel.buy(100,25000)',
+                                describe: '例: pixel.buy(100,25000,10,20000)',
                                 params: [
                                     { name: 'num', desc: '数量' },
                                     { name: 'price', desc: '价格' },
+                                    { name: 'unit', desc: '(可选) 单次购入数量' },
+                                    { name: 'floor', desc: '(可选) 自动调价价格下限' },
                                 ],
                                 functionName: 'pixel.buy'
                             },
                             {
                                 title: '自动卖像素:',
-                                describe: '例: pixel.sell(100,30000)',
+                                describe: '例: pixel.sell(100,30000,10,40000)',
                                 params: [
                                     { name: 'num', desc: '数量' },
                                     { name: 'price', desc: '价格' },
+                                    { name: 'unit', desc: '(可选) 单次卖出数量' },
+                                    { name: 'ceil', desc: '(可选) 自动调价价格上限' },
+                                ],
+                                functionName: 'pixel.sell'
+                            },
+                            {
+                                title: '取消买卖像素:',
+                                describe: '例: pixel.cancel("sell")',
+                                params: [
+                                    { name: 'type', desc: '交易类型 buy | sell' },
                                 ],
                                 functionName: 'pixel.sell'
                             },
@@ -511,13 +523,23 @@ export default [
                             },
                             {
                                 title: '查询市场上资源的最高价格:',
-                                describe: '例: market.highest("GH2O","sell",100)',
+                                describe: '例: market.highest("GH2O","buy",100)',
                                 params: [
                                     { name: 'rType', desc: '资源类型' },
                                     { name: 'mType', desc: '交易类型: buy | sell' },
                                     { name: 'limit', desc: '(可选) 价格上限' },
                                 ],
                                 functionName: 'market.highest'
+                            },
+                            {
+                                title: '查询市场上资源的最低价格:',
+                                describe: '例: market.lowest("GH2O","sell",100)',
+                                params: [
+                                    { name: 'rType', desc: '资源类型' },
+                                    { name: 'mType', desc: '交易类型: buy | sell' },
+                                    { name: 'limit', desc: '(可选) 价格下限' },
+                                ],
+                                functionName: 'market.lowest'
                             },
                             {
                                 title: '卖资源:',

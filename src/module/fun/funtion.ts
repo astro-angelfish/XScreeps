@@ -4,7 +4,7 @@ import { isInArray } from "@/utils"
 /* 杂物堆 */
 
 // 计算平均价格
-export function avePrice(res: ResourceConstant, day: number): number {
+export function avePrice(res: MarketResourceConstant, day: number): number {
     if (!Game.cpu.generatePixel) {
         let history = Game.market.getHistory(res)
         if (!history) return 0
@@ -60,7 +60,7 @@ export function haveOrder(roomName: string, res: ResourceConstant, mtype: 'sell'
 }
 
 // 计算一定范围内的最高价格
-export function highestPrice(res: ResourceConstant, mtype: 'sell' | 'buy', mprice?: number): number {
+export function highestPrice(res: MarketResourceConstant, mtype: 'sell' | 'buy', mprice?: number): number {
     let allOrder = Game.market.getAllOrders({ type: mtype, resourceType: res })
     let highestPrice = 0
     for (var i of allOrder) {
@@ -75,6 +75,24 @@ export function highestPrice(res: ResourceConstant, mtype: 'sell' | 'buy', mpric
     }
     if (mprice && highestPrice == 0) highestPrice = mprice
     return highestPrice
+}
+
+// 计算一定范围内的最低价格
+export function lowestPrice(res: MarketResourceConstant, mtype: 'sell' | 'buy', mprice?: number): number {
+    let allOrder = Game.market.getAllOrders({ type: mtype, resourceType: res })
+    let lowestPrice = Number.MAX_SAFE_INTEGER
+    for (var i of allOrder) {
+        if (i.price < lowestPrice) {
+            if (mprice) {
+                if (i.price >= mprice) lowestPrice = i.price
+            }
+            else {
+                lowestPrice = i.price
+            }
+        }
+    }
+    if (mprice && lowestPrice == Number.MAX_SAFE_INTEGER) lowestPrice = mprice
+    return lowestPrice
 }
 
 // 识别lab 合成 or 底物  [轮子]

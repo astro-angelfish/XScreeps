@@ -12,7 +12,7 @@ interface Memory {
     SystemEconomy: boolean,
     SystemStopPower?:boolean
     PowerSupply: string[],/*供应Power的房间信息*/
-    pixelInfo: {sellNum: number, buyNum: number, buyPrice: number, sellPrice: number}
+    pixelInfo: {buy: {num: number, price: number, unit: number, floor: number, order: string}, sell: {num: number, price: number, unit: number, ceil: number, order: string}}
 }
 
 interface RDData {

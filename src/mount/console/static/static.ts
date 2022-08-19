@@ -144,54 +144,68 @@ export default {
             return `[pixel] 自动搓像素改为${!Memory.StopPixel}`
         },
         //自动买像素
-        buy(num: number, price: number): string {
+        buy(num: number, price: number, unit: number = 1, floor?: number): string {
             //查找现有订单
             let buyOrder: string;
             for (let i in Game.market.orders) {
                 let order = Game.market.getOrderById(i);
-                if (order.resourceType === PIXEL && order.type === ORDER_BUY){
+                if (order.resourceType === PIXEL && order.type === ORDER_BUY) {
                     buyOrder = order.id;
                     break;
                 }
             }
+            Memory.pixelInfo.buy.price = price;
+            Memory.pixelInfo.buy.unit = unit;
+            Memory.pixelInfo.buy.floor = floor ? floor : 0;
             if (!Game.market.getOrderById(buyOrder)) {
                 //创建新订单
-                Memory.pixelInfo.buyNum = num - 1;
-                Memory.pixelInfo.buyPrice = price;
-                Game.market.createOrder({type: ORDER_BUY, resourceType: PIXEL, price: price, totalAmount: 1});
-                return `[Pixel] 创建像素购买订单! 数量${num}, 价格${price}`
+                Memory.pixelInfo.buy.num = num - unit;
+                Game.market.createOrder({type: ORDER_BUY, resourceType: PIXEL, price: price, totalAmount: unit});
+                return `[Pixel] 创建像素购买订单!数量${num},价格${price},单位${unit},下限${floor}`
             } else {
                 //更改现有订单
-                Memory.pixelInfo.buyNum += num - 1;
-                Memory.pixelInfo.buyPrice = price;
+                Memory.pixelInfo.buy.num += num - unit;
                 Game.market.changeOrderPrice(buyOrder, price);
-                return `[Pixel] 追加像素购买订单! 数量${num}, 价格${price}, 总量${Memory.pixelInfo.buyNum}`
+                return `[Pixel] 追加像素购买订单!数量${num},价格${price},单位${unit},下限${floor}`
             }
         },
         //自动卖像素
-        sell(num: number, price: number): string {
+        sell(num: number, price: number, unit: number = 1, ceil?: number): string {
             //查找现有订单
             let sellOrder: string;
             for (let i in Game.market.orders) {
                 let order = Game.market.getOrderById(i);
-                if (order.resourceType === PIXEL && order.type === ORDER_SELL){
+                if (order.resourceType === PIXEL && order.type === ORDER_SELL) {
                     sellOrder = order.id;
                     break;
                 }
             }
+            Memory.pixelInfo.sell.price = price;
+            Memory.pixelInfo.sell.unit = unit;
+            Memory.pixelInfo.sell.ceil = ceil ? ceil : 0;
             if (!Game.market.getOrderById(sellOrder)) {
                 //创建新订单
-                Memory.pixelInfo.sellNum = num - 1;
-                Memory.pixelInfo.sellPrice = price;
+                Memory.pixelInfo.sell.num = num - unit;
                 Game.market.createOrder({type: ORDER_SELL, resourceType: PIXEL, price: price, totalAmount: 1});
-                return `[Pixel] 创建像素出售订单! 数量${num}, 价格${price}`
+                return `[Pixel] 创建像素出售订单!数量${num},价格${price},单位${unit},上限${ceil}`
             } else {
                 //更改现有订单
-                Memory.pixelInfo.sellNum += num - 1;
-                Memory.pixelInfo.sellPrice = price;
+                Memory.pixelInfo.sell.num += num - unit;
                 Game.market.changeOrderPrice(sellOrder, price);
-                return `[Pixel] 追加像素出售订单! 数量${num}, 价格${price}, 总量${Memory.pixelInfo.sellNum}`
+                return `[Pixel] 追加像素出售订单!数量${num},价格${price},单位${unit},上限${ceil}`
             }
+        },
+        cancel(type: 'buy' | 'sell'): string {
+            let cancelAmount: number;
+            for (let i in Game.market.orders) {
+                let order = Game.market.getOrderById(i);
+                if (order.resourceType === PIXEL && order.type === type) {
+                    if (Game.market.cancelOrder(order.id) === OK) {
+                        cancelAmount++;
+                    } 
+                }
+            }
+            return `[Pixel] 已取消${cancelAmount}个${type}订单!`
         }
     },
 }
