@@ -546,6 +546,11 @@ export default {
             else myRoom.memory.switch.SavePower = false
             return `[power] 房间${roomName}的power升级的SavePower选项已经设置为${myRoom.memory.switch.SavePower}`
         },
+        stoppower(): string {
+            if (!Memory.SystemStopPower) Memory.SystemStopPower = true
+            else Memory.SystemStopPower = false
+            return `[power] 全局停止的power升级已经设置为${Memory.SystemStopPower}`
+        },
         // 限制pc的技能
         option(roomName: string, stru: string): string {
             var myRoom = Game.rooms[roomName]

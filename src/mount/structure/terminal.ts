@@ -430,7 +430,7 @@ export default class terminalExtension extends StructureTerminal {
                     if (i.rType != 'energy') {
                         this.room.memory.TerminalData[i.rType] = { num: i.unit ? i.unit : 5000, fill: true }
                     }
-                    if (this.store.getUsedCapacity(i.rType) < 100 && i.num >= 100) continue // terminal空闲资源过少便不会继续
+                    if (this.store.getUsedCapacity(i.rType) <= 100 && i.num >= 100 && i.unit >= 100) continue // terminal空闲资源过少便不会继续
                     if (storage_.store.getUsedCapacity(i.rType) <= 0 && this.room.RoleMissionNum('manage', '物流运输') <= 0) {
                         if (!i.retain) {
                             if (i.rType != 'energy') delete this.room.memory.TerminalData[i.rType]
