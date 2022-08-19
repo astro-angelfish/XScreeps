@@ -149,7 +149,6 @@ export default class RoomMissonVindicateExtension extends Room {
         let storage_ = this.storage as StructureStorage
         let terminal_ = this.terminal as StructureTerminal
         if (!storage_ || !terminal_) {
-            console.log('删除节点-0')
             this.DeleteMission(mission.id)
             return
         }
@@ -161,6 +160,9 @@ export default class RoomMissonVindicateExtension extends Room {
         // 不限定资源代表除了能量和ops之外所有资源都要转移
         if (!mission.Data.rType) {
             for (var i in storage_.store) {
+                if (mission.Data.whitelist.length > 0) {
+                    if (!isInArray(mission.Data.whitelist, i)) continue
+                }
                 if (isInArray(['energy', 'ops'], i)) continue
                 let missNum = (storage_.store[i] >= 50000) ? 50000 : storage_.store[i]
                 let sendTask = this.public_Send(mission.Data.disRoom, i as ResourceConstant, missNum)
@@ -170,7 +172,6 @@ export default class RoomMissonVindicateExtension extends Room {
             }
             // 代表已经没有资源了 - 8级控制器终止任务
             if (this.controller.level >= 8) {
-                console.log('删除节点-1')
                 this.DeleteMission(mission.id)
             }
             return
@@ -180,7 +181,6 @@ export default class RoomMissonVindicateExtension extends Room {
             let num = mission.Data.num as number
             if (num <= 0 || storage_.store.getUsedCapacity(rType) <= 0)   // 数量或存量小于0 就删除任务
             {
-                console.log('删除节点-2')
                 this.DeleteMission(mission.id)
                 return
             }

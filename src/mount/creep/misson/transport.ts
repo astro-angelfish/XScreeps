@@ -154,6 +154,7 @@ export default class CreepMissonTransportExtension extends Creep {
 
     }
 
+    /*拾荒者执行*/
     public handle_carrygleaner(): void {
         let missionData = this.memory.MissionData
         let id = missionData.id
@@ -186,7 +187,7 @@ export default class CreepMissonTransportExtension extends Creep {
                 console.log('操作存在异常的情况')
             }
             if (this.memory.belong != this.room.name) {
-                this.goTo(Game.rooms[this.memory.belong].storage.pos, 1)
+                this.goTo(Game.rooms[this.memory.belong].storage.pos, 3)
                 // this.arriveTo(new RoomPosition(24, 24, this.memory.belong), 23, data.shard, data.shardData ? data.shardData : null)
                 return;
             }
@@ -526,7 +527,7 @@ export default class CreepMissonTransportExtension extends Creep {
                             }
                             if (targetR) {
                                 if (!targetR.store || targetR.store.getUsedCapacity() == 0) {
-                                    /* 如果发现没资源了，就取消搬运任务 */ 
+                                    /* 如果发现没资源了，就取消搬运任务 */
                                     belongRoom.DeleteMission(this.memory.MissionData.id)
                                     return
                                 }

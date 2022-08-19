@@ -109,10 +109,10 @@ export default {
     },
     /* 物流 */
     logistic: {
-        send(roomName: string, disRoom: string, rType?: ResourceConstant, num?: number): string {
+        send(roomName: string, disRoom: string, rType?: ResourceConstant | null, num?: number | null, whitelist?: ResourceConstant[] | null): string {
             var thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[logistic] 不存在房间${roomName}`
-            let thisTask = thisRoom.public_resource_transfer(disRoom, rType ? rType : null, num ? num : null)
+            let thisTask = thisRoom.public_resource_transfer(disRoom, rType ? rType : null, num ? num : null, whitelist ? whitelist : null)
             if (thisTask && thisRoom.AddMission(thisTask))
                 return Colorful(`[logistic] 房间${roomName} --> ${disRoom}资源转移任务已经下达, 资源类型:${rType ? rType : "所有资源"} | 数量:${num ? num : "所有"}`, 'green')
             return Colorful(`[logistic] 房间${roomName} --> ${disRoom}资源转移任务已经下达失败!`, 'red')
@@ -272,7 +272,7 @@ export default {
             return result
         },
         // 下买订单
-        buy(roomName: string, rType: ResourceConstant, mType: 'deal' | 'order', num: number, price: number, unit: number = 2000): string {
+        buy(roomName: string, rType: ResourceConstant, mType: 'deal' | 'order', num: number, price: number, unit: number = 2000, retain?: boolean): string {
             var thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[support] 不存在房间${roomName}`
             if (!thisRoom.memory.market) thisRoom.memory.market = {}
@@ -284,7 +284,7 @@ export default {
                         bR = false
                 }
                 if (bR) {
-                    thisRoom.memory.market['order'].push({ rType: rType, num: num, unit: unit, price: price, mTyep: 'buy' })
+                    thisRoom.memory.market['order'].push({ rType: rType, num: num, unit: unit, price: price, mTyep: 'buy', retain: retain })
                     return `[market] 房间${roomName}成功下达order的资源采购指令,type:buy,rType:${rType},num:${num},unit:${unit},price:${price}`
                 }
                 else return `[market] 房间${roomName}已经存在${rType}的订单了`
@@ -297,7 +297,7 @@ export default {
                         bR = false
                 }
                 if (bR) {
-                    thisRoom.memory.market['deal'].push({ rType: rType, num: num, price: price, unit: unit, mTyep: 'buy' })
+                    thisRoom.memory.market['deal'].push({ rType: rType, num: num, price: price, unit: unit, mTyep: 'buy', retain: retain })
                     return `[market] 房间${roomName}成功下达deal的资源采购指令,type:buy,rType:${rType},num:${num},price:${price},unit:${unit}`
                 }
                 else return `[market] 房间${roomName}已经存在${rType}的订单了`
@@ -324,7 +324,7 @@ export default {
                 return `[market] 资源:${rType};类型:${mtype} 最高价格${result}`
         },
         // 卖资源
-        sell(roomName: string, rType: ResourceConstant, mType: 'deal' | 'order', num: number, price?: number, unit: number = 2000): string {
+        sell(roomName: string, rType: ResourceConstant, mType: 'deal' | 'order', num: number, price?: number, unit: number = 2000, retain?: boolean): string {
             var thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[support] 不存在房间${roomName}`
             if (!thisRoom.memory.market) thisRoom.memory.market = {}
@@ -336,7 +336,7 @@ export default {
                         bR = false
                 }
                 if (bR) {
-                    thisRoom.memory.market['order'].push({ rType: rType, num: num, unit: unit, price: price, mTyep: 'sell' })
+                    thisRoom.memory.market['order'].push({ rType: rType, num: num, unit: unit, price: price, mTyep: 'sell', retain: retain })
                     return `[market] 房间${roomName}成功下达order的资源卖出指令,type:sell,rType:${rType},num:${num},unit:${unit},price:${price}`
                 }
                 else return `[market] 房间${roomName}已经存在${rType}的sell订单了`
@@ -349,7 +349,7 @@ export default {
                         bR = false
                 }
                 if (bR) {
-                    thisRoom.memory.market['deal'].push({ rType: rType, num: num, price: price, unit: unit, mTyep: 'sell' })
+                    thisRoom.memory.market['deal'].push({ rType: rType, num: num, price: price, unit: unit, mTyep: 'sell', retain: retain })
                     return `[market] 房间${roomName}成功下达deal的资源卖出指令,type:sell,rType:${rType},num:${num},price:${price},unit:${unit}`
                 }
                 else return `[market] 房间${roomName}已经存在${rType}的sell订单了`

@@ -432,15 +432,16 @@ export default class terminalExtension extends StructureTerminal {
                     }
                     if (this.store.getUsedCapacity(i.rType) < 100 && i.num >= 100) continue // terminal空闲资源过少便不会继续
                     if (storage_.store.getUsedCapacity(i.rType) <= 0 && this.room.RoleMissionNum('manage', '物流运输') <= 0) {
-                        if (i.rType != 'energy') delete this.room.memory.TerminalData[i.rType]
-                        var index = this.room.memory.market['deal'].indexOf(i)
-                        this.room.memory.market['deal'].splice(index, 1)
+                        if (!i.retain) {
+                            if (i.rType != 'energy') delete this.room.memory.TerminalData[i.rType]
+                            var index = this.room.memory.market['deal'].indexOf(i)
+                            this.room.memory.market['deal'].splice(index, 1)
+                        }
                         continue
                     }
                     /* 数量少了就删除 */
                     if (i.num <= 0) {
-                        if (i.rType != 'energy')
-                            delete this.room.memory.TerminalData[i.rType]
+                        if (i.rType != 'energy') delete this.room.memory.TerminalData[i.rType]
                         var index = this.room.memory.market['deal'].indexOf(i)
                         this.room.memory.market['deal'].splice(index, 1)
                         continue
@@ -452,15 +453,15 @@ export default class terminalExtension extends StructureTerminal {
                         _market_x = 0.5
                     }
                     let _mex_market_number = Math.trunc(this.store.getUsedCapacity(i.rType) * _market_x)
-                    if (Marketdeal.amount >= _mex_market_number) {
-                        let _market_state = Game.market.deal(Marketdeal.id, _mex_market_number, this.room.name)
-                        i.num -= _mex_market_number
-                        break
+                    let _deal_number = _mex_market_number;
+                    if (Marketdeal.amount < _mex_market_number) {
+                        _deal_number = Marketdeal.amount;
                     }
-                    else {
-                        let _market_state = Game.market.deal(Marketdeal.id, Marketdeal.amount, this.room.name)
-                        i.num -= Marketdeal.amount
-                        break
+                    if (_deal_number > 0) {
+                        let _market_state = Game.market.deal(Marketdeal.id, _deal_number, this.room.name)
+                        if (_market_state == OK) {
+                            i.num -= _deal_number
+                        }
                     }
                 }
             }
