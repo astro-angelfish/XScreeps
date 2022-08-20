@@ -145,14 +145,13 @@ export default class CreepMoveExtension extends Creep {
                 return costs
             }
         })
-        if (range == 18) {
-            console.log(target.roomName)
-            console.log(JSON.stringify(allowedRooms));
-            console.log(JSON.stringify(room_list))
-            console.log(JSON.stringify(okroom_list))
-            console.log(this.name, swi, JSON.stringify(result))
-        }
-
+        // if (range == 18) {
+        //     console.log(target.roomName)
+        //     console.log(JSON.stringify(allowedRooms));
+        //     console.log(JSON.stringify(room_list))
+        //     console.log(JSON.stringify(okroom_list))
+        //     console.log(this.name, swi, JSON.stringify(result))
+        // }
         // 寻路异常返回null
         if (result.path.length <= 0) return null
         // 寻路结果压缩
@@ -222,6 +221,11 @@ export default class CreepMoveExtension extends Creep {
         const goResult = this.goByPath()
         // 如果发生撞停或者参数异常，说明缓存可能存在问题，移除缓存
         if (goResult === ERR_INVALID_TARGET) {
+            /*检查是否存在缓存*/
+            if (this.room.name != target.roomName) {
+                const routeKey = `${this.standardizePos(this.pos)} ${this.standardizePos(target)}`
+                if (global.routeCache[routeKey]) delete global.routeCache[routeKey];
+            }
             delete this.memory.moveData
         }
         else if (goResult != OK && goResult != ERR_TIRED) {

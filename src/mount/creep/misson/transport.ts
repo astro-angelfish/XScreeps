@@ -194,7 +194,7 @@ export default class CreepMissonTransportExtension extends Creep {
             if (data.suicide * 2 > this.ticksToLive && this.store.getUsedCapacity() < 1) {
                 this.suicide();
             }
-            if (this.hits < this.hitsMax && this.room.memory.state == 'peace') {
+            if (this.hits < this.hitsMax && this.room.memory.state == 'peace' && Game.rooms[this.memory.belong].name == this.room.name) {
                 this.optTower('heal', this);
             }
             // if (this.room.storage) {
