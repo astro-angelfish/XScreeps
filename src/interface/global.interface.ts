@@ -62,10 +62,11 @@ declare module NodeJS {
             storagePos?: { x: number, y: number },
             labPos?: { x: number, y: number },
             structMap?: StructMap,
-            structMaplv?: StructMap,
+            structMaplv?: string[],
         } | null
     }
 }
+
 
 interface StructMap {
     [key: string]: [number, number][]

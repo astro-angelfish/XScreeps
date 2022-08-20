@@ -302,6 +302,16 @@ export function unzipPosition(str: string): RoomPosition | undefined {
   return info.length == 3 ? new RoomPosition(Number(info[0]), Number(info[1]), info[2]) : undefined
 }
 
+export function unzipLayout(str: string): BluePrintData | undefined {
+  var info = str.split('/')
+  return info.length == 4 ? {
+    x: Number(info[0]),
+    y: Number(info[1]),
+    structureType: info[2] as BuildableStructureConstant,
+    level: Number(info[3]) as number
+  } : undefined
+}
+
 /** 统计全局单个资源量 非自开发 */
 export function StatisticalResources(resource: ResourceConstant): number {
   let num = 0;

@@ -22,14 +22,14 @@ const pluginDeploy = config && config.copyPath ?
                 src: 'dist/main.js',
                 dest: config.copyPath
             },
-            // {
-            //     src: 'src/module/layoutVisual/dynamic/algo_wasm_priorityqueue.wasm',
-            //     dest: config.copyPath
-            // },
-            // {
-            //     src: 'src/module/layoutVisual/dynamic/autoPlanner63.js',
-            //     dest: config.copyPath
-            // },
+            {
+                src: 'src/module/layoutVisual/dynamic/algo_wasm_priorityqueue.wasm',
+                dest: config.copyPath
+            },
+            {
+                src: 'src/module/layoutVisual/dynamic/autoPlanner63.js',
+                dest: config.copyPath
+            },
             // {
             //     src: 'src/module/layoutVisual/dynamic/autoPlannerdu.js',
             //     dest: config.copyPath
@@ -68,22 +68,22 @@ export default {
         commonjs(),
         // 编译 ts
         typescript({ tsconfig: "./tsconfig.json" }),
-        // copy({
-        //     targets: [
-        //         {
-        //             src: 'src/module/layoutVisual/dynamic/algo_wasm_priorityqueue.wasm',
-        //             dest: 'dist'
-        //         },
-        //         {
-        //             src: 'src/module/layoutVisual/dynamic/autoPlanner63.js',
-        //             dest: 'dist'
-        //         },
-        //         {
-        //             src: 'src/module/layoutVisual/dynamic/autoPlannerdu.js',
-        //             dest: 'dist'
-        //         }
-        //     ]
-        // }),
+        copy({
+            targets: [
+                {
+                    src: 'src/module/layoutVisual/dynamic/algo_wasm_priorityqueue.wasm',
+                    dest: 'dist'
+                },
+                {
+                    src: 'src/module/layoutVisual/dynamic/autoPlanner63.js',
+                    dest: 'dist'
+                },
+                // {
+                //     src: 'src/module/layoutVisual/dynamic/autoPlannerdu.js',
+                //     dest: 'dist'
+                // }
+            ]
+        }),
         // 执行上传或者复制
         pluginDeploy
     ],

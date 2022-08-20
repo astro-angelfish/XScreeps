@@ -1,5 +1,5 @@
 import { devPlanConstant, hohoPlanConstant, teaPlanConstant } from "@/constant/PlanConstant"
-import { Colorful, isInArray } from "@/utils"
+import { Colorful, isInArray, unzipLayout } from "@/utils"
 
 /* 房间原型拓展   --内核  --房间生态 */
 export default class RoomCoreEcosphereExtension extends Room {
@@ -8,7 +8,6 @@ export default class RoomCoreEcosphereExtension extends Room {
         this.RoomState()        // 房间状态监测
         this.RoomPlan()         // 房间布局及自动修复
     }
-
     /* 自动布局 */
     public RoomPlan(): void {
         // 没有中心点不进行自动布局
@@ -20,8 +19,23 @@ export default class RoomCoreEcosphereExtension extends Room {
             switch (LayOutPlan) {
                 case 'man': { break; }
                 case 'hoho': { this.RoomRuleLayout(level, hohoPlanConstant); break; }
-                case 'tea': {this.RoomRuleLayout(level, teaPlanConstant); break;}
+                case 'tea': { this.RoomRuleLayout(level, teaPlanConstant); break; }
                 case 'dev': { this.RoomRuleLayout(level, devPlanConstant); break; }
+                case 'auto63': {
+                    /*检查是否有已经保存的布局信息*/
+                    if (!Memory.RoomControlData[this.name].structMap) {
+                        console.log(`[LayoutVisual63] 房间${this.name}63布局尚未录入`)
+                    } else {
+                        let _Constant = [];
+                        let structMap_length = Memory.RoomControlData[this.name].structMap.length;
+                        for (let i = 0; i < structMap_length; i++) {
+                            _Constant.push(unzipLayout(Memory.RoomControlData[this.name].structMap[i]))
+                        }
+                        console.log('63布局详情')
+                        console.log(JSON.stringify(_Constant))
+                        this.RoomRuleautoLayout(level, _Constant); break;
+                    }
+                }
             }
 
 
@@ -176,7 +190,7 @@ export default class RoomCoreEcosphereExtension extends Room {
         // 每10tick观察一次房间状态，如果发现敌人，房间状态变为war，否则为peace
         if (Game.time % 10 == 0) {
             // 安全模式下和平模式
-            if (this.controller.safeMode && this.controller.level >=8) {
+            if (this.controller.safeMode && this.controller.level >= 8) {
                 this.memory.state = 'peace'
                 return
             }
@@ -207,6 +221,39 @@ export default class RoomCoreEcosphereExtension extends Room {
         for (let obj of map) {
             if (level >= obj.level) {
                 let new_point = new RoomPosition(center_point.x + obj.x, center_point.y + obj.y, this.name)
+                // 忽略越界位置
+                if (new_point.x >= 49 || new_point.x <= 0 || new_point.y >= 49 || new_point.y <= 0) continue
+                // 墙壁不建造东西
+                if (new_point.lookFor(LOOK_TERRAIN)[0] == 'wall') continue
+                let posOcp: boolean = false
+                let new_point_structures = new_point.lookFor(LOOK_STRUCTURES)
+                if (new_point_structures.length > 0)
+                    for (let j of new_point_structures) {
+                        if (j.structureType == obj.structureType) posOcp = true
+                    }
+                if (new_point && new_point.lookFor(LOOK_CONSTRUCTION_SITES).length <= 0 && !posOcp) {
+                    let result = new_point.createConstructionSite(obj.structureType)
+                    if (result != 0) {
+                        let str = Colorful(`房间${this.name}创建工地${obj.structureType}失败! 位置: x=${obj.x}|y=${obj.y}`, 'orange', false)
+                        console.log(str)
+                    }
+                    else {
+                        let str = Colorful(`房间${this.name}创建工地${obj.structureType}成功! 位置: x=${obj.x}|y=${obj.y}`, 'green', false)
+                        console.log(str)
+                    }
+                }
+            }
+            else return // 不遍历无关建筑
+        }
+    }
+
+    public RoomRuleautoLayout(level: number, map: BluePrint): void {
+        // let center_point: RoomPosition = null
+        // let centerList = Memory.RoomControlData[this.name].center
+        // center_point = new RoomPosition(centerList[0], centerList[1], this.name)
+        for (let obj of map) {
+            if (level >= obj.level) {
+                let new_point = new RoomPosition(obj.x, obj.y, this.name)
                 // 忽略越界位置
                 if (new_point.x >= 49 || new_point.x <= 0 || new_point.y >= 49 || new_point.y <= 0) continue
                 // 墙壁不建造东西
