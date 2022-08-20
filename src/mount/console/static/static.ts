@@ -196,7 +196,7 @@ export default {
             }
         },
         cancel(type: 'buy' | 'sell'): string {
-            let cancelAmount: number;
+            let cancelAmount = 0;
             for (let i in Game.market.orders) {
                 let order = Game.market.getOrderById(i);
                 if (order.resourceType === PIXEL && order.type === type) {
@@ -204,6 +204,11 @@ export default {
                         cancelAmount++;
                     } 
                 }
+            }
+            if (type === 'buy') {
+                Memory.pixelInfo.buy.num = 0;
+            } else {
+                Memory.pixelInfo.sell.num = 0;
             }
             return `[Pixel] 已取消${cancelAmount}个${type}订单!`
         }

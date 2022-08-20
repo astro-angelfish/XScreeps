@@ -352,6 +352,7 @@ export default class RoomCoreInitExtension extends Room {
             room_energy = this.storage.store.getUsedCapacity(RESOURCE_ENERGY)
             if (this.terminal) {
                 room_energy += this.terminal.store.getUsedCapacity(RESOURCE_ENERGY)
+                room_energy -= this.memory.TerminalData['energy'].num;
             }
             let creep_num = Math.floor(room_energy / 100000);
             creep_num = creep_num > 5 ? 5 : creep_num
