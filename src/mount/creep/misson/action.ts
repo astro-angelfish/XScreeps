@@ -296,10 +296,15 @@ export default class CreepMissonActionExtension extends Creep {
                     break;
             }
         }
-        if (this.room.name != missionData.Data.disRoom || Game.shard.name != missionData.Data.shard) {
-            this.arriveTo(new RoomPosition(24, 24, missionData.Data.disRoom), 10, missionData.Data.shard, missionData.Data.shardData ? missionData.Data.shardData : null)
-            return
+        // pandaflower 修复 援建从旗帜房(应该是援建房隔壁的房间)采集资源 卡在门口横跳的问题
+        // 再采集房插旗`${this.memory.belong}/HB/harvest`, 在援建房插旗 `${this.memory.belong}/expand`
+        if (!this.memory.arrived || this.memory.working) {
+            if (this.room.name != missionData.Data.disRoom || Game.shard.name != missionData.Data.shard) {
+                this.arriveTo(new RoomPosition(24, 24, missionData.Data.disRoom), 10, missionData.Data.shard, missionData.Data.shardData ? missionData.Data.shardData : null)
+                return
+            }
         }
+        // end
         if (this.room.name == missionData.Data.disRoom && Game.shard.name == missionData.Data.shard) {
 
         }

@@ -188,8 +188,9 @@ export default class CreepMissonMineExtension extends Creep {
                         // console.log(this.name, '标记2')
                         if (this.room.name != this.memory.belong) {/*只修理外矿*/
                             var road_ = this.pos.GetStructure('road')
-                            if (road_ && road_.hits < road_.hitsMax - 200) {
+                            if (road_ && road_.hits < road_.hitsMax - 200 && this.ticksToLive > 100) {
                                 this.repair(road_)
+                                this.goTo(stroage_.pos, 1, null, 4);
                                 return
                             }
                         }
