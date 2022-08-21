@@ -36,6 +36,7 @@ export default class PowerCreepMisson extends Room {
         if (this.memory.switch.StopEnhanceStorage) return
         var storage_ = this.storage as StructureStorage
         if (!storage_) return
+        if (storage_.store.getUsedCapacity() < 9.5e5) return;
         if (!pc.powers[PWR_OPERATE_STORAGE] || pc.powers[PWR_OPERATE_STORAGE].cooldown) return
         let effectDelay: boolean = false
         if (!storage_.effects) storage_.effects = []
