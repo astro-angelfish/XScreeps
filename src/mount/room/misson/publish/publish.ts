@@ -325,6 +325,7 @@ export default class RoomMissonPublish extends Room {
             level: 10,
             Data: {
             },
+            reserve: true
         }
         thisTask.CreepBind = { 'rush': { num: num, bind: [] } }
         if (Type && isInArray(['GH', 'GH2O', 'XGH2O'], Type)) {
