@@ -145,10 +145,10 @@ export default {
     /* 外矿 */
     mine: {
         // 采集外矿
-        harvest(roomName: string, x: number, y: number, disRoom: string): string {
+        harvest(roomName: string, x: number, y: number, disRoom: string,mineType:string): string {
             var thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[mine] 不存在房间${roomName}`
-            var thisTask = thisRoom.public_OutMine(roomName, x, y, disRoom)
+            var thisTask = thisRoom.public_OutMine(roomName, x, y, disRoom,mineType)
             thisTask.maxTime = 8
             if (thisRoom.AddMission(thisTask)) return `[mine] ${roomName} -> ${disRoom} 的外矿任务挂载成功!`
             return `[mine] ${roomName} -> ${disRoom} 的外矿任务挂载失败!`

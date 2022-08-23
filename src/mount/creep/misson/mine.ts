@@ -756,8 +756,6 @@ export default class CreepMissonMineExtension extends Creep {
                 }
                 break;
         }
-
-
-
     }
+
 }

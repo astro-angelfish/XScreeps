@@ -36,3 +36,4 @@ interface OutMineData {
     car?: boolean   // 是否派运输爬 默认不派出
     mineType?: 'normal' | 'center'   // 外矿类型
 }
+

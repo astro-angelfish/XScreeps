@@ -109,7 +109,8 @@ export default class RoomMissonMineExtension extends Room {
         let disRoomName = misson.Data.disRoom
         if (!Memory.outMineData[disRoomName]) Memory.outMineData[disRoomName] = { road: [], startpoint: misson.Data.startpoint, minepoint: [], mineType: 'normal' }
         // 相关爬虫死亡后的数据擦除
-        if (Memory.outMineData[disRoomName].minepoint && Memory.outMineData[disRoomName].minepoint.length > 0) {
+        
+        if (Memory.outMineData[disRoomName].minepoint && Memory.outMineData[disRoomName].minepoint.length > 0 && Memory.outMineData[disRoomName].mineType == 'normal') {
             for (var obj of Memory.outMineData[disRoomName].minepoint) {
                 if (obj.bind && obj.bind.harvest && !Game.creeps[obj.bind.harvest]) delete obj.bind.harvest
                 if (obj.bind && obj.bind.car && !Game.creeps[obj.bind.car]) delete obj.bind.car
