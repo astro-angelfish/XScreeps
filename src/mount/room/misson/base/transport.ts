@@ -48,6 +48,7 @@ export default class RoomMissonTransportExtension extends Room {
                         return
                     }
                 }
+                if (this.controller.level < 6) return;
                 if (this.terminal) {
                     if (!this.Check_Carry('transport', this.terminal.pos, tower.pos, 'energy')) continue
                     if (this.terminal.store.getUsedCapacity('energy') >= 1000) {
@@ -79,6 +80,7 @@ export default class RoomMissonTransportExtension extends Room {
                         return
                     }
                 }
+                if (this.controller.level < 6) return;
                 if (this.terminal) {
                     if (this.Check_Carry('transport', this.terminal.pos, thisLab.pos, 'energy')) return;
                     if (this.terminal.store.getUsedCapacity('energy') > 2000) {
