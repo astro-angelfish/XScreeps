@@ -240,11 +240,11 @@ export default class terminalExtension extends StructureTerminal {
                     switch (order_data.Demandlevel) {
                         case 1:
                             up_tick = 100;
-                            drop_tick = 40;
+                            drop_tick = 50;
                             break;
                         case 2:
-                            up_tick = 150;
-                            drop_tick = 60;
+                            up_tick = 200;
+                            drop_tick = 100;
                             break;
                     }
                 } else {

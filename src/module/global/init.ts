@@ -35,12 +35,14 @@ export const MemoryInit = function (): void {
     if (!global.controllerData) { global.controllerData = {} }
     if (!Memory.PowerSupply) { Memory.PowerSupply = [] }
     if (!global.PowerDemand) global.PowerDemand = []
+    if (!global.RoleMissionNum) global.RoleMissionNum = {}
     global.Marketorder = {};/*tick重置已有的订单列表信息*/
     global.RoomDataVisual = null
     global.Adaption = {}
     global.RoomResource = {}
     global.HostileCreepsData = {}
     global.MarketAveprice = {}
+    
     // Memory.SystemEconomy = false;
     if (Game.time % 100) {
         for (let rooms in Memory.rooms) {

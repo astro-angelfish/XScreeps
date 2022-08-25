@@ -102,9 +102,9 @@ export default class RoomMissonBehaviourExtension extends Room {
         // if (!center_link) { delete this.memory.StructureIdData.center_link; return }
         // else { if (center_link.store.getUsedCapacity('energy') > 750) return }
         // this.getStructure(STRUCTURE_LINK)
-        let source_links = this.getStructureData(STRUCTURE_LINK, 'source_links', this.memory.StructureIdData.source_links)
-        for (let source_link of source_links as StructureLink[]) {
-            // let source_link = Game.getObjectById(id) as StructureLink
+        // let source_links = this.getStructureData(STRUCTURE_LINK, 'source_links', this.memory.StructureIdData.source_links)
+        for (let source_linkid of this.memory.StructureIdData.source_links) {
+            let source_link = Game.getObjectById(source_linkid) as StructureLink
             if (!source_link) {
                 let index = this.memory.StructureIdData.source_links.indexOf(source_link.id)
                 this.memory.StructureIdData.source_links.splice(index, 1)
@@ -114,8 +114,8 @@ export default class RoomMissonBehaviourExtension extends Room {
             if (source_link.store.getUsedCapacity('energy') < 700) { continue; }
             /*检查up_link状态*/
             if (this.memory.StructureIdData.upgrade_link) {
-                let upgrade_link = this.getStructureData(STRUCTURE_LINK, 'upgrade_link', [this.memory.StructureIdData.upgrade_link])[0] as StructureLink
-                // let upgrade_link = Game.getObjectById(this.memory.StructureIdData.upgrade_link) as StructureLink
+                // let upgrade_link = this.getStructureData(STRUCTURE_LINK, 'upgrade_link', [this.memory.StructureIdData.upgrade_link])[0] as StructureLink
+                let upgrade_link = Game.getObjectById(this.memory.StructureIdData.upgrade_link) as StructureLink
                 if (upgrade_link && upgrade_link.store.getFreeCapacity('energy') > 600) {
                     var thisTask = this.public_link([source_link.id], upgrade_link.id, 10)
                     this.AddMission(thisTask)
@@ -124,8 +124,8 @@ export default class RoomMissonBehaviourExtension extends Room {
             }
             /*检查中央link*/
             if (this.memory.StructureIdData.center_link) {
-                let center_link = this.getStructureData(STRUCTURE_LINK, 'center_link', [this.memory.StructureIdData.center_link])[0] as StructureLink
-                // let center_link = Game.getObjectById(this.memory.StructureIdData.center_link) as StructureLink
+                // let center_link = this.getStructureData(STRUCTURE_LINK, 'center_link', [this.memory.StructureIdData.center_link])[0] as StructureLink
+                let center_link = Game.getObjectById(this.memory.StructureIdData.center_link) as StructureLink
                 if (center_link && center_link.store.getFreeCapacity('energy') > 600) {
                     var thisTask = this.public_link([source_link.id], center_link.id, 10)
                     this.AddMission(thisTask)
@@ -145,12 +145,12 @@ export default class RoomMissonBehaviourExtension extends Room {
     public Task_ComsumeLink(): void {
         if ((global.Gtime[this.name] - Game.time) % 7) return
         if (!this.memory.StructureIdData.center_link) return
-        let center_link = this.getStructureData(STRUCTURE_LINK, 'center_link', [this.memory.StructureIdData.center_link])[0] as StructureLink
-        // let center_link = Game.getObjectById(this.memory.StructureIdData.center_link) as StructureLink
+        // let center_link = this.getStructureData(STRUCTURE_LINK, 'center_link', [this.memory.StructureIdData.center_link])[0] as StructureLink
+        let center_link = Game.getObjectById(this.memory.StructureIdData.center_link) as StructureLink
         if (!center_link) { delete this.memory.StructureIdData.center_link; return }
         if (this.memory.StructureIdData.upgrade_link) {
-            let upgrade_link = this.getStructureData(STRUCTURE_LINK, 'upgrade_link', [this.memory.StructureIdData.upgrade_link])[0] as StructureLink
-            // let upgrade_link = Game.getObjectById(this.memory.StructureIdData.upgrade_link) as StructureLink
+            // let upgrade_link = this.getStructureData(STRUCTURE_LINK, 'upgrade_link', [this.memory.StructureIdData.upgrade_link])[0] as StructureLink
+            let upgrade_link = Game.getObjectById(this.memory.StructureIdData.upgrade_link) as StructureLink
             if (!upgrade_link) { delete this.memory.StructureIdData.upgrade_link; return }
             if (upgrade_link.store.getUsedCapacity('energy') < 400) {
                 var thisTask = this.public_link([center_link.id], upgrade_link.id, 25)
@@ -158,9 +158,9 @@ export default class RoomMissonBehaviourExtension extends Room {
                 return
             }
             if (this.memory.StructureIdData.comsume_link.length > 0) {
-                let comsume_link = this.getStructureData(STRUCTURE_LINK, 'comsume_link', [this.memory.StructureIdData.comsume_link]) as StructureLink[]
-                for (var l of comsume_link) {
-                    // let l = Game.getObjectById(i) as StructureLink
+                // let comsume_link = this.getStructureData(STRUCTURE_LINK, 'comsume_link', [this.memory.StructureIdData.comsume_link]) as StructureLink[]
+                for (var i of this.memory.StructureIdData.comsume_link) {
+                    let l = Game.getObjectById(i) as StructureLink
                     if (!l) {
                         let index = this.memory.StructureIdData.comsume_link.indexOf(l.id)
                         this.memory.StructureIdData.comsume_link.splice(index, 1)

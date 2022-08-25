@@ -58,6 +58,7 @@ export default class RoomCoreInitExtension extends Room {
         global.HostileGroup[this.name] = [];
         global.getStructure[this.name] = {};
         global.getStructureData[this.name] = {};
+        global.RoleMissionNum[this.name] = {};
         delete this.memory.DefendDouId;/*每个Tick都进行重置操作*/
         this.memory.DefendDouPosition = [];
     }

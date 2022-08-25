@@ -288,14 +288,18 @@ export default class RoomMissonFrameExtension extends Room {
     }
     /* 与role相关的任务数量查询 */
     public RoleMissionNum(role: string, name: string): number {
-        let n = 0
-        for (var i of this.memory.Misson['Creep']) {
-            if (!i.CreepBind) continue
-            if (i.name == name && isInArray(Object.keys(i.CreepBind), role)) {
-                n += 1
+        let Rolekey = `${role}|${name}|${this.memory.Misson['Creep'].length}`;
+        if (!global.RoleMissionNum[this.name][Rolekey]) {
+            let n = 0
+            for (var i of this.memory.Misson['Creep']) {
+                if (!i.CreepBind) continue
+                if (i.name == name && isInArray(Object.keys(i.CreepBind), role)) {
+                    n += 1
+                }
             }
+            global.RoleMissionNum[this.name][Rolekey] = n;
         }
-        return n
+        return global.RoleMissionNum[this.name][Rolekey]
     }
 
     /* 获取任务 */
