@@ -183,10 +183,10 @@ export default {
             for (var i of thisRoom.memory.Misson['Creep']) {
                 if (i.name == '控制攻击' && i.Data.disRoom == disRoom && i.Data.shard == shard) {
                     if (thisRoom.DeleteMission(i.id))
-                        return Colorful(`[war] 房间${roomName}控制攻击任务成功`, 'green')
+                        return Colorful(`[war] 房间${roomName}控制攻击任务删除成功`, 'green')
                 }
             }
-            return Colorful(`[war] 房间${roomName}控制攻击任务失败`, 'red')
+            return Colorful(`[war] 房间${roomName}控制攻击任务删除失败`, 'red')
         },
         aio(roomName: string, disRoom: string, shard: shardName, CreepNum: number, time: number = 1000, boost: boolean = true, bodylevel: "T0" | "T1" | "T2" = "T0", shardData?: shardRoomData[]): string {
             var myRoom = Game.rooms[roomName]
@@ -422,7 +422,7 @@ export default {
                         return Colorful(`[carry] 房间${roomName}位面搬运删除成功`, 'green')
                 }
             }
-            return Colorful(`[carry] 房间${roomName}位面搬运任务失败`, 'red')
+            return Colorful(`[carry] 房间${roomName}位面搬运任务删除失败`, 'red')
         },
         gleaner(roomName: string, disRoom: string, CreepNum: number, suicide: number, interval?: number, level?: 'T0' | 'T1' | 'T2' | 'T3'): string {
             let thisRoom = Game.rooms[roomName]
@@ -467,10 +467,10 @@ export default {
             for (var i of thisRoom.memory.Misson['Creep']) {
                 if (i.name == '紧急援建' && i.Data.disRoom == disRoom && i.Data.shard == shard) {
                     if (thisRoom.DeleteMission(i.id))
-                        return Colorful(`[support] 房间${roomName}紧急援建任务成功`, 'green')
+                        return Colorful(`[support] 房间${roomName}紧急援建任务删除成功`, 'green')
                 }
             }
-            return Colorful(`[support] 房间${roomName}紧急援建任务失败`, 'red')
+            return Colorful(`[support] 房间${roomName}紧急援建任务删除失败`, 'red')
         },
         upgrade(roomName: string, disRoom: string, shard: shardName = Game.shard.name as shardName, num: number, interval: number, defend: boolean = false, shardData?: shardRoomData[]): string {
             var thisRoom = Game.rooms[roomName]
@@ -494,10 +494,10 @@ export default {
             for (var i of thisRoom.memory.Misson['Creep']) {
                 if (i.name == '紧急升级' && i.Data.disRoom == disRoom && i.Data.shard == shard) {
                     if (thisRoom.DeleteMission(i.id))
-                        return Colorful(`[support] 房间${roomName}紧急升级任务成功`, 'green')
+                        return Colorful(`[support] 房间${roomName}紧急升级任务删除成功`, 'green')
                 }
             }
-            return Colorful(`[support] 房间${roomName}紧急升级任务失败`, 'red')
+            return Colorful(`[support] 房间${roomName}紧急升级任务删除失败`, 'red')
         },
         repair(roomName: string, disRoom: string, shard: shardName = Game.shard.name as shardName, num: number, interval: number, defend: boolean = false, shardData?: shardRoomData[]): string {
             var thisRoom = Game.rooms[roomName]
@@ -521,10 +521,10 @@ export default {
             for (var i of thisRoom.memory.Misson['Creep']) {
                 if (i.name == '紧急墙体' && i.Data.disRoom == disRoom && i.Data.shard == shard) {
                     if (thisRoom.DeleteMission(i.id))
-                        return Colorful(`[support] 房间${roomName}紧急墙体任务成功`, 'green')
+                        return Colorful(`[support] 房间${roomName}紧急墙体任务删除成功`, 'green')
                 }
             }
-            return Colorful(`[support] 房间${roomName}紧急墙体任务失败`, 'red')
+            return Colorful(`[support] 房间${roomName}紧急墙体任务删除失败`, 'red')
         },
     },
     /* 核弹相关 */
@@ -576,10 +576,10 @@ export default {
             for (var i of thisRoom.memory.Misson['Creep']) {
                 if (i.name == '房间签名' && i.Data.disRoom == disRoom && i.Data.shard == shard) {
                     if (thisRoom.DeleteMission(i.id))
-                        return Colorful(`[scout] 房间${roomName}房间签名任务成功`, 'green')
+                        return Colorful(`[scout] 房间${roomName}房间签名任务删除成功`, 'green')
                 }
             }
-            return Colorful(`[scout] 房间${roomName}房间签名任务失败`, 'red')
+            return Colorful(`[scout] 房间${roomName}房间签名任务删除失败`, 'red')
         },
         // 随机签名 手册不收录
         Rsign(roomName: string, disRoom: string, shard: shardName, shardData?: shardRoomData[]): string {
