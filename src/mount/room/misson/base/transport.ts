@@ -37,6 +37,10 @@ export default class RoomMissonTransportExtension extends Room {
         if (!this.memory.StructureIdData?.AtowerID) return;
         for (let towerid of this.memory.StructureIdData.AtowerID) {
             let tower = Game.getObjectById(towerid) as StructureTower;
+            if (!tower) {
+                this.memory.StructureIdData.AtowerID = _.difference(this.memory.StructureIdData.AtowerID, [towerid])
+                continue
+            };
             if (tower.store.getUsedCapacity('energy') < 500) {
                 /* 下达搬运任务搬运 */
                 if (this.RoleMissionNum('transport', '物流运输') > 3) continue;
@@ -69,6 +73,10 @@ export default class RoomMissonTransportExtension extends Room {
         if (missionNum > 3) return
         for (var thisLabid of this.memory.StructureIdData.labs) {
             let thisLab = Game.getObjectById(thisLabid) as StructureLab;
+            if (!thisLab) {
+                this.memory.StructureIdData.labs = _.difference(this.memory.StructureIdData.labs, [thisLabid])
+                continue
+            };;
             if (thisLab.store.getUsedCapacity('energy') <= 1800) {
                 /* 下布搬运命令 */
                 if (this.storage) {
