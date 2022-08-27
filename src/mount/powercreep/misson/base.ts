@@ -43,7 +43,7 @@ export default class PowerCreepMissonBase extends PowerCreep {
             for (let Nid of Game.rooms[this.memory.belong].memory.nukeID)
             {
                 let nuk = Game.getObjectById(Nid) as Nuke
-                if (nuk.timeToLand < 60) run = true
+                if (nuk && nuk.timeToLand < 60) run = true
             }
         }
         let belongRoom = Game.rooms[this.memory.belong]

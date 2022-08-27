@@ -95,6 +95,15 @@ export default class RoomCoreSpawnExtension extends Room {
         if (!this.memory.SpawnList || this.memory.SpawnList.length <= 0) return
         // 如果没有spawn就return
         if (!this.memory.StructureIdData.spawn || this.memory.StructureIdData.spawn.length <= 0) return
+        // 核弹快落地了 不孵化爬虫 保存能量
+        if (this.memory.nukeID && this.memory.nukeID.length > 0)
+        {
+            for (let Nid of this.memory.nukeID)
+            {
+                let nuk = Game.getObjectById(Nid) as Nuke
+                if (nuk && nuk.timeToLand < 80) return
+            }
+        }
         for (let sID of this.memory.StructureIdData.spawn as string[])
         {
             let thisSpawn = Game.getObjectById(sID) as StructureSpawn
