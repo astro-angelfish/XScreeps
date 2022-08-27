@@ -16,6 +16,7 @@ export default class PowerCreepMissonBase extends PowerCreep {
         if (!Game.rooms[this.memory.belong]) return
         var thisSpawn = Game.getObjectById(Game.rooms[this.memory.belong].memory.StructureIdData.PowerSpawnID) as StructurePowerSpawn
         if (!thisSpawn) return
+        if (!this.memory.MissionData) this.memory.MissionData = {}
         if (!this.memory.spawn)
         {
             this.memory.spawn = thisSpawn.id
@@ -29,6 +30,55 @@ export default class PowerCreepMissonBase extends PowerCreep {
             else this.enableRoom(Game.rooms[this.memory.belong].controller)
             return
         }
+        // 回复自身生命值
+        if (this.hits < this.hitsMax && this.room.name == this.memory.belong)
+        {
+            this.optTower('heal',this)
+        }
+        
+        // 躲避核弹
+        let run = false
+        if (Game.rooms[this.memory.belong].memory.nukeID.length > 0)
+        {
+            for (let Nid of Game.rooms[this.memory.belong].memory.nukeID)
+            {
+                let nuk = Game.getObjectById(Nid) as Nuke
+                if (nuk.timeToLand < 60) run = true
+            }
+        }
+        let belongRoom = Game.rooms[this.memory.belong]
+        if (run)
+        {
+            /* run 为true说明需要跑路，如果设定避难所了 可以前往避难 */
+            if (belongRoom.memory.refuge)
+            {
+                if (!this.pos.inRangeTo(new RoomPosition(25,25,belongRoom.memory.refuge),10))
+                this.goTo(new RoomPosition(25,25,belongRoom.memory.refuge),10)
+            }
+            return  // 跑路情况下 不做任何任务
+        }
+        else
+        {
+            /* 正常情况下 如果pc不在房间 需要回去 */
+            if (this.memory.role == 'queen')
+            {
+                if (this.room.name != this.memory.belong)
+                {
+                        this.goTo(new RoomPosition(25,25,this.memory.belong),20)
+                }
+                else
+                {
+                    // 如果有敌人并且没有任务 就快快的跑
+                    if (this.room.memory.state == 'war' && Object.keys(this.memory.MissionData).length <= 0)
+                    {
+                        if (belongRoom.storage) this.goTo(belongRoom.storage.pos,1)
+                        else
+                            this.goTo(new RoomPosition(25,25,this.memory.belong),4)
+                        return
+                    }
+                }
+            }
+        }
         // 快没生命了去renew
         if (this.room.name == this.memory.belong &&  this.memory.shard == Game.shard.name)
         {
@@ -39,7 +89,6 @@ export default class PowerCreepMissonBase extends PowerCreep {
                 return
             }
         }
-        if (!this.memory.MissionData) this.memory.MissionData = {}
         if (!Game.rooms[this.memory.belong].memory.Misson['PowerCreep'])
                 Game.rooms[this.memory.belong].memory.Misson['PowerCreep'] = []
         if (Object.keys(this.memory.MissionData).length <= 0){

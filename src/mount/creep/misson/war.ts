@@ -1374,10 +1374,16 @@ export default class CreepMissonWarExtension extends Creep {
             if (!Game.creeps[disCreepName] && portal){this.arriveTo(new RoomPosition(25,25,roomName),20,data.shard,data.shardData?data.shardData:null);return}
             if (Game.creeps[this.memory.double])this.moveTo(Game.creeps[this.memory.double])
             // 寻找敌人 远程攻击
-            let enemy = this.pos.findInRange(FIND_HOSTILE_CREEPS,3,{filter:(creep)=>{
-                return !isInArray(Memory.whitesheet,creep.owner.username )
+            let enemy = this.pos.findClosestByRange(FIND_HOSTILE_CREEPS,{filter:(creep)=>{
+                return !isInArray(Memory.whitesheet,creep.owner.username) && !creep.pos.GetStructure('rampart') && creep.pos.inRangeTo(this.pos.x,this.pos.y,3) 
             }})
-            if (enemy[0])this.rangedAttack(enemy[0])
+            if (enemy)
+            {
+                if (enemy.pos.isNearTo(this)) this.rangedMassAttack()
+                else this.rangedAttack(enemy)
+            }
+            else this.rangedMassAttack()
+
             // 奶
             if(Game.creeps[this.memory.double])
             {

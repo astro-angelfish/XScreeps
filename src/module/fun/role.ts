@@ -84,11 +84,11 @@ export function harvest_(creep_:Creep):void{
             if (!["superbitch","ExtraDim"].includes(creep_.owner.username))
             creep_.say("😒",true)
             else
-            creep_.say("🌱",true)
+            creep_.say("🌱",false)
         }
         else
         {
-            creep_.say("🤪",true)
+            creep_.say("🤪",false)
         }
         if (Game.time % 5 == 0)
         {

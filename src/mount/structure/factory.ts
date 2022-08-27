@@ -237,8 +237,8 @@ export class factoryExtension extends StructureFactory {
             for (var baseProduction in this.room.memory.productData.baseList)
             {
                 if (isInArray(zipList,baseProduction)) zip.push(baseProduction)
-                else if (isInArray(['wire','cell','alloy','condensate'],baseProduction)) low.push(baseProduction)
                 else if (isInArray(['composite','crystal','liquid'],baseProduction)) high.push(baseProduction)
+                else if (isInArray(['wire','cell','alloy','condensate'],baseProduction)) low.push(baseProduction)
             }
             // 检测基础商品是否满足
             for (let b of zip)

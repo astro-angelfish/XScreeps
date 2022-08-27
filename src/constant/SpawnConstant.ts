@@ -63,6 +63,10 @@ export const RoleData:SpawnConstantData = {
     'x-attack':{num:0,ability:[0,0,10,28,0,0,0,12],level:9,mark:"🟥",must:true,mem:{creepType:'attack'}},
     'x-range':{num:0,ability:[0,0,10,0,24,4,0,12],level:9,mark:"🟦",must:true,mem:{creepType:'attack'}},
     'x-aio':{num:0,ability:[0,0,10,0,10,20,0,10],level:9,mark:"🌈",must:true,mem:{creepType:'heal'}},
+    /* 三人小队 还没写 */
+    'tre-dismantle':{num:0,ability:[28,0,10,0,0,0,0,12],level:9,mark:"🟨",must:true},
+    'tre-heal':{num:0,ability:[0,0,10,0,2,26,0,12],level:9,mark:"🟩",must:true},
+    'tre-attack':{num:0,ability:[0,0,10,28,0,0,0,12],level:9,mark:"🟥",must:true},
 }
 /* 爬虫部件随房间等级变化的动态列表 */
 export const RoleLevelData = {

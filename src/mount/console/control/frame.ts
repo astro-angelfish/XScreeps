@@ -156,7 +156,22 @@ export default {
                 myRoom.memory.SpawnConfig['upgrade'].num = 1
             }
             return `[frame] 房间${roomName}的economy选项改为${myRoom.memory.economy}`
-        }
+        },
+        // 设置避难所
+        refuge(roomName:string,refugeRoomName:string):string{
+            var myRoom = Game.rooms[roomName]
+            if (!myRoom) return `[frame] 未找到房间${roomName},请确认房间!`
+            if (!refugeRoomName)
+            {
+                delete myRoom.memory.refuge
+                return `[frame] 已经删除房间${roomName}的避难所mem!`
+            }
+            else
+            {
+                myRoom.memory.refuge = refugeRoomName
+                return `[frame] 房间${roomName}的避难所mem设定为${refugeRoomName}!`
+            }
+        },
     },
     spawn:
     {

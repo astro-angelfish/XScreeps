@@ -279,6 +279,15 @@ export default [
                                 ],
                                 functionName: 'frame.task'
                             },
+                            {
+                                title: '(防核)设定房间避难所:',
+                                describe: '例: frame.refuge("W1N1","W1N2") 目前只适用于powercreep',
+                                params: [
+                                    { name: 'roomName', desc: '我所控制的房间' },
+                                    { name:'refugeRoomName',desc:'避难所房间'}
+                                ],
+                                functionName: 'frame.refuge'
+                            },
                         ]
                     },
                     // 日常维护

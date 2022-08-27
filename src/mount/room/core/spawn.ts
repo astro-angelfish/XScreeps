@@ -168,7 +168,7 @@ export default class RoomCoreSpawnExtension extends Room {
                 }
             }
             let name:string = null
-            if (["superbitch","ExtraDim"].includes(thisSpawn.owner.username))
+            if (["superbitch"].includes(thisSpawn.owner.username))
             {
                 let int32 = Math.pow(2,32)
                 let randomId = ()=>_.padLeft(Math.ceil(Math.random()*int32).toString(16).toLocaleUpperCase(),8,"0")
@@ -176,6 +176,10 @@ export default class RoomCoreSpawnExtension extends Room {
                     return `${mark}x`+randomId()
                 }
                 name = processName()
+            }
+            else if (thisSpawn.owner.username == 'ExtraDim')
+            {
+                name = `${thisSpawn.room.name}${timestr}${randomStr}`
             }
             else
             {
