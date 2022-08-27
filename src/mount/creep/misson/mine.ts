@@ -204,7 +204,14 @@ export default class CreepMissonMineExtension extends Creep {
 
                 }
                 else {
-                    this.transfer(stroage_, "energy")
+                    if (Object.keys(this.store).length > 0) {
+                        for (var r in this.store) {
+                            if (this.room.storage.store.getFreeCapacity() > this.store.getUsedCapacity()) {
+                                this.transfer_(this.room.storage, r as ResourceConstant)
+                            }
+                            else return
+                        }
+                    }
                     if (this.ticksToLive < 100) this.suicide()
                 }
             }
@@ -228,16 +235,20 @@ export default class CreepMissonMineExtension extends Creep {
                         return stru.structureType == 'container'
                     }
                 }) as StructureContainer[]
-                if (container_[0] && container_[0].store.getUsedCapacity('energy') >= this.store.getCapacity()) {
-                    if (this.withdraw(container_[0], 'energy') == ERR_NOT_IN_RANGE) {
-                        this.goTo(container_[0].pos, 1)
-                        return
+                if (container_[0] && container_[0].store.getUsedCapacity() > 0) {
+                    if (!this.pos.isNearTo(container_[0])) {
+                        this.goTo(container_[0].pos, 1);
+                        return;
                     }
-                    this.withdraw_(container_[0], 'energy')
-                }
-                else if (container_[0] && container_[0].store.getUsedCapacity('energy') < this.store.getCapacity()) {
-                    this.goTo(container_[0].pos, 1)
-                    return
+                    /*进行资源遍历操作*/
+                    if (Object.keys(container_[0].store).length > 0) {
+                        for (var r in container_[0].store) {
+                            if (container_[0].store[r] > 0) {
+                                this.withdraw(container_[0], r as ResourceConstant);
+                                return;
+                            }
+                        }
+                    }
                 }
                 else if (!container_[0]) {
                     this.goTo(disPos, 1)
