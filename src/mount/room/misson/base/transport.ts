@@ -77,12 +77,12 @@ export default class RoomMissonTransportExtension extends Room {
             if (!thisLab) {
                 this.memory.StructureIdData.labs = _.difference(this.memory.StructureIdData.labs, [thisLabid])
                 continue
-            };;
+            };
             if (thisLab.store.getUsedCapacity('energy') <= 1800) {
                 /* 下布搬运命令 */
                 if (this.storage) {
-                    if (this.Check_Carry('transport', this.storage.pos, thisLab.pos, 'energy')) return;
                     if (this.storage.store.getUsedCapacity('energy') > 2000) {
+                        if (!this.Check_Carry('transport', this.storage.pos, thisLab.pos, 'energy')) return;
                         var thisTask = this.public_Carry({ 'transport': { num: 1, bind: [] } }, 25, this.name, this.storage.pos.x, this.storage.pos.y, this.name, thisLab.pos.x, thisLab.pos.y, 'energy', 2000 - thisLab.store.getUsedCapacity('energy'))
                         this.AddMission(thisTask)
                         return
@@ -90,8 +90,8 @@ export default class RoomMissonTransportExtension extends Room {
                 }
                 if (this.controller.level < 6) return;
                 if (this.terminal) {
-                    if (this.Check_Carry('transport', this.terminal.pos, thisLab.pos, 'energy')) return;
                     if (this.terminal.store.getUsedCapacity('energy') > 2000) {
+                        if (!this.Check_Carry('transport', this.terminal.pos, thisLab.pos, 'energy')) return;
                         var thisTask = this.public_Carry({ 'transport': { num: 1, bind: [] } }, 25, this.name, this.terminal.pos.x, this.terminal.pos.y, this.name, thisLab.pos.x, thisLab.pos.y, 'energy', 2000 - thisLab.store.getUsedCapacity('energy'))
                         this.AddMission(thisTask)
                         return
