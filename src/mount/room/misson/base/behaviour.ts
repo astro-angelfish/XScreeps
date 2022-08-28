@@ -66,6 +66,12 @@ export default class RoomMissonBehaviourExtension extends Room {
         if (!mission.CreepBind) this.DeleteMission(mission.id)
     }
 
+    public Task_Carrymine(misson: MissionModel): void {
+        // 没有任务数据 或者数据不全就取消任务
+        if (!misson.Data) this.DeleteMission(misson.id)
+        if (!misson.CreepBind) this.DeleteMission(misson.id)
+    }
+
     // 建造任务
     public Constru_Build(): void {
         if (Game.time % 51) return

@@ -9,6 +9,7 @@ interface Creep{
     handle_carry():void
     handle_Carryshard():void
     handle_carrygleaner():void
+    handle_carrymine():void
     handle_repair():void
     handle_planC():void
     handle_dismantle():void

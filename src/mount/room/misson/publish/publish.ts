@@ -67,6 +67,20 @@ export default class RoomMissonPublish extends Room {
         return thisTask
     }
 
+    public public_Carrymine(disRoom: string, creepNum: number): MissionModel {
+        var thisTask: MissionModel =
+        {
+            name: '外矿偷取',
+            range: 'Creep',
+            delayTick: 99999,
+            Data: {
+                disRoom: disRoom,
+            }
+        }
+        thisTask.CreepBind = { 'steal': { num: creepNum, interval: 1500, bind: [] } }
+        return thisTask
+    }
+
     public public_Carryshard(disRoom: string, CreepNum: number, shard: shardName, res: ResourceConstant, interval: number, level: 'T0' | 'T1' | 'T2' | 'T3' = 'T0'): MissionModel {
         var thisTask: MissionModel =
         {

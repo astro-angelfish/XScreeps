@@ -37,6 +37,7 @@ interface Room {
     Task_Carry(misson: MissionModel): void
     Task_Carryshard(misson: MissionModel): void
     Task_Carrygleaner(misson: MissionModel): void
+    Task_Carrymine(misson: MissionModel): void
     Task_Repair(mission: MissionModel): void
     Task_dismantle(mission: MissionModel): void
     Task_Quick_upgrade(mission: MissionModel): void

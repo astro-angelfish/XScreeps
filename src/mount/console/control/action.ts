@@ -441,6 +441,23 @@ export default {
                 }
             return `[carry] 房间${roomName}删除拾荒者任务失败`
         },
+        mine(roomName: string, disRoom: string, creepNum?: number): string {
+            let thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[carry] 不存在房间${roomName}`
+            var thisTask = thisRoom.public_Carrymine(disRoom, (creepNum ? creepNum : 1))
+            if (thisRoom.AddMission(thisTask)) return `[carry] 房间${roomName}挂载外矿偷取任务成功`
+            return `[carry] 房间${roomName}挂载外矿偷取任务失败`
+        },
+        Cmine(roomName: string): string {
+            let thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[carry] 不存在房间${roomName}`
+            for (var i of thisRoom.memory.Misson['Creep'])
+                if (i.name == '外矿偷取') {
+                    if (thisRoom.DeleteMission(i.id))
+                        return `[upgrade] 房间${roomName}删除外矿偷取任务成功`
+                }
+            return `[carry] 房间${roomName}删除外矿偷取任务失败`
+        },
     },
     /* 支援 */
     support: {

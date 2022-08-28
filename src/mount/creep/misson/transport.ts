@@ -276,6 +276,64 @@ export default class CreepMissonTransportExtension extends Creep {
         }
     }
 
+    /*外矿偷取*/
+    public handle_carrymine(): void {
+        let missionData = this.memory.MissionData
+        let id = missionData.id
+        let data = missionData.Data
+
+        if (!this.memory.working) this.memory.working = false;
+        if (this.memory.working && this.store.getUsedCapacity() == 0) {
+            this.memory.working = false;
+        }
+        if (!this.memory.working && (this.store.getFreeCapacity() == 0)) {
+            this.memory.working = true;
+        }
+        if (this.memory.working) {
+            if (!Game.rooms[this.memory.belong]) {
+                console.log('操作存在异常的情况')
+            }
+            if (this.memory.belong != this.room.name) {
+                this.goTo(Game.rooms[this.memory.belong].storage.pos, 3)
+                return;
+            }
+            if (this.hits < this.hitsMax && this.room.memory.state == 'peace' && Game.rooms[this.memory.belong].name == this.room.name) {
+                this.optTower('heal', this);
+            }
+            if (Object.keys(this.store).length > 0) {
+                for (var r in this.store) {
+                    this.say("💨")
+                    /* 如果是自己的房间，则优先扔到最近的storage去 */
+                    if (this.room.name == this.memory.belong) {
+                        if (!this.room.storage) return
+                        if (this.room.storage.store.getFreeCapacity() > this.store.getUsedCapacity()) {
+                            this.transfer_(this.room.storage, r as ResourceConstant)
+                        }
+                        else return
+                    }
+                    return
+                }
+            }
+
+        } else {
+            if (data.disRoom != this.room.name) {
+                this.goTo(new RoomPosition(24, 24, data.disRoom), 23)
+                return;
+            }
+            var container = this.pos.findClosestByRange(FIND_STRUCTURES, {
+                filter: (c) => {
+                    return c.structureType === STRUCTURE_CONTAINER && 
+                           c.store.getCapacity() > 0.5 * this.store.getFreeCapacity()
+                }
+            })
+            if (container) {
+                if (!this.pos.isNearTo(container)) this.goTo(container.pos, 1)
+                else this.withdraw(container, RESOURCE_ENERGY)
+                return;
+            }
+        }
+    }
+
     /* 物资运输任务  已测试 */
     public handle_carry(): void {
         var Data = this.memory.MissionData.Data

@@ -57,6 +57,7 @@ export default class RoomMissonFrameExtension extends Room {
                     case "物流运输": this.Task_Carry(misson); break;
                     case "位面运输": this.Task_Carryshard(misson); break;
                     case "拾荒者": this.Task_Carrygleaner(misson); break;
+                    case "外矿偷取": this.Task_Carrymine(misson); break;
                     case "墙体维护": this.Task_Repair(misson); break;
                     case '黄球拆迁': this.Task_dismantle(misson); break;
                     case '急速冲级': this.Task_Quick_upgrade(misson); break;

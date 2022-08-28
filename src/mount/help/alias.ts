@@ -1228,6 +1228,24 @@ export default [
                                 functionName: 'carry.Cgleaner'
                             },
                             {
+                                title: '偷取别人外矿能量:',
+                                describe: '例: carry.mine("W1N1","W1N2",1)',
+                                params: [
+                                    { name: 'roomName', desc: '房间名' },
+                                    { name: 'destRoom', desc: '目标房间名' },
+                                    { name: 'num', desc: '搬运爬数量' },
+                                ],
+                                functionName: 'carry.mine'
+                            },
+                            {
+                                title: '取消搬运指定房间内资源:',
+                                describe: '例: carry.Cmine("W1N1")',
+                                params: [
+                                    { name: 'roomName', desc: '房间名' },
+                                ],
+                                functionName: 'carry.Cmine'
+                            },
+                            {
                                 title: '紧急援建:',
                                 describe: '例: support.build("W1N1","W2N2","shard3",1,1000)',
                                 params: [
