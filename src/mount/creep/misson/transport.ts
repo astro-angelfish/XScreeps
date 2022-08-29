@@ -282,11 +282,15 @@ export default class CreepMissonTransportExtension extends Creep {
         let id = missionData.id
         let data = missionData.Data
 
+        if (this.hits < this.hitsMax) {
+            this.heal(this);
+        }
+
         if (!this.memory.working) this.memory.working = false;
         if (this.memory.working && this.store.getUsedCapacity() == 0) {
             this.memory.working = false;
         }
-        if (!this.memory.working && (this.store.getFreeCapacity() == 0)) {
+        if (!this.memory.working && (this.store.getFreeCapacity() < 0.5 * this.store.getCapacity())) {
             this.memory.working = true;
         }
         if (this.memory.working) {
