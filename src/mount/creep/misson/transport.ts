@@ -468,7 +468,7 @@ export default class CreepMissonTransportExtension extends Creep {
                                 this.say("🚽")
                                 /* 如果是自己的房间，则优先扔到最近的storage去 */
                                 if (this.room.name == this.memory.belong) {
-                                    if (storage.store.getUsedCapacity() > this.store.getUsedCapacity()) {
+                                    if (storage.store.getFreeCapacity() > this.store.getUsedCapacity()) {
                                         this.transfer_(storage, r as ResourceConstant)
                                     }
                                     else return
