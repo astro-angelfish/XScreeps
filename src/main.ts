@@ -12,6 +12,7 @@ import { squadWarMoudle } from './module/squad/squad'
 import { statMoudle } from './module/stat/stat'
 import { towerDataVisual } from './module/visual/visual'
 import { crossShardAppPlugin } from './module/shard/intershard'
+import {warFrameMoudle} from './module/warframe/wmain'
 /**
  * 主运行函数
  */
@@ -26,7 +27,9 @@ import { crossShardAppPlugin } from './module/shard/intershard'
  app.on(creepRecycleAndStatistic)   // 爬虫记忆回收及数目统计
 
  app.on(squadWarMoudle)             // 四人小队战斗框架
- 
+
+    app.on(warFrameMoudle)
+
  app.on(ResourceDispatchDelayManager) // 资源调度超时管理器
 
  app.on(pixelManager)                 // 搓像素

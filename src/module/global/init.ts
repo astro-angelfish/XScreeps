@@ -26,6 +26,7 @@ export const MemoryInit = function(): void {
     if(!global.Repairlist)global.Repairlist={}
     global.Adaption = {}
     if (!Memory.VisualLevel) Memory.VisualLevel = 'high'    // 默认最高等级的画质显示
+    if (!Memory.warframe) Memory.warframe = {creep:{},task:{}}
 }
 
 
