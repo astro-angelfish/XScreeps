@@ -449,7 +449,7 @@ export default [
                                 describe: '让中央link自动向某link传送能量 例:link.comsume("W1N1","6204890bedf59067e60b4df3")',
                                 params: [
                                     { name: 'roomName', desc: '房间' },
-                                    { name: 'linkID', desc: 'link的ID' },,
+                                    { name: 'linkID', desc: 'link的ID' },
                                 ],
                                 functionName: 'link.comsume'
                             },
@@ -457,7 +457,7 @@ export default [
                                 title: '删除具体任务:',
                                 describe: '例:Game.rooms["xxxx"].DeleteMission("C-85ednh1ib439985674")',
                                 params: [
-                                    { name: 'missionID', desc: '任务Id' },,
+                                    { name: 'missionID', desc: '任务Id' },
                                 ],
                                 functionName: 'Game.rooms["xxxx"].DeleteMission'
                             },
@@ -1308,7 +1308,7 @@ export default [
                                 functionName: 'support.repair'
                             },
                             {
-                                title: '取消紧急升级:',
+                                title: '取消紧急修墙:',
                                 describe: '例: support.Crepair("W1N1","W2N2","shard3")',
                                 params: [
                                     { name: 'roomName', desc: '房间名' },
@@ -1551,7 +1551,7 @@ export default [
                 '旗帜名: reapair_xx special维修爬维修指定旗帜下墙体',
                 '旗帜名: withdraw_xx紧急援助爬从该旗帜下的建筑提取能量',
                 '旗帜名: [紧急援助爬所属房间]/HB/harvest 紧急援助爬从该旗帜下的房间的矿点采集能量',
-                '旗帜名: LayoutVisual 插在任意房间可以显示dev自动布局',
+                '旗帜名: LayoutVisualDev 插在任意房间可以显示dev自动布局',
                 '旗帜名: TowerVisualAttack 插在距离自己8级房最近房间或有视野房间 显示该房间防御塔伤害信息',
                 '旗帜名: TowerVisualHeal 插在距离自己8级房最近房间或有视野房间 显示该房间防御塔治疗信息',
                 '旗帜名: TowerVisualRepair 插在距离自己8级房最近房间或有视野房间 显示该房间防御塔维修信息',

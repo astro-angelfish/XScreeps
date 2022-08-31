@@ -159,7 +159,7 @@ const base = [
     'GH':['ZK','UL','G','GH'],
     'GH2O':['ZK','UL','G','GH','OH','GH2O'],
     'XGH2O':['ZK','UL','G','GH','OH','GH2O','XGH2O'],
-    'GO':['ZK','UL','G',,'GO'],
+    'GO':['ZK','UL','G','GO'],
     'GHO2':['ZK','UL','G','GO','OH','GHO2'],
     'XGHO2':['ZK','UL','G','GO','OH','GHO2','XGHO2'],
     'LH':['LH'],
