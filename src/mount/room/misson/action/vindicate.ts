@@ -200,14 +200,14 @@ export default class RoomMissonVindicateExtension extends Room {
             switch (mission.Data.level) {
                 case 'T1':
                     global.MSB[mission.id] = {
-                        'claim': GenerateAbility(0, 0, 1, 0, 0, 0, 1, 0),
+                        'claim': GenerateAbility(0, 0, 5, 0, 0, 0, 1, 0),
                         'Ebuild': GenerateAbility(15, 15, 15, 0, 0, 0, 0, 0),
                         'Eupgrade': GenerateAbility(15, 15, 15, 0, 0, 0, 0, 0)
                     }
                     break;
                 case 'T2':
                     global.MSB[mission.id] = {
-                        'claim': GenerateAbility(0, 0, 1, 0, 0, 0, 1, 0),
+                        'claim': GenerateAbility(0, 0, 5, 0, 0, 0, 1, 0),
                         'Ebuild': GenerateAbility(18, 18, 12, 0, 0, 0, 0, 0),
                         'Eupgrade': GenerateAbility(18, 18, 12, 0, 0, 0, 0, 0)
                     }
@@ -215,9 +215,37 @@ export default class RoomMissonVindicateExtension extends Room {
                 case 'T3':
                     // console.log('扩张援助体型3')
                     global.MSB[mission.id] = {
-                        'claim': GenerateAbility(0, 0, 1, 0, 0, 0, 1, 0),
+                        'claim': GenerateAbility(0, 0, 5, 0, 0, 0, 1, 0),
                         'Ebuild': GenerateAbility(30, 10, 10, 0, 0, 0, 0, 0),
                         'Eupgrade': GenerateAbility(30, 10, 10, 0, 0, 0, 0, 0)
+                    }
+                    break;
+                case 'T4':
+                    global.MSB[mission.id] = {
+                        'claim': GenerateAbility(0, 0, 6, 0, 0, 1, 1, 0),
+                        'Ebuild': GenerateAbility(14, 14, 15, 0, 0, 2, 0, 0),
+                        'Eupgrade': GenerateAbility(14, 14, 15, 0, 0, 2, 0, 0)
+                    }
+                    break;
+                case 'T5':
+                    global.MSB[mission.id] = {
+                        'claim': GenerateAbility(0, 0, 6, 0, 0, 1, 1, 0),
+                        'Ebuild': GenerateAbility(14, 14, 15, 0, 0, 2, 0, 0),
+                        'Eupgrade': GenerateAbility(14, 14, 15, 0, 0, 2, 0, 0)
+                    }
+                    break;
+                case 'T6':
+                    global.MSB[mission.id] = {
+                        'claim': GenerateAbility(0, 0, 6, 0, 0, 1, 1, 0),
+                        'Ebuild': GenerateAbility(17, 17, 12, 0, 0, 2, 0, 0),
+                        'Eupgrade': GenerateAbility(17, 17, 12, 0, 0, 2, 0, 0)
+                    }
+                    break;
+                case 'T7':
+                    global.MSB[mission.id] = {
+                        'claim': GenerateAbility(0, 0, 6, 0, 0, 1, 1, 0),
+                        'Ebuild': GenerateAbility(28, 10, 10, 0, 0, 2, 0, 0),
+                        'Eupgrade': GenerateAbility(28, 10, 10, 0, 0, 2, 0, 0)
                     }
                     break;
                 default:

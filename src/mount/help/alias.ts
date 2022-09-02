@@ -1067,6 +1067,7 @@ export default [
                                     { name: 'shard', desc: '目标房间所在shard' },
                                     { name: 'num', desc: '援建/升级爬数量' },
                                     { name: 'Cnum', desc: 'claim爬数量 默认1' },
+                                    { name: 'level(可选)', desc: '体型等级 T1-T3 (强化) | T4-T7 (带治疗)' },
                                     { name: 'shardData(可选)', desc: '多次跨shard参数' },
                                 ],
                                 functionName: 'expand.set'
@@ -1229,11 +1230,12 @@ export default [
                             },
                             {
                                 title: '偷取别人外矿能量:',
-                                describe: '例: carry.mine("W1N1","W1N2",1)',
+                                describe: '例: carry.mine("W1N1","W1N2",1,"T0")',
                                 params: [
                                     { name: 'roomName', desc: '房间名' },
                                     { name: 'destRoom', desc: '目标房间名' },
                                     { name: 'num', desc: '搬运爬数量' },
+                                    { name: 'level(可选)', desc: '是否需要治疗 T0 | T1' },
                                 ],
                                 functionName: 'carry.mine'
                             },

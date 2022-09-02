@@ -6,11 +6,11 @@ import { LabMap, unzipMap } from "@/constant/ResourceConstant"
 /* 房间原型拓展   --任务  --基本功能 */
 export default class RoomMissonBehaviourExtension extends Room {
     // 搬运基本任务
-    public Task_Carry(misson: MissionModel): void {
+    public Task_Carry(mission: MissionModel): void {
         /* 搬运任务需求 sourcePosX,Y sourceRoom targetPosX,Y targetRoom num  rType  */
         // 没有任务数据 或者数据不全就取消任务
-        if (!misson.Data) this.DeleteMission(misson.id)
-        if (!misson.CreepBind) this.DeleteMission(misson.id)
+        if (!mission.Data) this.DeleteMission(mission.id)
+        if (!mission.CreepBind) this.DeleteMission(mission.id)
     }
 
     // 搬运基本任务
@@ -66,10 +66,18 @@ export default class RoomMissonBehaviourExtension extends Room {
         if (!mission.CreepBind) this.DeleteMission(mission.id)
     }
 
-    public Task_Carrymine(misson: MissionModel): void {
+    public Task_Carrymine(mission: MissionModel): void {
         // 没有任务数据 或者数据不全就取消任务
-        if (!misson.Data) this.DeleteMission(misson.id)
-        if (!misson.CreepBind) this.DeleteMission(misson.id)
+        if (!mission.Data) this.DeleteMission(mission.id)
+        if (!mission.CreepBind) this.DeleteMission(mission.id)
+        if (mission.CreepBind.steal.num > 0) {
+            let level = mission.Data.level
+            switch (level) {
+                case 'T1':
+                    global.MSB[mission.id] = { 'steal': GenerateAbility(0, 13, 15, 0, 0, 2, 0, 0) }
+                    break;
+            }
+        }
     }
 
     // 建造任务

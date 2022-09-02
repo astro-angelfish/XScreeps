@@ -67,7 +67,7 @@ export default class RoomMissonPublish extends Room {
         return thisTask
     }
 
-    public public_Carrymine(disRoom: string, creepNum: number): MissionModel {
+    public public_Carrymine(disRoom: string, creepNum: number, level?: 'T0' | 'T1'): MissionModel {
         var thisTask: MissionModel =
         {
             name: '外矿偷取',
@@ -77,7 +77,7 @@ export default class RoomMissonPublish extends Room {
                 disRoom: disRoom,
             }
         }
-        thisTask.CreepBind = { 'steal': { num: creepNum, interval: 1500, bind: [] } }
+        thisTask.CreepBind = { 'steal': { num: creepNum, interval: 1350, bind: [], MSB: (level === 'T1') ? true : false } }
         return thisTask
     }
 
@@ -420,6 +420,15 @@ export default class RoomMissonPublish extends Room {
                     thisTask.LabMessage = { 'XGH2O': 'boost', 'XZHO2': 'boost', 'XKH2O': 'boost' }
                     break;
                 case 'T4':
+                    break;
+                case 'T5':
+                    thisTask.LabMessage = { 'GH': 'boost', 'ZO': 'boost' }
+                    break;
+                case 'T6':
+                    thisTask.LabMessage = { 'GH2O': 'boost', 'ZHO2': 'boost' }
+                    break;
+                case 'T7':
+                    thisTask.LabMessage = { 'XGH2O': 'boost', 'XZHO2': 'boost', 'XKH2O': 'boost' }
                     break;
             }
         }

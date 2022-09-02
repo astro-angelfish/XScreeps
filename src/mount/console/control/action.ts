@@ -83,7 +83,7 @@ export default {
     },
     /* 扩张 */
     expand: {
-        set(roomName: string, disRoom: string, shard: shardName, num: number, Cnum: number = 1, level?: 'T0' | 'T1' | 'T2' | 'T3' | 'T4', shardData?: shardRoomData[]): string {
+        set(roomName: string, disRoom: string, shard: shardName, num: number, Cnum: number = 1, level?: 'T0' | 'T1' | 'T2' | 'T3' | 'T4' | 'T5' | 'T6' | 'T7', shardData?: shardRoomData[]): string {
             var thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[expand] 不存在房间${roomName}`
             let task = thisRoom.public_expand(disRoom, shard, num, Cnum, level)
@@ -441,10 +441,10 @@ export default {
                 }
             return `[carry] 房间${roomName}删除拾荒者任务失败`
         },
-        mine(roomName: string, disRoom: string, creepNum?: number): string {
+        mine(roomName: string, disRoom: string, creepNum?: number, level?: 'T0' | 'T1'): string {
             let thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[carry] 不存在房间${roomName}`
-            var thisTask = thisRoom.public_Carrymine(disRoom, (creepNum ? creepNum : 1))
+            var thisTask = thisRoom.public_Carrymine(disRoom, (creepNum ? creepNum : 1), level)
             if (thisRoom.AddMission(thisTask)) return `[carry] 房间${roomName}挂载外矿偷取任务成功`
             return `[carry] 房间${roomName}挂载外矿偷取任务失败`
         },
