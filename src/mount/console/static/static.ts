@@ -62,6 +62,11 @@ export default {
             return `[ignore] 删除 ${name} 出调试输出忽略名单失败!`
 
         },
+        lab(ignore: true): string {
+            Memory.ignoreLab = ignore;
+            if (ignore) return `[ignore] 已经禁用控制台lab输出!`
+            else return `[ignore] 已经启用控制台lab输出!`
+        },
     },
     /*左上角显示操作*/
     visual: {

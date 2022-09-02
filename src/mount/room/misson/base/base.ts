@@ -373,14 +373,18 @@ export default class RoomMissonFrameExtension extends Room {
         for (var i in this.memory.RoomLabBind) {
             if (i == id) {
                 if (this.memory.RoomLabBind[i].missonID.length <= 1) {
-                    console.log('LabID: ', i, '------解绑-------->MissonID: ', MissonID)
+                    if (!Memory.ignoreLab) {
+                        console.log('LabID: ', i, '------解绑-------->MissonID: ', MissonID)
+                    }
                     delete this.memory.RoomLabBind[i]
                     return true
                 }
                 else {
                     for (var j of this.memory.RoomLabBind[i].missonID) {
                         if (j == MissonID) {
-                            console.log('LabID: ', i, '------解绑-------->MissonID: ', MissonID)
+                            if (!Memory.ignoreLab){
+                                console.log('LabID: ', i, '------解绑-------->MissonID: ', MissonID)
+                            }
                             var index = this.memory.RoomLabBind[i].missonID.indexOf(MissonID)
                             this.memory.RoomLabBind[i].missonID.splice(index, 1)
                             return true

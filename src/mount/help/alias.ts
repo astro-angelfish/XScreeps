@@ -156,6 +156,13 @@ export default [
                                 functionName: 'missionInfo.remove'
                             },
                             {
+                                title: '忽略控制台lab输出:',
+                                params: [
+                                    { name: 'ignore', desc: 'true | false' },
+                                ],
+                                functionName: 'missionInfo.lab'
+                            },
+                            {
                                 title: '开启/关闭自动搓像素(默认开启):',
                                 functionName: 'pixel.switch'
                             },

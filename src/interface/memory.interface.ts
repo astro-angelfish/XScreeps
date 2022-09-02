@@ -3,6 +3,7 @@ interface Memory {
     bypassRooms?: string[]
     whitesheet?: string[]
     ignoreMissonName?: string[]
+    ignoreLab: boolean
     marketAdjust?: { [res: string]: number }
     ResourceDispatchData: RDData[]
     outMineData: { [roomName: string]: OutMineData }
