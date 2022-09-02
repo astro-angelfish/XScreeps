@@ -223,15 +223,15 @@ export default class RoomMissonVindicateExtension extends Room {
                 case 'T4':
                     global.MSB[mission.id] = {
                         'claim': GenerateAbility(0, 0, 6, 0, 0, 1, 1, 0),
-                        'Ebuild': GenerateAbility(14, 14, 15, 0, 0, 2, 0, 0),
-                        'Eupgrade': GenerateAbility(14, 14, 15, 0, 0, 2, 0, 0)
+                        'Ebuild': GenerateAbility(14, 14, 15, 0, 0, 1, 0, 0),
+                        'Eupgrade': GenerateAbility(14, 14, 15, 0, 0, 1, 0, 0)
                     }
                     break;
                 case 'T5':
                     global.MSB[mission.id] = {
                         'claim': GenerateAbility(0, 0, 6, 0, 0, 1, 1, 0),
-                        'Ebuild': GenerateAbility(14, 14, 15, 0, 0, 2, 0, 0),
-                        'Eupgrade': GenerateAbility(14, 14, 15, 0, 0, 2, 0, 0)
+                        'Ebuild': GenerateAbility(14, 14, 15, 0, 0, 1, 0, 0),
+                        'Eupgrade': GenerateAbility(14, 14, 15, 0, 0, 1, 0, 0)
                     }
                     break;
                 case 'T6':
