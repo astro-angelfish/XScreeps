@@ -204,7 +204,7 @@ export default class CreepMissonActionExtension extends Creep {
                     }
                 }
                 var tank_ = Game.getObjectById(this.memory.containerID as Id<Structure>) as Structure
-                if(!tank_){
+                if (!tank_) {
                     /*没有能量的获取途径*/
                     this.say("无法提取能量")
                     return;
@@ -724,6 +724,9 @@ export default class CreepMissonActionExtension extends Creep {
                         if (source) { this.harvest_(source) }
                     }
                     return
+                }
+                if ((this.room.name == data.disRoom && Game.shard.name == data.shard) && !this.room.controller?.my) {
+                    if (!this.room.controller?.safeMode) this.suicide();
                 }
                 let resources = this.pos.findClosestByPath(FIND_DROPPED_RESOURCES, {
                     filter: (res) => {

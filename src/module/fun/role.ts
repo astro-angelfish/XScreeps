@@ -226,7 +226,7 @@ export function upgrade_(creep_: Creep): void {
         }
     }
     else {
-        if (creep_.room.controller.level < 6 && creep_.room.memory.switch.speedstate) {
+        if (creep_.room.controller?.level < 6 && creep_.room.memory.switch.speedstate) {
             var find_tombstones = creep_.pos.findClosestByRange(FIND_TOMBSTONES, {
                 filter: (structure) => {
                     return structure.store.getUsedCapacity('energy') > 0

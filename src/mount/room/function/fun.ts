@@ -372,10 +372,11 @@ export default class RoomFunctionFindExtension extends Room {
         //         return filter_structure(structure, sc) && structure.hits < structure.hitsMax
         //     }
         // })
-        let s_l = this.find(FIND_STRUCTURES).filter(s=>s.hits !== undefined)
+        let s_l = this.find(FIND_STRUCTURES)
         let s_list = [];
         for (let structure of s_l) {
             if (!isInArray(sc, structure.structureType)) continue
+            if(!structure.hits)continue;
             if (structure.hits >= structure.hitsMax) continue
             if (hitsMax && structure.hits > hitsMax) {
                 continue
