@@ -282,7 +282,7 @@ export default class CreepMissonTransportExtension extends Creep {
         let id = missionData.id
         let data = missionData.Data
 
-        if (this.hits < this.hitsMax) {
+        if (this.getActiveBodyparts('heal') && this.hits < this.hitsMax) {
             this.heal(this);
         }
 
@@ -327,7 +327,7 @@ export default class CreepMissonTransportExtension extends Creep {
             var container = this.pos.findClosestByRange(FIND_STRUCTURES, {
                 filter: (c) => {
                     return c.structureType === STRUCTURE_CONTAINER && 
-                           c.store.getCapacity() > 0.5 * this.store.getFreeCapacity()
+                           c.store.getUsedCapacity() > 0.5 * this.store.getCapacity()
                 }
             })
             if (container) {

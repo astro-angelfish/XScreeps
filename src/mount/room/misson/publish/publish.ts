@@ -73,6 +73,7 @@ export default class RoomMissonPublish extends Room {
             name: '外矿偷取',
             range: 'Creep',
             delayTick: 99999,
+            maxTime: 3,
             Data: {
                 disRoom: disRoom,
             }
