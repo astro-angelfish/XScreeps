@@ -710,7 +710,7 @@ let pro={
             if(i!=1){
                 let linkPos = getObjectPos(p[0],p[1],"link")
                 roomObjectCache.link = roomObjectCache.link || []
-                roomObjectCache.link.push(linkPos) // link controller 然后是  source
+                // roomObjectCache.link.push(linkPos) // link controller 然后是  source
             }else{
                 roomObjectCache.extractor = [[pos.x,pos.y]]
             }
