@@ -120,7 +120,7 @@ export default class RoomMissonBehaviourExtension extends Room {
         for (let source_linkid of this.memory.StructureIdData.source_links) {
             let source_link = Game.getObjectById(source_linkid) as StructureLink
             if (!source_link) {
-                let index = this.memory.StructureIdData.source_links.indexOf(source_link.id)
+                let index = this.memory.StructureIdData.source_links.indexOf(source_linkid)
                 this.memory.StructureIdData.source_links.splice(index, 1)
                 return
             }

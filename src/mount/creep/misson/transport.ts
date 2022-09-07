@@ -534,7 +534,7 @@ export default class CreepMissonTransportExtension extends Creep {
                     if (!this.pos.isNearTo(thisPos)) this.goTo(thisPos, 1)
                     else {
                         /* 寻找 */
-                        var targets = thisPos.GetStructureList(['terminal', 'storage', 'tower', 'powerSpawn', 'container', 'factory', 'nuker', 'lab', 'link', 'extension'])
+                        var targets = thisPos.GetStructureList(['terminal', 'storage', 'tower', 'powerSpawn', 'container', 'factory', 'nuker', 'lab', 'link'])
                         if (targets.length > 0) {
                             var target = targets[0]
 
@@ -571,7 +571,7 @@ export default class CreepMissonTransportExtension extends Creep {
                     }
                     if (!this.pos.isNearTo(disPos)) this.goTo(disPos, 1)
                     else {
-                        var targets = disPos.GetStructureList(['terminal', 'storage', 'tower', 'powerSpawn', 'container', 'factory', 'nuker', 'lab', 'link', 'extension'])
+                        var targets = disPos.GetStructureList(['terminal', 'storage', 'tower', 'powerSpawn', 'container', 'factory', 'nuker', 'lab', 'link'])
                         var ruin = disPos.GetRuin()
                         if (targets.length > 0 || ruin) {
                             var target = targets[0] as StructureStorage

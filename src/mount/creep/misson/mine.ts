@@ -66,7 +66,8 @@ export default class CreepMissonMineExtension extends Creep {
                             this.signController(this.room.controller, `${this.owner.username}'s 🌾 room!  Auto clean, Please keep distance!`)
                         }
                         else if (["CalvinG"].includes(this.owner.username)) {
-                        this.signController(this.room.controller, `垒土成垛，择高而上🌾`)}
+                            this.signController(this.room.controller, `垒土成垛，择高而上🌾`)
+                        }
                         else {
                             this.signController(this.room.controller, `躬耕陇亩`)
                         }
@@ -216,13 +217,18 @@ export default class CreepMissonMineExtension extends Creep {
                 }
             }
             else {
-                if (this.memory.belong == this.room.name && this.ticksToLive < 200) {
-                    if (this.memory.moveData) {
-                        if (this.memory.moveData.path) {
-                            if (this.memory.moveData.path.length * 2 + 30 > this.ticksToLive) {
-                                this.suicide()
-                            }
+                if (this.ticksToLive < 200) {
+                    let _path_length = 100;
+                    if (this.memory.moveData?.path) {
+                        _path_length = this.memory.moveData.path.length;
+                    }
+                    if (this.memory.belong == this.room.name) {
+                        if (this.hits < this.hitsMax) this.optTower('heal', this);
+                        if (_path_length * 2 + 30 > this.ticksToLive) {
+                            this.suicide()
                         }
+                    } else {
+                        if (this.ticksToLive < _path_length + 20) this.memory.working = true;
                     }
                 }
                 if (!Game.rooms[disPos.roomName]) {
