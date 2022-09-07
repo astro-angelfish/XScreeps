@@ -10,11 +10,11 @@ export const MemoryInit = function (): void {
     if (!Memory.ignoreLab) Memory.ignoreLab = false
     if (!Memory.RoomControlData) Memory.RoomControlData = {}
     if (!global.Gtime) global.Gtime = {}
-    for (let i in Memory.RoomControlData) if (!global.Gtime[i]) global.Gtime[i] = Game.time - random(1, 20, false)
+    for (let i in Memory.RoomControlData) if (!global.Gtime[i]) {global.Gtime = {}; initGTime();}
     if (!global.SpecialBodyData) global.SpecialBodyData = {}
     for (let i in Memory.RoomControlData) if (!global.SpecialBodyData[i]) global.SpecialBodyData[i] = {}
-    if (!global.intervalData) global.intervalData = {}
-    for (let i in global.intervalData) if (!global.intervalData[i]) global.intervalData[i] = {}
+    // if (!global.intervalData) global.intervalData = {}
+    // for (let i in global.intervalData) if (!global.intervalData[i]) global.intervalData[i] = {}
     if (!global.Stru) global.Stru = {}
     if (!global.HostileData) global.HostileData = {}
     if (!global.HostileTowerData) global.HostileTowerData = {}
@@ -59,4 +59,22 @@ export const MemoryTickStart = function (): void {
 
 export const memoryInit: AppLifecycleCallbacks = {
     tickStart: MemoryInit
+}
+
+function shuffle(array) {
+    var i = array.length, j = 0, temp;
+    while (i--) {
+        j = Math.floor(Math.random() * (i+1));
+        temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
+    return array;
+}
+
+function initGTime() {
+    let j = 0;
+    //打乱房间执行顺序，避免多个房间在同一tick执行任务
+    let order = shuffle([...Array(Object.keys(Memory.RoomControlData).length).keys()]);
+    for (let i in Memory.RoomControlData) global.Gtime[i] = Game.time - order[j++] - 1;
 }
