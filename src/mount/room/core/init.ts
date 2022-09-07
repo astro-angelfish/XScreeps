@@ -292,11 +292,13 @@ export default class RoomCoreInitExtension extends Room {
                     carry_num++;
                 }
                 if (level >= 5 && !this.memory.harvestData[id].linkID) {
-                    let source = Game.getObjectById(id as Id<Source>) as Source
-                    let links = source.pos.findInRange(FIND_STRUCTURES, 2, { filter: (stru) => { return stru.structureType == 'link' } })
-                    if (links.length > 0) {
-                        this.memory.harvestData[id].linkID = links[0].id
-                        carry_num--;
+                    let containerID = Game.getObjectById(this.memory.harvestData[id].containerID as Id<Source>) as Source
+                    if (containerID) {
+                        let links = containerID.pos.findInRange(FIND_STRUCTURES, 1, { filter: (stru) => { return stru.structureType == 'link' } })
+                        if (links.length > 0) {
+                            this.memory.harvestData[id].linkID = links[0].id
+                            carry_num--;
+                        }
                     }
                 } else if (this.memory.harvestData[id].linkID) {
                     carry_num--;
@@ -355,7 +357,7 @@ export default class RoomCoreInitExtension extends Room {
                 room_energy += this.terminal.store.getUsedCapacity(RESOURCE_ENERGY)
                 room_energy -= this.memory.TerminalData['energy'].num;
             }
-            let creep_num = Math.floor(room_energy / 100000);
+            let creep_num = Math.floor(room_energy / 100000) + 1;
             creep_num = creep_num > 5 ? 5 : creep_num
             creep_num = creep_num < 1 ? 1 : creep_num
             if (room_energy < 50000) creep_num = 0;
