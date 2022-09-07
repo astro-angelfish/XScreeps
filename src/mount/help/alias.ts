@@ -1527,6 +1527,19 @@ export default [
                                 functionName: 'resource.all'
                             },
                             {
+                                title: '房间资源统计:',
+                                describe: '例: resource.room("W1N1")',
+                                params: [
+                                    { name: 'roomName', desc: '房间' },
+                                ],
+                                functionName: 'resource.room'
+                            },
+                            {
+                                title: '全局lab合成统计:',
+                                describe: '全局lab合成统计',
+                                functionName: 'resource.lab'
+                            },
+                            {
                                 title: '商品资源名称打印:',
                                 describe: '商品资源名称打印',
                                 functionName: 'resource.com'
@@ -1535,6 +1548,14 @@ export default [
                                 title: '全局储量统计:',
                                 describe: '全局储量统计',
                                 functionName: 'store.all'
+                            },
+                            {
+                                title: '房间储量统计:',
+                                describe: '例: store.room("W1N1")',
+                                params: [
+                                    { name: 'roomName', desc: '房间' },
+                                ],
+                                functionName: 'store.room'
                             },
                         ]
                     },

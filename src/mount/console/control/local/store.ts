@@ -106,7 +106,7 @@ export function getStore(roomName?: string) {
 		for (let i = 0; i < rooms.length; i++) {
 			let storage = Game.rooms[rooms[i]].storage;
 			let terminal = Game.rooms[rooms[i]].terminal;
-			let factory = Game.rooms[roomName].GetStruDate(STRUCTURE_FACTORY) as StructureFactory;
+			let factory = Game.rooms[rooms[i]].GetStruDate(STRUCTURE_FACTORY) as StructureFactory;
 			let storageUsed = storage?.store.getUsedCapacity() || 0;
 			let storeCapacity = storage?.store.getCapacity() || 1;
 			let storageProportion = (storageUsed / storeCapacity * 100).toFixed(2) + '%';
@@ -120,7 +120,7 @@ export function getStore(roomName?: string) {
 			let factoryProportion = (factoryUsed / factoryCapacity * 100).toFixed(2) + '%';
 			let factoryColor = colorHex(getColor(Math.ceil(factoryUsed / factoryCapacity * 100)));
 			console.log(Colorful(rooms[i], 'blue'),
-				'Storage:', Colorful(storageProportion, storageColor), ' ',
+				'Storage', Colorful(storageProportion, storageColor), ' ',
 				'Terminal', Colorful(terminalProportion, terminalColor), ' ',
 				'Factory', Colorful(factoryProportion, factoryColor));
 			// Colorful(string, colorHex(getColor(Math.ceil(storageUsed / storeCapacity * 100))))

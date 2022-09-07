@@ -1,6 +1,6 @@
 import { Colorful, isInArray, GenerateAbility, CalculateEnergy } from "@/utils"
 import { forEach, result } from "lodash"
-import { allResource, roomResource } from "../control/local/resource"
+import { allLabData, allResource } from "../control/local/resource"
 import { getStore } from "../control/local/store"
 
 
@@ -11,10 +11,14 @@ export default {
             allResource()
             return `[resource] 全局资源统计完毕!`
         },
+        lab(): string {
+            allLabData()
+            return `[resource] lab合成信息统计完毕!`
+        },
         room(roomName: string): string {
             var thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[resource] 不存在房间${roomName}`
-            roomResource(roomName)
+            allResource(roomName)
             return `[resource] 房间${roomName}资源统计完毕!`
         },
         com(): string {
@@ -23,14 +27,14 @@ export default {
             result += 'ghodium_melt(G) oxidant(O) reductant(H) purifier(X)\n'
             result += '基础商品资源:\n'
             result += 'wire cell alloy condensate composite crystal liquid\n'
-            result += Colorful('机械商品:\n', '#f8a505', true)
-            result += Colorful('tube fixtures frame hydraulics machine\n', '#f8a505', false)
-            result += Colorful('生物商品:\n', '#05f817', true)
-            result += Colorful('phlegm tissue muscle organoid organism\n', '#05f817', false)
-            result += Colorful('电子商品:\n', 'blue', true)
-            result += Colorful('switch transistor microchip circuit device\n', 'blue', false)
-            result += Colorful('奥秘商品:\n', '#5147ea', true)
-            result += Colorful('concentrate extract spirit emanation essence\n', '#5147ea', false)
+            result += Colorful('机械商品:\n', '#f7d492', true)
+            result += Colorful('tube fixtures frame hydraulics machine\n', '#f7d492', false)
+            result += Colorful('生物商品:\n', '#6cf0a9', true)
+            result += Colorful('phlegm tissue muscle organoid organism\n', '#6cf0a9', false)
+            result += Colorful('电子商品:\n', '#4ca7e5', true)
+            result += Colorful('switch transistor microchip circuit device\n', '#4ca7e5', false)
+            result += Colorful('奥秘商品:\n', '#da6bf5', true)
+            result += Colorful('concentrate extract spirit emanation essence\n', '#da6bf5', false)
             return result
         }
     },
