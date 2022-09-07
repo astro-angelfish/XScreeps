@@ -410,6 +410,16 @@ export default {
                 }
             }
             return Colorful(`[market] 房间${roomName}资源[${rType}-${mtype}-${mType}]改价失败`, 'red')
+        },
+        resetEnergyPrice(roomName: string): string {
+            var thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[support] 不存在房间${roomName}`
+            if (!thisRoom.memory.MarketPrice){
+                return Colorful(`[market] 房间${roomName}能量价格重置失败`, 'red')
+            }
+            thisRoom.memory.MarketPrice.buy = {low: 0, high: 0};
+            thisRoom.memory.MarketPrice.sell = {low: 0, high: 0};
+            return `[market] 房间${roomName}能量价格重置成功`
         }
 
     },
