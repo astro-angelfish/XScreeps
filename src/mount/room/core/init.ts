@@ -358,8 +358,19 @@ export default class RoomCoreInitExtension extends Room {
                 room_energy -= this.memory.TerminalData['energy'].num;
             }
             let creep_num = Math.floor(room_energy / 100000) + 1;
-            creep_num = creep_num > 5 ? 5 : creep_num
-            creep_num = creep_num < 1 ? 1 : creep_num
+            let source_num = Object.keys(this.memory.harvestData).length; //统计房间能量源
+            let isRepairingWall = false; //若房间在刷墙则减少升级爬
+            for (const mission of this.memory.Misson.Creep) {
+                if (mission.name === "外矿开采") {
+                    source_num += 0.5 * (mission.CreepBind["out-harvest"].num);
+                } else if (mission.name === "墙体维护") {
+                    isRepairingWall = true;
+                }
+            }
+            if (source_num < 2.45) creep_num -= 1;
+            if (isRepairingWall) creep_num -= 1;
+            creep_num = creep_num > 5 ? 5 : creep_num;
+            creep_num = creep_num < 1 ? 1 : creep_num;
             if (room_energy < 50000) creep_num = 0;
             if (this.memory.SpawnConfig.upgrade.num != creep_num) { console.log(this.name, 'upgrade动态调整', creep_num); }
             this.memory.SpawnConfig.upgrade.num = creep_num;
