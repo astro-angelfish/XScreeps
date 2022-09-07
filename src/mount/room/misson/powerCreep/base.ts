@@ -14,7 +14,7 @@ export default class PowerCreepMisson extends Room {
         else {
             /* 看看是否存活，没存活就孵化 */
             if (!pc.ticksToLive) {
-                var pcspawn = Game.rooms[this.name].GetStruDate('powerspawn') as StructurePowerSpawn
+                var pcspawn = Game.rooms[this.name].GetStructData('powerspawn') as StructurePowerSpawn
                 if (pcspawn) {
                     pc.spawn(pcspawn)
                     return

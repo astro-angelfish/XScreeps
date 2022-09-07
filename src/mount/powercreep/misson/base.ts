@@ -19,7 +19,7 @@ export default class PowerCreepMissonBase extends PowerCreep {
         if (!this.memory.role) this.memory.role = info[1]   // 角色
         if (!this.memory.shard) this.memory.shard = info[2] as shardName    // 所属shard
         if (!Game.rooms[this.memory.belong]) return
-        var thisSpawn = Game.rooms[this.memory.belong].GetStruDate('powerspawn') as StructurePowerSpawn
+        var thisSpawn = Game.rooms[this.memory.belong].GetStructData('powerspawn') as StructurePowerSpawn
         if (!thisSpawn) return
         if (!this.memory.spawn) {
             this.memory.spawn = thisSpawn.id

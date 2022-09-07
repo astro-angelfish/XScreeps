@@ -84,7 +84,7 @@ export function getStore(roomName?: string) {
 	if (roomName) {
 		let storage = Game.rooms[roomName].storage;
 		let terminal = Game.rooms[roomName].terminal;
-		let factory = Game.rooms[roomName].GetStruDate(STRUCTURE_FACTORY) as StructureFactory;
+		let factory = Game.rooms[roomName].GetStructData(STRUCTURE_FACTORY) as StructureFactory;
 		let storageUsed = storage?.store.getUsedCapacity() || 0;
 		let storeCapacity = storage?.store.getCapacity() || 1;
 		let storageProportion = (storageUsed / storeCapacity * 100).toFixed(2) + '%';
@@ -106,7 +106,7 @@ export function getStore(roomName?: string) {
 		for (let i = 0; i < rooms.length; i++) {
 			let storage = Game.rooms[rooms[i]].storage;
 			let terminal = Game.rooms[rooms[i]].terminal;
-			let factory = Game.rooms[rooms[i]].GetStruDate(STRUCTURE_FACTORY) as StructureFactory;
+			let factory = Game.rooms[rooms[i]].GetStructData(STRUCTURE_FACTORY) as StructureFactory;
 			let storageUsed = storage?.store.getUsedCapacity() || 0;
 			let storeCapacity = storage?.store.getCapacity() || 1;
 			let storageProportion = (storageUsed / storeCapacity * 100).toFixed(2) + '%';

@@ -609,7 +609,7 @@ export default class RoomMissonFrameExtension extends Room {
     }
 
 
-    public GetStruDate(build: string): Structure {
+    public GetStructData(build: string): Structure {
         if (isInArray(['powerspawn', 'factory', 'Ntower', 'Atower'], build)) {
 
             switch (build) {

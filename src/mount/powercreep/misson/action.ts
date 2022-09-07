@@ -116,7 +116,7 @@ export default class PowerCreepMissonAction extends PowerCreep {
 
     /* 操作工厂 */
     public handle_pwr_factory(): void {
-        var factory_ = Game.rooms[this.memory.belong].GetStruDate('factory') as StructureStorage
+        var factory_ = Game.rooms[this.memory.belong].GetStructData('factory') as StructureStorage
         if (!factory_) return
         if (this.powers[PWR_OPERATE_FACTORY] && this.powers[PWR_OPERATE_FACTORY].cooldown) {
             if (Game.rooms[this.memory.belong].GainMission(this.memory.MissionData.id)) {
@@ -137,7 +137,7 @@ export default class PowerCreepMissonAction extends PowerCreep {
 
     /* 操作powerspawn */
     public handle_pwr_powerspawn(): void {
-        var powerspawn_ = Game.rooms[this.memory.belong].GetStruDate('powerspawn') as StructureStorage
+        var powerspawn_ = Game.rooms[this.memory.belong].GetStructData('powerspawn') as StructureStorage
         if (!powerspawn_) return
         if (this.powers[PWR_OPERATE_POWER] && this.powers[PWR_OPERATE_POWER].cooldown) {
             if (Game.rooms[this.memory.belong].GainMission(this.memory.MissionData.id)) {

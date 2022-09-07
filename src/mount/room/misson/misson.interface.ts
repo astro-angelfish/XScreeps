@@ -13,7 +13,7 @@ interface Room {
     Check_Buy(resource: ResourceConstant): boolean
     Check_ResourceType(rType: ResourceConstant, Num: number): boolean
     MissionName(range: string, name: string): MissionModel | null
-    GetStruDate(build: string): Structure
+    GetStructData(build: string): Structure
 
     // 主动任务
     Spawn_Feed(): void

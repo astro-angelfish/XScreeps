@@ -614,7 +614,7 @@ export default class RoomMissonBehaviourExtension extends Room {
         let powerspawn_ = Game.getObjectById(Game.rooms[this.name].memory.StructureIdData.PowerSpawnID) as StructurePowerSpawn;
         if (!powerspawn_) { delete Game.rooms[this.name].memory.StructureIdData.PowerSpawnID; return; }
         let storage_ = this.storage as StructureStorage
-        // let powerspawn_ = Game.rooms[this.name].GetStruDate('powerspawn') as StructurePowerSpawn
+        // let powerspawn_ = Game.rooms[this.name].GetStructData('powerspawn') as StructurePowerSpawn
         let terminal_ = this.terminal as StructureTerminal
         if (!storage_ || !terminal_) return
         if (misson.state == 1) {

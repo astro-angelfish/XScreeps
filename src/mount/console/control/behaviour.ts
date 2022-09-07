@@ -816,7 +816,7 @@ export default {
         add(roomName: string, cType: CommodityConstant, num: number): string {
             var myRoom = Game.rooms[roomName]
             if (!myRoom) return `[factory] 未找到房间${roomName},请确认房间!`
-            let factory_ = myRoom.GetStruDate(STRUCTURE_FACTORY) as StructureFactory
+            let factory_ = myRoom.GetStructData(STRUCTURE_FACTORY) as StructureFactory
             if (!factory_) return Colorful(`[factory] 未找到房间${roomName}的工厂!`, 'red', true)
             return factory_.add(cType, num)
         },
@@ -824,7 +824,7 @@ export default {
         remove(roomName: string, cType: CommodityConstant): string {
             var myRoom = Game.rooms[roomName]
             if (!myRoom) return `[factory] 未找到房间${roomName},请确认房间!`
-            let factory_ = myRoom.GetStruDate(STRUCTURE_FACTORY) as StructureFactory
+            let factory_ = myRoom.GetStructData(STRUCTURE_FACTORY) as StructureFactory
             if (!factory_) return Colorful(`[factory] 未找到房间${roomName}的工厂!`, 'red', true)
             return factory_.remove(cType)
         },
@@ -832,7 +832,7 @@ export default {
         set(roomName: string, cType: CommodityConstant): string {
             var myRoom = Game.rooms[roomName]
             if (!myRoom) return `[factory] 未找到房间${roomName},请确认房间!`
-            let factory_ = myRoom.GetStruDate(STRUCTURE_FACTORY) as StructureFactory
+            let factory_ = myRoom.GetStructData(STRUCTURE_FACTORY) as StructureFactory
             if (!factory_) return Colorful(`[factory] 未找到房间${roomName}的工厂!`, 'red', true)
             return factory_.set(cType)
         },
@@ -840,14 +840,14 @@ export default {
         del(roomName: string, cType: CommodityConstant): string {
             var myRoom = Game.rooms[roomName]
             if (!myRoom) return `[factory] 未找到房间${roomName},请确认房间!`
-            let factory_ = myRoom.GetStruDate(STRUCTURE_FACTORY) as StructureFactory
+            let factory_ = myRoom.GetStructData(STRUCTURE_FACTORY) as StructureFactory
             if (!factory_) return Colorful(`[factory] 未找到房间${roomName}的工厂!`, 'red', true)
             return factory_.del(cType)
         },
         decompress(roomName: string, cType: CommodityConstant, num: number): string {
             var myRoom = Game.rooms[roomName]
             if (!myRoom) return `[factory] 未找到房间${roomName},请确认房间!`
-            let factory_ = myRoom.GetStruDate(STRUCTURE_FACTORY) as StructureFactory
+            let factory_ = myRoom.GetStructData(STRUCTURE_FACTORY) as StructureFactory
             if (!factory_) return Colorful(`[factory] 未找到房间${roomName}的工厂!`, 'red', true)
             if (myRoom.memory.productData.unzip[cType]) return Colorful(`[factory] 房间${roomName}已经存在${cType}的解压缩任务!`, 'red', true)
             myRoom.memory.productData.unzip[cType] = { num: num }
@@ -856,7 +856,7 @@ export default {
         Cdecompress(roomName: string, cType: CommodityConstant): string {
             var myRoom = Game.rooms[roomName]
             if (!myRoom) return `[factory] 未找到房间${roomName},请确认房间!`
-            let factory_ = myRoom.GetStruDate(STRUCTURE_FACTORY) as StructureFactory
+            let factory_ = myRoom.GetStructData(STRUCTURE_FACTORY) as StructureFactory
             if (!factory_) return Colorful(`[factory] 未找到房间${roomName}的工厂!`, 'red', true)
             if (!myRoom.memory.productData.unzip[cType]) return Colorful(`[factory] 房间${roomName}不存在${cType}的解压缩任务!`, 'red', true)
             delete myRoom.memory.productData.unzip[cType]
@@ -865,7 +865,7 @@ export default {
         autoDecompress(roomName: string) {
             var myRoom = Game.rooms[roomName]
             if (!myRoom) return `[factory] 未找到房间${roomName},请确认房间!`
-            let factory_ = myRoom.GetStruDate(STRUCTURE_FACTORY) as StructureFactory
+            let factory_ = myRoom.GetStructData(STRUCTURE_FACTORY) as StructureFactory
             if (!factory_) return Colorful(`[factory] 未找到房间${roomName}的工厂!`, 'red', true)
             if (!myRoom.memory.DynamicConfig) myRoom.memory.DynamicConfig = {};
             if (myRoom.memory.DynamicConfig.Dynamicfactoryuncondense) {

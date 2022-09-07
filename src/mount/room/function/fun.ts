@@ -427,7 +427,7 @@ export default class RoomFunctionFindExtension extends Room {
         if (terminal) { structures.push(terminal) }
 
         /*工厂信息*/
-        let factory = this.GetStruDate(STRUCTURE_FACTORY) as StructureFactory
+        let factory = this.GetStructData(STRUCTURE_FACTORY) as StructureFactory
         if (factory) { structures.push(factory) }
 
         /*Link信息*/
@@ -474,7 +474,7 @@ export default class RoomFunctionFindExtension extends Room {
         if (!global.Stru) global.Stru = {}
         if (!global.Stru[this.name]) global.Stru[this.name] = {}
 
-        // Game.rooms[this.memory.belong].GetStruDate('factory')
+        // Game.rooms[this.memory.belong].GetStructData('factory')
         // if (this.memory.StructureIdData.NtowerID) {
         //     global.Stru[this.name]['Ntower'] = Game.getObjectById(this.memory.StructureIdData.NtowerID) as StructureTower
         //     if (!global.Stru[this.name]['Ntower']) {
