@@ -347,7 +347,7 @@ export default class RoomCoreInitExtension extends Room {
      * 房间自适应动态配置
      */
     public RoomGlobalDynamicconfig(): void {
-        if ((Game.time - global.Gtime[this.name]) % 50 != 0) { return }
+        if ((Game.time - global.Gtime[this.name]) % 53 != 0) { return }
         let level = this.controller.level
         if (this.memory.DynamicConfig.Dynamicupgrade && level < 8) {
             let room_energy = 0;
@@ -357,21 +357,24 @@ export default class RoomCoreInitExtension extends Room {
                 room_energy += this.terminal.store.getUsedCapacity(RESOURCE_ENERGY)
                 room_energy -= this.memory.TerminalData['energy'].num;
             }
-            let creep_num = Math.floor(room_energy / 100000) + 1;
+            let creep_num = Math.ceil(room_energy / 100000);
             let source_num = Object.keys(this.memory.harvestData).length; //统计房间能量源
-            let isRepairingWall = false; //若房间在刷墙则减少升级爬
+            let isInWar = (this.memory.state === 'war'); //若房间有战争行为则暂停升级
             for (const mission of this.memory.Misson.Creep) {
                 if (mission.name === "外矿开采") {
-                    source_num += 0.5 * (mission.CreepBind["out-harvest"].num);
-                } else if (mission.name === "墙体维护") {
-                    isRepairingWall = true;
+                    if (mission.Data.state === 2) {
+                        source_num += 0.5 * (mission.CreepBind["out-harvest"].num);
+                    }
+                } else if (isInWar || isInArray(['紧急支援', '紧急援建', '紧急升级', '紧急墙体', '攻防一体', '黄球拆迁', '红球防御', '蓝球防御', '双人防御', '双人小队', '四人小队'], mission.name)) {
+                    isInWar = true;
+                    break;
                 }
             }
             if (source_num < 2.45) creep_num -= 1;
-            if (isRepairingWall) creep_num -= 1;
+            if (this.MissionNum('Creep', '墙体维护') > 0) creep_num -= 1; //若房间在刷墙则减少升级爬
             creep_num = creep_num > 5 ? 5 : creep_num;
             creep_num = creep_num < 1 ? 1 : creep_num;
-            if (room_energy < 50000) creep_num = 0;
+            if (room_energy < 50000 || isInWar) creep_num = 0;
             if (this.memory.SpawnConfig.upgrade.num != creep_num) { console.log(this.name, 'upgrade动态调整', creep_num); }
             this.memory.SpawnConfig.upgrade.num = creep_num;
         } else {
@@ -406,6 +409,5 @@ export default class RoomCoreInitExtension extends Room {
         if (Object.keys(this.memory.harvestData).length <= 1 && level > 3) {
             this.NumSpawn('harvest', 1)
         }
-
     }
 }
