@@ -36,10 +36,18 @@ export function CreepNumStatistic(): void {
         if (!global.CreepNumData[creep_.memory.belong][creep_.memory.role])
             global.CreepNumData[creep_.memory.belong][creep_.memory.role] = 0
         /* 添加统计数目 */
-        if (["carry", "harvest", "out-car", "manage","initial_speed"].includes(creep_.memory.role)) {
+        if (["carry", "harvest", "out-car", "manage", "initial_speed"].includes(creep_.memory.role)) {
             if (Object.keys(creep_.body).length * 3 >= creep_.ticksToLive) continue;
         }
         global.CreepNumData[creep_.memory.belong][creep_.memory.role] += 1
+    }
+    /*进行ob数据超时回收*/
+    if (!(Game.time % 100)) {
+        for (let _ob in Memory.ObserverList) {
+            if (Game.time - 5000 > Memory.ObserverList[_ob]) {
+                delete Memory.ObserverList[_ob];
+            }
+        }
     }
 }
 

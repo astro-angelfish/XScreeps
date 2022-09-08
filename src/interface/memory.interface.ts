@@ -11,9 +11,10 @@ interface Memory {
     StopPixel: boolean,
     creepscpu?: { [creeps: string]: string }
     SystemEconomy: boolean,
-    SystemStopPower?:boolean
+    SystemStopPower?: boolean
     PowerSupply: string[],/*供应Power的房间信息*/
-    pixelInfo: {buy: {num: number, price: number, unit: number, floor: number, order: string}, sell: {num: number, price: number, unit: number, ceil: number, order: string}}
+    ObserverList: { [roomName: string]: number }/*过道被排除房间的信息*/
+    pixelInfo: { buy: { num: number, price: number, unit: number, floor: number, order: string }, sell: { num: number, price: number, unit: number, ceil: number, order: string } }
 }
 
 interface RDData {

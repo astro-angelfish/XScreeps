@@ -39,7 +39,7 @@ export default class RoomCoreEcosphereExtension extends Room {
             }
 
 
-            if (level == 5)                 // 5级1个source的Link
+            if (level == 6)                 // 6级1个source的Link
             {
                 let sourceIDs = this.memory.StructureIdData.source
                 if (sourceIDs.length <= 0) return
@@ -61,7 +61,7 @@ export default class RoomCoreEcosphereExtension extends Room {
                     }
                 }
             }
-            else if (level == 6)        // 6级出source的Link
+            else if (level == 7)        // 7级出source的Link
             {
                 let sourceIDs = this.memory.StructureIdData.source
                 if (sourceIDs.length <= 1) return
@@ -83,7 +83,7 @@ export default class RoomCoreEcosphereExtension extends Room {
                     }
                 }
             }
-            else if (level == 7)        // 7级出控制器Link
+            else if (level == 5)        // 5级出控制器Link
             {
                 let controller = this.controller
                 let points = controller.pos.getSourceLinkVoid()

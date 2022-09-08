@@ -157,7 +157,11 @@ export default class RoomMissonBehaviourExtension extends Room {
 
     // 消费link请求资源 例如升级Link
     public Task_ComsumeLink(): void {
-        if ((global.Gtime[this.name] - Game.time) % 7) return
+        if (this.controller.level > 4 && this.controller.level < 8) {
+            if ((global.Gtime[this.name] - Game.time) % 2) return
+        } else {
+            if ((global.Gtime[this.name] - Game.time) % 7) return
+        }
         if (!this.memory.StructureIdData.center_link) return
         // let center_link = this.getStructureData(STRUCTURE_LINK, 'center_link', [this.memory.StructureIdData.center_link])[0] as StructureLink
         let center_link = Game.getObjectById(this.memory.StructureIdData.center_link) as StructureLink

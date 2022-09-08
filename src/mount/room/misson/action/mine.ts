@@ -109,7 +109,7 @@ export default class RoomMissonMineExtension extends Room {
         let disRoomName = misson.Data.disRoom
         if (!Memory.outMineData[disRoomName]) Memory.outMineData[disRoomName] = { road: [], startpoint: misson.Data.startpoint, minepoint: [], mineType: 'normal' }
         // 相关爬虫死亡后的数据擦除
-        
+
         if (Memory.outMineData[disRoomName].minepoint && Memory.outMineData[disRoomName].minepoint.length > 0 && Memory.outMineData[disRoomName].mineType == 'normal') {
             for (var obj of Memory.outMineData[disRoomName].minepoint) {
                 if (obj.bind && obj.bind.harvest && !Game.creeps[obj.bind.harvest]) delete obj.bind.harvest
@@ -206,6 +206,7 @@ export default class RoomMissonMineExtension extends Room {
 
     /* 过道采集监控发布任务 */
     public Task_Cross(misson: MissionModel): void {
+
         if (this.controller.level < 8 || !this.memory.StructureIdData.ObserverID) return
         if (Game.cpu.bucket < 9500 && Memory.StopPixel) return/*CPU不足情况下不进行任务发布*/
         if (this.memory.switch.StopCross) return
@@ -215,8 +216,8 @@ export default class RoomMissonMineExtension extends Room {
         if (misson.Data.relateRooms.length <= 0) return
         if (!misson.Data.index) misson.Data.index = 0
         if (!misson.Data.state) misson.Data.state = 1
-
         if (misson.Data.state == 1) {
+            // let a = Game.cpu.getUsed();
             /* 观察房间 */
             if (misson.Data.relateRooms[misson.Data.index]) {
                 observer_.observeRoom(misson.Data.relateRooms[misson.Data.index])
@@ -233,58 +234,10 @@ export default class RoomMissonMineExtension extends Room {
                 /* 查找power和deposit */
                 // console.log('扫描房间',this.name)
                 if (misson.Data.power) {
-                    var powerbank = Game.rooms[beforRoom].find(FIND_STRUCTURES, {
-                        filter: (stru) => {
-                            return stru.structureType == 'powerBank' && stru.ticksToDecay >= 3600 && stru.power > 3000
-                        }
-                    }) as StructurePowerBank[]
-                    if (powerbank.length > 0) {
-                        let BR = true
-                        for (var i of this.memory.Misson['Creep']) {
-                            if (i.name == 'power采集' && i.Data.room == beforRoom && i.Data.x == powerbank[0].pos.x && i.Data.y == powerbank[0].pos.y) {
-                                BR = false
-                            }
-                        }
-                        if (BR) {
-                            /* 下达采集任务 */
-
-                            var thisTask = this.public_PowerHarvest(beforRoom, powerbank[0].pos.x, powerbank[0].pos.y, powerbank[0].power)
-                            if (thisTask != null) {
-                                this.AddMission(thisTask)
-                            }
-                        }
-                    }
+                    this.Add_Cross_power(beforRoom);
                 }
                 if (misson.Data.deposit) {
-                    var deposit = Game.rooms[beforRoom].find(FIND_DEPOSITS, {
-                        filter: (stru) => {
-                            return stru.ticksToDecay >= 3800 && stru.lastCooldown < 100
-                        }
-                    })
-                    // console.log(this.name, beforRoom, deposit.length)
-                    if (deposit.length > 0) {
-                        let BR = true
-                        for (var i of this.memory.Misson['Creep']) {
-                            if (i.name == 'deposit采集' && i.Data.room == beforRoom && i.Data.x == deposit[0].pos.x && i.Data.y == deposit[0].pos.y) {
-                                BR = false
-                            }
-                        }
-                        if (BR) {
-                            /* 查询一下是不是已经有了该房间的采集任务了 */
-                            let have = false
-                            for (var dm of this.memory.Misson['Creep']) {
-                                if (dm.name == 'deposit采集' && dm.Data.room == beforRoom) have = true
-                            }
-                            /*检测dp可以挖掘的位置数量*/
-                            var harvest_void: RoomPosition[] = deposit[0].pos.getSourceVoid()
-                            /* 下达采集任务 */
-                            var thisTask = this.public_DepositHarvest(beforRoom, deposit[0].pos.x, deposit[0].pos.y, deposit[0].depositType, harvest_void.length)
-                            if (thisTask != null && !have) {
-                                thisTask.Data.deposit_id = deposit[0].id;
-                                this.AddMission(thisTask)
-                            }
-                        }
-                    }
+                    this.Add_Cross_deposit(beforRoom);
                 }
             }
 
@@ -295,6 +248,8 @@ export default class RoomMissonMineExtension extends Room {
             } else {
                 misson.Data.index++
             }
+            // let b = Game.cpu.getUsed();
+            // console.log(this.name, beforRoom, b - a)
         }
         else if (misson.Data.state == 2) {
             if (Game.time - misson.Data.time != 0 && (Game.time - misson.Data.time) % 60 == 0) {
@@ -302,7 +257,85 @@ export default class RoomMissonMineExtension extends Room {
                 // console.log(Colorful("进入观察模式",'blue'))
             }
         }
+
     }
+    public Add_Cross_deposit(beforRoom) {
+        if (this.MissionNum('Creep', 'deposit采集') >= 2) return
+        var deposit = Game.rooms[beforRoom].find(FIND_DEPOSITS, {
+            filter: (stru) => {
+                return stru.ticksToDecay >= 3800 && stru.lastCooldown < 100
+            }
+        })
+        if (deposit.length < 1) return
+        for (let _dp of deposit) {
+            let _ob_pos = zipPosition(_dp.pos)
+            let BR = true
+            if (Memory.ObserverList[_ob_pos]) continue;/*这里将会过滤无法到达的位置以及已经进行任务发布的任务*/
+            for (var i of this.memory.Misson['Creep']) {
+                if (i.name == 'deposit采集' && i.Data.room == beforRoom) {
+                    BR = false
+                }
+            }
+            if (BR) {
+                /*检查shard 以及是否需要新手区检测*/
+                // if (!this.Check_Cross_newbies(_dp.pos)) continue;
+                /*检测dp可以挖掘的位置数量*/
+                var harvest_void: RoomPosition[] = _dp.pos.getSourceVoid()
+                /* 下达采集任务 */
+                var thisTask = this.public_DepositHarvest(beforRoom, _dp.pos.x, _dp.pos.y, _dp.depositType, harvest_void.length)
+                if (thisTask != null) {
+                    thisTask.Data.deposit_id = _dp.id;
+                    this.AddMission(thisTask)
+                    Memory.ObserverList[_ob_pos] = Game.time;/*进行状态标记操作*/
+                }
+            }
+        }
+
+    }
+
+    public Add_Cross_power(beforRoom) {
+        if (this.MissionNum('Creep', 'power采集') >= 2) return
+        var powerbank = Game.rooms[beforRoom].find(FIND_STRUCTURES, {
+            filter: (stru) => {
+                return stru.structureType == 'powerBank' && stru.ticksToDecay >= 3600 && stru.power > 3000
+            }
+        }) as StructurePowerBank[]
+        if (powerbank.length < 1) return
+        for (let _pw of powerbank) {
+            let _ob_pos = zipPosition(_pw.pos)
+            let BR = true
+            if (Memory.ObserverList[_ob_pos]) continue;/*这里将会过滤无法到达的位置以及已经进行任务发布的任务*/
+            for (var i of this.memory.Misson['Creep']) {
+                if (i.name == 'power采集' && i.Data.room == beforRoom && i.Data.x == _pw.pos.x && i.Data.y == _pw.pos.y) {
+                    BR = false
+                }
+            }
+            if (BR) {
+                /*检查shard 以及是否需要新手区检测*/
+                // if (!this.Check_Cross_newbies(_pw.pos)) continue;
+                /* 下达采集任务 */
+                var thisTask = this.public_PowerHarvest(beforRoom, _pw.pos.x, _pw.pos.y, _pw.power)
+                if (thisTask != null) {
+                    this.AddMission(thisTask)
+                    Memory.ObserverList[_ob_pos] = Game.time;/*进行状态标记操作*/
+                }
+            }
+        }
+    }
+
+    // public Check_Cross_newbies(pos: RoomPosition): boolean {
+    //     if (Game.shard.name != 'shard3') return true;
+    //     const targets = [
+    //         Game.rooms[pos.roomName].getPositionAt(pos.x, pos.y)
+    //     ];
+    //     const closest = this.storage.pos.findClosestByRange(targets);
+    //     if (closest) return true;
+    //     /*如果不存在路径则进行存储防止后续的刷新操作*/
+    //     console.log(this.name, JSON.stringify(pos), '无法到达', JSON.stringify(closest))
+    //     let _ob_pos = zipPosition(pos)
+    //     Memory.ObserverList[_ob_pos] = Game.time;
+    //     return false;
+    // }
 
     /* Power采集 */
     public Task_PowerHarvest(misson: MissionModel): void {

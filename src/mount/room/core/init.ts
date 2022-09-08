@@ -116,7 +116,7 @@ export default class RoomCoreInitExtension extends Room {
         }
         /* 升级Link记忆更新 -不进行重复刷新*/
         if (!StructureData.source_links) StructureData.source_links = []
-        if (level >= 6 && !StructureData.upgrade_link) {
+        if (level >= 5 && !StructureData.upgrade_link) {
             if ((Game.time - global.Gtime[this.name]) % tickratio * 4 == 0) {
                 let upgrade_link = this.controller.pos.getRangedStructure([STRUCTURE_LINK], 3, 0) as StructureLink[]
                 if (upgrade_link.length >= 1)

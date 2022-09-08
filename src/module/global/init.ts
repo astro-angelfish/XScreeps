@@ -35,6 +35,7 @@ export const MemoryInit = function (): void {
     if (!global.getStructureData) global.getStructureData = {}
     if (!global.controllerData) { global.controllerData = {} }
     if (!Memory.PowerSupply) { Memory.PowerSupply = [] }
+    if (!Memory.ObserverList) { Memory.ObserverList = {} }
     if (!global.PowerDemand) global.PowerDemand = []
     if (!global.RoleMissionNum) global.RoleMissionNum = {}
     global.Marketorder = {};/*tick重置已有的订单列表信息*/

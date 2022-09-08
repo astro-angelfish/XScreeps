@@ -50,7 +50,8 @@ interface CreepMemory{
     targetFlag?:string
     Extensions_id?:string
     transfercreep?:string,
-    creeptime?:number
+    creeptime?:number,
+    arrive?:number
 }
 
 

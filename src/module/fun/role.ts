@@ -219,6 +219,9 @@ export function carry_(creep_: Creep): void {
 export function upgrade_(creep_: Creep): void {
     if (!Game.rooms[creep_.memory.belong]) return
     creep_.workstate('energy', 0.5)
+    if (creep_.room.memory.state == 'peace' && creep_.hits < creep_.hitsMax) {
+        creep_.optTower('heal', creep_);
+    }
     if (creep_.memory.working) {
         creep_.upgrade_()
         if (creep_.memory.targetID) {
