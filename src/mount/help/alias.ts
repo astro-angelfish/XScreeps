@@ -591,6 +591,14 @@ export default [
                                 ],
                                 functionName: 'market.revise'
                             },
+                            {
+                                title: '重置房间能量价格:',
+                                describe: '例: market.resetEnergyPrice("W1N1")',
+                                params: [
+                                    { name: 'roomName', desc: '房间名' },
+                                ],
+                                functionName: 'market.resetEnergyPrice'
+                            },
                         ]
                     },
                     // 日常行为

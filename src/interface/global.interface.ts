@@ -41,7 +41,7 @@ declare module NodeJS {
             [roomName: string]: { [structure: string]: any }
         },
         RoleMissionNum:{ [roomName: string]: { [RoleMission: string]: number } },
-        intervalData: { [roomName: string]: { [creepRole: string]: number } }
+        // intervalData: { [roomName: string]: { [creepRole: string]: number } }
         ResourceLimit: resourceLimitData
         warData: any
         MSB: MissonSpecialBody   // 任务特殊体型
