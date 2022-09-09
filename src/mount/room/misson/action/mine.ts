@@ -240,7 +240,6 @@ export default class RoomMissonMineExtension extends Room {
                     this.Add_Cross_deposit(beforRoom);
                 }
             }
-
             if (misson.Data.index > misson.Data.relateRooms.length) {
                 misson.Data.index = 0
                 misson.Data.time = Game.time
@@ -252,7 +251,7 @@ export default class RoomMissonMineExtension extends Room {
             // console.log(this.name, beforRoom, b - a)
         }
         else if (misson.Data.state == 2) {
-            if (Game.time - misson.Data.time != 0 && (Game.time - misson.Data.time) % 60 == 0) {
+            if (Game.time - misson.Data.time != 0 && (Game.time - misson.Data.time) % 180 == 0) {
                 misson.Data.state = 1
                 // console.log(Colorful("进入观察模式",'blue'))
             }
@@ -278,7 +277,7 @@ export default class RoomMissonMineExtension extends Room {
             }
             if (BR) {
                 /*检查shard 以及是否需要新手区检测*/
-                // if (!this.Check_Cross_newbies(_dp.pos)) continue;
+                if (!this.Check_Cross_newbies(_dp, beforRoom)) continue;
                 /*检测dp可以挖掘的位置数量*/
                 var harvest_void: RoomPosition[] = _dp.pos.getSourceVoid()
                 /* 下达采集任务 */
@@ -312,7 +311,7 @@ export default class RoomMissonMineExtension extends Room {
             }
             if (BR) {
                 /*检查shard 以及是否需要新手区检测*/
-                // if (!this.Check_Cross_newbies(_pw.pos)) continue;
+                if (!this.Check_Cross_newbies(_pw, beforRoom)) continue;
                 /* 下达采集任务 */
                 var thisTask = this.public_PowerHarvest(beforRoom, _pw.pos.x, _pw.pos.y, _pw.power)
                 if (thisTask != null) {
@@ -323,19 +322,23 @@ export default class RoomMissonMineExtension extends Room {
         }
     }
 
-    // public Check_Cross_newbies(pos: RoomPosition): boolean {
-    //     if (Game.shard.name != 'shard3') return true;
-    //     const targets = [
-    //         Game.rooms[pos.roomName].getPositionAt(pos.x, pos.y)
-    //     ];
-    //     const closest = this.storage.pos.findClosestByRange(targets);
-    //     if (closest) return true;
-    //     /*如果不存在路径则进行存储防止后续的刷新操作*/
-    //     console.log(this.name, JSON.stringify(pos), '无法到达', JSON.stringify(closest))
-    //     let _ob_pos = zipPosition(pos)
-    //     Memory.ObserverList[_ob_pos] = Game.time;
-    //     return false;
-    // }
+    public Check_Cross_newbies(structure: Deposit | StructurePowerBank, beforRoom: string): boolean {
+        if (Game.shard.name != 'shard3') return true;
+        /*检测是否存在墙壁信息*/
+        if (Game.rooms[beforRoom].find(FIND_STRUCTURES).find(e => e.structureType == STRUCTURE_WALL)) {//如果有墙壁
+            if (!Game.rooms[beforRoom].lookForAtArea(LOOK_STRUCTURES, Math.min(structure.pos.y, 25), Math.min(structure.pos.x, 25), Math.max(structure.pos.y, 25), Math.max(structure.pos.x, 25), true)
+                .find(e => e.structure.structureType == STRUCTURE_WALL)) {
+                return true
+            }
+        } else {
+            return true;
+        }
+        /*如果不存在路径则进行存储防止后续的刷新操作*/
+        console.log(this.name, JSON.stringify(structure.pos), '无法到达')
+        let _ob_pos = zipPosition(structure.pos)
+        Memory.ObserverList[_ob_pos] = Game.time + structure.ticksToDecay;
+        return false;
+    }
 
     /* Power采集 */
     public Task_PowerHarvest(misson: MissionModel): void {

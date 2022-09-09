@@ -111,8 +111,14 @@ export default class CreepMissonMineExtension extends Creep {
                 }
             }
             if (!this.memory.bindpoint) return
-            var disPos = unzipPosition(this.memory.bindpoint)
-            var source = disPos.lookFor(LOOK_SOURCES)[0]
+            if (this.memory.carsourceid) {
+                var source = Game.getObjectById(this.memory.carsourceid) as Source;
+
+            } else {
+                var disPos = unzipPosition(this.memory.bindpoint)
+                var source = disPos.lookFor(LOOK_SOURCES)[0]
+            }
+
             if (!source) return
             this.workstate('energy')
             if (this.memory.working) {
@@ -691,26 +697,6 @@ export default class CreepMissonMineExtension extends Creep {
             case 'deposit-transfer':
                 if (!this.memory.standed) this.memory.standed = true;
                 creepMisson.creeptimebool = false;//停止计时
-                // if (this.memory?.arrive > 1) {
-                //     switch (Number(this.memory.arrive)) {
-                //         case 2:
-                //             /*进行单位的清理操作*/
-                //             let Mission_Data = Game.rooms[this.memory.belong].GainMission(this.memory.MissionData.id)
-                //             for (let id of Mission_Data.CreepBind['deposit-harvest'].bind) {
-                //                 Game.creeps[id].suicide();
-                //             }
-                //             this.memory.arrive = 3;
-                //             break;
-                //         case 3:
-                //             /*任务移除操作*/
-                //             Game.rooms[this.memory.belong].DeleteMission(this.memory.MissionData.id)
-                //             this.memory.arrive = 4;
-                //             break;
-                //         case 4:
-                //             this.suicide();
-                //             break;
-                //     }
-                // }
 
                 if (this.pos.roomName == creepMisson.room) {
                     if (Game.time % 10 == 0) {
@@ -719,25 +705,6 @@ export default class CreepMissonMineExtension extends Creep {
                         if (this.pos.isNearTo(deposit_)) {
                             this.Flee(deposit_.pos, 2)
                         }
-                        // if (!this.memory.arrive) {
-                        //     let arrive_targets = [
-                        //         deposit_
-                        //     ]
-                        //     const closest = this.pos.findClosestByPath(arrive_targets, { maxOps: 200 });
-                        //     console.log(JSON.stringify(closest))
-                        //     if (closest) {
-                        //         this.memory.arrive = 1
-                        //     } else {
-                        //         this.memory.arrive = 2
-                        //         let _ob_pos = zipPosition(deposit_.pos)
-                        //         Memory.ObserverList[_ob_pos] = Game.time + deposit_.ticksToDecay;/*进行状态标记操作*/
-                        //         let Mission_Data = Game.rooms[this.memory.belong].GainMission(this.memory.MissionData.id)
-                        //         Mission_Data.CreepBind['deposit-harvest'].num = 0;
-                        //         Mission_Data.CreepBind['deposit-transfer'].num = 0;
-                        //         this.memory.Missionstate = true;
-                        //     }
-                        // }
-
                         if (!this.memory.Missionstate && deposit_?.lastCooldown > 110) {
                             Game.rooms[this.memory.belong].DeleteMission(this.memory.MissionData.id)
                             this.memory.Missionstate = true;
@@ -748,7 +715,6 @@ export default class CreepMissonMineExtension extends Creep {
                                 this.goTo(targets[0].pos, 1);
                             }
                         }
-
                     }
                 }
                 if (!this.pos.inRangeTo(missonPostion, 2)) {

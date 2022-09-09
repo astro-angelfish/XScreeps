@@ -51,7 +51,8 @@ interface CreepMemory{
     Extensions_id?:string
     transfercreep?:string,
     creeptime?:number,
-    arrive?:number
+    arrive?:number,
+    carsourceid?:string/*外矿专用-能量矿ID*/
 }
 
 

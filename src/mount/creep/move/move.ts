@@ -438,7 +438,7 @@ export default class CreepMoveExtension extends Creep {
                 // {
                 //     console.log('nextshardRoom:',JSON.stringify(nextShardRoom))
                 // }
-                if (!thisportal) { console.log("找不到thisportal",this.name,JSON.stringify(this.pos)); return }
+                if (!thisportal) { console.log("找不到thisportal", this.name, JSON.stringify(this.pos)); return }
                 if (!this.pos.isNearTo(thisportal)) this.goTo(thisportal.pos, 1)
                 else {
                     /* moveData里的shardmemory */
