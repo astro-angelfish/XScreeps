@@ -10,10 +10,15 @@ interface Memory {
     stats: any
     StopPixel: boolean,
     creepscpu?: { [creeps: string]: string }
-    SystemEconomy: boolean,
-    SystemStopPower?: boolean
+    // SystemEconomy: boolean,
+
     PowerSupply: string[],/*供应Power的房间信息*/
     ObserverList: { [roomName: string]: number }/*过道被排除房间的信息*/
+    Systemswitch: {
+        SystemEconomy?: boolean,
+        SystemStopPower?: boolean,
+        SystemUpgrade?: boolean
+    },
     pixelInfo: { buy: { num: number, price: number, unit: number, floor: number, order: string }, sell: { num: number, price: number, unit: number, ceil: number, order: string } }
 }
 

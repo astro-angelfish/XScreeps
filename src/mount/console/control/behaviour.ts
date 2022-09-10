@@ -145,10 +145,10 @@ export default {
     /* 外矿 */
     mine: {
         // 采集外矿
-        harvest(roomName: string, x: number, y: number, disRoom: string,mineType:string): string {
+        harvest(roomName: string, x: number, y: number, disRoom: string, mineType: string): string {
             var thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[mine] 不存在房间${roomName}`
-            var thisTask = thisRoom.public_OutMine(roomName, x, y, disRoom,mineType)
+            var thisTask = thisRoom.public_OutMine(roomName, x, y, disRoom, mineType)
             thisTask.maxTime = 8
             if (thisRoom.AddMission(thisTask)) return `[mine] ${roomName} -> ${disRoom} 的外矿任务挂载成功!`
             return `[mine] ${roomName} -> ${disRoom} 的外矿任务挂载失败!`
@@ -414,11 +414,11 @@ export default {
         resetEnergyPrice(roomName: string): string {
             var thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[support] 不存在房间${roomName}`
-            if (!thisRoom.memory.MarketPrice){
+            if (!thisRoom.memory.MarketPrice) {
                 return Colorful(`[market] 房间${roomName}能量价格重置失败`, 'red')
             }
-            thisRoom.memory.MarketPrice.buy = {low: 0, high: 0};
-            thisRoom.memory.MarketPrice.sell = {low: 0, high: 0};
+            thisRoom.memory.MarketPrice.buy = { low: 0, high: 0 };
+            thisRoom.memory.MarketPrice.sell = { low: 0, high: 0 };
             return `[market] 房间${roomName}能量价格重置成功`
         }
 
@@ -557,9 +557,9 @@ export default {
             return `[power] 房间${roomName}的power升级的SavePower选项已经设置为${myRoom.memory.switch.SavePower}`
         },
         stoppower(): string {
-            if (!Memory.SystemStopPower) Memory.SystemStopPower = true
-            else Memory.SystemStopPower = false
-            return `[power] 全局停止的power升级已经设置为${Memory.SystemStopPower}`
+            if (!Memory.Systemswitch.SystemStopPower) Memory.Systemswitch.SystemStopPower = true
+            else Memory.Systemswitch.SystemStopPower = false
+            return `[power] 全局停止的power升级已经设置为${Memory.Systemswitch.SystemStopPower}`
         },
         // 限制pc的技能
         option(roomName: string, stru: string): string {

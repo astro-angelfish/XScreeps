@@ -197,7 +197,7 @@ export default class RoomCoreSpawnExtension extends Room {
             }
             else if (["CalvinG"].includes(thisSpawn.owner.username)) {
                 let processName = function () {
-                    return `${mark}-` + `${thisSpawn.room.name}-`+`${Game.time}`
+                    return `${mark}-` + `${thisSpawn.room.name}-` + `${Game.time}`
                 }
                 name = processName()
             }
@@ -257,11 +257,13 @@ export default class RoomCoreSpawnExtension extends Room {
 
     /* 经济模式特殊处理 */
     public Economy(): void {
-        if (this.controller.level == 8 && (this.memory.economy || Memory.SystemEconomy)) {
-            if (this.controller.ticksToDowngrade < 180000)
+        if (this.controller.level == 8 && (this.memory.economy || Memory.Systemswitch.SystemEconomy || Memory.Systemswitch.SystemUpgrade)) {
+            if (this.controller.ticksToDowngrade < 180000 || Memory.Systemswitch.SystemUpgrade)
                 this.memory.SpawnConfig['upgrade'].num = 1
             else
                 this.memory.SpawnConfig['upgrade'].num = 0
+        } else {
+            if (this.controller.level == 8 && this.memory.SpawnConfig['upgrade'].num == 0) this.memory.SpawnConfig['upgrade'].num = 1
         }
     }
 }

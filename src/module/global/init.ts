@@ -38,6 +38,7 @@ export const MemoryInit = function (): void {
     if (!Memory.ObserverList) { Memory.ObserverList = {} }
     if (!global.PowerDemand) global.PowerDemand = []
     if (!global.RoleMissionNum) global.RoleMissionNum = {}
+    if(!Memory.Systemswitch){Memory.Systemswitch = {}}
     global.Marketorder = {};/*tick重置已有的订单列表信息*/
     global.RoomDataVisual = null
     global.Adaption = {}

@@ -348,6 +348,7 @@ export default class RoomCoreInitExtension extends Room {
      */
     public RoomGlobalDynamicconfig(): void {
         if ((Game.time - global.Gtime[this.name]) % 53 != 0) { return }
+        if (!this.memory.DynamicConfig.Dynamicupgrade) return;
         let level = this.controller.level
         if (this.memory.DynamicConfig.Dynamicupgrade && level < 8) {
             let room_energy = 0;
@@ -378,11 +379,12 @@ export default class RoomCoreInitExtension extends Room {
             if (this.memory.SpawnConfig.upgrade.num != creep_num) { console.log(this.name, 'upgrade动态调整', creep_num); }
             this.memory.SpawnConfig.upgrade.num = creep_num;
         } else {
-            if (!this.memory.economy && !Memory.SystemEconomy) {
+            if (!this.memory.economy && !Memory.Systemswitch.SystemEconomy) {
                 if (this.MissionNum('Creep', '急速冲级') > 0) {
                     this.memory.SpawnConfig.upgrade.num = 0;
                 } else {
                     if (level >= 8) {
+                        this.memory.DynamicConfig.Dynamicupgrade = false;
                         this.memory.SpawnConfig.upgrade.num = 1;
                     } else {
                         this.memory.SpawnConfig.upgrade.num = 2;

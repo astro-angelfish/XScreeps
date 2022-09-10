@@ -162,11 +162,18 @@ export default {
             return `[frame] 房间${roomName}的economy选项改为${myRoom.memory.economy}`
         },
         allEconomy(): string {
-            Memory.SystemEconomy = !Memory.SystemEconomy;
-            if (!Memory.SystemEconomy) {
+            Memory.Systemswitch.SystemEconomy = !Memory.Systemswitch.SystemEconomy;
+            if (!Memory.Systemswitch.SystemEconomy) {
                 return `[frame] 关闭全局经济模式(自动烧帕瓦)`
             }
             return `[frame] 启用全局经济模式(自动烧帕瓦)`
+        },
+        allUpgrade(): string {
+            Memory.Systemswitch.SystemUpgrade = !Memory.Systemswitch.SystemUpgrade;
+            if (!Memory.Systemswitch.SystemUpgrade) {
+                return `[frame] 关闭全局GCL模式(强制Upgrade)`
+            }
+            return `[frame] 启用全局GCL模式(强制Upgrade)`
         },
         speedup(roomName): string {
             var myRoom = Game.rooms[roomName]

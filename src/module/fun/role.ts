@@ -242,19 +242,22 @@ export function upgrade_(creep_: Creep): void {
                 return;
             }
         }
-        if (Game.flags[`${creep_.memory.belong}/ruin`]) {
-            if (!creep_.pos.isNearTo(Game.flags[`${creep_.memory.belong}/ruin`]))
-                creep_.goTo(Game.flags[`${creep_.memory.belong}/ruin`].pos, 1)
-            else {
-                let ruin = Game.flags[`${creep_.memory.belong}/ruin`].pos.lookFor(LOOK_RUINS)
-                let swi = false
-                for (var i of ruin) {
-                    if (i.store.getUsedCapacity('energy') > 0) { creep_.withdraw(i, 'energy'); swi = true; return }
+        if (creep_.room.controller?.level < 8) {
+            if (Game.flags[`${creep_.memory.belong}/ruin`]) {
+                if (!creep_.pos.isNearTo(Game.flags[`${creep_.memory.belong}/ruin`]))
+                    creep_.goTo(Game.flags[`${creep_.memory.belong}/ruin`].pos, 1)
+                else {
+                    let ruin = Game.flags[`${creep_.memory.belong}/ruin`].pos.lookFor(LOOK_RUINS)
+                    let swi = false
+                    for (var i of ruin) {
+                        if (i.store.getUsedCapacity('energy') > 0) { creep_.withdraw(i, 'energy'); swi = true; return }
+                    }
+                    if (!swi) Game.flags[`${creep_.memory.belong}/ruin`].remove()
                 }
-                if (!swi) Game.flags[`${creep_.memory.belong}/ruin`].remove()
+                return
             }
-            return
         }
+
         if (!creep_.memory.targetID) {
             let target = null
             if (creep_.room.controller.level < 8 && creep_.room.terminal && !Game.rooms[creep_.memory.belong].memory.StructureIdData.upgrade_link) {
