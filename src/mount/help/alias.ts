@@ -496,7 +496,7 @@ export default [
                             },
                             {
                                 title: '下单买某类型资源:',
-                                describe: '例: market.buy("W1N1","GH2O","order",20000,35)',
+                                describe: '例: market.buy("W1N1","GH2O","order",30000,35,10000,true)',
                                 params: [
                                     { name: 'roomName', desc: '房间名' },
                                     { name: 'rType', desc: '资源类型' },
@@ -504,6 +504,7 @@ export default [
                                     { name: 'num', desc: '数量' },
                                     { name: 'price', desc: '价格' },
                                     { name: 'unit', desc: '(可选) 单次购入数量' },
+                                    { name: 'confirm', desc: '(可选) 确认交易(总额大于10M时需确认)' },
                                 ],
                                 functionName: 'market.buy'
                             },

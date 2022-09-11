@@ -272,9 +272,12 @@ export default {
             return result
         },
         // 下买订单
-        buy(roomName: string, rType: ResourceConstant, mType: 'deal' | 'order', num: number, price: number, unit: number = 2000, retain?: boolean): string {
+        buy(roomName: string, rType: ResourceConstant, mType: 'deal' | 'order', num: number, price: number, unit: number = 2000, confirm?: boolean, retain?: boolean): string {
             var thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[support] 不存在房间${roomName}`
+            if (!mType) return `[market] 未指定交易类型`
+            if (num * price > 10000000 && !confirm) return `[market] 大额购买(单价:${price},总价:${num*price})需手动确认!`
+            if (confirm === false) return `[market] 交易未确认!`
             if (!thisRoom.memory.market) thisRoom.memory.market = {}
             if (mType == 'order') {
                 if (!thisRoom.memory.market['order']) thisRoom.memory.market['order'] = []
@@ -285,7 +288,7 @@ export default {
                 }
                 if (bR) {
                     thisRoom.memory.market['order'].push({ rType: rType, num: num, unit: unit, price: price, mTyep: 'buy', retain: retain })
-                    return `[market] 房间${roomName}成功下达order的资源采购指令,type:buy,rType:${rType},num:${num},unit:${unit},price:${price}`
+                    return `[market] 房间${roomName}成功下达order的资源采购指令,类型:buy,资源:${rType},数量:${num},单位:${unit},单价:${price},总价:${num * price}`
                 }
                 else return `[market] 房间${roomName}已经存在${rType}的订单了`
             }
@@ -298,7 +301,7 @@ export default {
                 }
                 if (bR) {
                     thisRoom.memory.market['deal'].push({ rType: rType, num: num, price: price, unit: unit, mTyep: 'buy', retain: retain })
-                    return `[market] 房间${roomName}成功下达deal的资源采购指令,type:buy,rType:${rType},num:${num},price:${price},unit:${unit}`
+                    return `[market] 房间${roomName}成功下达deal的资源采购指令,类型:buy,资源:${rType},数量:${num},单位:${unit},单价:${price},总价:${num * price}`
                 }
                 else return `[market] 房间${roomName}已经存在${rType}的订单了`
             }
