@@ -94,6 +94,8 @@ export default class CreepMissonTransportExtension extends Creep {
                 }
             }
             if (this.room.storage.store.getUsedCapacity(data.rType) < this.store.getFreeCapacity(data.rType)) {
+                /*发送一个邮件提醒，任务已经完成*/
+                Game.notify(`[Carry] 位面搬运任务${this.memory.belong}-${data.rType}已完成`)
                 Game.rooms[this.memory.belong].DeleteMission(id)
             }
             this.withdraw_(this.room.storage, data.rType)
@@ -326,8 +328,8 @@ export default class CreepMissonTransportExtension extends Creep {
             }
             var container = this.pos.findClosestByRange(FIND_STRUCTURES, {
                 filter: (c) => {
-                    return c.structureType === STRUCTURE_CONTAINER && 
-                           c.store.getUsedCapacity() > 0.5 * this.store.getCapacity()
+                    return c.structureType === STRUCTURE_CONTAINER &&
+                        c.store.getUsedCapacity() > 0.5 * this.store.getCapacity()
                 }
             })
             if (container) {

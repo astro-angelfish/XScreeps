@@ -181,6 +181,7 @@ export default {
             if (myRoom.controller.level > 6 && !myRoom.memory.switch.speedstate) return `[frame] controller等级过高无法开启`
             myRoom.memory.switch.speedstate = !myRoom.memory.switch.speedstate
             if (!myRoom.memory.switch.speedstate) {
+                this.NumSpawn('initial_speed', 0)
                 return `[frame] 新房快速初始化关闭`
             }
             return `[frame] 新房快速初始化开启`

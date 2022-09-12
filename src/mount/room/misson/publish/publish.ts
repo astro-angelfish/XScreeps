@@ -93,7 +93,8 @@ export default class RoomMissonPublish extends Room {
                 shard: shard,
                 rType: res,
                 level: level
-            }
+            },
+            reserve: true
         }
         thisTask.CreepBind = { 'truckshard': { num: CreepNum, interval: interval, bind: [], MSB: (level ? true : false) } }
         switch (level) {

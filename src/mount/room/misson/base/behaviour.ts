@@ -319,7 +319,6 @@ export default class RoomMissonBehaviourExtension extends Room {
         /*必须storage terminal 同时存在*/
         if (!this.storage) return;
         if (!this.terminal) return;
-
         /*解压缩设定*/
         if (this.memory.DynamicConfig.Dynamicfactoryuncondense) {
             if (!_.isEmpty(this.memory.productData.unzip)) return   /*已有解压任务的情况下不做处理*/
@@ -328,7 +327,7 @@ export default class RoomMissonBehaviourExtension extends Room {
                 let resource = unzipMap[bar];
                 let resource_store = this.storage.store.getUsedCapacity(resource as ResourceConstant) + this.terminal.store.getUsedCapacity(resource as ResourceConstant)
                 let bar_store = this.storage.store.getUsedCapacity(bar as ResourceConstant) + this.terminal.store.getUsedCapacity(bar as ResourceConstant)
-                if (bar_store < 1000) continue;
+                if (bar_store <= 1000) continue;
                 if (bar_store > 0 && resource_store < (resource == RESOURCE_ENERGY ? 300000 : 20000)) {
                     let un_number = bar_store > 1000 ? 1000 : bar_store;
                     this.memory.productData.unzip[bar] = { num: Math.trunc(un_number / 100) * 100 }

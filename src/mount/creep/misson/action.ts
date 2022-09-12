@@ -740,7 +740,11 @@ export default class CreepMissonActionExtension extends Creep {
                 }
 
                 let source = this.pos.findClosestByPath(FIND_SOURCES_ACTIVE)
-                if (source) this.harvest_(source)
+                if (source) {
+                    this.harvest_(source)
+                } else {
+                    this.workstate('energy', 0.3)
+                }
             }
         }
     }

@@ -46,8 +46,13 @@ export default class RoomMissonVindicateExtension extends Room {
                         }
                     }
                 } else {
-                    if (this.memory.state == 'war') {
+                    if (this.memory.state == 'war' && mission.CreepBind.repair.num < 2) {
+                        mission.CreepBind.repair.historynum = mission.CreepBind.repair.num;
                         mission.CreepBind.repair.num = 2;
+                        mission.Data.hangstate = false;
+                    } else if (this.memory.state == 'peace' && mission.CreepBind.repair.historynum) {
+                        mission.CreepBind.repair.num = mission.CreepBind.repair.historynum;
+                        delete mission.CreepBind.repair.historynum;
                         mission.Data.hangstate = false;
                     } else if (mission.CreepBind.repair.num < 1) {
                         mission.CreepBind.repair.num = 1;
