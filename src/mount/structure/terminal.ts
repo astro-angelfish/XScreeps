@@ -109,6 +109,7 @@ export default class terminalExtension extends StructureTerminal {
             addnumber -= Math.floor(75000 / (1 + Math.exp(-3 * (lastDayAve - threeDayAve))));
             addnumber -= Math.floor(25000 / (1 + Math.exp(-1 * (lastDayAve - lastWeekAve))));
         }
+        addnumber = (addnumber < 10000) ? 10000 : addnumber;
         if (this.store.getFreeCapacity('energy') < addnumber) {
             addnumber = this.store.getFreeCapacity('energy')
         }
