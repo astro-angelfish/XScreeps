@@ -10,7 +10,7 @@ export const MemoryInit = function (): void {
     if (!Memory.ignoreLab) Memory.ignoreLab = false
     if (!Memory.RoomControlData) Memory.RoomControlData = {}
     if (!global.Gtime) global.Gtime = {}
-    for (let i in Memory.RoomControlData) if (!global.Gtime[i]) {global.Gtime = {}; initGTime();}
+    for (let i in Memory.RoomControlData) if (!global.Gtime[i]) { global.Gtime = {}; initGTime(); }
     if (!global.SpecialBodyData) global.SpecialBodyData = {}
     for (let i in Memory.RoomControlData) if (!global.SpecialBodyData[i]) global.SpecialBodyData[i] = {}
     // if (!global.intervalData) global.intervalData = {}
@@ -28,7 +28,7 @@ export const MemoryInit = function (): void {
     if (!global.warData) global.warData = { tower: {}, enemy: {}, flag: {}, structure: {} }
     if (!global.MSB) global.MSB = {}
     if (!Memory.StopPixel) Memory.StopPixel = false
-    if (!Memory.pixelInfo || !Memory.pixelInfo.buy || !Memory.pixelInfo.sell) Memory.pixelInfo = {buy: {num: 0, price: 0, unit: 1, floor: 0, order: ""}, sell: {num: 0, price: 0, unit: 1, ceil: 0, order: ""}}
+    if (!Memory.pixelInfo || !Memory.pixelInfo.buy || !Memory.pixelInfo.sell) Memory.pixelInfo = { buy: { num: 0, price: 0, unit: 1, floor: 0, order: "" }, sell: { num: 0, price: 0, unit: 1, ceil: 0, order: "" } }
     if (!global.Repairlist) global.Repairlist = {}
     if (!Memory.creepscpu) { Memory.creepscpu = {} }
     if (!global.getStructure) global.getStructure = {}
@@ -38,14 +38,14 @@ export const MemoryInit = function (): void {
     if (!Memory.ObserverList) { Memory.ObserverList = {} }
     if (!global.PowerDemand) global.PowerDemand = []
     if (!global.RoleMissionNum) global.RoleMissionNum = {}
-    if(!Memory.Systemswitch){Memory.Systemswitch = {}}
+    if (!Memory.Systemswitch) { Memory.Systemswitch = {} }
     global.Marketorder = {};/*tick重置已有的订单列表信息*/
     global.RoomDataVisual = null
     global.Adaption = {}
     global.RoomResource = {}
     global.HostileCreepsData = {}
     global.MarketAveprice = {}
-    
+
     // Memory.SystemEconomy = false;
     if (Game.time % 100) {
         for (let rooms in Memory.rooms) {
@@ -66,7 +66,7 @@ export const memoryInit: AppLifecycleCallbacks = {
 function shuffle(array) {
     var i = array.length, j = 0, temp;
     while (i--) {
-        j = Math.floor(Math.random() * (i+1));
+        j = Math.floor(Math.random() * (i + 1));
         temp = array[i];
         array[i] = array[j];
         array[j] = temp;

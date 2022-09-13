@@ -6,25 +6,28 @@ import { isInArray } from "@/utils"
 // 计算平均价格
 export function avePrice(res: MarketResourceConstant, day: number): number {
     if (!Game.cpu.generatePixel) {
-        let history = Game.market.getHistory(res)
-        if (!history) return 0
-        return history[history.length - 1].avgPrice
+        let history = Game.market.getHistory(res);
+        if (!history) return 0;
+        return history[history.length - 1].avgPrice;
     }
-    if (day > 14) return 0  // 0
-    let allprice: number = 0
+    if (day > 14) return 0;  // 0
     let history = null;
     if (global.MarketAveprice[res]) {
-        history = global.MarketAveprice[res]
+        history = global.MarketAveprice[res];
     } else {
-        history = Game.market.getHistory(res)
+        history = Game.market.getHistory(res);
         global.MarketAveprice[res] = history;
     }
-
-    for (var ii = 14 - day; ii < 14; ii++) {
-        if (history[ii]) allprice += history[ii].avgPrice
+    let totalPrice: number = 0;
+    let totalAmount: number = 0;
+    for (var i = 14 - day; i <= 14; i++) { //计入最后一天价格
+        if (history[i]) {
+            totalPrice += history[i].avgPrice * history[i].volume;
+            totalAmount += history[i].volume;
+        }
     }
-    let avePrice = allprice / day // 平均能量价格
-    return avePrice
+    let avePrice = totalPrice / totalAmount; // 平均能量价格
+    return avePrice;
 }
 
 // 判断是否已经有相应order了s

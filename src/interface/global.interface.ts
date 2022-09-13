@@ -23,7 +23,7 @@ declare module NodeJS {
             [creep_name: string]: { [creep: string]: any }
         },
         MarketAveprice: {
-            [Res: string]: string
+            [Res: string]: PriceHistory[]
         },
         HostileGroup: {
             [roomName: string]: { [creep: string]: any }
@@ -40,7 +40,7 @@ declare module NodeJS {
         getStructureData: {
             [roomName: string]: { [structure: string]: any }
         },
-        RoleMissionNum:{ [roomName: string]: { [RoleMission: string]: number } },
+        RoleMissionNum: { [roomName: string]: { [RoleMission: string]: number } },
         // intervalData: { [roomName: string]: { [creepRole: string]: number } }
         ResourceLimit: resourceLimitData
         warData: any
