@@ -224,7 +224,7 @@ export default class RoomMissonFrameExtension extends Room {
 
     /*新房快速起步模块*/
     public SpeedUpcontroller(): void {
-        if (Game.time % 20) return
+        if ((Game.time - global.Gtime[this.name]) % 19) return
         if (!this.memory.switch.speedstate) return;
         if (this.controller.level > 6) {
             this.memory.switch.speedstate = false;
@@ -259,7 +259,7 @@ export default class RoomMissonFrameExtension extends Room {
     /* 任务解绑监测 */
     public UnbindMonitor(): void {
         /* 只适用于Creep任务 */
-        if (Game.time % 5) return
+        if ((Game.time - global.Gtime[this.name]) % 5) return
         if (!this.memory.Misson['Creep']) return
         for (var m of this.memory.Misson['Creep']) {
             if (!m.CreepBind) continue
@@ -382,7 +382,7 @@ export default class RoomMissonFrameExtension extends Room {
                 else {
                     for (var j of this.memory.RoomLabBind[i].missonID) {
                         if (j == MissonID) {
-                            if (!Memory.ignoreLab){
+                            if (!Memory.ignoreLab) {
                                 console.log('LabID: ', i, '------解绑-------->MissonID: ', MissonID)
                             }
                             var index = this.memory.RoomLabBind[i].missonID.indexOf(MissonID)

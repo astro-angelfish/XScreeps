@@ -131,8 +131,8 @@ export default class RoomCoreEcosphereExtension extends Room {
             // }
         }
         /* 自动重建 */
-        if (Game.shard.name == 'shard3') { if (Game.time % 50) return }
-        else { if (Game.time % 10) return }
+        if (Game.shard.name == 'shard3') { if ((Game.time - global.Gtime[this.name]) % 47) return }
+        else { if ((Game.time - global.Gtime[this.name]) % 11) return }
         if (this.memory.state == 'peace') {
             /* cpu过少就不进行自动重建 */
             if (Game.cpu.bucket < 4000) return
@@ -154,7 +154,7 @@ export default class RoomCoreEcosphereExtension extends Room {
                 this.repatchDistribution()
             }
         }
-        else if (this.memory.state == 'war' || Game.time % 200 == 0) {
+        else if (this.memory.state == 'war' || (Game.time - global.Gtime[this.name]) % 199 == 0) {
             /* 战争状态 */
             /* cpu过少就不进行自动重建 */
             if (Game.cpu.bucket < 4000) return
@@ -188,7 +188,7 @@ export default class RoomCoreEcosphereExtension extends Room {
     /* 房间状态 */
     public RoomState(): void {
         // 每10tick观察一次房间状态，如果发现敌人，房间状态变为war，否则为peace
-        if (Game.time % 10 == 0) {
+        if ((Game.time - global.Gtime[this.name]) % 10 == 0) {
             // 安全模式下和平模式
             if (this.controller.safeMode && this.controller.level >= 8) {
                 this.memory.state = 'peace'

@@ -23,7 +23,7 @@ declare module NodeJS {
             [creep_name: string]: { [creep: string]: any }
         },
         MarketAveprice: {
-            [Res: string]: string
+            [Res: string]: PriceHistory[]
         },
         /*资源筛选出来的价格当前t*/
         MarketHighestprice: {

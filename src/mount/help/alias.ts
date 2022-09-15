@@ -596,7 +596,7 @@ export default [
                                 title: '重置房间能量价格:',
                                 describe: '例: market.resetEnergyPrice("W1N1")',
                                 params: [
-                                    { name: 'roomName', desc: '房间名' },
+                                    { name: 'roomName', desc: '房间名 | all (所有房间)' },
                                 ],
                                 functionName: 'market.resetEnergyPrice'
                             },

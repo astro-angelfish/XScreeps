@@ -302,7 +302,7 @@ export default class CreepMoveExtension extends Creep {
     // 跨shard移动
     public arriveTo(target: RoomPosition, range: number, shard: shardName = Game.shard.name as shardName, shardData?: shardRoomData[]): void {
         if (!this.memory.targetShard) this.memory.targetShard = shard
-        if (!shardData || shardData == []) {
+        if (!shardData || shardData.length === 0) {
             if (shard == Game.shard.name) {
                 this.goTo(target, range)
             }
@@ -362,7 +362,7 @@ export default class CreepMoveExtension extends Creep {
                 }
                 this.memory.shardAffirm = data
             }
-            if (this.memory.shardAffirm == []) {
+            if (this.memory.shardAffirm.length === 0) {
                 this.say("shardAffirm赋予错误!")
                 return
             }

@@ -13,7 +13,7 @@ export default class DefendWarExtension extends Room {
                 new RoomVisual(this.name).text(`${this.memory.nukeData.damage[i] / 1000000}M`, thisPos.x, thisPos.y, { color: this.memory.nukeData.damage[i] == 0 ? 'green' : 'red', font: 0.5 });
 
             }
-        if (Game.time % 41) return
+        if ((Game.time - global.Gtime[this.name]) % 41) return
         if (this.memory.switch.Stopnukeprotect) return
 
         if (this.controller.level < 6) return
@@ -100,7 +100,7 @@ export default class DefendWarExtension extends Room {
             }
 
             /* 去除废除的维护坐标 例如核弹已经砸过了，但是还没有修完 */
-            if (Game.time % 9 == 0)
+            if ((Game.time - global.Gtime[this.name]) % 9 == 0)
                 LoopP:
                 for (var po in this.memory.nukeData.damage) {
                     var thisPos = unzipPosition(po)
@@ -132,7 +132,7 @@ export default class DefendWarExtension extends Room {
             // let e = Game.cpu.getUsed()
             // console.log('初始化', e - s)
         }
-        if (Game.time % 5) return
+        if ((Game.time - global.Gtime[this.name]) % 5) return
         // if (!Game.rooms[this.name].terminal) return
         if (this.controller.level < 6) return
         if (!this.memory.state) return

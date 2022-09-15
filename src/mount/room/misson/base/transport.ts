@@ -3,7 +3,7 @@ export default class RoomMissonTransportExtension extends Room {
     // 虫卵填充任务
     public Spawn_Feed(): void {
         /* 每11 tick 观察一次 */
-        if (Game.time % 10) return
+        if ((Game.time - global.Gtime[this.name]) % 11) return
         if (!this.storage && !this.terminal) return
         if (this.energyAvailable >= this.energyCapacityAvailable) return;
         if (this.RoleMissionNum('transport', '虫卵填充') < 1) {
@@ -28,10 +28,10 @@ export default class RoomMissonTransportExtension extends Room {
     // 防御塔填充任务
     public Tower_Feed(): void {
         if (Game.shard.name == 'shard3') {
-            if (Game.time % 15) return
+            if ((Game.time - global.Gtime[this.name]) % 17) return
         }
         else {
-            if (Game.time % 5) return
+            if ((Game.time - global.Gtime[this.name]) % 5) return
         }
         if (!this.storage && !this.terminal) return
         if (!this.memory.StructureIdData?.AtowerID) return;
@@ -111,7 +111,7 @@ export default class RoomMissonTransportExtension extends Room {
 
     // 核弹填充任务
     public Nuker_Feed(): void {
-        if (Game.time % 103) return
+        if ((Game.time - global.Gtime[this.name]) % 103) return
         if (this.memory.switch.StopFillNuker) return
         if (!this.memory.StructureIdData.NukerID || !this.storage) return
         if (this.RoleMissionNum('transport', '物流运输') >= 1) return

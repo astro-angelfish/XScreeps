@@ -101,10 +101,11 @@ export default class RoomFunctionFindExtension extends Room {
                     else if (state == 'unbind') {
                         let id = this.Allot_Occupy(missObj, rType as ResourceConstant)
                         if (!id) {
-                            if (Game.time % 5 == 0) {
-                                // console.log(`房间${this.name}的lab分配存在问题,找不到合适的lab!材料为:${rType}`);
-                                return
-                            }
+                            // if ((Game.time - global.Gtime[this.name]) % 5 == 0) {
+                            //     console.log(`房间${this.name}的lab分配存在问题,找不到合适的lab!材料为:${rType}`);
+                            //     return
+                            // }
+                            return
                         } // 说明没lab了直接截止整个函数
                         if (_.isArray(id)) {
                             for (var str_ of id) {
@@ -376,7 +377,7 @@ export default class RoomFunctionFindExtension extends Room {
         let s_list = [];
         for (let structure of s_l) {
             if (!isInArray(sc, structure.structureType)) continue
-            if(!structure.hits)continue;
+            if (!structure.hits) continue;
             if (structure.hits >= structure.hitsMax) continue
             if (hitsMax && structure.hits > hitsMax) {
                 continue
