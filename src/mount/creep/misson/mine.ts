@@ -508,9 +508,17 @@ export default class CreepMissonMineExtension extends Creep {
                 if (!this.pos.inRangeTo(missonPostion, 3)) {
                     this.memory.standed = false
                     if (this.room.name == this.memory.belong)
-                        this.goTo(Game.creeps[this.memory.double].pos, 0, 500, 1)
+                        this.moveTo(Game.creeps[this.memory.double].pos, {
+                            ignoreRoads: true,
+                            maxOps: 200,
+                            maxRooms: 1
+                        })
                     else
-                        this.goTo(Game.creeps[this.memory.double].pos, 0, 1000, 1)
+                        this.moveTo(Game.creeps[this.memory.double].pos, {
+                            ignoreRoads: true,
+                            maxOps: 1000,
+                            maxRooms: 4
+                        })
                 }
                 else {
                     this.memory.standed = true
