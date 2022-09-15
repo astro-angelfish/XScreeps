@@ -262,4 +262,17 @@ export const unzipMap = {
     'reductant': RESOURCE_HYDROGEN,
     'purifier': RESOURCE_CATALYST,
 }
+interface AutomarketData {
+    [resourceType: string]: {
+        max: number,/*系统需要进行默认值的配置,支持通过订单传入更高优先级的价格上限*/
+        time?: number,/*默认的扫描间隔为200t,支持固定间隔或者在订单传入*/
+        Atype?: 1 | 2, /*Atype 类型描述 当前类型为必要,但是允许通过订单传入而非固定值 1 最高价 2 价格提升*/
+        Aincrease?: number/*Atype类型为2的情况下需要次参数作为竞价幅度*/
+    }
+}
 
+/*market-Buy-Auto类型处理*/
+export const AutomarketBuydata: AutomarketData = {
+    'metal': { max: 200 },/*紫色基础*/
+    'alloy': { max: 500 },/*紫色加工*/
+}

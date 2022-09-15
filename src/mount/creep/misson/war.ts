@@ -917,14 +917,14 @@ export default class CreepMissonWarExtension extends Creep {
             warDataInit(Game.rooms[data.disRoom])
             let creeps = global.warData.enemy[data.disRoom].data
             let flags = global.warData.flag[data.disRoom].data
-            if (!this.memory.targetFlag && (!this.room.controller || (this.room.controller && !this.room.controller.my)))    // 没有目标旗帜Memory的情况下，先查找有没有最近的周围没有攻击爬的旗帜
+            this.heal(this)
+            if (!this.memory.targetFlag && (this.room.controller && !this.room.controller.my))    // 没有目标旗帜Memory的情况下，先查找有没有最近的周围没有攻击爬的旗帜
             {
-                this.heal(this)
+
                 let flag_attack = pathClosestFlag(this.pos, flags, 'aio', true, 4) // 最近的攻击旗帜
                 if (flag_attack) {
                     this.memory.targetFlag = flag_attack.name
-                }
-                else {
+                } else {
                     // 没有旗帜，就寻找一个最近的非危险建筑【优先没有rampart的】
                     let safeStructure = pathClosestStructure(this.pos, true, true, true, 4)
                     if (!safeStructure) {

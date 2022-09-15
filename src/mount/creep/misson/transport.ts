@@ -97,6 +97,7 @@ export default class CreepMissonTransportExtension extends Creep {
                 /*发送一个邮件提醒，任务已经完成*/
                 Game.notify(`[Carry] 位面搬运任务${this.memory.belong}-${data.rType}已完成`)
                 Game.rooms[this.memory.belong].DeleteMission(id)
+                this.suicide();
             }
             this.withdraw_(this.room.storage, data.rType)
             this.workstate(data.rType)

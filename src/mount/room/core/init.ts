@@ -132,51 +132,34 @@ export default class RoomCoreInitExtension extends Room {
             StructureData.comsume_link = []
         }
         /* 矿点link记忆更新 */
-        if (level == 5 || level == 6) {
-            if (level == 5) {
+        if (level == 6 || level == 7) {
+            if (level == 6) {
                 if (StructureData.source_links.length <= 0) {
                     let temp_link_list = []
                     for (let sID of StructureData.source) {
                         let source_ = Game.getObjectById(sID) as Source
                         let nearlink = source_.pos.getRangedStructure(['link'], 2, 0) as StructureLink[]
-                        LoopLink:
                         for (let l of nearlink) {
-                            if (StructureData.upgrade_link && l.id == StructureData.upgrade_link) continue LoopLink
+                            if (StructureData.upgrade_link && l.id == StructureData.upgrade_link) continue
                             temp_link_list.push(l.id)
                         }
                     }
                     StructureData.source_links = temp_link_list
                 }
             }
-            if (level == 6 && !StructureData.upgrade_link) {
+            if (level == 7) {
                 if (StructureData.source_links.length < StructureData.source.length) {
                     let temp_link_list = []
                     for (let sID of StructureData.source) {
                         let source_ = Game.getObjectById(sID) as Source
                         let nearlink = source_.pos.getRangedStructure(['link'], 2, 0) as StructureLink[]
-                        LoopLink:
                         for (let l of nearlink) {
-                            if (StructureData.upgrade_link && l.id == StructureData.upgrade_link) continue LoopLink
+                            if (StructureData.upgrade_link && l.id == StructureData.upgrade_link) continue
                             temp_link_list.push(l.id)
                         }
                     }
                     StructureData.source_links = temp_link_list
                 }
-            }
-        }
-        else if (level >= 7) {
-            if (StructureData.source_links.length < StructureData.source.length) {
-                let temp_link_list = []
-                for (let sID of StructureData.source) {
-                    let source_ = Game.getObjectById(sID) as Source
-                    let nearlink = source_.pos.getRangedStructure(['link'], 2, 0) as StructureLink[]
-                    LoopLink:
-                    for (let l of nearlink) {
-                        if (StructureData.upgrade_link && l.id == StructureData.upgrade_link) continue LoopLink
-                        temp_link_list.push(l.id)
-                    }
-                }
-                StructureData.source_links = temp_link_list
             }
         }
         /* 仓库记忆更新 */
@@ -347,9 +330,28 @@ export default class RoomCoreInitExtension extends Room {
      * 房间自适应动态配置
      */
     public RoomGlobalDynamicconfig(): void {
-        if ((Game.time - global.Gtime[this.name]) % 53 != 0) { return }
-        if (!this.memory.DynamicConfig.Dynamicupgrade) return;
+        if ((Game.time - global.Gtime[this.name]) % 53) { return }
         let level = this.controller.level
+        if (this.controller.level >= 4) {
+            let transport_num = this.memory.SpawnConfig.transport.num;
+            if (this.memory.state == 'peace') {
+                /*调整物流人员的数量*/
+                transport_num = 1;
+            } else if (this.memory.state == 'war') {
+                transport_num = 2;
+            }
+            if (this.memory.DynamicConfig.Dynamictransport) {
+                transport_num += this.memory.DynamicConfig.Dynamictransport;
+            }
+            this.NumSpawn('transport', transport_num)
+        } else {
+            this.NumSpawn('transport', 0)
+        }
+        /*针对单矿房间进行定式操作*/
+        if (Object.keys(this.memory.harvestData).length <= 1 && level > 3) {
+            this.NumSpawn('harvest', 1)
+        }
+        if (!this.memory.DynamicConfig.Dynamicupgrade) return;
         if (this.memory.DynamicConfig.Dynamicupgrade && level < 8) {
             let room_energy = 0;
             if (!this.storage) { return }
@@ -392,24 +394,6 @@ export default class RoomCoreInitExtension extends Room {
                 }
             }
         }
-        if (this.controller.level >= 4) {
-            let transport_num = this.memory.SpawnConfig.transport.num;
-            if (this.memory.state == 'peace') {
-                /*调整物流人员的数量*/
-                transport_num = 1;
-            } else if (this.memory.state == 'war') {
-                transport_num = 2;
-            }
-            if (this.memory.DynamicConfig.Dynamictransport) {
-                transport_num += this.memory.DynamicConfig.Dynamictransport;
-            }
-            this.NumSpawn('transport', transport_num)
-        } else {
-            this.NumSpawn('transport', 0)
-        }
-        /*针对单矿房间进行定式操作*/
-        if (Object.keys(this.memory.harvestData).length <= 1 && level > 3) {
-            this.NumSpawn('harvest', 1)
-        }
+
     }
 }

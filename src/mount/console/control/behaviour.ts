@@ -272,11 +272,11 @@ export default {
             return result
         },
         // 下买订单
-        buy(roomName: string, rType: ResourceConstant, mType: 'deal' | 'order', num: number, price: number, unit: number = 2000, confirm?: boolean, retain?: boolean): string {
+        buy(roomName: string, rType: ResourceConstant, mType: 'deal' | 'order', num: number, price: number, unit: number = 2000, confirm?: boolean, retain?: boolean, autoprice?: boolean): string {
             var thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[support] 不存在房间${roomName}`
             if (!mType) return `[market] 未指定交易类型`
-            if (num * price > 10000000 && !confirm) return `[market] 大额购买(单价:${price},总价:${num*price})需手动确认!`
+            if (num * price > 10000000 && !confirm) return `[market] 大额购买(单价:${price},总价:${num * price})需手动确认!`
             if (confirm === false) return `[market] 交易未确认!`
             if (!thisRoom.memory.market) thisRoom.memory.market = {}
             if (mType == 'order') {
@@ -335,10 +335,12 @@ export default {
                 return `[market] 资源:${rType};类型:${mtype} 最低价格${result}`
         },
         // 卖资源
-        sell(roomName: string, rType: ResourceConstant, mType: 'deal' | 'order', num: number, price?: number, unit: number = 2000, retain?: boolean): string {
+        sell(roomName: string, rType: ResourceConstant, mType: 'deal' | 'order', num: number, price?: number, unit: number = 2000, confirm?: boolean, retain?: boolean, autoprice?: boolean): string {
             var thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[support] 不存在房间${roomName}`
             if (!thisRoom.memory.market) thisRoom.memory.market = {}
+            if (num * price > 10000000 && !confirm) return `[market] 大额购买(单价:${price},总价:${num * price})需手动确认!`
+            if (confirm === false) return `[market] 交易未确认!`
             if (mType == 'order') {
                 if (!thisRoom.memory.market['order']) thisRoom.memory.market['order'] = []
                 var bR = true

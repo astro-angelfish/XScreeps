@@ -274,7 +274,7 @@ export function getOppositeDirection(direction: DirectionConstant): DirectionCon
 }
 
 /* 打印指定颜色 */
-type Colors = 'red' | 'blue' | 'green' | 'yellow' | 'orange'
+type Colors = 'red' | 'blue' | 'green' | 'yellow' | 'orange' | '#0000CC'
 
 export function Colorful(content: string, colorName: Colors | string = null, bolder: boolean = false): string {
   const colorStyle = colorName ? `color: ${colors[colorName] ? colors[colorName] : colorName};` : ''

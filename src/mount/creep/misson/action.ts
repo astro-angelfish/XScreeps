@@ -661,7 +661,6 @@ export default class CreepMissonActionExtension extends Creep {
                 if (this.hits < this.hitsMax) {
                     this.heal(this)
                 }
-                if (this.room.name != data.disRoom) { this.goTo(new RoomPosition(24, 24, data.disRoom), 23); return }
                 if (Game.flags[`${this.memory.belong}/first_build`]) {
                     let fcon = Game.flags[`${this.memory.belong}/first_build`].pos.lookFor(LOOK_CONSTRUCTION_SITES)
                     if (fcon.length > 0) {

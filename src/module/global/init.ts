@@ -45,6 +45,7 @@ export const MemoryInit = function (): void {
     global.RoomResource = {}
     global.HostileCreepsData = {}
     global.MarketAveprice = {}
+    global.MarketHighestprice = {}
     
     // Memory.SystemEconomy = false;
     if (Game.time % 100) {

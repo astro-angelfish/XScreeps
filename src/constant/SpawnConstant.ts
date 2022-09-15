@@ -44,7 +44,7 @@ export const RoleData: SpawnConstantData = {
     'upgrade-work': { num: 0, ability: [5, 20, 10, 0, 0, 10, 0, 5], level: 10, mark: "🔨" },
     'repair-work': { num: 0, ability: [1, 1, 1, 0, 0, 0, 0, 0], level: 8, mark: "🧱", must: true },     // 刷墙
     'scout': { num: 0, ability: [0, 0, 1, 0, 0, 0, 0, 0], level: 15, mark: '✏️' },
-    'aio': { num: 0, ability: [0, 0, 25, 0, 10, 15, 0, 0], level: 10, mark: "⚡" },
+    'aio': { num: 0, ability: [0, 0, 25, 0, 13, 12, 0, 0], level: 10, mark: "⚡" },
     'saio': { num: 0, ability: [0, 0, 25, 0, 10, 15, 0, 0], level: 10, mark: "⚡" }, // 支援一体机
     'mineral': { num: 0, ability: [15, 15, 15, 0, 0, 0, 0, 0], level: 11, mark: "🪓" },
     /*本房间拆迁队*/
@@ -104,7 +104,7 @@ export const RoleLevelData = {
         3: { bodypart: [0, 4, 4, 0, 0, 0, 0, 0], num: 2 },
         4: { bodypart: [0, 8, 8, 0, 0, 0, 0, 0], num: 2 },
         5: { bodypart: [0, 10, 10, 0, 0, 0, 0, 0], num: 2 },
-        6: { bodypart: [0, 10, 10, 0, 0, 0, 0, 0], num: 1 },
+        6: { bodypart: [0, 15, 15, 0, 0, 0, 0, 0], num: 1 },
         7: { bodypart: [0, 10, 10, 0, 0, 0, 0, 0], num: 0 },
         8: { bodypart: [0, 10, 10, 0, 0, 0, 0, 0], num: 0 },
     },

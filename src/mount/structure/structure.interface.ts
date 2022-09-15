@@ -29,6 +29,10 @@ interface LittleMarketData {
     changePrice?: boolean    // 是否需要修改价格
     time?: number,
     retain?: boolean,
+    refreshtime?: number/*订单最后成交的Game_time*/
+    autotrade?: boolean/*订单的自动调价开关*/
+    autotime?: number/*自动调价中自定义调价间隔*/
+    autoatype?: number/*订单定义的调价类型*/
 }
 
 // interface Factory {

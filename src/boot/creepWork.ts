@@ -9,7 +9,7 @@ export const creepRunner = function (creep: Creep): void {
 
   var cpu_test = false
   // switch (Game.shard.name) {
-  //   case 'shard3':
+  //   case 'shard0':
   //     cpu_test = true
   //     break;
   // }

@@ -25,6 +25,10 @@ declare module NodeJS {
         MarketAveprice: {
             [Res: string]: string
         },
+        /*资源筛选出来的价格当前t*/
+        MarketHighestprice: {
+            [Res: string]: number
+        },
         HostileGroup: {
             [roomName: string]: { [creep: string]: any }
         },
@@ -40,7 +44,7 @@ declare module NodeJS {
         getStructureData: {
             [roomName: string]: { [structure: string]: any }
         },
-        RoleMissionNum:{ [roomName: string]: { [RoleMission: string]: number } },
+        RoleMissionNum: { [roomName: string]: { [RoleMission: string]: number } },
         // intervalData: { [roomName: string]: { [creepRole: string]: number } }
         ResourceLimit: resourceLimitData
         warData: any

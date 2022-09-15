@@ -27,6 +27,7 @@ export function avePrice(res: MarketResourceConstant, day: number): number {
     return avePrice
 }
 
+
 // 判断是否已经有相应order了s
 export function gethaveOrder(roomName: string, res: ResourceConstant, mtype: 'sell' | 'buy', nowPrice: number, range?: number): any {
     for (let i in Game.market.orders) {
@@ -93,6 +94,32 @@ export function lowestPrice(res: MarketResourceConstant, mtype: 'sell' | 'buy', 
     }
     if (mprice && lowestPrice == Number.MAX_SAFE_INTEGER) lowestPrice = mprice
     return lowestPrice
+}
+
+/*筛选最高价格(剔除自己的房间以及系统的过道房间)-主要用于order挂单购买的情况下*/
+export function notmehighestPrice(res: MarketResourceConstant, mtype: 'sell' | 'buy', mprice?: number): number {
+    if (global.MarketHighestprice[res]) return global.MarketHighestprice[res];
+    let allOrder = Game.market.getAllOrders({ type: mtype, resourceType: res })
+    let highestPrice = 0
+    for (var i of allOrder) {
+        if (Memory.RoomControlData[i.roomName]) continue;
+        var patt = /^[WE]([0-9]+)[NS]([0-9]+)$/;
+        var roomparsed = patt.exec(i.roomName) as any;
+        // let roomparsed = Number((/^[WE]([0-9]+)[NS]([0-9]+)$/.exec(i.roomName)));
+        if (roomparsed[0] % 10 || roomparsed[1] % 10) {
+            if (i.price > highestPrice) {
+                if (mprice) {
+                    if (i.price <= mprice) highestPrice = i.price
+                }
+                else {
+                    highestPrice = i.price
+                }
+            }
+        }
+    }
+    if (mprice && highestPrice == 0) highestPrice = mprice
+    global.MarketHighestprice[res] = highestPrice;
+    return highestPrice
 }
 
 // 识别lab 合成 or 底物  [轮子]
