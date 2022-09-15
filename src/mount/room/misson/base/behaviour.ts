@@ -82,7 +82,7 @@ export default class RoomMissonBehaviourExtension extends Room {
 
     // 建造任务
     public Constru_Build(): void {
-        if (Game.time % 51) return
+        if ((Game.time - global.Gtime[this.name]) % 51) return
         if (this.controller.level < 5) return
         var myConstrusion = this.find(FIND_MY_CONSTRUCTION_SITES)
         if (myConstrusion.length > 0) {
@@ -196,7 +196,7 @@ export default class RoomMissonBehaviourExtension extends Room {
 
     // lab合成任务 （底层）
     public Task_Compound(misson: MissionModel): void {
-        if (Game.time % 5) return
+        if ((Game.time - global.Gtime[this.name]) % 5) return
         if (!this.memory.StructureIdData.labInspect || Object.keys(this.memory.StructureIdData.labInspect).length < 3) return
         let storage_ = this.storage as StructureStorage
         let terminal_ = this.terminal as StructureTerminal
@@ -571,7 +571,7 @@ export default class RoomMissonBehaviourExtension extends Room {
     /* 烧Power发布函数任务 */
     public Task_montitorPower(): void {
         if (Game.cpu.bucket < 6000 && Memory.StopPixel) return/*CPU不足情况下暂停*/
-        if (Game.time % 15) return
+        if ((Game.time - global.Gtime[this.name]) % 13) return
         if (this.controller.level < 8) return
         if (!this.memory.switch.StartPower && !Memory.Systemswitch.SystemEconomy) return
         let storage_ = this.storage as StructureStorage
