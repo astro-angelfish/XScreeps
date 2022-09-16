@@ -281,8 +281,12 @@ export default class CreepMissonTransportExtension extends Creep {
 
     /*外矿偷取*/
     public handle_carrymine(): void {
+        if (!this.memory.notifyWhenAttacked) {
+            this.notifyWhenAttacked(false)
+            this.memory.notifyWhenAttacked = true;
+        }
+
         let missionData = this.memory.MissionData
-        let id = missionData.id
         let data = missionData.Data
 
         if (this.getActiveBodyparts('heal') && this.hits < this.hitsMax) {
@@ -364,7 +368,7 @@ export default class CreepMissonTransportExtension extends Creep {
             for (var r in this.store) {
                 /* 清除杂志 */
                 if (r != Data.rType) {
-                    this.say("🚽")
+                    this.say("♻️")
                     /* 如果是自己的房间，则优先扔到最近的storage去 */
                     var storage = this.room.storage as StructureStorage
                     if (!storage) return
