@@ -272,7 +272,7 @@ export default {
             return result
         },
         // 下买订单
-        buy(roomName: string, rType: ResourceConstant, mType: 'deal' | 'order', num: number, price: number, unit: number = 2000, confirm?: boolean, retain?: boolean, autoprice?: boolean): string {
+        buy(roomName: string, rType: ResourceConstant, mType: 'deal' | 'order', num: number, price: number, unit: number = 2000, confirm?: boolean, retain?: boolean, autotrade?: boolean, autoData?: any): string {
             var thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[support] 不存在房间${roomName}`
             if (!mType) return `[market] 未指定交易类型`
@@ -287,7 +287,16 @@ export default {
                         bR = false
                 }
                 if (bR) {
-                    thisRoom.memory.market['order'].push({ rType: rType, num: num, unit: unit, price: price, mTyep: 'buy', retain: retain })
+                    let _addbR = { rType: rType, num: num, unit: unit, price: price, mTyep: 'buy', retain: retain };
+                    if (autotrade) {
+                        _addbR['autotrade'] = autotrade;
+                        if (!autoData.Atype) return `[market][auto] 参数Atype未定义!`
+                        _addbR['Atype'] = autoData.Atype;
+                        if (autoData.Aincrease) _addbR['Aincrease'] = autoData.Aincrease;
+                        if (autoData.time) _addbR['time'] = autoData.time;
+                        if (autoData.max) _addbR['max'] = autoData.max;
+                    }
+                    thisRoom.memory.market['order'].push(_addbR)
                     return `[market] 房间${roomName}成功下达order的资源采购指令,类型:buy,资源:${rType},数量:${num},单位:${unit},单价:${price},总价:${num * price}`
                 }
                 else return `[market] 房间${roomName}已经存在${rType}的订单了`

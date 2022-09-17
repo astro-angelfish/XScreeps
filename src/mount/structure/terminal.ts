@@ -101,7 +101,7 @@ export default class terminalExtension extends StructureTerminal {
         let storeNum = this.room.storage.store.getUsedCapacity('energy') + this.store.getUsedCapacity('energy')
         if (storeNum >= 250000) return
         let Demandlevel = 0;
-        let addnumber = 20000;
+        let addnumber = 30000;
         if (this.room.controller.level < 8) {
             addnumber = 100000;
             let lastDayAve = avePrice('energy', 1);
@@ -139,16 +139,17 @@ export default class terminalExtension extends StructureTerminal {
             /*检索房间内的所有订单，同时进行匹配,*/
             /*取出当前类型的基准价格*/
             let price_ = 0;
-            if (this.room.memory.MarketPrice.Dynamicprice) {
-                switch (Demandlevel) {
-                    case 1:
-                        price_ = this.room.memory.MarketPrice.buy.high;
-                        break;
-                    case 2:
-                        price_ = this.room.memory.MarketPrice.buy.low;
-                        break;
-                }
-            }
+            // if (this.room.memory.MarketPrice.Dynamicprice) {
+            //     switch (Demandlevel) {
+            //         case 1:
+            //             price_ = this.room.memory.MarketPrice.buy.high;
+            //             break;
+            //         case 2:
+            //             price_ = this.room.memory.MarketPrice.buy.low;
+            //             break;
+            //     }
+            // }
+            price_ = this.room.memory.MarketPrice.buy.low;
             if (price_ <= 0) {
                 price_ = avePrice('energy', 1) - 0.5;
             }
@@ -276,7 +277,7 @@ export default class terminalExtension extends StructureTerminal {
                         if (!order_data.ignore) {
                             /*非忽略订单。执行价格更新*/
                             let reduceprice = 0.05;
-                            reduceprice += Math.min((Math.floor(drop_tick / order_time) * 0.05), 0.45); //最多下调0.5cr
+                            reduceprice += Math.min((Math.floor(drop_tick / order_time) * 0.05), 0.25); //最多下调0.3cr
                             order_data.price = (Number(order_data.price) - reduceprice).toFixed(3).toString();
                             console.log(Colorful(`[调价下跌]房间${this.room.name}订单已完结,调价:${order_data.price}已存储`, 'gold', true))
                             switch (order_data.Demandlevel) {
@@ -557,7 +558,7 @@ export default class terminalExtension extends StructureTerminal {
                                     let Atype = 0;
                                     if (Automarketdata.Atype) Atype = Automarketdata.Atype;
                                     if (l.autoatype) Atype = l.autoatype;
-                                    switch (Automarketdata.Atype) {
+                                    switch (Atype) {
                                         case 1:/*进行最高价格竞价*/
                                             let highest = notmehighestPrice(order.resourceType, 'buy');
                                             /*当前处于最高价则不进行处理*/

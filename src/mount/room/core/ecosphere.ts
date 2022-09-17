@@ -177,7 +177,7 @@ export default class RoomCoreEcosphereExtension extends Room {
                 }
             }
             // console.log("memoryNum:", memoryNum)
-            if (currentNum < memoryNum) {
+            if (currentNum < memoryNum && this.memory.state == 'war') {
                 /* 说明出问题了 */
                 if (Game.cpu.generatePixel) { this.controller.activateSafeMode() }
             }

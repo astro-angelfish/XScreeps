@@ -275,4 +275,5 @@ interface AutomarketData {
 export const AutomarketBuydata: AutomarketData = {
     'metal': { max: 200 },/*紫色基础*/
     'alloy': { max: 500 },/*紫色加工*/
+    'ops': { max: 30 }
 }
