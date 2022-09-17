@@ -8,11 +8,11 @@ export const creepRunner = function (creep: Creep): void {
   }
 
   var cpu_test = false
-  // switch (Game.shard.name) {
-  //   case 'shard0':
-  //     cpu_test = true
-  //     break;
-  // }
+  switch (Game.shard.name) {
+    case 'shard3':
+      cpu_test = true
+      break;
+  }
   let cpu_list = [];
   if (cpu_test) { cpu_list.push(Game.cpu.getUsed()) }
   if (creep.spawning) {
@@ -65,6 +65,7 @@ export const creepRunner = function (creep: Creep): void {
       }
       console.log(
         creep.name,
+        creep.room.name,
         '初始化' + (cpu_list[1] - cpu_list[0]).toFixed(3),
         '任务执行' + (cpu_list[2] - cpu_list[1]).toFixed(3),
         '总计' + (cpu_list[2] - cpu_list[0]).toFixed(3),

@@ -676,7 +676,16 @@ export default class CreepMissonMineExtension extends Creep {
                     }
                     if (deposit_) {
                         if (!this.pos.isNearTo(missonPostion)) {
-                            this.goTo(missonPostion, 1)
+                            var harvest_void: RoomPosition[] = missonPostion.getSourceVoid()
+                            var active_void: RoomPosition[] = []
+                            for (var v of harvest_void) {
+                                var creep_ = v.lookFor(LOOK_CREEPS)
+                                if (creep_.length <= 0) active_void.push(v)
+
+                            }
+                            if (active_void.length > 0) {
+                                this.goTo(missonPostion, 1, 200)
+                            }
                         }
                         if (!deposit_.cooldown && Free_number > 0) {
                             let harvest_state = this.harvest(deposit_)
@@ -721,17 +730,20 @@ export default class CreepMissonMineExtension extends Creep {
                         if (targets.length > 0) {
                             if (this.withdraw(targets[0], deposit_.depositType) == ERR_NOT_IN_RANGE) {
                                 this.goTo(targets[0].pos, 1);
+                                return;
                             }
                         }
                     }
-                }
-                if (!this.pos.inRangeTo(missonPostion, 2)) {
-                    this.goTo(missonPostion, 2)
-                } else {
-                    if (!creepMisson.creeptime) {
-                        /*标记爬的距离信息*/
-                        creepMisson.creeptime = 1500 - this.ticksToLive + 50;
+                    if (!this.pos.inRangeTo(missonPostion, 2)) {
+                        this.goTo(missonPostion, 2, 100)
+                    } else {
+                        if (!creepMisson.creeptime) {
+                            /*标记爬的距离信息*/
+                            creepMisson.creeptime = 1500 - this.ticksToLive + 50;
+                        }
                     }
+                } else {
+                    this.goTo(missonPostion, 2)
                 }
                 break;
             default:

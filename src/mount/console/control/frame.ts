@@ -182,9 +182,16 @@ export default {
             myRoom.memory.switch.speedstate = !myRoom.memory.switch.speedstate
             if (!myRoom.memory.switch.speedstate) {
                 this.NumSpawn('initial_speed', 0)
-                return `[frame] 新房快速初始化关闭`
+                return `[frame]  房间${roomName}新房快速初始化关闭`
             }
-            return `[frame] 新房快速初始化开启`
+            return `[frame]  房间${roomName}新房快速初始化开启`
+        },
+        mineral(roomName): string {
+            var myRoom = Game.rooms[roomName]
+            if (!myRoom) return `[frame] 未找到房间${roomName}, 请确认房间!`
+            myRoom.memory.switch.stopmineral = !myRoom.memory.switch.stopmineral
+            if (!myRoom.memory.switch.stopmineral) return `[frame] 房间${roomName}关闭原矿开采`
+            return `[frame] 房间${roomName}开启原矿开采`
         }
     },
     spawn:

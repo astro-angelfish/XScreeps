@@ -566,7 +566,6 @@ export default class terminalExtension extends StructureTerminal {
                                             let newprice = Number(highest) + 0.01;
                                             newprice = newprice > Automarketdata.max ? Automarketdata.max : newprice;
                                             l.refreshtime = Game.time;
-                                            console.log(`[Auto][${this.room.name}]订单价格${newprice}|${l.price}`)
                                             if (newprice == l.price) continue;
                                             l.price = newprice;
                                             Game.market.changeOrderPrice(l.id, newprice)

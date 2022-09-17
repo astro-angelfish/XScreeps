@@ -275,5 +275,13 @@ interface AutomarketData {
 export const AutomarketBuydata: AutomarketData = {
     'metal': { max: 200 },/*紫色基础*/
     'alloy': { max: 500 },/*紫色加工*/
-    'ops': { max: 30 }
+    'ops': { max: 30 },
+    'utrium_bar': { max: 20 },
+    'lemergium_bar': { max: 20 },
+    'zynthium_bar': { max: 20 },
+    'keanium_bar': { max: 20 },
+    'ghodium_melt': { max: 20 },
+    'oxidant': { max: 20 },
+    'reductant': { max: 20 },
+    'purifier': { max: 20 },
 }

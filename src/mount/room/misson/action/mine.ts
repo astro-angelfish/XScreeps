@@ -6,6 +6,7 @@ export default class RoomMissonMineExtension extends Room {
     /* 房间内矿资源采集发布任务 */
     public Task_monitorMineral(): void {
         if ((Game.time - global.Gtime[this.name]) % 67) return
+        if (this.memory.switch.stopmineral) return;
         if (this.controller.level < 6) return
         if (!this.memory.StructureIdData.mineralID) return
         if (this.MissionNum('Creep', '原矿开采') > 0) return
