@@ -17,7 +17,9 @@ interface Memory {
     Systemswitch: {
         SystemEconomy?: boolean,
         SystemStopPower?: boolean,
-        SystemUpgrade?: boolean
+        SystemUpgrade?: boolean,
+        Showtestroom?:boolean,
+        Showtestcreep?:boolean
     },
     pixelInfo: { buy: { num: number, price: number, unit: number, floor: number, order: string }, sell: { num: number, price: number, unit: number, ceil: number, order: string } }
 }

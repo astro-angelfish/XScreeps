@@ -49,7 +49,7 @@ export default class CreepMoveExtension extends Creep {
             let disRoomparsed = Number((/^[WE]([0-9]+)[NS]([0-9]+)$/.exec(target.roomName)));
             /* 计算距离 如果两个房间之间距离过短就不这样做 */
             let enoughDistance = Math.sqrt(Math.abs(myroomparsed[0] - disRoomparsed[0]) ** 2 + Math.abs(myroomparsed[1] - disRoomparsed[1]) ** 2)
-            if (enoughDistance > 3.6 || range > 10) swi = true
+            if (enoughDistance > 1.6 || range > 10) swi = true
             if (swi) {
                 let ret = Game.map.findRoute(this.pos.roomName, target.roomName, {
                     routeCallback(roomName) {
@@ -58,9 +58,7 @@ export default class CreepMoveExtension extends Creep {
                         let parsed = (/^[WE]([0-9]+)[NS]([0-9]+)$/.exec(roomName));
                         let isHighway = (Number(parsed[1]) % 10 === 0) ||
                             (Number(parsed[2]) % 10 === 0);
-                        let isMyRoom = Game.rooms[roomName] &&
-                            Game.rooms[roomName].controller &&
-                            Game.rooms[roomName].controller.my;
+                        let isMyRoom = Game.rooms[roomName]?.controller?.my;
                         if (isHighway || isMyRoom) {
                             return 1;
                         } else {
@@ -82,7 +80,7 @@ export default class CreepMoveExtension extends Creep {
             plainCost: plain ? plain : 2,
             swampCost: 10,
             maxRooms: target.roomName == this.room.name ? 1 : 32,
-            maxOps: ops ? ops : (target.roomName == this.room.name ? 1000 : 8000),
+            maxOps: ops ? ops : (target.roomName == this.room.name ? 750 : 8000),
             roomCallback: roomName => {
                 // 在全局绕过房间列表的房间 false
                 room_list.push(roomName)

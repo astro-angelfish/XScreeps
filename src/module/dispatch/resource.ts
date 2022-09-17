@@ -51,7 +51,7 @@ export function ResourceDispatch(thisRoom: Room): void {
                     console.log(Colorful(`[资源调度] 房间${thisRoom.name}需求资源[${i.rType}]无法调度,将进行购买! 购买方式为${i.mtype},购买数量:${i.num}`, 'yellow'))
                     // 能量 ops
                     if (isInArray(['ops', 'energy'], i.rType)) {
-                        let task = thisRoom.public_Buy(i.rType, i.num, 5, 10);
+                        let task = thisRoom.public_Buy(i.rType, i.num, 5, 50);
                         if (task) { thisRoom.AddMission(task); i.delayTick = 0 }; continue
                     }
                     // 原矿 中间化合物

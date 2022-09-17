@@ -100,7 +100,7 @@ export function lowestPrice(res: MarketResourceConstant, mtype: 'sell' | 'buy', 
 }
 
 /*筛选最高价格(剔除自己的房间以及系统的过道房间)-主要用于order挂单购买的情况下*/
-export function notmehighestPrice(res: MarketResourceConstant, mtype: 'sell' | 'buy', mprice?: number): number {
+export function notmehighestPrice(res: MarketResourceConstant, mtype: 'sell' | 'buy', filter_aisle?: boolean): number {
     if (global.MarketHighestprice[res]) return global.MarketHighestprice[res];
     let allOrder = Game.market.getAllOrders({ type: mtype, resourceType: res })
     let highestPrice = 0
@@ -109,18 +109,13 @@ export function notmehighestPrice(res: MarketResourceConstant, mtype: 'sell' | '
         var patt = /^[WE]([0-9]+)[NS]([0-9]+)$/;
         var roomparsed = patt.exec(i.roomName) as any;
         // let roomparsed = Number((/^[WE]([0-9]+)[NS]([0-9]+)$/.exec(i.roomName)));
-        if (roomparsed[0] % 10 || roomparsed[1] % 10) {
+        if ((roomparsed[0] % 10 || roomparsed[1] % 10) || !filter_aisle) {
             if (i.price > highestPrice) {
-                if (mprice) {
-                    if (i.price <= mprice) highestPrice = i.price
-                }
-                else {
-                    highestPrice = i.price
-                }
+                highestPrice = i.price
             }
         }
     }
-    if (mprice && highestPrice == 0) highestPrice = mprice
+    // if (mprice && highestPrice == 0) highestPrice = mprice
     global.MarketHighestprice[res] = highestPrice;
     return highestPrice
 }

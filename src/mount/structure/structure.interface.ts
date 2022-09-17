@@ -34,6 +34,7 @@ interface LittleMarketData {
     autotime?: number/*自动调价中自定义调价间隔*/
     autoatype?: number/*订单定义的调价类型*/
     automax?: number/*订单自定义调价上限*/
+    autofilteraisle?: boolean/*是否过滤过道房的NPC订单*/
 }
 
 // interface Factory {

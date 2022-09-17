@@ -685,6 +685,8 @@ export default class CreepMissonMineExtension extends Creep {
                             }
                             if (active_void.length > 0) {
                                 this.goTo(missonPostion, 1, 200)
+                            } else {
+                                this.goTo(missonPostion, 3, 200)
                             }
                         }
                         if (!deposit_.cooldown && Free_number > 0) {

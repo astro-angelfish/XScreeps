@@ -324,7 +324,7 @@ export function build_(creep: Creep): void {
         else {
             if (creep.room.controller.level < 3) {
                 /* 没有建筑物则考虑道路维护 */
-                var roads = creep.pos.findClosestByPath(FIND_STRUCTURES, {
+                var roads = creep.pos.findClosestByRange(FIND_STRUCTURES, {
                     filter: (structure) => {
                         return structure.structureType == 'road' && structure.hits < structure.hitsMax
                     }
@@ -391,7 +391,7 @@ export function build_(creep: Creep): void {
             }
         }
 
-        var container = creep.pos.findClosestByPath(FIND_STRUCTURES, { filter: (stru) => { return stru.structureType == 'container' && stru.store.getUsedCapacity('energy') > creep.store.getCapacity() } })
+        var container = creep.pos.findClosestByRange(FIND_STRUCTURES, { filter: (stru) => { return stru.structureType == 'container' && stru.store.getUsedCapacity('energy') > creep.store.getCapacity() } })
         if (container) {
             if (!creep.pos.isNearTo(container)) {
                 creep.goTo(container.pos, 1)
@@ -401,7 +401,7 @@ export function build_(creep: Creep): void {
             }
         } else {
             /*进行资源采集*/
-            const target = creep.pos.findClosestByPath(FIND_SOURCES);
+            const target = creep.pos.findClosestByRange(FIND_SOURCES);
             if (creep.harvest(target) == ERR_NOT_IN_RANGE) {
                 creep.goTo(target.pos, 1);
             }

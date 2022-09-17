@@ -560,7 +560,7 @@ export default class terminalExtension extends StructureTerminal {
                                     if (l.autoatype) Atype = l.autoatype;
                                     switch (Atype) {
                                         case 1:/*进行最高价格竞价*/
-                                            let highest = notmehighestPrice(order.resourceType, 'buy');
+                                            let highest = notmehighestPrice(order.resourceType, 'buy', l.autofilteraisle);
                                             /*当前处于最高价则不进行处理*/
                                             // if (highest <= l.price) l.refreshtime = Game.time;
                                             let newprice = Number(highest) + 0.01;

@@ -291,10 +291,9 @@ export default {
                     if (autotrade) {
                         _addbR['autotrade'] = autotrade;
                         if (!autoData.autoatype) return `[market][auto] 参数Atype未定义!`
-                        _addbR['autoatype'] = autoData.autoatype;
-                        if (autoData.Aincrease) _addbR['Aincrease'] = autoData.Aincrease;
-                        if (autoData.autotime) _addbR['autotime'] = autoData.autotime;
-                        if (autoData.automax) _addbR['automax'] = autoData.automax;
+                        for (let key in autoData) {
+                            _addbR[key] = autoData[key];
+                        }
                     }
                     thisRoom.memory.market['order'].push(_addbR)
                     return `[market] 房间${roomName}成功下达order的资源采购指令,类型:buy,资源:${rType},数量:${num},单位:${unit},单价:${price},总价:${num * price}`
