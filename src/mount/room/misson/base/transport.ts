@@ -1,3 +1,6 @@
+import { checkSend, DispatchNum } from "@/module/fun/funtion";
+import { Colorful } from "@/utils";
+
 /* 房间原型拓展   --任务  --运输工任务 */
 export default class RoomMissonTransportExtension extends Room {
     // 虫卵填充任务
@@ -115,14 +118,33 @@ export default class RoomMissonTransportExtension extends Room {
         if (this.memory.switch.StopFillNuker) return
         if (!this.memory.StructureIdData.NukerID || !this.storage) return
         if (this.RoleMissionNum('transport', '物流运输') >= 1) return
-        var nuker = Game.getObjectById(this.memory.StructureIdData.NukerID) as StructureNuker
-        var storage_ = this.storage as StructureStorage
+        const nuker = Game.getObjectById(this.memory.StructureIdData.NukerID) as StructureNuker
+        const storage_ = this.storage as StructureStorage
+        const terminal_ = this.terminal as StructureTerminal
         if (!nuker) { delete this.memory.StructureIdData.NukerID; return }
-        // if (!storage_) { delete this.memory.StructureIdData.storageID; return }
-        if (nuker.store.getUsedCapacity('G') < 5000 && (storage_.store.getUsedCapacity('G') + nuker.store.getUsedCapacity('G')) >= 5000) {
+        if (!storage_ || !terminal_) { return }
+        const storedGhodium = storage_.store.getUsedCapacity('G') + terminal_.store.getUsedCapacity('G')
+        if (nuker.store.getUsedCapacity('G') < 5000 && (storedGhodium + nuker.store.getUsedCapacity('G')) >= 5000) {
             var thisTask = this.public_Carry({ 'transport': { num: 1, bind: [] } }, 40, this.name, storage_.pos.x, storage_.pos.y, this.name, nuker.pos.x, nuker.pos.y, 'G', 5000 - nuker.store.getUsedCapacity('G'))
             this.AddMission(thisTask)
             return
+        } else {
+            let ghodiumRequired = 5000 - storedGhodium
+            let _DispatchNum = DispatchNum(this.name);
+            /* 资源调度 */
+            if (_DispatchNum <= 0 && this.MissionNum('Structure', '资源购买') <= 0 && !checkSend(this.name, 'G' as ResourceConstant)) {
+                console.log(Colorful(`[资源调度] 房间${this.name}没有足够的资源[G],将执行资源调度!`, 'yellow'))
+                let dispatchTask: RDData = {
+                    sourceRoom: this.name,
+                    rType: 'G' as ResourceConstant,
+                    num: ghodiumRequired,
+                    delayTick: 200,
+                    conditionTick: 20,
+                    buy: true,
+                    mtype: 'deal'
+                }
+                Memory.ResourceDispatchData.push(dispatchTask)
+            }
         }
         if (nuker.store.getUsedCapacity('energy') < 300000 && storage_.store.getUsedCapacity('energy') > 200000) {
             var thisTask = this.public_Carry({ 'transport': { num: 1, bind: [] } }, 40, this.name, storage_.pos.x, storage_.pos.y, this.name, nuker.pos.x, nuker.pos.y, 'energy', Math.min(300000 - nuker.store.getUsedCapacity('energy'), storage_.store.getUsedCapacity('energy') - 200000))
