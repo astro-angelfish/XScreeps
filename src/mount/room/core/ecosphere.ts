@@ -135,7 +135,7 @@ export default class RoomCoreEcosphereExtension extends Room {
         else { if ((Game.time - global.Gtime[this.name]) % 11) return }
         if (this.memory.state == 'peace') {
             /* cpu过少就不进行自动重建 */
-            if (Game.cpu.bucket < 4000) return
+            if (Game.cpu.bucket < 4000&& Memory.StopPixel) return
             /* 仅仅在和平情况下才会打开自动重建 */
             // 寻找所有属于我的建筑的数量 -1是去除controller 包含所有非控制器的我方建筑、我方建筑工地、该房间内的道路，container
             let currentNum = this.find(FIND_MY_STRUCTURES).length + this.find(FIND_MY_CONSTRUCTION_SITES).length + this.find(FIND_STRUCTURES, { filter: (structure) => { return structure.structureType == STRUCTURE_CONTAINER || structure.structureType == STRUCTURE_ROAD } }).length - 1
@@ -157,7 +157,7 @@ export default class RoomCoreEcosphereExtension extends Room {
         else if (this.memory.state == 'war' || (Game.time - global.Gtime[this.name]) % 199 == 0) {
             /* 战争状态 */
             /* cpu过少就不进行自动重建 */
-            if (Game.cpu.bucket < 4000) return
+            if (Game.cpu.bucket < 4000&& Memory.StopPixel) return
             // 仅检测城墙、spawn、仓库、终端、实验室的数量，检测到缺损就自动开启安全模式
             let currentNum = this.find(FIND_MY_STRUCTURES, {
                 filter: (structure) => {

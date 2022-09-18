@@ -8,6 +8,7 @@ import { avePrice, checkDispatch, checkLabBindResource, checkSend, DispatchNum, 
 
 // 主调度函数
 export function ResourceDispatch(thisRoom: Room): void {
+    if (Game.cpu.bucket < 3000 && Memory.StopPixel) return;
     if ((Game.time - global.Gtime[thisRoom.name]) % 15) return
     // 处理订单前检查
     let storage_ = thisRoom.storage as StructureStorage

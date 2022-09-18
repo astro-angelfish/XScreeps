@@ -30,9 +30,9 @@ export default class CreepFunctionExtension extends Creep {
         }
     }
 
-    public transfer_(distination: Structure, rType: ResourceConstant = RESOURCE_ENERGY): void {
+    public transfer_(distination: Structure, rType: ResourceConstant = RESOURCE_ENERGY, ops?: number): void {
         if (this.transfer(distination, rType) == ERR_NOT_IN_RANGE) {
-            this.goTo(distination.pos, 1)
+            this.goTo(distination.pos, 1, ops)
         }
     }
 

@@ -213,6 +213,7 @@ export default class RoomMissonFrameExtension extends Room {
                 /* 删除任务*/
                 var index = this.memory.Misson[range].indexOf(m)
                 this.memory.Misson[range].splice(index, 1)
+                if (global.getMission[this.name][id]) delete global.getMission[this.name][id];
                 if (!isInArray(Memory.ignoreMissonName, m.name))
                     console.log(Colorful(`${m.name} 任务删除 xxx ID:${m.id} Room:${this.name}`, 'blue'))
                 return true
@@ -305,11 +306,15 @@ export default class RoomMissonFrameExtension extends Room {
 
     /* 获取任务 */
     public GainMission(id: string): MissionModel | null {
-        for (var i in this.memory.Misson)
+        if (global.getMission[this.name][id]) return global.getMission[this.name][id];
+        for (var i in this.memory.Misson) {
             for (var t of this.memory.Misson[i]) {
-                if (t.id == id)
+                if (t.id == id) {
+                    global.getMission[this.name][id] = t;
                     return t
+                }
             }
+        }
         return null
     }
 

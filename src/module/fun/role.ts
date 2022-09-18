@@ -20,7 +20,7 @@ export function harvest_(creep_: Creep): void {
         let data = harvestData[creep_.memory.targetID]
         if (!data) return
         // 优先寻找link
-        if (!data.containerID) {
+        if (creep_.room.controller?.level < 4 && !data.containerID) {
             /* 最后寻找附近的建筑工地 -补全container*/
             let cons = creep_.pos.findInRange(FIND_MY_CONSTRUCTION_SITES, 3)
             if (cons.length > 0) {
@@ -34,16 +34,6 @@ export function harvest_(creep_: Creep): void {
             }
             return
         }
-        // else {
-        //     /*维修操作检查*/
-        //     let container = Game.getObjectById(data.containerID as Id<StructureContainer>) as StructureContainer
-        //     if (container) {
-        //         if (container.hits < container.hitsMax) {
-        //             creep_.repair(container)
-        //             return
-        //         }
-        //     }
-        // }
         if (data.linkID) {
             let link = Game.getObjectById(data.linkID as Id<StructureLink>) as StructureLink
             if (!link) delete data.linkID
@@ -54,15 +44,12 @@ export function harvest_(creep_: Creep): void {
                         creep_.transfer(link, 'energy')
                         return
                     }
-                }
-                else {
-                    creep_.goTo(link.pos, 1)
+                } else {
+                    creep_.goTo(link.pos, 1, 100)
                     return
                 }
             }
-        }
-        // 其次寻找container
-        if (data.containerID) {
+        } else if (data.containerID) {
             let container = Game.getObjectById(data.containerID as Id<StructureLink>) as StructureLink
             if (!container) delete data.containerID
             else {
@@ -72,14 +59,13 @@ export function harvest_(creep_: Creep): void {
                     return
                 }
                 else {
-                    creep_.goTo(container.pos, 0)
+                    creep_.goTo(container.pos, 0, 100)
                     return
                 }
             }
 
         }
-    }
-    else {
+    } else {
         // 如果不具备挖矿功能了，就自杀
         if (creep_.hits < creep_.hitsMax) {
             if (creep_.getActiveBodyparts('work') <= 0) {
@@ -106,7 +92,7 @@ export function harvest_(creep_: Creep): void {
         let source = Game.getObjectById(creep_.memory.targetID as Id<Source>) as Source
         if (!source) return
         if (source.energy > 0) {
-            if (creep_.harvest(source) == ERR_NOT_IN_RANGE) { creep_.goTo(source.pos, 1); return }
+            if (creep_.harvest(source) == ERR_NOT_IN_RANGE) { creep_.goTo(source.pos, 1, 200); return }
         } else {
             if (Game.time % 2) return;
             let data = harvestData[creep_.memory.targetID]
@@ -115,7 +101,13 @@ export function harvest_(creep_: Creep): void {
             let container = Game.getObjectById(data.containerID as Id<StructureContainer>) as StructureContainer
             if (!container) return
             let container_energy = container.store.getUsedCapacity(RESOURCE_ENERGY)
-            if (container_energy < 1) return/*容器没有能量终止*/
+            if (container_energy < 1) {
+                if (source.energy < 1 && source.ticksToRegeneration > 0) {
+                    /*进行空置操作*/
+                    creep_.memory.Rerunt = Number(Game.time) + Number(source.ticksToRegeneration);
+                }
+                return/*容器没有能量终止*/
+            }
             let link = Game.getObjectById(data.linkID as Id<StructureLink>) as StructureLink
             if (!link) return;
             let link_energy = link.store.getFreeCapacity(RESOURCE_ENERGY)
@@ -123,6 +115,8 @@ export function harvest_(creep_: Creep): void {
             if (creep_.withdraw(container, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                 creep_.moveTo(container);
             }
+
+
         }
     }
 }

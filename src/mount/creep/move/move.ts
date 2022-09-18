@@ -45,33 +45,51 @@ export default class CreepMoveExtension extends Creep {
         let allowedRooms = { [this.pos.roomName]: true, [target.roomName]: true };
         let swi = false
         if (target.roomName != this.room.name) {
-            let myroomparsed = Number((/^[WE]([0-9]+)[NS]([0-9]+)$/.exec(this.room.name)));
-            let disRoomparsed = Number((/^[WE]([0-9]+)[NS]([0-9]+)$/.exec(target.roomName)));
-            /* 计算距离 如果两个房间之间距离过短就不这样做 */
-            let enoughDistance = Math.sqrt(Math.abs(myroomparsed[0] - disRoomparsed[0]) ** 2 + Math.abs(myroomparsed[1] - disRoomparsed[1]) ** 2)
-            if (enoughDistance > 1.6 || range > 10) swi = true
-            if (swi) {
-                let ret = Game.map.findRoute(this.pos.roomName, target.roomName, {
-                    routeCallback(roomName) {
-                        // 在全局绕过房间列表的房间 false
-                        if (Memory.bypassRooms && Memory.bypassRooms.includes(roomName)) return Infinity
-                        let parsed = (/^[WE]([0-9]+)[NS]([0-9]+)$/.exec(roomName));
-                        let isHighway = (Number(parsed[1]) % 10 === 0) ||
-                            (Number(parsed[2]) % 10 === 0);
-                        let isMyRoom = Game.rooms[roomName]?.controller?.my;
-                        if (isHighway || isMyRoom) {
-                            return 1;
-                        } else {
-                            return 2;
+            const FindrouteKey = `${this.standardizePos(this.pos)}|${this.standardizePos(target)}`
+            /*检查是否存在已知的缓存*/
+            if (Memory.Findrouteroom[FindrouteKey]) {
+                for (let rroom of Memory.Findrouteroom[FindrouteKey].a) {
+                    allowedRooms[rroom] = true;
+                }
+            } else {
+                let myroomparsed = Number((/^[WE]([0-9]+)[NS]([0-9]+)$/.exec(this.room.name)));
+                let disRoomparsed = Number((/^[WE]([0-9]+)[NS]([0-9]+)$/.exec(target.roomName)));
+                /* 计算距离 如果两个房间之间距离过短就不这样做 */
+                let enoughDistance = Math.sqrt(Math.abs(myroomparsed[0] - disRoomparsed[0]) ** 2 + Math.abs(myroomparsed[1] - disRoomparsed[1]) ** 2)
+                if (enoughDistance > 1.6 || range > 10) swi = true
+                if (swi) {
+                    let ret = Game.map.findRoute(this.pos.roomName, target.roomName, {
+                        routeCallback(roomName) {
+                            // 在全局绕过房间列表的房间 false
+                            if (Memory.bypassRooms && Memory.bypassRooms.includes(roomName)) return Infinity
+                            let parsed = (/^[WE]([0-9]+)[NS]([0-9]+)$/.exec(roomName));
+                            let isHighway = (Number(parsed[1]) % 10 === 0) ||
+                                (Number(parsed[2]) % 10 === 0);
+                            let isMyRoom = Game.rooms[roomName]?.controller?.my;
+                            if (isHighway || isMyRoom) {
+                                return 1;
+                            } else {
+                                return 2;
+                            }
+                        }
+                    })
+                    if (ret != ERR_NO_PATH) {
+                        ret.forEach(function (info) {
+                            allowedRooms[info.room] = true;
+                        });
+                        let routea = [];
+                        for (let rooms in allowedRooms) {
+                            routea.push(rooms)
+                        }
+                        /*将结果进行格式化存储操作*/
+                        Memory.Findrouteroom[FindrouteKey] = {
+                            t: Game.time,
+                            a: routea
                         }
                     }
-                })
-                if (ret != ERR_NO_PATH) {
-                    ret.forEach(function (info) {
-                        allowedRooms[info.room] = true;
-                    });
                 }
             }
+
         }
         /* 路线查找 */
         let room_list: any = [];

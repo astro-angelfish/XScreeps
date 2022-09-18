@@ -5,6 +5,7 @@ import { zipMap } from "@/constant/ResourceConstant"
 export default class RoomMissonMineExtension extends Room {
     /* 房间内矿资源采集发布任务 */
     public Task_monitorMineral(): void {
+        if (Game.cpu.bucket < 7000 && Memory.StopPixel) return
         if ((Game.time - global.Gtime[this.name]) % 67) return
         if (this.memory.switch.stopmineral) return;
         if (this.controller.level < 6) return

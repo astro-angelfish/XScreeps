@@ -108,7 +108,7 @@ export const createApp = function (opt: Partial<CreateOptions> = {}) {
      */
     const run = function (): void {
         // console.log(`——初始化——${Game.cpu.getUsed()}——`)
-        if (Memory.Systemswitch.Showtestcreep || Memory.Systemswitch.Showtestroom) {
+        if (Memory.Systemswitch.Showtestcreep || Memory.Systemswitch.Showtestroom || Memory.Systemswitch.Showtestpowercreep || Memory.Systemswitch.ShowtestroomInit) {
             console.log(`—————————— Game.time ${Game.time} ——————————`)
         }
         // 有内存缓存的话就包裹一下，否则就直接运行

@@ -7,6 +7,7 @@ export default class terminalExtension extends StructureTerminal {
     public ManageMission(): void {
         // if (this.room.MissionNum('Creep', '急速冲级') > 0) return   // 急速冲级状态下停止terminal功能
         if (this.room.controller.level < 6) return;
+        if (Game.cpu.bucket < 1000 && Memory.StopPixel) return;
         var allmyTask = []
         for (var task of this.room.memory.Misson['Structure']) {
             if (!task.structure) continue
