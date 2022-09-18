@@ -5,7 +5,7 @@ interface Creep {
     workstate(rType: ResourceConstant, ratio?: number): void
     harvest_(source_: Source): void
     transfer_(distination: Structure, rType: ResourceConstant, ops?: number): void
-    upgrade_(): void
+    upgrade_(ops?:number): void
     build_(distination: ConstructionSite): void
     repair_(distination: Structure, ops?: number): void
     withdraw_(distination: Structure, rType: ResourceConstant, range?: number): void

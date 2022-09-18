@@ -92,7 +92,7 @@ export function harvest_(creep_: Creep): void {
         let source = Game.getObjectById(creep_.memory.targetID as Id<Source>) as Source
         if (!source) return
         if (source.energy > 0) {
-            if (creep_.harvest(source) == ERR_NOT_IN_RANGE) { creep_.goTo(source.pos, 1, 200); return }
+            if (creep_.harvest(source) == ERR_NOT_IN_RANGE) { creep_.goTo(source.pos, 1, 300); return }
         } else {
             if (Game.time % 2) return;
             let data = harvestData[creep_.memory.targetID]
@@ -217,7 +217,7 @@ export function upgrade_(creep_: Creep): void {
         creep_.optTower('heal', creep_);
     }
     if (creep_.memory.working) {
-        creep_.upgrade_()
+        creep_.upgrade_(300)
         if (creep_.memory.targetID) {
             delete creep_.memory.targetID
         }

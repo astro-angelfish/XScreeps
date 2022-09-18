@@ -619,7 +619,7 @@ export default class CreepMissonMineExtension extends Creep {
                 if (!this.memory.standed) this.memory.standed = true;
                 /*这里对transfer进行绑定操作*/
                 if (this.pos.roomName != creepMisson.room) {
-                    this.goTo(missonPostion, 1)
+                    this.goTo(missonPostion, 4)
                     return;
                 }
                 if (this.pos.roomName == creepMisson.room) {
@@ -666,7 +666,7 @@ export default class CreepMissonMineExtension extends Creep {
                             var T_creepMisson = Game.creeps[this.memory.transfercreep].memory.MissionData.Data;
                             if (Game.creeps[this.memory.transfercreep].ticksToLive <= T_creepMisson.creeptime) return;
                             if (!this.pos.isNearTo(Game.creeps[this.memory.transfercreep])) {
-                                Game.creeps[this.memory.transfercreep].goTo(this.pos, 1)
+                                Game.creeps[this.memory.transfercreep].goTo(this.pos, 1, 100)
                                 return;
                             }
                             this.transfer(Game.creeps[this.memory.transfercreep], Object.keys(this.store)[0] as ResourceConstant)

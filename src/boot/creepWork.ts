@@ -63,7 +63,7 @@ export const creepRunner = function (creep: Creep): void {
   if (cpu_test) {
     cpu_list.push(Game.cpu.getUsed())
     Memory.creepscpu[creep.name] = (cpu_list[1] - cpu_list[0]).toFixed(3) + "|" + (cpu_list[2] - cpu_list[1]).toFixed(3) + "|" + creep.memory.role;
-    if (cpu_list[2] - cpu_list[0] > 0.4) {
+    if (cpu_list[2] - cpu_list[0] > 0.3) {
       let MissionDataName = '未领取';
       if (creep.memory.MissionData?.name) {
         MissionDataName = creep.memory.MissionData.name;
@@ -75,7 +75,8 @@ export const creepRunner = function (creep: Creep): void {
         '任务执行' + (cpu_list[2] - cpu_list[1]).toFixed(3),
         '总计' + (cpu_list[2] - cpu_list[0]).toFixed(3),
         creep.memory.role,
-        MissionDataName
+        MissionDataName,
+        creep.memory.working
       )
     }
 

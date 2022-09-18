@@ -276,6 +276,7 @@ export const AutomarketBuydata: AutomarketData = {
     'metal': { max: 200 },/*紫色基础*/
     'alloy': { max: 500 },/*紫色加工*/
     'ops': { max: 30 },
+    'Z': { max: 20 },
     'utrium_bar': { max: 20 },
     'lemergium_bar': { max: 20 },
     'zynthium_bar': { max: 20 },

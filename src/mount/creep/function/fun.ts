@@ -36,10 +36,10 @@ export default class CreepFunctionExtension extends Creep {
         }
     }
 
-    public upgrade_(): void {
+    public upgrade_(ops?: number): void {
         if (this.room.controller) {
             if (this.upgradeController(this.room.controller) == ERR_NOT_IN_RANGE) {
-                this.goTo(this.room.controller.pos, 3)
+                this.goTo(this.room.controller.pos, 3, ops ? ops : 500)
                 this.memory.standed = false
             }
             else this.memory.standed = true

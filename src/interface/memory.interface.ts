@@ -21,7 +21,9 @@ interface Memory {
         Showtestroom?: boolean,
         Showtestcreep?: boolean,
         Showtestpowercreep?:boolean,
-        ShowtestroomInit?:boolean
+        ShowtestroomInit?:boolean,
+        ShowtestroomMisson?:boolean,
+        Showtestrun?:boolean
     },
     Findrouteroom: {
         [key: string]: {

@@ -45,7 +45,7 @@ export default class CreepMoveExtension extends Creep {
         let allowedRooms = { [this.pos.roomName]: true, [target.roomName]: true };
         let swi = false
         if (target.roomName != this.room.name) {
-            const FindrouteKey = `${this.standardizePos(this.pos)}|${this.standardizePos(target)}`
+            const FindrouteKey = `${this.pos.roomName}|${target.roomName}`
             /*检查是否存在已知的缓存*/
             if (Memory.Findrouteroom[FindrouteKey]) {
                 for (let rroom of Memory.Findrouteroom[FindrouteKey].a) {
@@ -56,7 +56,7 @@ export default class CreepMoveExtension extends Creep {
                 let disRoomparsed = Number((/^[WE]([0-9]+)[NS]([0-9]+)$/.exec(target.roomName)));
                 /* 计算距离 如果两个房间之间距离过短就不这样做 */
                 let enoughDistance = Math.sqrt(Math.abs(myroomparsed[0] - disRoomparsed[0]) ** 2 + Math.abs(myroomparsed[1] - disRoomparsed[1]) ** 2)
-                if (enoughDistance > 1.6 || range > 10) swi = true
+                if (enoughDistance > 3.6 || range > 3) swi = true
                 if (swi) {
                     let ret = Game.map.findRoute(this.pos.roomName, target.roomName, {
                         routeCallback(roomName) {
