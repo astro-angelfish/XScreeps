@@ -23,7 +23,8 @@ interface CreepMemory {
     // 初始身体部件统计
     bodyPartCount?: {
         [bodyType in BodyPartConstant]?: number
-    }
+    },
+    Rerunt?:number/*爬的重启时间*/
 }
 
 interface BoostData {

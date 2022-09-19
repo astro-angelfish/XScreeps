@@ -29,7 +29,6 @@ export default class RoomFunctionTowerExtension extends Room {
                 }
                 Ntower.repair(Repairdata)
             }
-
         }
         else if (this, this.memory.state == 'war') {
             if (Game.flags[`${this.name}/stop`]) return
@@ -120,6 +119,5 @@ export default class RoomFunctionTowerExtension extends Room {
                 global.Repairlist[this.name].push(repairRoad_.id)
             }
         }
-
     }
 }

@@ -421,45 +421,48 @@ export default class RoomFunctionFindExtension extends Room {
     * 建筑任务初始化 目前包含terminal factory link
     */
     public StructureMission(): void {
+        if (Game.cpu.bucket < 1000 && Memory.StopPixel) return;
         let structures = []
         var IdData = this.memory.StructureIdData
         /*终端信息*/
-        let terminal = this.terminal as StructureTerminal
-        if (terminal) { structures.push(terminal) }
-
-        /*工厂信息*/
-        let factory = this.GetStructData(STRUCTURE_FACTORY) as StructureFactory
-        if (factory) { structures.push(factory) }
-
-        /*Link信息*/
-        for (let _link of this.getStructure(STRUCTURE_LINK) as StructureLink[]) {
-            structures.push(_link)
+        if (Game.cpu.bucket > 1500 && Memory.StopPixel) {
+            let terminal = this.terminal as StructureTerminal
+            if (terminal) { structures.push(terminal) }
         }
-        // if (IdData.center_link) {
-        //     let center_link = Game.getObjectById(IdData.center_link) as StructureLink
-        //     if (!center_link) { delete IdData.center_link }
-        //     else structures.push(center_link)
+        /*工厂信息*/
+        if (IdData.FactoryId && Game.cpu.bucket > 2000 && Memory.StopPixel) {
+            let factory = Game.getObjectById(IdData.FactoryId) as StructureFactory
+            if (factory) { structures.push(factory) }
+        }
+        /*Link信息*/
+        // for (let _link of this.getStructure(STRUCTURE_LINK) as StructureLink[]) {
+        //     structures.push(_link)
         // }
-        // if (IdData.source_links && IdData.source_links.length > 0) {
-        //     for (var s of IdData.source_links) {
-        //         let sl = Game.getObjectById(s) as StructureLink
-        //         if (!sl) {
-        //             var index = IdData.source_links.indexOf(s)
-        //             IdData.source_links.splice(index, 1)
-        //         }
-        //         else structures.push(sl)
-        //     }
-        // }
-        // if (IdData.comsume_link && IdData.comsume_link.length > 0) {
-        //     for (var s of IdData.comsume_link) {
-        //         let sl = Game.getObjectById(s) as StructureLink
-        //         if (!sl) {
-        //             var index = IdData.comsume_link.indexOf(s)
-        //             IdData.comsume_link.splice(index, 1)
-        //         }
-        //         else structures.push(sl)
-        //     }
-        // }
+        if (IdData.center_link) {
+            let center_link = Game.getObjectById(IdData.center_link) as StructureLink
+            if (!center_link) { delete IdData.center_link }
+            else structures.push(center_link)
+        }
+        if (IdData.source_links && IdData.source_links.length > 0) {
+            for (var s of IdData.source_links) {
+                let sl = Game.getObjectById(s) as StructureLink
+                if (!sl) {
+                    var index = IdData.source_links.indexOf(s)
+                    IdData.source_links.splice(index, 1)
+                }
+                else structures.push(sl)
+            }
+        }
+        if (IdData.comsume_link && IdData.comsume_link.length > 0) {
+            for (var s of IdData.comsume_link) {
+                let sl = Game.getObjectById(s) as StructureLink
+                if (!sl) {
+                    var index = IdData.comsume_link.indexOf(s)
+                    IdData.comsume_link.splice(index, 1)
+                }
+                else structures.push(sl)
+            }
+        }
         if (structures.length > 0) {
             for (var obj of structures) {
                 if (obj.ManageMission) {

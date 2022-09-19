@@ -130,20 +130,22 @@ export default class RoomMissonTransportExtension extends Room {
             return
         } else {
             let ghodiumRequired = 5000 - storedGhodium
-            let _DispatchNum = DispatchNum(this.name);
-            /* 资源调度 */
-            if (_DispatchNum <= 0 && this.MissionNum('Structure', '资源购买') <= 0 && !checkSend(this.name, 'G' as ResourceConstant)) {
-                console.log(Colorful(`[资源调度] 房间${this.name}没有足够的资源[G],将执行资源调度!`, 'yellow'))
-                let dispatchTask: RDData = {
-                    sourceRoom: this.name,
-                    rType: 'G' as ResourceConstant,
-                    num: ghodiumRequired,
-                    delayTick: 200,
-                    conditionTick: 20,
-                    buy: true,
-                    mtype: 'deal'
+            if (ghodiumRequired > 0) {
+                let _DispatchNum = DispatchNum(this.name);
+                /* 资源调度 */
+                if (_DispatchNum <= 0 && this.MissionNum('Structure', '资源购买') <= 0 && !checkSend(this.name, 'G' as ResourceConstant)) {
+                    console.log(Colorful(`[资源调度] 房间${this.name}没有足够的资源[G],将执行资源调度!`, 'yellow'))
+                    let dispatchTask: RDData = {
+                        sourceRoom: this.name,
+                        rType: 'G' as ResourceConstant,
+                        num: ghodiumRequired,
+                        delayTick: 200,
+                        conditionTick: 20,
+                        buy: true,
+                        mtype: 'deal'
+                    }
+                    Memory.ResourceDispatchData.push(dispatchTask)
                 }
-                Memory.ResourceDispatchData.push(dispatchTask)
             }
         }
         if (nuker.store.getUsedCapacity('energy') < 300000 && storage_.store.getUsedCapacity('energy') > 200000) {

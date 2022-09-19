@@ -108,9 +108,9 @@ export const createApp = function (opt: Partial<CreateOptions> = {}) {
      */
     const run = function (): void {
         // console.log(`——初始化——${Game.cpu.getUsed()}——`)
-        if (Memory.Systemswitch.Showtestcreep || Memory.Systemswitch.Showtestroom) {
-            console.log(`—————————— Game.time ${Game.time} ——————————`)
-        }
+        // if (Memory.Systemswitch.Showtestcreep || Memory.Systemswitch.Showtestroom || Memory.Systemswitch.Showtestpowercreep || Memory.Systemswitch.ShowtestroomInit || Memory.Systemswitch.ShowtestroomMisson) {
+        //     console.log(`—————————— Game.time ${Game.time} ——————————`)
+        // }
         // 有内存缓存的话就包裹一下，否则就直接运行
         if (_memoryCacher) _memoryCacher(_run)
         else _run()
@@ -129,14 +129,35 @@ export const createApp = function (opt: Partial<CreateOptions> = {}) {
             execLifecycleCallback('born')
             Memory[appName] = true
         }
-
+        var cpu_test = false
+        if (Memory.Systemswitch.Showtestrun) {
+            cpu_test = true
+        }
+        let cpu_list = [];
+        if (cpu_test) { cpu_list.push(Game.cpu.getUsed()) }
         collectCost('tickStart', SHOW_BASE_CPU_COST, execLifecycleCallback, 'tickStart')
 
+        if (cpu_test) { cpu_list.push(Game.cpu.getUsed()) }
         if (roomRunner) collectCost('room', SHOW_BASE_CPU_COST, runAllRoom)
+        if (cpu_test) { cpu_list.push(Game.cpu.getUsed()) }
         if (creepRunner) collectCost('creep', SHOW_BASE_CPU_COST, runAllCreep)
+        if (cpu_test) { cpu_list.push(Game.cpu.getUsed()) }
         if (powerCreepRunner) collectCost('powerCreep', SHOW_BASE_CPU_COST, runAllPowerCreep)
-
+        if (cpu_test) { cpu_list.push(Game.cpu.getUsed()) }
         collectCost('tickEnd', SHOW_BASE_CPU_COST, execLifecycleCallback, 'tickEnd')
+        if (cpu_test) {
+            cpu_list.push(Game.cpu.getUsed())
+            console.log(
+                Game.time,
+                'tickStart' + (cpu_list[1] - cpu_list[0]).toFixed(3),
+                'room' + (cpu_list[2] - cpu_list[1]).toFixed(3),
+                'creep' + (cpu_list[3] - cpu_list[2]).toFixed(3),
+                'powerCreep' + (cpu_list[4] - cpu_list[3]).toFixed(3),
+                'tickEnd' + (cpu_list[5] - cpu_list[4]).toFixed(3),
+                '总计' + (cpu_list[5] - cpu_list[0]).toFixed(3),
+                '初始化' + (cpu_list[0]).toFixed(3),
+            )
+        }
     }
 
     /**

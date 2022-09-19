@@ -8,7 +8,7 @@ export const roomRunner = function (room: Room): void {
     var cpu_test = false
     if (Memory.Systemswitch.Showtestroom) {
         cpu_test = true
-      }
+    }
     let cpu_list = [];
     /* 房间核心 */
     if (cpu_test) { cpu_list.push(Game.cpu.getUsed()) }

@@ -7,6 +7,7 @@ export default class terminalExtension extends StructureTerminal {
     public ManageMission(): void {
         // if (this.room.MissionNum('Creep', '急速冲级') > 0) return   // 急速冲级状态下停止terminal功能
         if (this.room.controller.level < 6) return;
+        if (Game.cpu.bucket < 1000 && Memory.StopPixel) return;
         var allmyTask = []
         for (var task of this.room.memory.Misson['Structure']) {
             if (!task.structure) continue
@@ -389,8 +390,9 @@ export default class terminalExtension extends StructureTerminal {
      * 资源买卖函数 买卖资源(不deal购买)
      */
     public ResourceMarket(): void {
+        if (Game.cpu.bucket < 7000 && Memory.StopPixel) return;
         if (Game.shard.name == 'shard3') {
-            if ((Game.time - global.Gtime[this.room.name]) % 17) return
+            if ((Game.time - global.Gtime[this.room.name]) % 23) return
         } else {
             if ((Game.time - global.Gtime[this.room.name]) % 3) return
         }
@@ -563,7 +565,7 @@ export default class terminalExtension extends StructureTerminal {
                                             let highest = notmehighestPrice(order.resourceType, 'buy', l.autofilteraisle);
                                             /*当前处于最高价则不进行处理*/
                                             // if (highest <= l.price) l.refreshtime = Game.time;
-                                            let newprice = Number(highest) + 0.01;
+                                            let newprice = Number(highest) + 0.001;
                                             newprice = newprice > Automarketdata.max ? Automarketdata.max : newprice;
                                             l.refreshtime = Game.time;
                                             if (newprice == l.price) continue;

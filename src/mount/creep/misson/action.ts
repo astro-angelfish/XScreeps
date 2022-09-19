@@ -952,7 +952,7 @@ export default class CreepMissonActionExtension extends Creep {
             if (this.memory.working) {
                 var storage_ = Game.rooms[this.memory.belong].storage as StructureStorage
                 if (!storage_) return
-                if (!this.pos.isNearTo(storage_)) this.goTo(storage_.pos, 1)
+                if (!this.pos.isNearTo(storage_)) this.goTo(storage_.pos, 1, 300)
                 else {
                     for (var i in this.store) {
                         this.transfer(storage_, i as ResourceConstant)
@@ -968,7 +968,12 @@ export default class CreepMissonActionExtension extends Creep {
                         this.harvest(mineral)
                         return;
                     }
-                    if (this.ticksToLive < 15) this.suicide()
+                    if (this.ticksToLive < 15) {
+                        if (Game.cpu.bucket < 7000 && Memory.StopPixel) {
+                            Game.rooms[this.memory.belong].DeleteMission(this.memory.MissionData.id)
+                        }
+                        this.suicide()
+                    }
                     if (!mineral.mineralAmount) {
                         Game.rooms[this.memory.belong].DeleteMission(this.memory.MissionData.id)
                         this.suicide()

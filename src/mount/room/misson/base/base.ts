@@ -8,13 +8,11 @@ export default class RoomMissonFrameExtension extends Room {
     /* 任务管理器 */
     public MissionManager(): void {
         var cpu_test = false
-        // switch (Game.shard.name) {
-        //     case 'shard3':
-        //         cpu_test = true
-        //         break;
-        // }
+        if (Memory.Systemswitch.ShowtestroomMisson) {
+            cpu_test = true
+        }
         let cpu_list = [];
-        // if (cpu_test) { cpu_list.push(Game.cpu.getUsed()) }
+        if (cpu_test) { cpu_list.push(Game.cpu.getUsed()) }
         this.SpeedUpcontroller()
         // 冷却监测
         this.CoolDownCaculator()
@@ -28,7 +26,7 @@ export default class RoomMissonFrameExtension extends Room {
         this.Update_Lab()
         /* PC任务管理器 */
         this.PowerCreep_TaskManager()
-        // if (cpu_test) { cpu_list.push(Game.cpu.getUsed()) }
+        if (cpu_test) { cpu_list.push(Game.cpu.getUsed()) }
 
         /* [全自动] 任务挂载区域 需要按照任务重要程度进行排序 */
         this.Spawn_Feed()    // 虫卵填充任务 
@@ -48,6 +46,7 @@ export default class RoomMissonFrameExtension extends Room {
         this.Task_montitorPower()   // 烧power任务监控
         this.Task_Auto_Defend()     // 主动防御任务发布
 
+        if (cpu_test) { cpu_list.push(Game.cpu.getUsed()) }
 
         /* 基本任务监控区域 */
         for (var index in this.memory.Misson) {
@@ -92,25 +91,17 @@ export default class RoomMissonFrameExtension extends Room {
                 }
             }
         }
-        // if (cpu_test) {
-        //     cpu_list.push(Game.cpu.getUsed())
-        //     console.log(
-        //         // room.name,
-        //         // '初始化' + (cpu_list[1] - cpu_list[0]).toFixed(3),
-        //         // '房间布局' + (cpu_list[2] - cpu_list[1]).toFixed(3),
-        //         // '孵化管理' + (cpu_list[3] - cpu_list[2]).toFixed(3),
+        if (cpu_test) {
+            cpu_list.push(Game.cpu.getUsed())
+            console.log(
+                this.name,
+                '基础任务' + (cpu_list[1] - cpu_list[0]).toFixed(3),
+                '全自动' + (cpu_list[2] - cpu_list[1]).toFixed(3),
+                '任务管理' + (cpu_list[3] - cpu_list[2]).toFixed(3),
 
-        //         '任务管理' + (cpu_list[4] - cpu_list[3]).toFixed(3),
-        //         // '孵化爬虫' + (cpu_list[5] - cpu_list[4]).toFixed(3),
-        //         // '防御塔' + (cpu_list[6] - cpu_list[5]).toFixed(3),
-
-        //         'T-L-F' + (cpu_list[7] - cpu_list[6]).toFixed(3),
-        //         // '资源调度' + (cpu_list[8] - cpu_list[7]).toFixed(3),
-        //         // '房间可视' + (cpu_list[9] - cpu_list[8]).toFixed(3),
-
-        //         '总计' + (cpu_list[10] - cpu_list[0]).toFixed(3),
-        //     )
-        // }
+                '总计' + (cpu_list[3] - cpu_list[0]).toFixed(3),
+            )
+        }
     }
 
     /* 添加任务 */
@@ -213,6 +204,7 @@ export default class RoomMissonFrameExtension extends Room {
                 /* 删除任务*/
                 var index = this.memory.Misson[range].indexOf(m)
                 this.memory.Misson[range].splice(index, 1)
+                if (global.getMission[this.name][id]) delete global.getMission[this.name][id];
                 if (!isInArray(Memory.ignoreMissonName, m.name))
                     console.log(Colorful(`${m.name} 任务删除 xxx ID:${m.id} Room:${this.name}`, 'blue'))
                 return true
@@ -305,11 +297,15 @@ export default class RoomMissonFrameExtension extends Room {
 
     /* 获取任务 */
     public GainMission(id: string): MissionModel | null {
-        for (var i in this.memory.Misson)
+        if (global.getMission[this.name][id]) return global.getMission[this.name][id];
+        for (var i in this.memory.Misson) {
             for (var t of this.memory.Misson[i]) {
-                if (t.id == id)
+                if (t.id == id) {
+                    global.getMission[this.name][id] = t;
                     return t
+                }
             }
+        }
         return null
     }
 

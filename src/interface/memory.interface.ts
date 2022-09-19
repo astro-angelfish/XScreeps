@@ -18,8 +18,18 @@ interface Memory {
         SystemEconomy?: boolean,
         SystemStopPower?: boolean,
         SystemUpgrade?: boolean,
-        Showtestroom?:boolean,
-        Showtestcreep?:boolean
+        Showtestroom?: boolean,
+        Showtestcreep?: boolean,
+        Showtestpowercreep?:boolean,
+        ShowtestroomInit?:boolean,
+        ShowtestroomMisson?:boolean,
+        Showtestrun?:boolean
+    },
+    Findrouteroom: {
+        [key: string]: {
+            t: number,
+            a: string[]
+        }
     },
     pixelInfo: { buy: { num: number, price: number, unit: number, floor: number, order: string }, sell: { num: number, price: number, unit: number, ceil: number, order: string } }
 }

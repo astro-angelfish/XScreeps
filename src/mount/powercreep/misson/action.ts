@@ -116,8 +116,12 @@ export default class PowerCreepMissonAction extends PowerCreep {
 
     /* 操作工厂 */
     public handle_pwr_factory(): void {
-        var factory_ = Game.rooms[this.memory.belong].GetStructData('factory') as StructureStorage
-        if (!factory_) return
+        // var factory_ = Game.rooms[this.memory.belong].GetStructData('factory') as StructureStorage
+        var factory_ = Game.getObjectById(Game.rooms[this.memory.belong].memory.StructureIdData.FactoryId) as StructureFactory
+        if (!factory_) {
+            delete Game.rooms[this.memory.belong].memory.StructureIdData.FactoryId;
+            return
+        }
         if (this.powers[PWR_OPERATE_FACTORY] && this.powers[PWR_OPERATE_FACTORY].cooldown) {
             if (Game.rooms[this.memory.belong].GainMission(this.memory.MissionData.id)) {
                 Game.rooms[this.memory.belong].DeleteMission(this.memory.MissionData.id)
@@ -137,8 +141,12 @@ export default class PowerCreepMissonAction extends PowerCreep {
 
     /* 操作powerspawn */
     public handle_pwr_powerspawn(): void {
-        var powerspawn_ = Game.rooms[this.memory.belong].GetStructData('powerspawn') as StructureStorage
-        if (!powerspawn_) return
+        // var powerspawn_ = Game.rooms[this.memory.belong].GetStructData('powerspawn') as StructureStorage
+        var powerspawn_ = Game.getObjectById(Game.rooms[this.memory.belong].memory.StructureIdData.PowerSpawnID) as StructurePowerSpawn
+        if (!powerspawn_) {
+            delete Game.rooms[this.memory.belong].memory.StructureIdData.PowerSpawnID;
+            return
+        }
         if (this.powers[PWR_OPERATE_POWER] && this.powers[PWR_OPERATE_POWER].cooldown) {
             if (Game.rooms[this.memory.belong].GainMission(this.memory.MissionData.id)) {
                 Game.rooms[this.memory.belong].DeleteMission(this.memory.MissionData.id)

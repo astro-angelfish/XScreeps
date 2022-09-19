@@ -100,6 +100,8 @@ export default class RoomCoreSpawnExtension extends Room {
     public SpawnExecution(): void {
         // 没有孵化任务就return
         if (!this.memory.SpawnList || this.memory.SpawnList.length <= 0) return
+        let allEnergy = this.energyAvailable
+        if (allEnergy < 300) { return }
         // 如果没有spawn就return
         if (!this.memory.StructureIdData.spawn || this.memory.StructureIdData.spawn.length <= 0) return
         for (let thisSpawn of this.find(FIND_MY_SPAWNS) as StructureSpawn[]) {
@@ -115,10 +117,7 @@ export default class RoomCoreSpawnExtension extends Room {
             if (thisSpawn.spawning) continue
 
             var spawnlist = this.memory.SpawnList
-            if (spawnlist.length <= 0) return
             /*基于当前能量确定最小孵化值-不低于300以免出现体型过小的单位*/
-            let allEnergy = this.energyAvailable
-            if (allEnergy < 300) { return }
             let roleName = spawnlist[0].role
             let mem = spawnlist[0].memory
             let bd = spawnlist[0].body
@@ -170,42 +169,45 @@ export default class RoomCoreSpawnExtension extends Room {
                 }
             }
             let name: string = null
-            if (["superbitch", "ExtraDim"].includes(thisSpawn.owner.username)) {
-                let int32 = Math.pow(2, 32)
-                let randomId = () => _.padLeft(Math.ceil(Math.random() * int32).toString(16).toLocaleUpperCase(), 8, "0")
-                let processName = function () {
-                    return `${mark}x` + randomId()
-                }
-                name = processName()
-            }
-            else if (["somygame"].includes(thisSpawn.owner.username)) {
-                let int32 = Math.pow(2, 32)
-                let randomId = () => _.padLeft(Math.ceil(Math.random() * int32).toString(16).toLocaleUpperCase(), 8, "0")
-                let processName = function () {
-                    return randomId() + `【${thisSpawn.room.name}】`
-                }
-                name = processName()
-            }
-            else if (["Morningtea"].includes(thisSpawn.owner.username)) {
-                let int32 = Math.pow(2, 32)
-                let timestr = (Game.time + body.length * 3 + (body.includes(CLAIM) ? 599 : 1499)).toString().substr(-4)
-                let randomId = () => _.padLeft(Math.ceil(Math.random() * int32).toString(16).toLocaleUpperCase(), 6, "0")
-                let processName = function () {
-                    return randomId() + `/` + timestr
-                }
-                name = processName()
-            }
-            else if (["CalvinG"].includes(thisSpawn.owner.username)) {
-                let processName = function () {
-                    return `${mark}-` + `${thisSpawn.room.name}-` + `${Game.time}`
-                }
-                name = processName()
-            }
-            else if (["shenli"].includes(thisSpawn.owner.username)) {
-                name = CreepNameManager.registerName(this);
-            }
-            else {
-                name = `【${mark}】${randomStr}|${timestr}`
+            switch (thisSpawn.owner.username) {
+                case "superbitch":
+                case "ExtraDim":
+                    var int32 = Math.pow(2, 32)
+                    var randomId = () => _.padLeft(Math.ceil(Math.random() * int32).toString(16).toLocaleUpperCase(), 8, "0")
+                    var processName = function () {
+                        return `${mark}x` + randomId()
+                    }
+                    name = processName()
+                    break;
+                case "somygame":
+                    var int32 = Math.pow(2, 32)
+                    var randomId = () => _.padLeft(Math.ceil(Math.random() * int32).toString(16).toLocaleUpperCase(), 8, "0")
+                    var processName = function () {
+                        return randomId() + `【${thisSpawn.room.name}】`
+                    }
+                    name = processName()
+                    break;
+                case "Morningtea":
+                    var int32 = Math.pow(2, 32)
+                    let timestr = (Game.time + body.length * 3 + (body.includes(CLAIM) ? 599 : 1499)).toString().substr(-4)
+                    var randomId = () => _.padLeft(Math.ceil(Math.random() * int32).toString(16).toLocaleUpperCase(), 6, "0")
+                    var processName = function () {
+                        return randomId() + `/` + timestr
+                    }
+                    name = processName()
+                    break;
+                case "CalvinG":
+                    var processName = function () {
+                        return `${mark}-` + `${thisSpawn.room.name}-` + `${Game.time}`
+                    }
+                    name = processName()
+                    break;
+                case "shenli":
+                    name = CreepNameManager.registerName(this);
+                    break;
+                default:
+                    name = `【${mark}】${randomStr}|${timestr}`
+                    break;
             }
             let result = thisSpawn.spawnCreep(body, name, { memory: thisMem })
             if (result == OK) {

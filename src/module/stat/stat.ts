@@ -27,7 +27,7 @@ export function statCPU(): void {
     var mainEndCpu = Game.cpu.getUsed()
     if (!global.CpuData) global.CpuData = []
     global.UsedCpu = mainEndCpu
-    let length_i = 200;
+    let length_i = 100;
     if (global.CpuData.length >= length_i) {
         global.CpuData = global.CpuData.slice(1);
     }
@@ -41,8 +41,8 @@ export function statCPU(): void {
 }
 
 export function stat(): void {
-    stateScanner()
     statCPU()
+    stateScanner()
 }
 
 export const statMoudle: AppLifecycleCallbacks = {

@@ -48,6 +48,14 @@ export function CreepNumStatistic(): void {
                 delete Memory.ObserverList[_ob];
             }
         }
+        for (let _ob in Memory.Findrouteroom) {
+            if (Game.time - 5000 > Memory.Findrouteroom[_ob].t) {
+                delete Memory.Findrouteroom[_ob];
+            }
+        }
+        for (let _creeps in Memory.creepscpu) {
+            if (!Game.creeps[_creeps]) delete Memory.creepscpu[_creeps];
+        }
     }
 }
 

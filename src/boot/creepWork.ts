@@ -2,11 +2,16 @@ import { RoleData, RoleLevelData } from "@/constant/SpawnConstant"
 import { CalculateEnergy, colors, GenerateAbility } from "@/utils"
 
 export const creepRunner = function (creep: Creep): void {
+
+  if (creep.memory.Rerunt) {
+    /*指令级别的操作闲置*/
+    if (creep.memory.Rerunt > Game.time) { Memory.creepscpu[creep.name] = ''; return; }
+    else delete creep.memory.Rerunt
+  }
   // 模仿原神角色说话，要求爬命名时必须使用shenli的命名方法
   if (creep.owner.username === 'shenli') {
     if (Math.random() < 0.4) creep.sayHi(creep.room.memory.state);
   }
-
   var cpu_test = false
   if (Memory.Systemswitch.Showtestcreep) {
     cpu_test = true
@@ -58,7 +63,7 @@ export const creepRunner = function (creep: Creep): void {
   if (cpu_test) {
     cpu_list.push(Game.cpu.getUsed())
     Memory.creepscpu[creep.name] = (cpu_list[1] - cpu_list[0]).toFixed(3) + "|" + (cpu_list[2] - cpu_list[1]).toFixed(3) + "|" + creep.memory.role;
-    if (cpu_list[2] - cpu_list[0] > 0.6) {
+    if (cpu_list[2] - cpu_list[0] > 0.3) {
       let MissionDataName = '未领取';
       if (creep.memory.MissionData?.name) {
         MissionDataName = creep.memory.MissionData.name;
@@ -70,7 +75,8 @@ export const creepRunner = function (creep: Creep): void {
         '任务执行' + (cpu_list[2] - cpu_list[1]).toFixed(3),
         '总计' + (cpu_list[2] - cpu_list[0]).toFixed(3),
         creep.memory.role,
-        MissionDataName
+        MissionDataName,
+        creep.memory.working
       )
     }
 

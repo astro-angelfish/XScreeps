@@ -6,13 +6,32 @@ export default class RoomCoreInitExtension extends Room {
      * 房间初始化主函数
      */
     public RoomInit(): void {
-
+        var cpu_test = false
+        if (Memory.Systemswitch.ShowtestroomInit) {
+            cpu_test = true
+        }
+        let cpu_list = [];
+        if (cpu_test) { cpu_list.push(Game.cpu.getUsed()) }
         this.RoomMemoryInit()
+        if (cpu_test) { cpu_list.push(Game.cpu.getUsed()) }
         this.RoomStructureInit()
+        if (cpu_test) { cpu_list.push(Game.cpu.getUsed()) }
         this.RoomSpawnListInit()
+        if (cpu_test) { cpu_list.push(Game.cpu.getUsed()) }
         /*建筑初始化已废弃*/
         // this.RoomGlobalStructure()
         this.RoomGlobalDynamicconfig()
+        if (cpu_test) {
+            cpu_list.push(Game.cpu.getUsed())
+            console.log(
+                this.name,
+                'MemoryInit' + (cpu_list[1] - cpu_list[0]).toFixed(3),
+                'StructureInit' + (cpu_list[2] - cpu_list[1]).toFixed(3),
+                'SpawnListInit' + (cpu_list[3] - cpu_list[2]).toFixed(3),
+                'GlobalDynamicconfig' + (cpu_list[4] - cpu_list[3]).toFixed(3),
+                '总计' + (cpu_list[4] - cpu_list[0]).toFixed(3),
+            )
+        }
     }
 
     /**
@@ -59,6 +78,7 @@ export default class RoomCoreInitExtension extends Room {
         global.getStructure[this.name] = {};
         global.getStructureData[this.name] = {};
         global.RoleMissionNum[this.name] = {};
+        global.getMission[this.name] = {};
         delete this.memory.DefendDouId;/*每个Tick都进行重置操作*/
         this.memory.DefendDouPosition = [];
     }
@@ -91,7 +111,7 @@ export default class RoomCoreInitExtension extends Room {
             }
         }
         /* 中心点依赖建筑 - 正常情况下8级不应该发生触发*/
-        if (Memory.RoomControlData[this.name].center.length == 2 && !this.memory.StructureIdData.NtowerID) {
+        if (!this.memory.StructureIdData.NtowerID && Memory.RoomControlData[this.name].center.length == 2) {
             let centerlist = Memory.RoomControlData[this.name].center
             /* 近塔记忆更新 (用于维护道路和container的塔) */
             if (!this.memory.StructureIdData.NtowerID && this.controller.level >= 3) {
@@ -132,6 +152,7 @@ export default class RoomCoreInitExtension extends Room {
             StructureData.comsume_link = []
         }
         /* 矿点link记忆更新 */
+
         if (level == 6 || level == 7) {
             if (level == 6) {
                 if (StructureData.source_links.length <= 0) {
@@ -162,6 +183,8 @@ export default class RoomCoreInitExtension extends Room {
                 }
             }
         }
+
+
         /* 仓库记忆更新 */
         if (level >= 4 && !this.memory.StructureIdData.storageID) {
             if (this.storage) this.memory.StructureIdData.storageID = this.storage.id
@@ -175,7 +198,7 @@ export default class RoomCoreInitExtension extends Room {
             }
         }
         /* 防御塔记忆更新 */
-        if ((Game.time - global.Gtime[this.name]) % tickratio * 25 == 0 && this.controller.level >= 3) {
+        if (this.memory.StructureIdData.AtowerID.length < 6 && (Game.time - global.Gtime[this.name]) % tickratio * 25 == 0 && this.controller.level >= 3) {
             if (!this.memory.StructureIdData.AtowerID) this.memory.StructureIdData.AtowerID = []
             this.memory.StructureIdData.AtowerID as string[]
             var ATowers = this.getStructure(STRUCTURE_TOWER) as StructureTower[]
@@ -197,7 +220,7 @@ export default class RoomCoreInitExtension extends Room {
             if (extract.length == 1) this.memory.StructureIdData.extractID = extract[0].id
         }
         /* 实验室识别 */
-        if ((Game.time - global.Gtime[this.name]) % tickratio * 34 == 0) {
+        if (this.memory.StructureIdData.labs.length < 10 && (Game.time - global.Gtime[this.name]) % tickratio * 34 == 0) {
             var ALabs = this.getStructure(STRUCTURE_LAB) as StructureLab[]
             if (ALabs.length >= 1) {
                 if (!this.memory.StructureIdData.labs) this.memory.StructureIdData.labs = []

@@ -5,6 +5,7 @@ import { OptCost } from "./constant";
 export default class PowerCreepMissonBase extends PowerCreep {
     // pc处理任务专用函数
     public ManageMisson(): void {
+      
         /* 获取名字 */
         var name = this.name
         var info = name.split('/')
@@ -13,7 +14,6 @@ export default class PowerCreepMissonBase extends PowerCreep {
         // if (!this.memory.belong) this.memory.belong =this.room.name  // 所属房间
         // if (!this.memory.role) this.memory.role = 'queen' // 角色
         // if (!this.memory.shard) this.memory.shard = this.shard as shardName    // 所属shard
-
         if (info.length != 3) { this.say("名字有问题!"); return }
         if (!this.memory.belong) this.memory.belong = info[0]    // 所属房间
         if (!this.memory.role) this.memory.role = info[1]   // 角色
@@ -51,7 +51,6 @@ export default class PowerCreepMissonBase extends PowerCreep {
                 this.room.memory.UpgradespawnConfig['harvest'] = 2
             }
         }
-
         if (Object.keys(this.memory.MissionData).length <= 0) {
             /* 领取任务 */
             if ((Game.time - global.Gtime[this.room.name]) % 2) return

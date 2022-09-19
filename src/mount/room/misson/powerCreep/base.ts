@@ -165,7 +165,7 @@ export default class PowerCreepMisson extends Room {
         if (!storage_) return
         let pc = Game.powerCreeps[`${this.name}/queen/${Game.shard.name}`]
         if (!pc || !pc.powers[PWR_OPERATE_FACTORY] || pc.powers[PWR_OPERATE_FACTORY].cooldown) return
-        if (this.MissionNum("PowerCreep", '工厂合成') > 0) return
+        if (this.MissionNum("PowerCreep", '工厂强化') > 0) return
         var thisTask: MissionModel = {
             name: "工厂强化",
             delayTick: 50,

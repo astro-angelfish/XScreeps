@@ -374,7 +374,7 @@ export default class CreepMissonTransportExtension extends Creep {
                     if (!storage) return
                     if (this.room.name == this.memory.belong) {
                         if (storage.store.getFreeCapacity() > this.store.getUsedCapacity(r as ResourceConstant)) {
-                            this.transfer_(storage, r as ResourceConstant)
+                            this.transfer_(storage, r as ResourceConstant, 200)
                         } else return
                     }
                     return
@@ -412,7 +412,10 @@ export default class CreepMissonTransportExtension extends Creep {
                         }
                     }
                 } else {
-                    if (!this.pos.isNearTo(disPos)) { this.goTo(disPos, 1) }
+                    if (!this.pos.isNearTo(disPos)) {
+                        if (this.room.name == this.memory.belong) this.goTo(disPos, 1, 200)
+                        else this.goTo(disPos, 1)
+                    }
                     else {
                         var targets = disPos.GetStructureList(['terminal', 'storage', 'tower', 'powerSpawn', 'container', 'factory', 'nuker', 'lab', 'link', 'extension'])
                         if (targets.length > 0) {

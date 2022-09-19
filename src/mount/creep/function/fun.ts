@@ -30,16 +30,16 @@ export default class CreepFunctionExtension extends Creep {
         }
     }
 
-    public transfer_(distination: Structure, rType: ResourceConstant = RESOURCE_ENERGY): void {
+    public transfer_(distination: Structure, rType: ResourceConstant = RESOURCE_ENERGY, ops?: number): void {
         if (this.transfer(distination, rType) == ERR_NOT_IN_RANGE) {
-            this.goTo(distination.pos, 1)
+            this.goTo(distination.pos, 1, ops)
         }
     }
 
-    public upgrade_(): void {
+    public upgrade_(ops?: number): void {
         if (this.room.controller) {
             if (this.upgradeController(this.room.controller) == ERR_NOT_IN_RANGE) {
-                this.goTo(this.room.controller.pos, 3)
+                this.goTo(this.room.controller.pos, 3, ops ? ops : 500)
                 this.memory.standed = false
             }
             else this.memory.standed = true

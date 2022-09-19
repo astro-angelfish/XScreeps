@@ -502,28 +502,29 @@ export default class CreepMissonMineExtension extends Creep {
                     this.heal(this)
                     return
                 }
-                if (Game.creeps[this.memory.double].hits < Game.creeps[this.memory.double].hitsMax) {
-                    this.heal(Game.creeps[this.memory.double])
-                }
-                if (!this.pos.inRangeTo(missonPostion, 3)) {
-                    this.memory.standed = false
-                    if (this.room.name == this.memory.belong)
-                        this.moveTo(Game.creeps[this.memory.double].pos, {
-                            ignoreRoads: true,
-                            maxOps: 200,
-                            maxRooms: 1
-                        })
-                    else
-                        this.moveTo(Game.creeps[this.memory.double].pos, {
-                            ignoreRoads: true,
-                            maxOps: 1000,
-                            maxRooms: 4
-                        })
-                }
-                else {
+                if (this.pos.isNearTo(Game.creeps[this.memory.double])) {
                     this.memory.standed = true
-                    if (!this.pos.isNearTo(Game.creeps[this.memory.double]))
-                        this.goTo(Game.creeps[this.memory.double].pos, 1)
+                    if (Game.creeps[this.memory.double].hits < Game.creeps[this.memory.double].hitsMax) {
+                        this.heal(Game.creeps[this.memory.double])
+                        return;
+                    }
+                    if (!this.pos.inRangeTo(missonPostion, 3)) {
+                        this.memory.standed = false
+                        if (this.room.name == this.memory.belong)
+                            this.moveTo(Game.creeps[this.memory.double].pos, {
+                                ignoreRoads: true,
+                                maxOps: 200,
+                                maxRooms: 1
+                            })
+                        else
+                            this.moveTo(Game.creeps[this.memory.double].pos, {
+                                ignoreRoads: true,
+                                maxOps: 1000,
+                                maxRooms: 4
+                            })
+                    }
+                } else {
+                    this.goTo(Game.creeps[this.memory.double].pos, 1)
                 }
             }
             else {
@@ -617,6 +618,10 @@ export default class CreepMissonMineExtension extends Creep {
             case 'deposit-harvest':
                 if (!this.memory.standed) this.memory.standed = true;
                 /*这里对transfer进行绑定操作*/
+                if (this.pos.roomName != creepMisson.room) {
+                    this.goTo(missonPostion, 4)
+                    return;
+                }
                 if (this.pos.roomName == creepMisson.room) {
                     if (Game.time % 10 == 0) {
                         if (!this.memory.transfercreep) {
@@ -661,7 +666,7 @@ export default class CreepMissonMineExtension extends Creep {
                             var T_creepMisson = Game.creeps[this.memory.transfercreep].memory.MissionData.Data;
                             if (Game.creeps[this.memory.transfercreep].ticksToLive <= T_creepMisson.creeptime) return;
                             if (!this.pos.isNearTo(Game.creeps[this.memory.transfercreep])) {
-                                Game.creeps[this.memory.transfercreep].goTo(this.pos, 1)
+                                Game.creeps[this.memory.transfercreep].goTo(this.pos, 1, 100)
                                 return;
                             }
                             this.transfer(Game.creeps[this.memory.transfercreep], Object.keys(this.store)[0] as ResourceConstant)
@@ -670,48 +675,41 @@ export default class CreepMissonMineExtension extends Creep {
                     }
                 }
                 if (Free_number < 1) return;
-                if (this.pos.roomName == creepMisson.room) {
-                    if (!deposit_) {
-                        var deposit_ = Game.getObjectById(creepMisson.deposit_id) as Deposit
-                    }
-                    if (deposit_) {
-                        if (!this.pos.isNearTo(missonPostion)) {
-                            var harvest_void: RoomPosition[] = missonPostion.getSourceVoid()
-                            var active_void: RoomPosition[] = []
-                            for (var v of harvest_void) {
-                                var creep_ = v.lookFor(LOOK_CREEPS)
-                                if (creep_.length <= 0) active_void.push(v)
+                if (!deposit_) {
+                    var deposit_ = Game.getObjectById(creepMisson.deposit_id) as Deposit
+                }
+                if (deposit_) {
+                    if (!this.pos.isNearTo(missonPostion)) {
+                        var harvest_void: RoomPosition[] = missonPostion.getSourceVoid()
+                        var active_void: RoomPosition[] = []
+                        for (var v of harvest_void) {
+                            var creep_ = v.lookFor(LOOK_CREEPS)
+                            if (creep_.length <= 0) active_void.push(v)
 
-                            }
-                            if (active_void.length > 0) {
-                                this.goTo(missonPostion, 1, 200)
-                            } else {
-                                this.goTo(missonPostion, 3, 200)
-                            }
                         }
-                        if (!deposit_.cooldown && Free_number > 0) {
-                            let harvest_state = this.harvest(deposit_)
-                            this.memory.arrive = 1;
-                            switch (harvest_state) {
-                                case OK:
-                                    if (!this.memory.tick) this.memory.tick = this.ticksToLive
-                                    break;
-                                case ERR_NOT_IN_RANGE:
-                                    this.goTo(missonPostion, 1)
-                                    break;
-                            }
+                        if (active_void.length > 0) {
+                            this.goTo(missonPostion, 1, 200)
+                        } else {
+                            this.goTo(missonPostion, 3, 200)
                         }
-                    } else {
-                        if (this.pos.roomName == creepMisson.room) {
-                            Game.rooms[this.memory.belong].DeleteMission(this.memory.MissionData.id)
-                            return
+                    }
+                    if (!deposit_.cooldown && Free_number > 0) {
+                        let harvest_state = this.harvest(deposit_)
+                        this.memory.arrive = 1;
+                        switch (harvest_state) {
+                            case OK:
+                                if (!this.memory.tick) this.memory.tick = this.ticksToLive
+                                break;
+                            case ERR_NOT_IN_RANGE:
+                                this.goTo(missonPostion, 1)
+                                break;
                         }
                     }
                 } else {
-                    if (!this.pos.isNearTo(missonPostion)) {
-                        this.goTo(missonPostion, 1)
-                    }
+                    Game.rooms[this.memory.belong].DeleteMission(this.memory.MissionData.id)
+                    return
                 }
+
                 break;
             case 'deposit-transfer':
                 if (!this.memory.standed) this.memory.standed = true;
