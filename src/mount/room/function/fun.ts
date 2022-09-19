@@ -425,7 +425,7 @@ export default class RoomFunctionFindExtension extends Room {
         let structures = []
         var IdData = this.memory.StructureIdData
         /*终端信息*/
-        if (Game.cpu.bucket > 1500 || Memory.StopPixel) {
+        if (Game.cpu.bucket > 1500 || !Memory.StopPixel) {
             let terminal = this.terminal as StructureTerminal
             if (terminal) { structures.push(terminal) }
         }
