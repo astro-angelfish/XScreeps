@@ -5,7 +5,7 @@ import { OptCost } from "./constant";
 export default class PowerCreepMissonBase extends PowerCreep {
     // pc处理任务专用函数
     public ManageMisson(): void {
-      
+
         /* 获取名字 */
         var name = this.name
         var info = name.split('/')
@@ -149,6 +149,9 @@ export default class PowerCreepMissonBase extends PowerCreep {
                 if (this.store.getFreeCapacity() < max_pc_number) {
                     max_pc_number = this.store.getFreeCapacity();
                 }
+                if (storage_.store.getUsedCapacity('ops') < max_pc_number) {
+                    max_pc_number = storage_.store.getUsedCapacity('ops');
+                }
                 // max_pc_number = max_pc_number < 200 ? 200 : max_pc_number;
                 if (this.withdraw(storage_, 'ops', max_pc_number) == ERR_NOT_IN_RANGE) {
                     this.goTo(storage_.pos, 1)
@@ -158,6 +161,9 @@ export default class PowerCreepMissonBase extends PowerCreep {
                 var max_pc_number = Number(this.store.getCapacity()) / 2;
                 if (this.store.getFreeCapacity() < max_pc_number) {
                     max_pc_number = this.store.getFreeCapacity();
+                }
+                if (terminal_.store.getUsedCapacity('ops') < max_pc_number) {
+                    max_pc_number = terminal_.store.getUsedCapacity('ops');
                 }
                 // max_pc_number = max_pc_number < 200 ? 200 : max_pc_number;
                 if (this.withdraw(terminal_, 'ops', max_pc_number) == ERR_NOT_IN_RANGE) {

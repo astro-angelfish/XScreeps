@@ -377,7 +377,11 @@ export default class CreepMissonMineExtension extends Creep {
                     return
 
                 /*出击 主动攻击*/
-                const h_creeps = this.pos.findInRange(FIND_HOSTILE_CREEPS, 4);
+                const h_creeps = this.pos.findInRange(FIND_HOSTILE_CREEPS, 4, {
+                    filter: function (object) {
+                        return (!isInArray([0, 49], object.pos.x) && !isInArray([0, 49], object.pos.y))
+                    }
+                });
                 if (h_creeps.length > 0) {
                     // console.log("找到攻击目标",h_creeps[0].name)
                     /*搜索拥有攻击组件的爬为优先*/
@@ -496,19 +500,16 @@ export default class CreepMissonMineExtension extends Creep {
             }
         }
         else if (role == 'power-heal') {
-            if (!this.memory.double) return
+            if (!this.memory.double) {
+                return
+            }
             if (Game.creeps[this.memory.double]) {
                 if (this.hits < this.hitsMax) {
                     this.heal(this)
-                    return
                 }
                 if (this.pos.isNearTo(Game.creeps[this.memory.double])) {
                     this.memory.standed = true
-                    if (Game.creeps[this.memory.double].hits < Game.creeps[this.memory.double].hitsMax) {
-                        this.heal(Game.creeps[this.memory.double])
-                        return;
-                    }
-                    if (!this.pos.inRangeTo(missonPostion, 3)) {
+                    if (!this.pos.inRangeTo(missonPostion, 2)) {
                         this.memory.standed = false
                         if (this.room.name == this.memory.belong)
                             this.moveTo(Game.creeps[this.memory.double].pos, {
@@ -523,12 +524,20 @@ export default class CreepMissonMineExtension extends Creep {
                                 maxRooms: 4
                             })
                     }
+                    if (Game.creeps[this.memory.double].hits < Game.creeps[this.memory.double].hitsMax) {
+                        this.heal(Game.creeps[this.memory.double])
+                        return;
+                    }
                 } else {
                     this.goTo(Game.creeps[this.memory.double].pos, 1)
                 }
-            }
-            else {
-                this.suicide()
+            } else {
+                var powerbank_ = missonPostion.GetStructure('powerBank')
+                if (!powerbank_) this.suicide()
+                if (this.hits < this.hitsMax) {
+                    this.heal(this)
+                    return
+                }
             }
         }
         else if (role == 'power-carry') {
