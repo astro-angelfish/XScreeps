@@ -198,16 +198,18 @@ export default class RoomCoreInitExtension extends Room {
             }
         }
         /* 防御塔记忆更新 */
-        if (this.memory.StructureIdData.AtowerID.length < 6 && (Game.time - global.Gtime[this.name]) % tickratio * 25 == 0 && this.controller.level >= 3) {
+        if (this.controller.level >= 3 && (Game.time - global.Gtime[this.name]) % tickratio * 25 == 0) {
             if (!this.memory.StructureIdData.AtowerID) this.memory.StructureIdData.AtowerID = []
-            this.memory.StructureIdData.AtowerID as string[]
-            var ATowers = this.getStructure(STRUCTURE_TOWER) as StructureTower[]
-            if (ATowers.length > this.memory.StructureIdData.AtowerID.length) {
-                for (var t of ATowers)
-                    if (t.my && !isInArray(this.memory.StructureIdData.AtowerID as string[], t.id)) {
-                        var AtowerID = this.memory.StructureIdData.AtowerID as string[]
-                        AtowerID.push(t.id)
-                    }
+            if (this.memory.StructureIdData.AtowerID.length < 6) {
+                this.memory.StructureIdData.AtowerID as string[]
+                var ATowers = this.getStructure(STRUCTURE_TOWER) as StructureTower[]
+                if (ATowers.length > this.memory.StructureIdData.AtowerID.length) {
+                    for (var t of ATowers)
+                        if (t.my && !isInArray(this.memory.StructureIdData.AtowerID as string[], t.id)) {
+                            var AtowerID = this.memory.StructureIdData.AtowerID as string[]
+                            AtowerID.push(t.id)
+                        }
+                }
             }
         }
         /* 终端识别  -不进行重复刷新*/
@@ -220,14 +222,16 @@ export default class RoomCoreInitExtension extends Room {
             if (extract.length == 1) this.memory.StructureIdData.extractID = extract[0].id
         }
         /* 实验室识别 */
-        if (this.memory.StructureIdData.labs.length < 10 && (Game.time - global.Gtime[this.name]) % tickratio * 34 == 0) {
-            var ALabs = this.getStructure(STRUCTURE_LAB) as StructureLab[]
-            if (ALabs.length >= 1) {
-                if (!this.memory.StructureIdData.labs) this.memory.StructureIdData.labs = []
-                for (var llab of ALabs) {
-                    if (llab.my && !isInArray(this.memory.StructureIdData.labs as string[], llab.id)) {
-                        var labs = this.memory.StructureIdData.labs as string[]
-                        labs.push(llab.id)
+        if ((Game.time - global.Gtime[this.name]) % tickratio * 34 == 0) {
+            if (!this.memory.StructureIdData.labs) this.memory.StructureIdData.labs = []
+            if (this.memory.StructureIdData.labs.length < 10) {
+                var ALabs = this.getStructure(STRUCTURE_LAB) as StructureLab[]
+                if (ALabs.length >= 1) {
+                    for (var llab of ALabs) {
+                        if (llab.my && !isInArray(this.memory.StructureIdData.labs as string[], llab.id)) {
+                            var labs = this.memory.StructureIdData.labs as string[]
+                            labs.push(llab.id)
+                        }
                     }
                 }
             }

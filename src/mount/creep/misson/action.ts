@@ -392,6 +392,7 @@ export default class CreepMissonActionExtension extends Creep {
                 this.upgrade_()
             }
             else {
+                if (this.ticksToLive < 60) this.suicide()
                 delete this.memory.targetID;
                 // 以withdraw开头的旗帜  例如： withdraw_0
                 let withdrawFlag = this.room.find(FIND_FLAGS, {
@@ -495,6 +496,7 @@ export default class CreepMissonActionExtension extends Creep {
                 this.upgrade_()
             }
             else {
+                if (this.ticksToLive < 60) this.suicide()
                 if (this.room.controller.level >= 8) {
                     if (missionData.Data.shard == this.memory.shard) {
                         let mission = Game.rooms[this.memory.belong].GainMission(id)
@@ -737,7 +739,16 @@ export default class CreepMissonActionExtension extends Creep {
                     else this.pickup(resources)
                     return
                 }
-
+                let tombstones = this.pos.findClosestByPath(FIND_TOMBSTONES, {
+                    filter: (res) => {
+                        return res.store.getUsedCapacity('energy') > 100
+                    }
+                })
+                if (tombstones) {
+                    if (!this.pos.isNearTo(tombstones)) this.goTo(tombstones.pos, 1)
+                    else this.withdraw(tombstones, 'energy')
+                    return
+                }
                 let source = this.pos.findClosestByPath(FIND_SOURCES_ACTIVE)
                 if (source) {
                     this.harvest_(source)
@@ -768,15 +779,14 @@ export default class CreepMissonActionExtension extends Creep {
                 this.heal(this)
             }
             this.arriveTo(new RoomPosition(24, 24, data.disRoom), 23, data.shard, data.shardData ? data.shardData : null)
-        }
-        else {
+        } else {
             this.memory.swith = true
             this.workstate('energy')
             if (this.memory.working) {
                 if (this.hits < this.hitsMax) {
                     this.optTower('heal', this, true)
                 }
-                if (!this.pos.inRangeTo(this.room.controller, 3)) this.goTo(this.room.controller.pos, 3)
+                // if (!this.pos.inRangeTo(this.room.controller, 3)) this.goTo(this.room.controller.pos, 3)
                 this.upgrade_()
             }
             else {
