@@ -101,7 +101,7 @@ export default class RoomCoreInitExtension extends Room {
                 }
             }
             else if ((level == 7 && StructureData.spawn.length < 2) || (level >= 8 && StructureData.spawn.length < 3)) {
-                if ((Game.time - global.Gtime[this.name]) % tickratio * 2 == 0) {
+                if ((Game.time - global.Gtime[this.name]) % (tickratio * 2) == 0) {
                     let ASpawn = this.find(FIND_MY_SPAWNS) as StructureSpawn[]
                     for (let sp of ASpawn) {
                         if (!isInArray(StructureData.spawn, sp.id))
@@ -137,7 +137,7 @@ export default class RoomCoreInitExtension extends Room {
         /* 升级Link记忆更新 -不进行重复刷新*/
         if (!StructureData.source_links) StructureData.source_links = []
         if (level >= 5 && !StructureData.upgrade_link) {
-            if ((Game.time - global.Gtime[this.name]) % tickratio * 4 == 0) {
+            if ((Game.time - global.Gtime[this.name]) % (tickratio * 4) == 0) {
                 let upgrade_link = this.controller.pos.getRangedStructure([STRUCTURE_LINK], 3, 0) as StructureLink[]
                 if (upgrade_link.length >= 1)
                     for (let ul of upgrade_link) {
@@ -198,8 +198,8 @@ export default class RoomCoreInitExtension extends Room {
             }
         }
         /* 防御塔记忆更新 */
-        if (this.memory.StructureIdData.AtowerID.length < 6 && (Game.time - global.Gtime[this.name]) % tickratio * 25 == 0 && this.controller.level >= 3) {
-            if (!this.memory.StructureIdData.AtowerID) this.memory.StructureIdData.AtowerID = []
+        if (!this.memory.StructureIdData.AtowerID) this.memory.StructureIdData.AtowerID = []
+        if (this.memory.StructureIdData.AtowerID?.length < 6 && (Game.time - global.Gtime[this.name]) % (tickratio * 25) == 0 && this.controller.level >= 3) {
             this.memory.StructureIdData.AtowerID as string[]
             var ATowers = this.getStructure(STRUCTURE_TOWER) as StructureTower[]
             if (ATowers.length > this.memory.StructureIdData.AtowerID.length) {
@@ -220,6 +220,7 @@ export default class RoomCoreInitExtension extends Room {
             if (extract.length == 1) this.memory.StructureIdData.extractID = extract[0].id
         }
         /* 实验室识别 */
+        if (!this.memory.StructureIdData.labs) this.memory.StructureIdData.labs = []
         if (this.memory.StructureIdData.labs.length < 10 && (Game.time - global.Gtime[this.name]) % tickratio * 34 == 0) {
             var ALabs = this.getStructure(STRUCTURE_LAB) as StructureLab[]
             if (ALabs.length >= 1) {
@@ -248,7 +249,7 @@ export default class RoomCoreInitExtension extends Room {
             }
 
         }
-        if ((Game.time - global.Gtime[this.name]) % tickratio * 10 == 0) {
+        if ((Game.time - global.Gtime[this.name]) % (tickratio * 10) == 0) {
             /* 观察器识别 */
             if (!this.memory.StructureIdData.ObserverID && this.controller.level >= 8) {
                 var observer_ = this.getStructure(STRUCTURE_OBSERVER)
@@ -285,7 +286,7 @@ export default class RoomCoreInitExtension extends Room {
             }
         }
         let carry_num = 0;
-        if ((Game.time - global.Gtime[this.name]) % tickratio * 5 == 0) {
+        if ((Game.time - global.Gtime[this.name]) % (tickratio * 5) == 0) {
             for (let id in this.memory.harvestData) {
                 if (!this.memory.harvestData[id].containerID) {
                     let source = Game.getObjectById(id as Id<Source>) as Source
