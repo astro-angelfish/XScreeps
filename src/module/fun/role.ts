@@ -1,4 +1,4 @@
-import { loop } from "@/main";
+import frame from "@/mount/console/control/frame";
 import { getDistance, isInArray } from "@/utils";
 
 /**
@@ -35,6 +35,11 @@ export function harvest_(creep_: Creep): void {
             return
         }
         if (data.linkID) {
+            if (data.containerID && creep_.room.controller?.level >= 7) {
+                let container = Game.getObjectById(data.containerID as Id<StructureContainer>) as StructureContainer
+                if (container) frame.frame.del(creep_.room.name, container.pos.x, container.pos.y, STRUCTURE_CONTAINER)
+                delete data.containerID
+            }
             let link = Game.getObjectById(data.linkID as Id<StructureLink>) as StructureLink
             if (!link) delete data.linkID
             else {
@@ -50,7 +55,7 @@ export function harvest_(creep_: Creep): void {
                 }
             }
         } else if (data.containerID) {
-            let container = Game.getObjectById(data.containerID as Id<StructureLink>) as StructureLink
+            let container = Game.getObjectById(data.containerID as Id<StructureContainer>) as StructureContainer
             if (!container) delete data.containerID
             else {
                 if (container.hits < container.hitsMax) { creep_.repair(container); return }

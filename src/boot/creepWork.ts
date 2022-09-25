@@ -5,7 +5,7 @@ export const creepRunner = function (creep: Creep): void {
 
   if (creep.memory.Rerunt) {
     /*指令级别的操作闲置*/
-    if (creep.memory.Rerunt > Game.time) { Memory.creepscpu[creep.name] = ''; return; }
+    if (creep.memory.Rerunt > Game.time && !((Game.getObjectById(creep.memory.targetID) as Source).effects)) { Memory.creepscpu[creep.name] = ''; return; }
     else delete creep.memory.Rerunt
   }
   // 模仿原神角色说话，要求爬命名时必须使用shenli的命名方法
