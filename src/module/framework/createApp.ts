@@ -130,7 +130,7 @@ export const createApp = function (opt: Partial<CreateOptions> = {}) {
             Memory[appName] = true
         }
         var cpu_test = false
-        if (Memory.Systemswitch.Showtestrun) {
+        if (Memory?.Systemswitch?.Showtestrun) {
             cpu_test = true
         }
         let cpu_list = [];
