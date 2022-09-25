@@ -198,6 +198,8 @@ export default class RoomCoreInitExtension extends Room {
             }
         }
         /* 防御塔记忆更新 */
+        if (this.controller.level >= 3 && (Game.time - global.Gtime[this.name]) % tickratio * 25 == 0) {
+            if (!this.memory.StructureIdData.AtowerID) this.memory.StructureIdData.AtowerID = []
             if (this.memory.StructureIdData.AtowerID.length < 6) {
                 this.memory.StructureIdData.AtowerID as string[]
                 var ATowers = this.getStructure(STRUCTURE_TOWER) as StructureTower[]
@@ -220,6 +222,16 @@ export default class RoomCoreInitExtension extends Room {
             if (extract.length == 1) this.memory.StructureIdData.extractID = extract[0].id
         }
         /* 实验室识别 */
+        if ((Game.time - global.Gtime[this.name]) % tickratio * 34 == 0) {
+            if (!this.memory.StructureIdData.labs) this.memory.StructureIdData.labs = []
+            if (this.memory.StructureIdData.labs.length < 10) {
+                var ALabs = this.getStructure(STRUCTURE_LAB) as StructureLab[]
+                if (ALabs.length >= 1) {
+                    for (var llab of ALabs) {
+                        if (llab.my && !isInArray(this.memory.StructureIdData.labs as string[], llab.id)) {
+                            var labs = this.memory.StructureIdData.labs as string[]
+                            labs.push(llab.id)
+                        }
                     }
                 }
             }
