@@ -553,7 +553,9 @@ export default class terminalExtension extends StructureTerminal {
                                     /*检查是否满足了调价的要求时间*/
                                     if (Game.time - l.refreshtime < autotime) break;
                                     /*检查是否已经达到最近价格*/
-                                    if (l.price >= Automarketdata.max) {
+                                    let pricemax = Automarketdata.max
+                                    if (l.automax) pricemax = l.automax;
+                                    if (l.price >= pricemax) {
                                         l.refreshtime = Game.time;
                                         break;
                                     }
@@ -566,7 +568,7 @@ export default class terminalExtension extends StructureTerminal {
                                             /*当前处于最高价则不进行处理*/
                                             // if (highest <= l.price) l.refreshtime = Game.time;
                                             let newprice = Number(highest) + 0.001;
-                                            newprice = newprice > Automarketdata.max ? Automarketdata.max : newprice;
+                                            newprice = newprice > pricemax ? pricemax : newprice;
                                             l.refreshtime = Game.time;
                                             if (newprice == l.price) continue;
                                             l.price = newprice;
@@ -658,7 +660,13 @@ export default class terminalExtension extends StructureTerminal {
             /* 资源判断 */
             var cargoNum: number = task.Data.rType == 'energy' ? this.store.getUsedCapacity(task.Data.rType) - wastage : this.store.getUsedCapacity(task.Data.rType)
             console.log('终端拥有资源量:', Colorful(`${cargoNum}`, 'blue'), ' 仓库拥有资源量:', storage_.store.getUsedCapacity(task.Data.rType), ' 任务所需资源量:', task.Data.num)
+
             if (task.Data.num > cargoNum) {
+                if (storage_.store.getUsedCapacity(task.Data.rType) <= 0) {
+                    /* 条件不满足就自动删除任务 */
+                    this.room.DeleteMission(task.id)
+                    return
+                }
                 if (storage_ && (storage_.store.getUsedCapacity(task.Data.rType) + this.store.getUsedCapacity(task.Data.rType)) >= (task.Data.num - 1600) && remain > task.Data.num - cargoNum) {
                     /* 下布搬运任务 */
                     var thisTask = this.room.public_Carry({ 'manage': { num: 1, bind: [] } }, 40, this.room.name, storage_.pos.x, storage_.pos.y, this.room.name, this.pos.x, this.pos.y, task.Data.rType, task.Data.num - cargoNum)

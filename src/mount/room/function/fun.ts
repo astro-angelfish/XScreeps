@@ -433,6 +433,7 @@ export default class RoomFunctionFindExtension extends Room {
         if (IdData.FactoryId && (Game.cpu.bucket > 2000 || !Memory.StopPixel)) {
             let factory = Game.getObjectById(IdData.FactoryId) as StructureFactory
             if (factory) { structures.push(factory) }
+            else delete IdData.FactoryId
         }
         /*Link信息*/
         // for (let _link of this.getStructure(STRUCTURE_LINK) as StructureLink[]) {

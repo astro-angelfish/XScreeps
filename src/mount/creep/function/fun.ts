@@ -118,6 +118,7 @@ export default class CreepFunctionExtension extends Creep {
     // 召唤所有房间内的防御塔治疗/攻击 自己/爬虫 [不一定成功]
     public optTower(otype: 'heal' | 'attack', creep: Creep, boolean: boolean = false): void {
         if ((this.room.name != this.memory.belong || Game.shard.name != this.memory.shard) && !boolean) return
+        if (Game.rooms[this.room.name].memory.StructureIdData.AtowerID.length < 1) return
         for (var i of Game.rooms[this.room.name].memory.StructureIdData.AtowerID) {
             let tower_ = Game.getObjectById(i) as StructureTower
             if (!tower_) continue
