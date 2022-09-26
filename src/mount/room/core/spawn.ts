@@ -189,7 +189,7 @@ export default class RoomCoreSpawnExtension extends Room {
                     break;
                 case "Morningtea":
                     var int32 = Math.pow(2, 32)
-                    let timestr = (Game.time + body.length * 3 + (body.includes(CLAIM) ? 599 : 1499)).toString().substr(-4)
+                    timestr = (Game.time + body.length * 3 + (body.includes(CLAIM) ? 599 : 1499)).toString().substr(-4)
                     var randomId = () => _.padLeft(Math.ceil(Math.random() * int32).toString(16).toLocaleUpperCase(), 6, "0")
                     var processName = function () {
                         return randomId() + `/` + timestr
