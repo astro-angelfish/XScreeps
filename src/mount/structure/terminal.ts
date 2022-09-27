@@ -490,6 +490,10 @@ export default class terminalExtension extends StructureTerminal {
                                 price = l.price;
                             } else {
                                 price = avePrice(l.rType, 1);
+                                if (!price) {
+                                    var index = this.room.memory.market['order'].indexOf(l)
+                                    this.room.memory.market['order'].splice(index, 1)
+                                }
                             }
                             // let price_ave = avePrice(l.rType, 1)
                             let result = Game.market.createOrder({

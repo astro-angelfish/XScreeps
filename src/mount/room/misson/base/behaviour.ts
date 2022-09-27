@@ -671,7 +671,8 @@ export default class RoomMissonBehaviourExtension extends Room {
             if (unit > _add_number) unit = _add_number;
             /*获取一个平均的价格信息*/
             let price = 0;
-            price = avePrice(res as ResourceConstant, 1)
+            var avePriceprice = avePrice(res as ResourceConstant, 1)
+            if (avePriceprice) price = avePriceprice;
             let _addbR: LittleMarketData = {
                 rType: res as ResourceConstant,
                 num: _add_number,
