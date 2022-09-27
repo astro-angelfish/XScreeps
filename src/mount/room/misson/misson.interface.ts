@@ -32,6 +32,7 @@ interface Room {
     Task_montitorPower(): void
     Task_Auto_Defend(): void
     Global_Detection(): void
+    Auto_Basicmarket(): void
 
     // 被动任务
     Task_Carry(misson: MissionModel): void

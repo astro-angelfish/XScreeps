@@ -446,6 +446,29 @@ export default {
             thisRoom.memory.MarketPrice.buy = { low: 0, high: 0 };
             thisRoom.memory.MarketPrice.sell = { low: 0, high: 0 };
             return `[market] 房间${roomName}能量价格重置成功`
+        },
+        addAutoBasic(roomName: string, rType: ResourceConstant, number: number, pricemax?: number): string {
+            var thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[market] 不存在房间${roomName}`
+            if (thisRoom.memory.AutoBasicmarket[rType]) {
+                thisRoom.memory.AutoBasicmarket[rType].number = number
+                if (pricemax) thisRoom.memory.AutoBasicmarket[rType].pricemax = pricemax
+            }
+            let _data: any = {
+                number: number
+            };
+            if (pricemax) _data.pricemax = pricemax;
+            thisRoom.memory.AutoBasicmarket[rType] = _data;
+            if (pricemax) return `[market][Auto] 房间${roomName},rType:${rType} ,number:${number} ,pricemax:${pricemax} 添加成功`
+            else return `[market][Auto] 房间${roomName},rType:${rType} ,number:${number} 添加成功  `
+        }
+        ,
+        CaddAutoBasic(roomName: string, rType: ResourceConstant): string {
+            var thisRoom = Game.rooms[roomName]
+            if (!thisRoom) return `[market] 不存在房间${roomName}`
+            if (!thisRoom.memory.AutoBasicmarket[rType]) return `[market][Auto] 房间${roomName},rType:${rType} 查询失败`
+            delete thisRoom.memory.AutoBasicmarket[rType];
+            return `[market][Auto] 房间${roomName},rType:${rType} 移除成功`
         }
 
     },

@@ -72,6 +72,7 @@ export default class RoomCoreInitExtension extends Room {
             if (!this.memory.Labautomatic) this.memory.Labautomatic = { 'automaticData': [], 'automaticState': false }
             if (!this.memory.ExcludeRampart) { this.memory.ExcludeRampart = [] }
             if (!this.memory.Enemydistribution) { this.memory.Enemydistribution = {} }
+            if (!this.memory.AutoBasicmarket) { this.memory.AutoBasicmarket = {} }
         }
         global.HostileCreeps[this.name] = [];
         global.HostileGroup[this.name] = [];

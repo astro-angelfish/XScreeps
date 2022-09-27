@@ -47,6 +47,7 @@ export function ResourceDispatch(thisRoom: Room): void {
                     continue
                 }
                 else if (i.mtype == 'deal') {
+                    if (isInArray(['energy'], i.rType)) continue;/*能量将不会进行deal操作*/
                     if (thisRoom.Check_Buy(i.rType) || thisRoom.MissionNum('Structure', '资源购买') >= 2) continue
                     // 在一定范围内寻找最便宜的订单deal 例如平均价格20 范围 10 最高价格31 便只能接受30以下的价格 （根据资源不同选择不同参数）
                     console.log(Colorful(`[资源调度] 房间${thisRoom.name}需求资源[${i.rType}]无法调度,将进行购买! 购买方式为${i.mtype},购买数量:${i.num}`, 'yellow'))

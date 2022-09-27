@@ -45,6 +45,7 @@ export default class RoomMissonFrameExtension extends Room {
         this.Task_monitorMineral()  // 挖矿
         this.Task_montitorPower()   // 烧power任务监控
         this.Task_Auto_Defend()     // 主动防御任务发布
+        this.Auto_Basicmarket() //自动化基础资源保持功能
 
         if (cpu_test) { cpu_list.push(Game.cpu.getUsed()) }
 

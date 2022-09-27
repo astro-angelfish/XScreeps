@@ -1,5 +1,5 @@
 import { ResourceCanDispatch } from "@/module/dispatch/resource"
-import { checkBuy, checkDispatch, checkSend, DispatchNum, resourceMap } from "@/module/fun/funtion"
+import { checkBuy, checkDispatch, checkSend, DispatchNum, resourceMap, avePrice } from "@/module/fun/funtion"
 import { Colorful, isInArray, GenerateAbility } from "@/utils"
 import { LabMap, unzipMap } from "@/constant/ResourceConstant"
 
@@ -640,6 +640,55 @@ export default class RoomMissonBehaviourExtension extends Room {
             if (result != OK) {
                 this.DeleteMission(misson.id)
             }
+        }
+    }
+
+    /*基础资源保持功能,当资源数量不满足基础要求的情况下将会执行资源的采购操作*/
+    public Auto_Basicmarket(): void {
+        if (Game.cpu.bucket < 5000 && Memory.StopPixel) return/*CPU不足情况下暂停*/
+        if ((Game.time - global.Gtime[this.name]) % 88) return
+        if (Object.keys(this.memory.AutoBasicmarket).length < 1) return;/*没有保持内容的房间将不会进行保持操作*/
+        if (this.controller?.level < 6) return;/*6级以下控制器不执行当前操作内容*/
+        if (!this.storage || !this.terminal) return/*没有仓库或者终端将不会执行当前操作*/
+        /*把已有的order订单进行格式化*/
+        var _order_list = []
+        if (this.memory.market.order.length > 0) {
+            for (var _order of this.memory.market.order) {
+                if (_order.autoBasic) _order_list.push(_order.rType)
+            }
+        }
+        /*检查当前房间需要保持的资源信息(包括类型、数量、最高价格)*/
+        let AutoBasicmarket = this.memory.AutoBasicmarket;
+        for (let res in AutoBasicmarket) {
+            /*检查仓库对应的资源数量*/
+            let resdata = AutoBasicmarket[res];
+            let Resource = this.storage.store.getUsedCapacity(res as ResourceConstant) + this.terminal.store.getUsedCapacity(res as ResourceConstant)
+            if (Resource >= resdata.number) continue;
+            if (isInArray(_order_list, res)) continue;
+            /*检查缺少的数量*/
+            let _add_number = resdata.number - Resource;
+            let unit = 3000;
+            if (unit > _add_number) unit = _add_number;
+            /*获取一个平均的价格信息*/
+            let price = 0;
+            price = avePrice(res as ResourceConstant, 1)
+            let _addbR: LittleMarketData = {
+                rType: res as ResourceConstant,
+                num: _add_number,
+                unit: unit,
+                price: price,
+                mTyep: 'buy',
+                retain: true,
+                autotrade: true,
+                autoBasic: true,
+                autoatype: 1,
+                autofilteraisle: true
+            };
+            /*如果有预设的最高价则进行加载操作*/
+            if (resdata.pricemax) _addbR.automax = resdata.pricemax;
+            this.memory.market.order.push(_addbR)
+            console.log(Colorful(`房间${this.name}下达资源平衡rType:${res},price:${price},num:${_add_number},unit:${unit}!`, '#0099FF', true))
+            return;
         }
     }
 
