@@ -3,7 +3,7 @@
  */
 import { RoleData, RoleLevelData } from "@/constant/SpawnConstant"
 import CreepNameManager from "@/module/creepNameManager";
-import { adaption_body, CalculateEnergy, compare, GenerateAbility } from "@/utils"
+import { adaption_body, CalculateEnergy, compare, GenerateAbility, isInArray } from "@/utils"
 
 /* 房间原型拓展   --内核  --房间孵化 */
 export default class RoomCoreSpawnExtension extends Room {
@@ -56,6 +56,10 @@ export default class RoomCoreSpawnExtension extends Room {
                 var role_ = this.memory.SpawnConfig[role]
                 if (!role_.manual && RoleLevelData[role] && RoleLevelData[role][this.controller.level]) {
                     role_.num = RoleLevelData[role][this.controller.level].num
+                }
+                /*对于快速起步的操作*/
+                if (!this.memory.switch.speedstate && isInArray(['initial_speed'], role)) {
+                    role_.num = 0;
                 }
             }
         }

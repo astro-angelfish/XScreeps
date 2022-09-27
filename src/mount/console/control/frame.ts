@@ -184,6 +184,7 @@ export default {
                 this.NumSpawn('initial_speed', 0)
                 return `[frame]  房间${roomName}新房快速初始化关闭`
             }
+            myRoom.memory.SpawnConfig['initial_speed'] = RoleLevelData['initial_speed'][myRoom.controller.level].num
             return `[frame]  房间${roomName}新房快速初始化开启`
         },
         mineral(roomName): string {

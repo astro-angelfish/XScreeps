@@ -536,6 +536,33 @@ export default class terminalExtension extends StructureTerminal {
                         if (_add_number > l.num) {
                             _add_number = l.num
                         }
+                        if (order && (order.remainingAmount < _add_number) && l.num > 0) {
+                            let add_order_number = _add_number;
+                            if (order.remainingAmount) {
+                                add_order_number = _add_number - order.remainingAmount;
+                            }
+                            /*操作补充订单*/
+                            let result = Game.market.extendOrder(l.id, add_order_number)
+                            if (result == OK) {
+                                l.num -= add_order_number;
+                                /*刷新采购的时间戳*/
+                                l.refreshtime = Game.time;
+                                console.log(Colorful(`[market] 房间${this.room.name}-rType:${l.rType}补充订单 ${add_order_number}!`, 'yellow'))
+                                continue
+                            } else {
+                                console.log(Colorful(`[market] 房间${this.room.name}订单ID:${l.id},rType:${l.rType}补充订单失败!`, 'blue'))
+                            }
+                        }
+                        // 价格
+                        if (order && l.changePrice) {
+                            // 收到改变价格指令，也会改变订单价格
+                            Game.market.changeOrderPrice(l.id, l.price)
+                            console.log(`[market] 房间${this.room.name}改变订单ID:${l.id},type:${l.rType}的价格为${l.price}`)
+                            l.changePrice = false
+                            /*刷新采购的时间戳*/
+                            l.refreshtime = Game.time;
+                            continue;
+                        }
                         /*进行价格调整器*/
                         if (l.autotrade) {
                             if (!l.refreshtime) l.refreshtime = Game.time;/*初始化一个时间戳*/
@@ -589,32 +616,7 @@ export default class terminalExtension extends StructureTerminal {
                                     break;
                             }
                         }
-                        if (order && (order.remainingAmount < _add_number) && l.num > 0) {
-                            let add_order_number = _add_number;
-                            if (order.remainingAmount) {
-                                add_order_number = _add_number - order.remainingAmount;
-                            }
-                            /*操作补充订单*/
-                            let result = Game.market.extendOrder(l.id, add_order_number)
-                            if (result == OK) {
-                                l.num -= add_order_number;
-                                /*刷新采购的时间戳*/
-                                l.refreshtime = Game.time;
-                                console.log(Colorful(`[market] 房间${this.room.name}-rType:${l.rType}补充订单 ${add_order_number}!`, 'yellow'))
-                                continue
-                            } else {
-                                console.log(Colorful(`[market] 房间${this.room.name}订单ID:${l.id},rType:${l.rType}补充订单失败!`, 'blue'))
-                            }
-                        }
-                        // 价格
-                        if (order) {
-                            // 收到改变价格指令，也会改变订单价格
-                            if (l.changePrice) {
-                                Game.market.changeOrderPrice(l.id, l.price)
-                                console.log(`[market] 房间${this.room.name}改变订单ID:${l.id},type:${l.rType}的价格为${l.price}`)
-                                l.changePrice = false
-                            }
-                        }
+
                     }
                 }
             }

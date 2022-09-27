@@ -663,7 +663,7 @@ export default class RoomMissonBehaviourExtension extends Room {
             /*检查仓库对应的资源数量*/
             let resdata = AutoBasicmarket[res];
             let Resource = this.storage.store.getUsedCapacity(res as ResourceConstant) + this.terminal.store.getUsedCapacity(res as ResourceConstant)
-            if (Resource >= resdata.number) continue;
+            if (Resource >= Math.round(resdata.number * 0.8)) continue;
             if (isInArray(_order_list, res)) continue;
             /*检查缺少的数量*/
             let _add_number = resdata.number - Resource;
