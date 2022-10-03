@@ -61,7 +61,7 @@ export default class RoomCoreInitExtension extends Room {
             if (!this.memory.DefendDouPosition) this.memory.DefendDouPosition = [];
             if (!this.memory.switch) this.memory.switch = {}
             if (!this.memory.enemy) this.memory.enemy = {}
-            if (!this.memory.productData) this.memory.productData = { level: 0, state: 'sleep', baseList: {}, balanceData: {} }
+            if (!this.memory.productData) this.memory.productData = { level: 0, state: 'sleep', baseList: {}, balanceData: {}, unzip: {} }
             if (!this.memory.DynamicConfig) this.memory.DynamicConfig = {}
             if (!this.memory.DynamicConfig.Dynamicupgrade) this.memory.DynamicConfig.Dynamicupgrade = false
             if (!global.Repairlist[this.name]) global.Repairlist[this.name] = []
