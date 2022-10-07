@@ -303,9 +303,9 @@ export default class RoomCoreInitExtension extends Room {
                     carry_num++;
                 }
                 if (level >= 5 && !this.memory.harvestData[id].linkID) {
-                    let containerID = Game.getObjectById(this.memory.harvestData[id].containerID as Id<Source>) as Source
-                    if (containerID) {
-                        let links = containerID.pos.findInRange(FIND_STRUCTURES, 1, { filter: (stru) => { return stru.structureType == 'link' } })
+                    let source = Game.getObjectById(id as Id<Source>) as Source
+                    if (source) {
+                        let links = source.pos.findInRange(FIND_STRUCTURES, 2, { filter: (stru) => { return stru.structureType == 'link' } })
                         if (links.length > 0) {
                             this.memory.harvestData[id].linkID = links[0].id
                             carry_num--;
