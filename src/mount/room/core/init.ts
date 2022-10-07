@@ -61,7 +61,7 @@ export default class RoomCoreInitExtension extends Room {
             if (!this.memory.DefendDouPosition) this.memory.DefendDouPosition = [];
             if (!this.memory.switch) this.memory.switch = {}
             if (!this.memory.enemy) this.memory.enemy = {}
-            if (!this.memory.productData) this.memory.productData = { level: 0, state: 'sleep', baseList: {}, balanceData: {} }
+            if (!this.memory.productData) this.memory.productData = { level: 0, state: 'sleep', baseList: {}, balanceData: {}, unzip: {} }
             if (!this.memory.DynamicConfig) this.memory.DynamicConfig = {}
             if (!this.memory.DynamicConfig.Dynamicupgrade) this.memory.DynamicConfig.Dynamicupgrade = false
             if (!global.Repairlist[this.name]) global.Repairlist[this.name] = []
@@ -303,9 +303,9 @@ export default class RoomCoreInitExtension extends Room {
                     carry_num++;
                 }
                 if (level >= 5 && !this.memory.harvestData[id].linkID) {
-                    let containerID = Game.getObjectById(this.memory.harvestData[id].containerID as Id<Source>) as Source
-                    if (containerID) {
-                        let links = containerID.pos.findInRange(FIND_STRUCTURES, 1, { filter: (stru) => { return stru.structureType == 'link' } })
+                    let source = Game.getObjectById(id as Id<Source>) as Source
+                    if (source) {
+                        let links = source.pos.findInRange(FIND_STRUCTURES, 2, { filter: (stru) => { return stru.structureType == 'link' } })
                         if (links.length > 0) {
                             this.memory.harvestData[id].linkID = links[0].id
                             carry_num--;

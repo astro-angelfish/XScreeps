@@ -175,19 +175,23 @@ export default {
             }
             return `[frame] 启用全局GCL模式(强制Upgrade)`
         },
-        speedup(roomName): string {
+        speedup(roomName: string, enable?: boolean): string {
             var myRoom = Game.rooms[roomName]
             if (!myRoom) return `[frame] 未找到房间${roomName}, 请确认房间!`
             if (myRoom.controller.level > 6 && !myRoom.memory.switch.speedstate) return `[frame] controller等级过高无法开启`
-            myRoom.memory.switch.speedstate = !myRoom.memory.switch.speedstate
+            if (enable !== undefined) {
+                myRoom.memory.switch.speedstate = enable
+            } else {
+                myRoom.memory.switch.speedstate = !myRoom.memory.switch.speedstate
+            }
             if (!myRoom.memory.switch.speedstate) {
-                this.NumSpawn('initial_speed', 0)
+                myRoom.NumSpawn('initial_speed', 0)
                 return `[frame]  房间${roomName}新房快速初始化关闭`
             }
             myRoom.memory.SpawnConfig['initial_speed'] = RoleLevelData['initial_speed'][myRoom.controller.level].num
             return `[frame]  房间${roomName}新房快速初始化开启`
         },
-        mineral(roomName): string {
+        mineral(roomName: string): string {
             var myRoom = Game.rooms[roomName]
             if (!myRoom) return `[frame] 未找到房间${roomName}, 请确认房间!`
             myRoom.memory.switch.stopmineral = !myRoom.memory.switch.stopmineral

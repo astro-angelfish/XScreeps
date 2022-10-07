@@ -112,7 +112,7 @@ export default class CreepMissonMineExtension extends Creep {
             }
             if (!this.memory.bindpoint) return
             if (this.memory.carsourceid) {
-                var source = Game.getObjectById(this.memory.carsourceid) as Source;
+                var source = Game.getObjectById(this.memory.carsourceid as Id<Source>) as Source;
 
             } else {
                 var disPos = unzipPosition(this.memory.bindpoint)
