@@ -597,7 +597,7 @@ export default class RoomMissonBehaviourExtension extends Room {
             }
             // SavePower 是节省能量的一种"熔断"机制 防止烧power致死
 
-            if (storage_.store.getUsedCapacity('energy') > (SavePower ? 250000 : 200000) && storage_number > 100) {
+            if (storage_.store.getUsedCapacity('energy') > (SavePower ? 250000 : 150000) && storage_number > 100) {
                 /* 发布烧power任务 */
                 var thisTask: MissionModel = {
                     name: 'power升级',
