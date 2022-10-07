@@ -137,6 +137,7 @@ export default {
         support(roomName: string, disRoom: string, shard: shardName, sType: 'double' | 'aio', num: number, interval: number = 1000, boost: boolean = true, shardData?: shardRoomData[]): string {
             var thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[war] 不存在房间${roomName}`
+            if (thisRoom.controller.level < 8) return `[war] 房间${roomName}控制器等级过低,请在8级后使用`
             for (var oi of thisRoom.memory.Misson['Creep'])
                 if (oi.name == '紧急支援' && oi.Data.disRoom == disRoom && oi.Data.shard == shard) {
                     return `[war] 房间${roomName}已经存在去往${disRoom}(${shard})的该类型任务了!`
@@ -165,6 +166,7 @@ export default {
         control(roomName: string, disRoom: string, shard: shardName = Game.shard.name as shardName, interval: number, shardData?: shardRoomData[]): string {
             var thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[war] 不存在房间${roomName}`
+            if (thisRoom.controller.level < 8) return `[war] 房间${roomName}控制器等级过低,请在8级后使用`
             for (var oi of thisRoom.memory.Misson['Creep'])
                 if (oi.name == '控制攻击' && oi.Data.disRoom == disRoom && oi.Data.shard == shard) {
                     return `[war] 房间${roomName}已经存在去往${disRoom}(${shard})的该类型任务了!`
@@ -191,6 +193,7 @@ export default {
         aio(roomName: string, disRoom: string, shard: shardName, CreepNum: number, time: number = 1000, boost: boolean = true, bodylevel: "T0" | "T1" | "T2" = "T0", shardData?: shardRoomData[]): string {
             var myRoom = Game.rooms[roomName]
             if (!myRoom) return `[war] 未找到房间${roomName},请确认房间!`
+            if (myRoom.controller.level < 6) return `[war] 房间${roomName}控制器等级过低,请在6级后使用`
             for (var oi of myRoom.memory.Misson['Creep'])
                 if (oi.name == '攻防一体' && oi.Data.disRoom == disRoom && oi.Data.shard == shard) {
                     return `[war] 房间${roomName}已经存在去往${disRoom}(${shard})的该类型任务了!`
@@ -217,6 +220,7 @@ export default {
         squad(roomName: string, disRoom: string, shard: shardName, mtype: 'R' | 'A' | 'D' | 'Aio' | 'RA' | 'DA' | 'DR', time: number = 1000, shardData?: shardRoomData[]): string {
             var myRoom = Game.rooms[roomName]
             if (!myRoom) return `[war] 未找到房间${roomName},请确认房间!`
+            if (myRoom.controller.level < 8) return `[war] 房间${roomName}控制器等级过低,请在8级后使用`
             for (var oi of myRoom.memory.Misson['Creep'])
                 if (oi.name == '四人小队' && oi.Data.disRoom == disRoom && oi.Data.shard == shard && oi.Data.flag == mtype) {
                     return `[war] 房间${roomName}已经存在去往${disRoom}(${shard})的<${mtype}>四人小队任务了!`
@@ -264,6 +268,7 @@ export default {
         double(roomName: string, disRoom: string, shard: shardName = Game.shard.name as shardName, mType: 'dismantle' | 'attack', num: number, interval: number, shardData?: shardRoomData[]): string {
             var thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[war] 不存在房间${roomName}`
+            if (thisRoom.controller.level < 6) return `[war] 房间${roomName}控制器等级过低,请在6级后使用`
             for (var oi of thisRoom.memory.Misson['Creep'])
                 if (oi.name == '双人小队' && oi.Data.disRoom == disRoom && oi.Data.shard == shard) {
                     return `[war] 房间${roomName}已经存在去往${disRoom}(${shard})的该类型任务了!`
@@ -385,13 +390,14 @@ export default {
             if (thisRoom.AddMission(thisTask)) return `[carry] 房间${roomName}挂载special搬运任务成功`
             return `[carry] 房间${roomName}挂载special搬运任务失败`
         },
-        all(roomName: string, sPF: string, dPF: string, CreepNum?: number): string {
+        all(roomName: string, sPF: string, dPF: string, CreepNum?: number, st?: number): string {
             let thisRoom = Game.rooms[roomName]
             if (!thisRoom) return `[carry] 不存在房间${roomName}`
             if (!Game.flags[sPF] || !Game.flags[dPF]) return `[carry] 旗帜错误,请检查是否有相应旗帜`
             let sP = Game.flags[sPF].pos
             let dP = Game.flags[dPF].pos
             var thisTask = thisRoom.public_Carry({ 'truck': { num: CreepNum ? CreepNum : 1, bind: [] } }, 50000, sP.roomName, sP.x, sP.y, dP.roomName, dP.x, dP.y)
+            if (st) thisTask.Data.st = st;
             if (thisRoom.AddMission(thisTask)) return `[carry] 房间${roomName}挂载all搬运任务成功`
             return `[carry] 房间${roomName}挂载all搬运任务失败`
         },

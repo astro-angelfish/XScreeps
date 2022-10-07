@@ -111,7 +111,7 @@ export default class RoomMissonBehaviourExtension extends Room {
     public Task_CenterLink(): void {
         if ((global.Gtime[this.name] - Game.time) % 2) return
         if (!this.memory.StructureIdData.source_links) this.memory.StructureIdData.source_links = []
-        if (!this.memory.StructureIdData.center_link || this.memory.StructureIdData.source_links.length <= 0) return
+        if ((!this.memory.StructureIdData.upgrade_link && !this.memory.StructureIdData.center_link) || this.memory.StructureIdData.source_links.length <= 0) return
         // let center_link = Game.getObjectById(this.memory.StructureIdData.center_link) as StructureLink
         // if (!center_link) { delete this.memory.StructureIdData.center_link; return }
         // else { if (center_link.store.getUsedCapacity('energy') > 750) return }
@@ -663,7 +663,7 @@ export default class RoomMissonBehaviourExtension extends Room {
             /*检查仓库对应的资源数量*/
             let resdata = AutoBasicmarket[res];
             let Resource = this.storage.store.getUsedCapacity(res as ResourceConstant) + this.terminal.store.getUsedCapacity(res as ResourceConstant)
-            if (Resource >= Math.round(resdata.number * 0.8)) continue;
+            if (Resource >= Math.round(resdata.number * 0.5)) continue;
             if (isInArray(_order_list, res)) continue;
             /*检查缺少的数量*/
             let _add_number = resdata.number - Resource;

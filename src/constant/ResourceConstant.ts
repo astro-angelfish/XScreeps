@@ -291,4 +291,5 @@ export const AutomarketBuydata: AutomarketData = {
     'oxidant': { max: 20 },
     'reductant': { max: 20 },
     'purifier': { max: 20 },
+    'power': { max: 200 }
 }

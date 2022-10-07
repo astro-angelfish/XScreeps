@@ -90,7 +90,8 @@ export default class CreepMissonWarExtension extends Creep {
             }
             if (!this.pos.isNearTo(control)) this.goTo(control.pos, 1)
             else {
-                if (control.owner) this.attackController(control)
+                if (control.owner && !control.my) this.attackController(control)
+                // else this.claimController(control)
                 else this.reserveController(control)
                 if (control.upgradeBlocked > this.ticksToLive) this.suicide()
             }
@@ -892,8 +893,13 @@ export default class CreepMissonWarExtension extends Creep {
                         break;
                 }
             }
+            let flags_key = `${this.memory.belong}/aio/standby`
+            if (Game.flags[flags_key]) {
+                if (Game.flags[flags_key] && !this.pos.inRangeTo(Game.flags[flags_key].pos, 5)) {
+                    this.goTo(Game.flags[flags_key].pos, 5)
+                }
+            }
         }
-
         if ((this.room.name != data.disRoom || Game.shard.name != data.shard)) {
             if (this.hits < this.hitsMax) {
                 this.heal(this)
@@ -974,49 +980,56 @@ export default class CreepMissonWarExtension extends Creep {
                 /*检查是否有对方的爬进行攻击*/
             }
             else {
-                if (!Game.flags[this.memory.targetFlag]) {
-                    delete this.memory.targetFlag
-                }
-                else {
-                    let pos_ = Game.flags[this.memory.targetFlag].pos
-                    if (pos_.roomName != this.room.name) {
+                if (this.memory.targetFlag) {
+                    if (!Game.flags[this.memory.targetFlag]) {
                         delete this.memory.targetFlag
-                        return
-                    }
-                    let stru = pos_.lookFor(LOOK_STRUCTURES)
-                    if (stru.length <= 0 || (stru[0].structureType == 'road' || stru[0].structureType == 'container') && stru.length == 1) {
-                        this.heal(this)
-                        Game.flags[this.memory.targetFlag].remove()
-                        delete this.memory.targetFlag
-                        // 尝试看一下有没有建筑 对墙就不做尝试了
-                        let safeStructure = pathClosestStructure(this.pos, true, true, true, 4)
-                        if (safeStructure) {
-                            let randomStr = Math.random().toString(36).substr(3)
-                            if (!Game.flags[`aio_${randomStr}`]) {
-                                safeStructure.pos.createFlag(`aio_${randomStr}`)
-                                this.memory.targetFlag = `aio_${randomStr}`
-                            }
-                            return
-                        }
                     }
                     else {
-                        // 自动规避
-                        let ranged3Attack = RangeCreep(this.pos, creeps, 3, true)  // 三格内的攻击性爬虫
-                        if (ranged3Attack.length > 0) {
-                            // 防御塔伤害数据
-                            let towerData = global.warData.tower[this.room.name].data
-                            let posStr = `${this.pos.x}/${this.pos.y}`
-                            let towerHurt = towerData[posStr] ? towerData[posStr]['attack'] : 0
-                            if (!canSustain(ranged3Attack, this, towerHurt)) {
-                                this.say("危")
-                                /* 删除记忆 */
-                                if (!this.pos.isNearTo(Game.flags[this.memory.targetFlag])) {
-                                    delete this.memory.targetFlag
+                        let pos_ = Game.flags[this.memory.targetFlag].pos
+                        if (pos_.roomName != this.room.name) {
+                            delete this.memory.targetFlag
+                            return
+                        }
+                        let stru = pos_.lookFor(LOOK_STRUCTURES)
+                        if (stru.length <= 0 || (stru[0].structureType == 'road' || stru[0].structureType == 'container') && stru.length == 1) {
+                            this.heal(this)
+                            Game.flags[this.memory.targetFlag].remove()
+                            delete this.memory.targetFlag
+                            // 尝试看一下有没有建筑 对墙就不做尝试了
+                            let safeStructure = pathClosestStructure(this.pos, true, true, true, 4)
+                            if (safeStructure) {
+                                let randomStr = Math.random().toString(36).substr(3)
+                                if (!Game.flags[`aio_${randomStr}`]) {
+                                    safeStructure.pos.createFlag(`aio_${randomStr}`)
+                                    this.memory.targetFlag = `aio_${randomStr}`
                                 }
-                                this.heal(this)
-                                let closestHurtCreep = RangeClosestCreep(this.pos, ranged3Attack, true)
-                                if (closestHurtCreep) {
-                                    this.Flee(closestHurtCreep.pos, 4)
+                                return
+                            }
+                        }
+                        else {
+                            // 自动规避
+                            let ranged3Attack = RangeCreep(this.pos, creeps, 3, true)  // 三格内的攻击性爬虫
+                            if (ranged3Attack.length > 0) {
+                                // 防御塔伤害数据
+                                let towerData = global.warData.tower[this.room.name].data
+                                let posStr = `${this.pos.x}/${this.pos.y}`
+                                let towerHurt = towerData[posStr] ? towerData[posStr]['attack'] : 0
+                                if (!canSustain(ranged3Attack, this, towerHurt)) {
+                                    this.say("危")
+                                    /* 删除记忆 */
+                                    if (!this.pos.isNearTo(Game.flags[this.memory.targetFlag])) {
+                                        delete this.memory.targetFlag
+                                    }
+                                    this.heal(this)
+                                    let closestHurtCreep = RangeClosestCreep(this.pos, ranged3Attack, true)
+                                    if (closestHurtCreep) {
+                                        this.Flee(closestHurtCreep.pos, 4)
+                                    }
+                                }
+                                else {
+                                    if (!this.pos.isNearTo(pos_)) {
+                                        this.goTo_aio(pos_, 1)
+                                    }
                                 }
                             }
                             else {
@@ -1024,22 +1037,17 @@ export default class CreepMissonWarExtension extends Creep {
                                     this.goTo_aio(pos_, 1)
                                 }
                             }
-                        }
-                        else {
-                            if (!this.pos.isNearTo(pos_)) {
-                                this.goTo_aio(pos_, 1)
-                            }
-                        }
-                        // 根据建筑类型判断攻击方式
-                        if (isInArray([STRUCTURE_WALL, STRUCTURE_ROAD, STRUCTURE_CONTAINER], stru[0].structureType)) {
-                            this.rangedAttack(stru[0])
-                        }
-                        else {
-                            if (stru[0].pos.isNearTo(this)) {
-                                this.rangedMassAttack()
+                            // 根据建筑类型判断攻击方式
+                            if (isInArray([STRUCTURE_WALL, STRUCTURE_ROAD, STRUCTURE_CONTAINER], stru[0].structureType)) {
+                                this.rangedAttack(stru[0])
                             }
                             else {
-                                this.rangedAttack(stru[0])
+                                if (stru[0].pos.isNearTo(this)) {
+                                    this.rangedMassAttack()
+                                }
+                                else {
+                                    this.rangedAttack(stru[0])
+                                }
                             }
                         }
                     }
@@ -1058,15 +1066,23 @@ export default class CreepMissonWarExtension extends Creep {
             // 治疗自己和周围友军
             if (this.hits < this.hitsMax) this.heal(this)
             else {
-                let allys = this.pos.findInRange(FIND_CREEPS, 3, {
-                    filter: (creep) => {
-                        return (creep.my || isInArray(Memory.whitesheet, creep.owner.username)) && creep.hitsMax - creep.hits > 350
-                    }
-                })
+                if (this.room.memory?.state == 'peace') {
+                    var allys = this.room.find(FIND_CREEPS, {
+                        filter: (creep) => {
+                            return (creep.my || isInArray(Memory.whitesheet, creep.owner.username)) && creep.hitsMax - creep.hits > 350
+                        }
+                    })
+                } else {
+                    var allys = this.pos.findInRange(FIND_CREEPS, 3, {
+                        filter: (creep) => {
+                            return (creep.my || isInArray(Memory.whitesheet, creep.owner.username)) && creep.hitsMax - creep.hits > 350
+                        }
+                    })
+                }
                 if (allys.length > 0) {
                     // 寻找最近的爬
                     let ally_ = allys[0]
-                    for (var i of allys) if (getDistance(this.pos, i.pos) < getDistance(ally_.pos, this.pos)) ally_ = i
+                    // for (var i of allys) if (getDistance(this.pos, i.pos) < getDistance(ally_.pos, this.pos)) ally_ = i
                     if (this.pos.isNearTo(ally_)) this.heal(ally_)
                     else this.rangedHeal(ally_)
                 }
@@ -1532,10 +1548,18 @@ export default class CreepMissonWarExtension extends Creep {
                 if (!this.BoostCheck(['move', 'attack', 'tough'])) return
             }
             else if (this.memory.role == 'double-heal') {
-                if (!this.BoostCheck(['move', 'heal', 'ranged_attack', 'tough'])) return
+                // , 'ranged_attack'
+                if (!this.BoostCheck(['move', 'heal', 'tough'])) return
             }
             else if (this.memory.role == 'double-dismantle') {
                 if (!this.BoostCheck(['move', 'work', 'tough'])) return
+            }
+            if (this.hits < this.hitsMax) { this.optTower('heal', this) };
+            let flags_key = `${this.memory.belong}/double/standby`
+            if (Game.flags[flags_key]) {
+                if (Game.flags[flags_key] && !this.pos.inRangeTo(Game.flags[flags_key].pos, 5)) {
+                    this.goTo(Game.flags[flags_key].pos, 5)
+                }
             }
         }
         if (!this.memory.double) {
@@ -1652,8 +1676,10 @@ export default class CreepMissonWarExtension extends Creep {
         else if (this.memory.role == 'double-dismantle') {
             if (!Game.creeps[this.memory.double]) return
             if (this.fatigue || Game.creeps[this.memory.double].fatigue) return
-            if (Game.creeps[this.memory.double] && !this.pos.isNearTo(Game.creeps[this.memory.double]) && (!isInArray([0, 49], this.pos.x) && !isInArray([0, 49], this.pos.y)))
+            if (Game.creeps[this.memory.double] && !this.pos.isNearTo(Game.creeps[this.memory.double]) && (!isInArray([0, 49], this.pos.x) && !isInArray([0, 49], this.pos.y))) {
+                console.log('运行被终止了')
                 return
+            }
             if (this.room.name != roomName || Game.shard.name != data.shard) {
                 this.arriveTo(new RoomPosition(24, 24, roomName), 23, data.shard, data.shardData ? data.shardData : null)
             }
@@ -1709,8 +1735,13 @@ export default class CreepMissonWarExtension extends Creep {
                 }
                 else {
                     // 有旗子就攻击旗子下的建筑
+                    if (!this.pos.isNearTo(attack_flag)) {
+                        this.goTo(attack_flag.pos, 1, 2000)
+                    }
+                    this.memory.standed = true;
                     let stru = attack_flag.pos.lookFor(LOOK_STRUCTURES)
                     if (stru.length > 0) {
+
                         if (this.dismantle(stru[0]) == ERR_NOT_IN_RANGE) this.goTo(stru[0].pos, 1)
                         return
                     }
@@ -1732,12 +1763,12 @@ export default class CreepMissonWarExtension extends Creep {
             if (!Game.creeps[disCreepName] && portal) { this.arriveTo(new RoomPosition(25, 25, roomName), 20, data.shard, data.shardData ? data.shardData : null); return }
             if (Game.creeps[this.memory.double]) this.moveTo(Game.creeps[this.memory.double])
             // 寻找敌人 远程攻击
-            let enemy = this.pos.findInRange(FIND_HOSTILE_CREEPS, 3, {
-                filter: (creep) => {
-                    return !isInArray(Memory.whitesheet, creep.owner.username)
-                }
-            })
-            if (enemy[0]) this.rangedAttack(enemy[0])
+            // let enemy = this.pos.findInRange(FIND_HOSTILE_CREEPS, 3, {
+            //     filter: (creep) => {
+            //         return !isInArray(Memory.whitesheet, creep.owner.username)
+            //     }
+            // })
+            // if (enemy[0]) this.rangedAttack(enemy[0])
             // 奶
             if (Game.creeps[this.memory.double]) {
                 if (this.hits < this.hitsMax || Game.creeps[this.memory.double].hits < Game.creeps[this.memory.double].hitsMax) {

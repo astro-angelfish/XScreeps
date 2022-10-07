@@ -97,10 +97,18 @@ export default class terminalExtension extends StructureTerminal {
      * 负责各种情况下能量不足的市场调度操作
      */
     public EnergyreplenishMarket(): void {
-        if ((Game.time - global.Gtime[this.room.name]) % 27) return
+        switch (Game.shard.name) {
+            case 'shard3':
+                if ((Game.time - global.Gtime[this.room.name]) % 27) return
+                break;
+            default:
+                if ((Game.time - global.Gtime[this.room.name]) % 15) return
+                break;
+        }
         // 确定当前的能量数量信息
         let storeNum = this.room.storage.store.getUsedCapacity('energy') + this.store.getUsedCapacity('energy')
         if (storeNum >= 250000) return
+        if (!this.room.storage.my && storeNum > 150000) return;
         let Demandlevel = 0;
         let addnumber = 30000;
         if (this.room.controller.level < 8) {
@@ -111,7 +119,7 @@ export default class terminalExtension extends StructureTerminal {
             addnumber -= Math.floor(75000 / (1 + Math.exp(-3 * (lastDayAve - threeDayAve))));
             addnumber -= Math.floor(25000 / (1 + Math.exp(-1 * (lastDayAve - lastWeekAve))));
         }
-        addnumber = (addnumber < 10000) ? 10000 : addnumber;
+        addnumber = (addnumber < 20000) ? 20000 : addnumber;
         if (this.store.getFreeCapacity('energy') < addnumber) {
             addnumber = this.store.getFreeCapacity('energy')
         }
@@ -140,17 +148,18 @@ export default class terminalExtension extends StructureTerminal {
             /*检索房间内的所有订单，同时进行匹配,*/
             /*取出当前类型的基准价格*/
             let price_ = 0;
-            // if (this.room.memory.MarketPrice.Dynamicprice) {
-            //     switch (Demandlevel) {
-            //         case 1:
-            //             price_ = this.room.memory.MarketPrice.buy.high;
-            //             break;
-            //         case 2:
-            //             price_ = this.room.memory.MarketPrice.buy.low;
-            //             break;
-            //     }
-            // }
-            price_ = this.room.memory.MarketPrice.buy.low;
+            Demandlevel = 1;
+            if (this.room.memory.MarketPrice.Dynamicprice) {
+                switch (Demandlevel) {
+                    case 1:
+                        price_ = this.room.memory.MarketPrice.buy.high;
+                        break;
+                    case 2:
+                        price_ = this.room.memory.MarketPrice.buy.low;
+                        break;
+                }
+            }
+            // price_ = this.room.memory.MarketPrice.buy.low;
             if (price_ <= 0) {
                 price_ = avePrice('energy', 1) - 0.5;
             }
@@ -200,7 +209,15 @@ export default class terminalExtension extends StructureTerminal {
         }
     }
     public ModifypriceMarket(): void {
-        if ((Game.time - global.Gtime[this.room.name]) % 5) return
+        switch (Game.shard.name) {
+            case 'shard3':
+                if ((Game.time - global.Gtime[this.room.name]) % 5) return
+                break;
+            default:
+                if ((Game.time - global.Gtime[this.room.name]) % 2) return
+                break;
+        }
+
         /** 
          * 存在订单进行订单检查
          * [普通] 300 tick 减少报价  600 tick 自动涨价
@@ -244,11 +261,11 @@ export default class terminalExtension extends StructureTerminal {
                     switch (order_data.Demandlevel) {
                         case 1:
                             up_tick = 100;
-                            drop_tick = 50;
+                            drop_tick = 75;
                             break;
                         case 2:
                             up_tick = 200;
-                            drop_tick = 100;
+                            drop_tick = 150;
                             break;
                     }
                 } else {
@@ -272,8 +289,9 @@ export default class terminalExtension extends StructureTerminal {
                 if (Gatorder.remainingAmount <= 0) {
                     // console.log(this.room.name, '订单已完结', order_time, drop_tick)
                     /*检查订单是否已经完结，如果完结进行降价检测操作*/
+                    let end_time = Game.time - Gatorder.created
                     let over_price = order_data.price;
-                    if (order_time < drop_tick) {
+                    if (end_time < drop_tick) {
                         // console.log(this.room.name, '订单触发调价')
                         if (!order_data.ignore) {
                             /*非忽略订单。执行价格更新*/
@@ -295,7 +313,7 @@ export default class terminalExtension extends StructureTerminal {
                             }
                         }
                     }
-                    let end_time = Game.time - Gatorder.created
+
                     console.log(Colorful(`[订单完结]房间${this.room.name}订单已完结,价格:${over_price},耗时${end_time}`, 'green', true))
                     /*执行降价操作，同时当前订单完结以及关闭*/
                     Game.market.cancelOrder(order_data.order_id);
@@ -315,12 +333,16 @@ export default class terminalExtension extends StructureTerminal {
                     }
                     /*进行正常的检测序列*/
                     if (order_time > up_tick) {
+                        /*检查一个提价倍率信息*/
+                        let _x_p = Math.floor((Math.floor(Game.time) - Math.floor(Gatorder.created)) / drop_tick)
                         /*超时额定的间隔-进行涨价处理*/
                         let increase = 0.05;
                         let Salesmargin = (Number(Gatorder.remainingAmount) / Number(order_data.totalAmount))
-                        order_data.price = (Number(order_data.price) + increase * Salesmargin).toFixed(3);
+                        let _add_p = increase * Salesmargin;
+
+                        order_data.price = (Number(order_data.price) + _add_p).toFixed(3);
                         Game.market.changeOrderPrice(order_data.order_id, order_data.price)/*订单进行价格更新*/
-                        this.room.memory.MarketPrice.order_list[j]._time = Game.time - drop_tick/*涨价后价格重新赋值-这个价格被采纳将不会触发降价*/
+                        this.room.memory.MarketPrice.order_list[j]._time = Game.time - Math.ceil(drop_tick / _x_p) /*涨价后价格重新赋值-这个价格被采纳将不会触发降价*/
                         this.room.memory.MarketPrice.order_list[j].price = order_data.price /*价格赋值*/
 
                         console.log(Colorful(`[调价上涨]房间${this.room.name}调整energy,订单${order_data.order_id},价格:${order_data.price};`, 'yellow', true))
@@ -391,10 +413,14 @@ export default class terminalExtension extends StructureTerminal {
      */
     public ResourceMarket(): void {
         if (Game.cpu.bucket < 7000 && Memory.StopPixel) return;
-        if (Game.shard.name == 'shard3') {
-            if ((Game.time - global.Gtime[this.room.name]) % 23) return
-        } else {
-            if ((Game.time - global.Gtime[this.room.name]) % 3) return
+        let v_market = 1;
+        if (!Memory.Systemswitch.SystemValidmarket) {
+            if (Game.shard.name == 'shard3') {
+                v_market = 23;
+            } else {
+                v_market = 2;
+            }
+            if ((Game.time - global.Gtime[this.room.name]) % v_market) return
         }
         // 能量自动购买区 [与MarketData无关] storage内能量小于200000时自动购买
         /* 清理过期订单 */
@@ -522,7 +548,7 @@ export default class terminalExtension extends StructureTerminal {
                     }
                     else {
                         let order = Game.market.getOrderById(l.id)
-                        if (((!order || !order.remainingAmount) && l.num < 1) || !order)   // 取消订单信息
+                        if (!order || (!order?.remainingAmount && l.num < 1))   // 取消订单信息
                         {
                             if (l.rType != 'energy')
                                 delete this.room.memory.TerminalData[l.rType]
@@ -532,6 +558,7 @@ export default class terminalExtension extends StructureTerminal {
                             Game.market.cancelOrder(l.id)
                             continue
                         }
+                        
                         let _add_number = l.unit ? l.unit : 5000;
                         if (_add_number > l.num) {
                             _add_number = l.num
@@ -546,13 +573,14 @@ export default class terminalExtension extends StructureTerminal {
                             if (result == OK) {
                                 l.num -= add_order_number;
                                 /*刷新采购的时间戳*/
-                                l.refreshtime = Game.time;
+                                // l.refreshtime = Game.time;
                                 console.log(Colorful(`[market] 房间${this.room.name}-rType:${l.rType}补充订单 ${add_order_number}!`, 'yellow'))
-                                continue
+                                // continue
                             } else {
                                 console.log(Colorful(`[market] 房间${this.room.name}订单ID:${l.id},rType:${l.rType}补充订单失败!`, 'blue'))
                             }
                         }
+
                         // 价格
                         if (order && l.changePrice) {
                             // 收到改变价格指令，也会改变订单价格
@@ -560,36 +588,38 @@ export default class terminalExtension extends StructureTerminal {
                             console.log(`[market] 房间${this.room.name}改变订单ID:${l.id},type:${l.rType}的价格为${l.price}`)
                             l.changePrice = false
                             /*刷新采购的时间戳*/
-                            l.refreshtime = Game.time;
+                            // l.refreshtime = Game.time;
                             continue;
                         }
                         /*进行价格调整器*/
                         if (l.autotrade) {
                             if (!l.refreshtime) l.refreshtime = Game.time;/*初始化一个时间戳*/
+                            // if (!l.autorefreshtime) l.autorefreshtime = Game.time;/*初始化一个时间戳*/
                             /*检查订单的方向信息,然后检查是否存在限价*/
+                            /*订单检查是否满足调价要求*/
+                            let Automarketdata = AutomarketBuydata[order.resourceType];
+                            if (!Automarketdata) {
+                                console.log(Colorful(`[market][Auto]房间${this.room.name}订单ID:${l.id},type:${l.rType}没有调价配置`, 'red'))
+                                continue;
+                            }
+                            if (!Automarketdata.max) continue;
+                            let autotime = 200;
+                            if (Automarketdata.time) autotime = Automarketdata.time;/*硬编码默认间隔*/
+                            if (l.autotime) autotime = l.autotime;/*订单包含的间隔-最高优先级*/
+                            /*检查是否满足了调价的要求时间*/
+                            if (Game.time - l.refreshtime < autotime) continue;
                             switch (order.type) {
                                 case ORDER_SELL:
                                     break;
                                 case ORDER_BUY:
-                                    /*订单检查是否满足调价要求*/
-                                    let Automarketdata = AutomarketBuydata[order.resourceType];
-                                    if (!Automarketdata) {
-                                        console.log(Colorful(`[market][Auto]房间${this.room.name}订单ID:${l.id},type:${l.rType}没有调价配置`, 'red'))
-                                        break;
-                                    }
-                                    if (!Automarketdata.max) break;
-                                    let autotime = 200;
-                                    if (Automarketdata.time) autotime = Automarketdata.time;/*硬编码默认间隔*/
-                                    if (l.autotime) autotime = l.autotime;/*订单包含的间隔-最高优先级*/
-                                    /*检查是否满足了调价的要求时间*/
-                                    if (Game.time - l.refreshtime < autotime) break;
+
                                     /*检查是否已经达到最近价格*/
                                     let pricemax = Automarketdata.max
                                     if (l.automax) pricemax = l.automax;
-                                    if (l.price >= pricemax) {
-                                        l.refreshtime = Game.time;
-                                        break;
-                                    }
+                                    // if (l.price >= pricemax) {
+                                    //     l.refreshtime = Game.time;
+                                    //     break;
+                                    // }
                                     let Atype = 0;
                                     if (Automarketdata.Atype) Atype = Automarketdata.Atype;
                                     if (l.autoatype) Atype = l.autoatype;
@@ -611,12 +641,9 @@ export default class terminalExtension extends StructureTerminal {
 
                                             break;
                                     }
-
-
                                     break;
                             }
                         }
-
                     }
                 }
             }

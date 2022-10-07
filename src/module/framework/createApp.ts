@@ -107,10 +107,6 @@ export const createApp = function (opt: Partial<CreateOptions> = {}) {
      * 运行 bot
      */
     const run = function (): void {
-        // console.log(`——初始化——${Game.cpu.getUsed()}——`)
-        // if (Memory.Systemswitch.Showtestcreep || Memory.Systemswitch.Showtestroom || Memory.Systemswitch.Showtestpowercreep || Memory.Systemswitch.ShowtestroomInit || Memory.Systemswitch.ShowtestroomMisson) {
-        //     console.log(`—————————— Game.time ${Game.time} ——————————`)
-        // }
         // 有内存缓存的话就包裹一下，否则就直接运行
         if (_memoryCacher) _memoryCacher(_run)
         else _run()
@@ -136,7 +132,6 @@ export const createApp = function (opt: Partial<CreateOptions> = {}) {
         let cpu_list = [];
         if (cpu_test) { cpu_list.push(Game.cpu.getUsed()) }
         collectCost('tickStart', SHOW_BASE_CPU_COST, execLifecycleCallback, 'tickStart')
-
         if (cpu_test) { cpu_list.push(Game.cpu.getUsed()) }
         if (roomRunner) collectCost('room', SHOW_BASE_CPU_COST, runAllRoom)
         if (cpu_test) { cpu_list.push(Game.cpu.getUsed()) }

@@ -147,11 +147,10 @@ export default class RoomMissonMineExtension extends Room {
                     if (!startpos) { console.log(`${startpos}不能解压成RoomPosition对象`); return }
                     /* 每个矿点都要有一个路线信息 */
                     for (var s of sources) {
-                        var results = s.pos.FindPath(startpos, 1, misson.Data.roadUpdatedforce)
-                        LoopB:
+                        var results = startpos.FindPath(s.pos, 1, misson.Data.roadUpdatedforce)
                         for (var p of results) {
                             if (p.isNearTo(s.pos)) continue
-                            if (isInArray([0, 49], p.x) || isInArray([0, 49], p.y)) continue LoopB
+                            if (isInArray([0, 49], p.x) || isInArray([0, 49], p.y)) continue
                             /* 如果不再路径点缓存中，就push进路径列表中 */
                             if (!isInArray(Memory.outMineData[disRoomName].road, zipPosition(p))) {
                                 Memory.outMineData[disRoomName].road.push(zipPosition(p))

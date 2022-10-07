@@ -110,7 +110,7 @@ export function notmehighestPrice(res: MarketResourceConstant, mtype: 'sell' | '
         var roomparsed = patt.exec(i.roomName) as any;
         // let roomparsed = Number((/^[WE]([0-9]+)[NS]([0-9]+)$/.exec(i.roomName)));
         if ((roomparsed[0] % 10 || roomparsed[1] % 10) || !filter_aisle) {
-            if (i.price > highestPrice) {
+            if (i.amount > 200 && i.price > highestPrice) {
                 highestPrice = i.price
             }
         }

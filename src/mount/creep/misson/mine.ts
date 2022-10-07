@@ -532,14 +532,15 @@ export default class CreepMissonMineExtension extends Creep {
                     this.goTo(Game.creeps[this.memory.double].pos, 1)
                 }
             } else {
-                if (this.room.name == this.memory.belong) {
-                    var powerbank_ = missonPostion.GetStructure('powerBank')
-                    if (!powerbank_) this.suicide()
-                    if (this.hits < this.hitsMax) {
-                        this.heal(this)
-                        return
-                    }
-                }
+                // if (this.room.name == this.memory.belong) {
+                //     var powerbank_ = missonPostion.GetStructure('powerBank')
+                //     if (!powerbank_) this.suicide()
+                //     if (this.hits < this.hitsMax) {
+                //         this.heal(this)
+                //         return
+                //     }
+                // }
+                this.suicide()
             }
         }
         else if (role == 'power-carry') {

@@ -58,7 +58,7 @@ export default class RoomCoreSpawnExtension extends Room {
                     role_.num = RoleLevelData[role][this.controller.level].num
                 }
                 /*对于快速起步的操作*/
-                if (!this.memory.switch.speedstate && isInArray(['initial_speed'], role)) {
+                if (role_ && !this.memory.switch.speedstate && isInArray(['initial_speed'], role)) {
                     role_.num = 0;
                 }
             }
@@ -187,7 +187,7 @@ export default class RoomCoreSpawnExtension extends Room {
                     var int32 = Math.pow(2, 32)
                     var randomId = () => _.padLeft(Math.ceil(Math.random() * int32).toString(16).toLocaleUpperCase(), 8, "0")
                     var processName = function () {
-                        return randomId() + `【${thisSpawn.room.name}】`
+                        return `${thisSpawn.room.name}_${Game.shard.name}_` + randomId()
                     }
                     name = processName()
                     break;

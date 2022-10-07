@@ -45,32 +45,45 @@ export function layoutVisual(): void {
                         for (let level = 1; level <= 8; level++) {
                             for (let type in CONTROLLER_STRUCTURES) {
                                 let lim = CONTROLLER_STRUCTURES[type]
-                                if (type == 'road') {
-                                    if (level == 4) {
-                                        for (let i = 0; i < ret.structMap[type].length; i++) {
+                                switch (type) {
+                                    case 'road':
+                                        if (level == 4) {
+                                            for (let i = 0; i < ret.structMap[type].length; i++) {
+                                                let e = ret.structMap[type][i]
+                                                if (_add_lv_state) {
+                                                    global.roomStructsData.structMaplv.push(`${e[0]}/${e[1]}/${type}/${level}`)
+                                                }
+                                                new RoomVisual(flag.pos.roomName as string).text(level.toString(), e[0] + 0.3, e[1] + 0.5, { font: 0.4, opacity: 0.8 })
+                                            }
+                                        }
+                                        break;
+                                    case 'link':
+                                        if (level == 5) {
+                                            let link_c = ret.structMap[type][ret.structMap[type].length - 1];
+                                            if (_add_lv_state) {
+                                                global.roomStructsData.structMaplv.push(`${link_c[0]}/${link_c[1]}/${type}/${level}`)
+                                            }
+                                            new RoomVisual(flag.pos.roomName as string).text(level.toString(), link_c[0] + 0.3, link_c[1] + 0.5, { font: 0.4, opacity: 0.8 })
+                                        }
+                                        break;
+                                    case 'container':
+                                        break;
+                                    default:
+                                        for (let i = lim[level - 1]; i < Math.min(ret.structMap[type].length, lim[level]); i++) {
                                             let e = ret.structMap[type][i]
-                                            if (_add_lv_state) {
-                                                global.roomStructsData.structMaplv.push(`${e[0]}/${e[1]}/${type}/${level}`)
+                                            if (type != 'rampart') {
+                                                if (_add_lv_state) {
+                                                    global.roomStructsData.structMaplv.push(`${e[0]}/${e[1]}/${type}/${level}`)
+                                                }
+                                                // {x: -4, y: -3,structureType:'extension',level:2}
+                                                new RoomVisual(flag.pos.roomName as string).text(level.toString(), e[0] + 0.3, e[1] + 0.5, { font: 0.4, opacity: 0.8 })
                                             }
-                                            new RoomVisual(flag.pos.roomName as string).text(level.toString(), e[0] + 0.3, e[1] + 0.5, { font: 0.4, opacity: 0.8 })
                                         }
-                                    }
-                                } else {
-                                    for (let i = lim[level - 1]; i < Math.min(ret.structMap[type].length, lim[level]); i++) {
-                                        let e = ret.structMap[type][i]
-                                        if (type != 'rampart') {
-                                            if (_add_lv_state) {
-                                                global.roomStructsData.structMaplv.push(`${e[0]}/${e[1]}/${type}/${level}`)
-                                            }
-                                            // {x: -4, y: -3,structureType:'extension',level:2}
-                                            new RoomVisual(flag.pos.roomName as string).text(level.toString(), e[0] + 0.3, e[1] + 0.5, { font: 0.4, opacity: 0.8 })
-                                        }
-                                    }
+                                        break;
                                 }
-
                             }
                         }
-                        if (Game.flags.savestructMap) {
+                        if (Game.flags.savestructMap && global.roomStructsData?.structMaplv) {
                             if (Memory.RoomControlData[flag.pos.roomName]) {
                                 Memory.RoomControlData[flag.pos.roomName].structMap = global.roomStructsData.structMaplv
                                 Game.flags.savestructMap.remove();

@@ -66,6 +66,11 @@ export default class CreepMissonActionExtension extends Creep {
                                 this.build_(construction)
                                 return;
                             }
+                            if (mission.CreepBind.repair.historynum) {/*和平状态下会进行数量调整*/
+                                mission.CreepBind.repair.num = mission.CreepBind.repair.historynum;
+                                delete mission.CreepBind.repair.historynum;
+                                mission.Data.hangstate = false;
+                            }
                         }
                         let _getListHitsleast = [STRUCTURE_RAMPART, STRUCTURE_WALL];
                         switch (mission.Data.RepairType) {
@@ -749,6 +754,16 @@ export default class CreepMissonActionExtension extends Creep {
                     else this.withdraw(tombstones, 'energy')
                     return
                 }
+                let ruins = this.pos.findClosestByPath(FIND_RUINS, {
+                    filter: (res) => {
+                        return res.store.getUsedCapacity('energy') > 100
+                    }
+                })
+                if (ruins) {
+                    if (!this.pos.isNearTo(ruins)) this.goTo(ruins.pos, 1)
+                    else this.withdraw(ruins, 'energy')
+                    return
+                }
                 let source = this.pos.findClosestByPath(FIND_SOURCES_ACTIVE)
                 if (source) {
                     this.harvest_(source)
@@ -774,22 +789,48 @@ export default class CreepMissonActionExtension extends Creep {
                 }
             }
         }
-        if ((this.room.name != data.disRoom || Game.shard.name != data.shard) && !this.memory.swith) {
+
+        if ((this.room.name != data.disRoom || Game.shard.name != data.shard)) {
             if (this.hits < this.hitsMax) {
                 this.heal(this)
+                if (this.room.controller?.my) {
+                    this.optTower('heal', this, true)
+                }
             }
             this.arriveTo(new RoomPosition(24, 24, data.disRoom), 23, data.shard, data.shardData ? data.shardData : null)
         } else {
             this.memory.swith = true
             this.workstate('energy')
             if (this.memory.working) {
-                if (this.hits < this.hitsMax) {
-                    this.optTower('heal', this, true)
-                }
+                // if (this.hits < this.hitsMax) {
+                //     this.optTower('heal', this, true)
+                // }
                 // if (!this.pos.inRangeTo(this.room.controller, 3)) this.goTo(this.room.controller.pos, 3)
                 this.upgrade_()
             }
             else {
+                let resources_list = this.pos.findInRange(FIND_DROPPED_RESOURCES, 5, {
+                    filter: (res) => {
+                        return res.amount > 200 && res.resourceType == 'energy'
+                    }
+                })
+                if (resources_list.length > 0) {
+                    let resources = resources_list[0];
+                    if (!this.pos.isNearTo(resources)) this.goTo(resources.pos, 1)
+                    else this.pickup(resources)
+                    return
+                }
+                let tombstones_list = this.pos.findInRange(FIND_TOMBSTONES, 5, {
+                    filter: (res) => {
+                        return res.store.getUsedCapacity('energy') > 100
+                    }
+                })
+                if (tombstones_list.length > 0) {
+                    let tombstones = tombstones_list[0];
+                    if (!this.pos.isNearTo(tombstones)) this.goTo(tombstones.pos, 1)
+                    else this.withdraw(tombstones, 'energy')
+                    return
+                }
                 this.suicide();
             }
         }
@@ -858,6 +899,7 @@ export default class CreepMissonActionExtension extends Creep {
                     this.say("🛠️")
                     var target_ = Game.getObjectById(this.memory.targetID as Id<StructureRampart>) as StructureRampart
                     if (!target_) { delete this.memory.targetID; return }
+                    if (target_.hits >= target_.hitsMax) delete this.memory.targetID;
                     this.repair_(target_, 400)
                     if (this.room.memory.state == 'war') {
                         let hostileCreep = this.pos.findInRange(FIND_HOSTILE_CREEPS, 3, {
@@ -869,6 +911,25 @@ export default class CreepMissonActionExtension extends Creep {
                     }
                 }
                 else {
+                    /* 寻找插了旗子的hits最小的墙 */
+                    var flags = this.room.find(FIND_FLAGS, {
+                        filter: (flag) => {
+                            return flag.name.indexOf('repair') == 0
+                        }
+                    })
+                    if (flags.length > 0) {
+                        let disWall = null
+                        for (var f of flags) {
+                            let fwall = f.pos.GetStructureList(['rampart', 'constructedWall'])[0]
+                            if (!fwall) f.remove()
+                            else {
+                                if (!disWall || fwall.hits < disWall.hits) disWall = fwall
+                            }
+                        }
+                        if (disWall) this.memory.targetID = disWall.id
+                        return;
+                    }
+
                     if (this.room.memory.state == 'peace') {
                         var construction = this.pos.findClosestByRange(FIND_MY_CONSTRUCTION_SITES)
                         if (construction) {

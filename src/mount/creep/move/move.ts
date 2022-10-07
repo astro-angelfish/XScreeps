@@ -188,6 +188,7 @@ export default class CreepMoveExtension extends Creep {
         // 获取方向，进行移动
         const direction = <DirectionConstant>Number(this.memory.moveData.path[index])
         const goResult = this.go(direction)
+        this.memory.standed = false;
         // 移动成功，更新下次移动索引
         if (goResult == OK) this.memory.moveData.index++
         return goResult

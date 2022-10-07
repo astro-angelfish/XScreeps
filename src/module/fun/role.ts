@@ -20,7 +20,7 @@ export function harvest_(creep_: Creep): void {
         let data = harvestData[creep_.memory.targetID]
         if (!data) return
         // 优先寻找link
-        if (creep_.room.controller?.level < 4 && !data.containerID) {
+        if (creep_.room.controller?.level <= 4 && !data.containerID) {
             /* 最后寻找附近的建筑工地 -补全container*/
             let cons = creep_.pos.findInRange(FIND_MY_CONSTRUCTION_SITES, 3)
             if (cons.length > 0) {

@@ -250,11 +250,20 @@ export default class CreepMissonTransportExtension extends Creep {
                 return;
             }
             /*搜索墓碑*/
-            var find_tombstones = this.pos.findClosestByRange(FIND_TOMBSTONES, {
+            var find_tombstones = null;
+            find_tombstones = this.pos.findClosestByRange(FIND_TOMBSTONES, {
                 filter: (structure) => {
                     return structure.store.getUsedCapacity() > 0
                 }
             })
+            /*搜索废墟*/
+            if (!find_tombstones) {
+                find_tombstones = this.pos.findClosestByRange(FIND_RUINS, {
+                    filter: (structure) => {
+                        return structure.store.getUsedCapacity() > 0
+                    }
+                })
+            }
             if (find_tombstones) {
                 // console.log('存在目的信息')
                 /*进行资源遍历操作*/
@@ -275,6 +284,7 @@ export default class CreepMissonTransportExtension extends Creep {
                 }
                 return;
             }
+
 
         }
     }
@@ -570,6 +580,12 @@ export default class CreepMissonTransportExtension extends Creep {
                         }
                     }
                 } else {
+                    if (Data.st) {
+                        if (this.ticksToLive < Data.st) {
+                            this.suicide();
+                            return;
+                        }
+                    }
                     if (this.ticksToLive < 10) {
                         this.suicide();
                         return;

@@ -30,6 +30,7 @@ interface LittleMarketData {
     time?: number,
     retain?: boolean,
     refreshtime?: number/*订单最后成交的Game_time*/
+    autorefreshtime?: number/*订单的强制刷新间隔信息*/
     autotrade?: boolean/*订单的自动调价开关*/
     autotime?: number/*自动调价中自定义调价间隔*/
     autoatype?: number/*订单定义的调价类型*/
