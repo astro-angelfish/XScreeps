@@ -63,6 +63,22 @@ export function squadFrameWork(squardID: string): void {
         return
     }
 
+    /* 检测房间内是否有敌对爬 */
+    var hasEnemy = false
+    for (const creepName in squadData) {
+        var myCreep = Game.creeps[creepName]
+        if (!myCreep) continue
+        var roomEnemy = myCreep.room.find(FIND_HOSTILE_CREEPS, {
+            filter: (creep_) => {
+                return !isInArray(Memory.whitesheet, creep_.owner.username) && !creep_.pos.GetStructure('rampart') &&
+                    (creep_.getActiveBodyparts(ATTACK) > 0 || creep_.getActiveBodyparts(RANGED_ATTACK) > 0 || creep_.getActiveBodyparts(HEAL) > 0 || creep_.getActiveBodyparts(TOUGH) > 0)
+            }
+        })
+        if (roomEnemy.length > 0) {
+            hasEnemy = true
+        }
+    }
+
     /* 如果小队还没有到目标房间 */
     if (!SquadArrivedRoom(squadData, Data.disRoom)) {
         /* 如果有蓝色旗帜，优先去蓝色旗帜那里集结  [临时] */
@@ -81,6 +97,9 @@ export function squadFrameWork(squardID: string): void {
             return
         }
         squadMove(squadData, new RoomPosition(25, 25, Data.disRoom), 10)
+        if (hasEnemy) {
+            Squadaction(squadData)
+        }
         return
     }
     /* 小队行为 攻击周围的敌人和建筑*/
@@ -96,7 +115,7 @@ export function squadFrameWork(squardID: string): void {
     }
     let attack_flag = SquadNameFlagPath(squadData, 'squad_attack')
     if (attack_flag) {
-        if (attack_flag.pos.lookFor(LOOK_STRUCTURES).length <= 0) attack_flag.remove()
+        if ((attack_flag.pos.lookFor(LOOK_STRUCTURES).length <= 0) || attack_flag.pos.findInRange(FIND_HOSTILE_CREEPS, 5).length <= 0) attack_flag.remove()
         else {
             var Attackdirection = SquadAttackDirection(Data.creepData)
             if (SquadPosDirection(squadData, attack_flag.pos) != null && Attackdirection != SquadPosDirection(squadData, attack_flag.pos)) {
@@ -123,7 +142,16 @@ export function squadFrameWork(squardID: string): void {
             clostStructure.pos.createFlag(`squad_attack_${Math.random().toString(36).substr(3)}`, COLOR_WHITE)
             return
         }
-        else { return }
+        var closestCreep = standCreep.pos.findClosestByPath(FIND_HOSTILE_CREEPS, {
+            filter: (creep_) => {
+                return !isInArray(Memory.whitesheet, creep_.owner.username) && !creep_.pos.GetStructure('rampart') &&
+                    (creep_.getActiveBodyparts(ATTACK) > 0 || creep_.getActiveBodyparts(RANGED_ATTACK) > 0 || creep_.getActiveBodyparts(HEAL) > 0 || creep_.getActiveBodyparts(TOUGH) > 0)
+            }
+        })
+        if (closestCreep) {
+            closestCreep.pos.createFlag(`squad_attack_${Math.random().toString(36).substr(3)}`, COLOR_WHITE)
+            return
+        }
     }
     if (!attack_flag) return
 
