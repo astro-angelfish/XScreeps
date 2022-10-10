@@ -93,9 +93,9 @@ export default class RoomMissonVindicateExtension extends Room {
         if (!terminal_) return
         if (!mission.Data.standed) mission.Data.standed = true
         /* 如果terminal附近已经充满了爬虫，则standed为false */
-        let creeps = terminal_.pos.findInRange(FIND_MY_CREEPS, 1)
-        if (creeps.length >= 8) mission.Data.standed = false
-        else mission.Data.standed = true
+        // let creeps = terminal_.pos.findInRange(FIND_MY_CREEPS, 1)
+        // if (creeps.length >= 8) mission.Data.standed = false
+        // else mission.Data.standed = true
         if (!this.Check_Lab(mission, 'transport', 'complex')) return
         // if (Game.time % 40) return
         // if (terminal_.store.getUsedCapacity('energy') < 100000 && Game.market.credits >= 1000000) {

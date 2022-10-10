@@ -188,15 +188,15 @@ export default {
                 myRoom.NumSpawn('initial_speed', 0)
                 return `[frame]  房间${roomName}新房快速初始化关闭`
             }
-            myRoom.memory.SpawnConfig['initial_speed'] = RoleLevelData['initial_speed'][myRoom.controller.level].num
+            myRoom.NumSpawn('initial_speed', RoleLevelData['initial_speed'][myRoom.controller.level].num)
             return `[frame]  房间${roomName}新房快速初始化开启`
         },
         mineral(roomName: string): string {
             var myRoom = Game.rooms[roomName]
             if (!myRoom) return `[frame] 未找到房间${roomName}, 请确认房间!`
             myRoom.memory.switch.stopmineral = !myRoom.memory.switch.stopmineral
-            if (!myRoom.memory.switch.stopmineral) return `[frame] 房间${roomName}关闭原矿开采`
-            return `[frame] 房间${roomName}开启原矿开采`
+            if (!myRoom.memory.switch.stopmineral) return `[frame] 房间${roomName}开启原矿开采关闭原矿开采`
+            return `[frame] 房间${roomName}关闭原矿开采`
         }
     },
     spawn:

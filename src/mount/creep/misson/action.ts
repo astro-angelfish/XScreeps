@@ -592,7 +592,9 @@ export default class CreepMissonActionExtension extends Creep {
         let mission = Game.rooms[this.memory.belong].GainMission(id)
         if (!mission) return
         // boost检查
-        if (mission.LabBind && !this.BoostCheck(['work'])) return
+        if (!this.memory.boostState) {
+            if (mission.LabBind && !this.BoostCheck(['work'])) return
+        }
         this.workstate('energy')
         var terminal_ = this.room.terminal as StructureTerminal
         if (!terminal_) { this.say("找不到terminal!"); return }

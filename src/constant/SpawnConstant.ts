@@ -97,6 +97,8 @@ export const RoleLevelData = {
         4: { bodypart: [5, 5, 10, 0, 0, 0, 0, 0], num: 6 },
         5: { bodypart: [10, 6, 10, 0, 0, 0, 0, 0], num: 5 },
         6: { bodypart: [10, 6, 10, 0, 0, 0, 0, 0], num: 0 },
+        7: { bodypart: [10, 6, 10, 0, 0, 0, 0, 0], num: 0 },
+        8: { bodypart: [10, 6, 10, 0, 0, 0, 0, 0], num: 0 },
     },
     'carry': {
         1: { bodypart: [0, 2, 2, 0, 0, 0, 0, 0], num: 2 },
@@ -165,7 +167,7 @@ export const RoleLevelData = {
         4: { bodypart: [0, 2, 2, 0, 0, 0, 0, 0], num: 1 },
         5: { bodypart: [0, 10, 5, 0, 0, 0, 0, 0], num: 1 },
         6: { bodypart: [0, 30, 15, 0, 0, 0, 0, 0], num: 1 },
-        7: { bodypart: [0, 32, 15, 0, 0, 0, 0, 0], num: 1 },
+        7: { bodypart: [0, 32, 16, 0, 0, 0, 0, 0], num: 1 },
         8: { bodypart: [0, 32, 16, 0, 0, 0, 0, 0], num: 1 },
     },
     'repair': {
@@ -189,7 +191,7 @@ export const RoleLevelData = {
         8: { bodypart: [25, 0, 25, 0, 0, 0, 0, 0], num: 0 },
     },
     'rush': {
-        6: { bodypart: [17, 1, 8, 0, 0, 0, 0, 0], num: 0 },
+        6: { bodypart: [17, 1, 9, 0, 0, 0, 0, 0], num: 0 },
         7: { bodypart: [39, 1, 10, 0, 0, 0, 0, 0], num: 0 },
     },
     'truck': {

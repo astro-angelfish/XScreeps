@@ -1480,12 +1480,12 @@ let pro={
                     maxRooms:1
                 }
             )
-            ret.path.forEach(pos=>{
-                if(costs.get(pos.x,pos.y) != 1){
-                    structMap['road'].push([pos.x,pos.y])
-                    costs.set(pos.x,pos.y,1)
-                }
-            })
+            // ret.path.forEach(pos=>{
+            //     if(costs.get(pos.x,pos.y) != 1){
+            //         structMap['road'].push([pos.x,pos.y])
+            //         costs.set(pos.x,pos.y,1)
+            //     }
+            // })
 
         })
         //#endregion
