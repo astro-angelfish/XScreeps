@@ -293,6 +293,9 @@ export default class CreepMissonActionExtension extends Creep {
                         case 'T3':
                             if (!this.BoostCheck(['work', 'move', 'carry'])) return
                             break;
+                        case 'T7':
+                            if (!this.BoostCheck(['work', 'move', 'carry', 'heal'])) return
+                            break;
                         default:
                             if (!this.BoostCheck(['work', 'move'])) return
                             break;

@@ -9,8 +9,8 @@ export function squadMove(squadData:Squad,disPos:RoomPosition,range:number):void
     let standPos = getStandPos(squadData)
     if (!standPos) return
     const result = PathFinder.search(standPos,{pos:disPos,range:range},{
-        plainCost:2,
-        swampCost:10,
+        plainCost:1,
+        swampCost:5,
         maxOps:4000,
         roomCallback:roomName=>{
             // 在绕过房间列表的房间将直接不让走
@@ -25,18 +25,18 @@ export function squadMove(squadData:Squad,disPos:RoomPosition,range:number):void
             {
                 if (terrian.get(x,y) == TERRAIN_MASK_SWAMP)
                 {
-                    costs.set(x,y,10)
+                    costs.set(x,y,5)
                     if (x>2)
                     {
-                        costs.set(x-1,y,10)
+                        costs.set(x-1,y,5)
                     }
                     if (y>2)
                     {
-                        costs.set(x,y-1,10)
+                        costs.set(x,y-1,5)
                     }
                     if (x>2 && y > 2)
                     {
-                        costs.set(x-1,y-1,10)
+                        costs.set(x-1,y-1,5)
                     }
                 }
                 
