@@ -23,7 +23,7 @@ export const RoleData: SpawnConstantData = {
     'build': { num: 0, ability: [1, 1, 2, 0, 0, 0, 0, 0], level: 10, mark: "🔨", init: true, fun: build_, must: true },   // 建筑工
     'manage': { num: 0, ability: [0, 1, 1, 0, 0, 0, 0, 0], level: 1, mark: "🗃️", init: true, must: true, adaption: true },   // 中央搬运工
     'transport': { num: 0, ability: [0, 2, 2, 0, 0, 0, 0, 0], level: 2, mark: "📦", init: true, must: true, adaption: true },  // 房间物流搬运工
-    'initial_speed': { num: 0, ability: [1, 1, 2, 0, 0, 0, 0, 0], level: 5, mark: "⛏️", must: false, init: true, fun: initial_speed_ },  // 新房间冲级专用
+    'initial_speed': { num: 0, ability: [1, 1, 2, 0, 0, 0, 0, 0], level: 5, mark: "⛏️", must: false, init: true, adaption: true, fun: initial_speed_ },  // 新房间冲级专用
     'repair': { num: 0, ability: [1, 1, 1, 0, 0, 0, 0, 0], level: 8, mark: "🧱", must: true },     // 刷墙
     'cclaim': { num: 0, ability: [0, 0, 5, 0, 0, 0, 1, 0], level: 10, mark: "🐱" },           // 开房sf
     'cupgrade': { num: 0, ability: [2, 5, 7, 0, 0, 0, 0, 0], level: 11, mark: "🐱" },
@@ -158,7 +158,7 @@ export const RoleLevelData = {
         5: { bodypart: [0, 8, 8, 0, 0, 0, 0, 0], num: 0 },
         6: { bodypart: [0, 10, 10, 0, 0, 0, 0, 0], num: 0 },
         7: { bodypart: [0, 15, 15, 0, 0, 0, 0, 0], num: 0 },
-        8: { bodypart: [0, 15, 15, 0, 0, 0, 0, 0], num: 0 },
+        8: { bodypart: [0, 20, 20, 0, 0, 0, 0, 0], num: 0 },
     },
     'manage': {
         1: { bodypart: [0, 1, 1, 0, 0, 0, 0, 0], num: 0 },
@@ -196,7 +196,7 @@ export const RoleLevelData = {
     },
     'truck': {
         1: { bodypart: [0, 1, 1, 0, 0, 0, 0, 0], num: 0 },
-        2: { bodypart: [0, 1, 1, 0, 0, 0, 0, 0], num: 0 },
+        2: { bodypart: [0, 3, 3, 0, 0, 0, 0, 0], num: 0 },
         3: { bodypart: [0, 4, 4, 0, 0, 0, 0, 0], num: 0 },
         4: { bodypart: [0, 8, 8, 0, 0, 0, 0, 0], num: 0 },
         5: { bodypart: [0, 10, 10, 0, 0, 0, 0, 0], num: 0 },

@@ -347,7 +347,7 @@ export default class CreepMissonActionExtension extends Creep {
                 if (this.room.controller.level < 8) {
                     let tower = this.pos.findClosestByPath(FIND_MY_STRUCTURES, {
                         filter: (stru) => {
-                            return stru.structureType == 'tower' && stru.store.getFreeCapacity('energy') > 800
+                            return stru.structureType == 'tower' && stru.store.getFreeCapacity('energy') > 500
                         }
                     })
                     if (tower) {

@@ -417,10 +417,10 @@ export function initial_speed_(creep: Creep): void {
     creep.workstate('energy')
     if (creep.memory.working) {
         /*检查是否有需要填充的单位*/
-        if (thisRoom.controller.level < 2) {
+        if (thisRoom.controller.level <= 2) {
             var target = creep.pos.findClosestByRange(FIND_STRUCTURES, {
-                filter: (stru: StructureTower | StructureSpawn) => {
-                    return isInArray(['tower', 'spawn', 'extension'], stru.structureType) && stru.store.getFreeCapacity('energy') > 0
+                filter: (stru: StructureSpawn | StructureExtension) => {
+                    return isInArray(['spawn', 'extension'], stru.structureType) && stru.store.getFreeCapacity('energy') > 0
                 }
             })
             if (target) {
@@ -428,7 +428,7 @@ export function initial_speed_(creep: Creep): void {
                 return
             }
         } else {
-            if (thisRoom.controller.level < 4) {
+            if (thisRoom.controller.level <= 4) {
                 var target = creep.pos.findClosestByRange(FIND_STRUCTURES, {
                     filter: (stru: StructureTower | StructureSpawn) => {
                         return isInArray(['tower', 'spawn'], stru.structureType) && stru.store.getFreeCapacity('energy') > 0
