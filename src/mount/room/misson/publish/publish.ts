@@ -82,7 +82,7 @@ export default class RoomMissonPublish extends Room {
         return thisTask
     }
 
-    public public_Carryshard(disRoom: string, CreepNum: number, shard: shardName, res: ResourceConstant, interval: number, level: 'T0' | 'T1' | 'T2' | 'T3' = 'T0'): MissionModel {
+    public public_Carryshard(disRoom: string, CreepNum: number, shard: shardName, res: ResourceConstant, interval: number, level: 'T0' | 'T1' | 'T11' | 'T2' | 'T3' | 'T9' = 'T0'): MissionModel {
         var thisTask: MissionModel =
         {
             name: '位面运输',
@@ -98,6 +98,9 @@ export default class RoomMissonPublish extends Room {
         }
         thisTask.CreepBind = { 'truckshard': { num: CreepNum, interval: interval, bind: [], MSB: (level ? true : false) } }
         switch (level) {
+            case 'T9':/*跨位面高净值物品专用*/
+                thisTask.LabMessage = { 'XKH2O': 'boost', 'XZHO2': 'boost', 'XGHO2': 'boost', 'XLHO2': 'boost' }
+                break;
             case 'T3':
                 thisTask.LabMessage = { 'XKH2O': 'boost', 'XZHO2': 'boost' }
                 break;
@@ -105,6 +108,7 @@ export default class RoomMissonPublish extends Room {
                 thisTask.LabMessage = { 'KH2O': 'boost', 'ZHO2': 'boost' }
                 break;
             case 'T1':
+            case 'T11':
                 thisTask.LabMessage = { 'KH': 'boost', 'ZO': 'boost' }
                 break;
         }

@@ -355,6 +355,16 @@ export default class CreepMissonActionExtension extends Creep {
                         return
                     }
                 }
+                if (Game.flags[`${this.memory.belong}/first_build`]) {
+                    let fcon = Game.flags[`${this.memory.belong}/first_build`].pos.lookFor(LOOK_CONSTRUCTION_SITES)
+                    if (fcon.length > 0) {
+                        this.build_(fcon[0])
+                    }
+                    else {
+                        Game.flags[`${this.memory.belong}/first_build`].remove()
+                    }
+                    return
+                }
                 /* 优先遭建筑 */
                 let cons = this.pos.findClosestByRange(FIND_MY_CONSTRUCTION_SITES)
                 if (cons) {
@@ -368,7 +378,7 @@ export default class CreepMissonActionExtension extends Creep {
                         return
                     }
                 }
-                if (this.room.controller.level < 6) {
+                if (this.room.controller.level < 4) {
                     let roads = this.pos.findClosestByRange(FIND_STRUCTURES, {
                         filter: (stru) => {
                             return ((stru.structureType == 'road' || stru.structureType == 'container') && stru.hits < stru.hitsMax * 0.8) ||
@@ -501,6 +511,16 @@ export default class CreepMissonActionExtension extends Creep {
         else if (this.memory.role == 'Eupgrade') {
             if (this.memory.working) {
                 // this.say("upgrade")
+                if (Game.flags[`${this.memory.belong}/first_build`]) {
+                    let fcon = Game.flags[`${this.memory.belong}/first_build`].pos.lookFor(LOOK_CONSTRUCTION_SITES)
+                    if (fcon.length > 0) {
+                        this.build_(fcon[0])
+                    }
+                    else {
+                        Game.flags[`${this.memory.belong}/first_build`].remove()
+                    }
+                    return
+                }
                 this.upgrade_()
             }
             else {
@@ -641,7 +661,7 @@ export default class CreepMissonActionExtension extends Creep {
         if (!missionData) return
         if (this.room.name == this.memory.belong && Game.shard.name == this.memory.shard) {
             if (!this.BoostCheck(['move', 'work', 'heal', 'tough', 'carry'])) return
-            if (this.store.getUsedCapacity('energy') <= 0) {
+            if (this.store.getUsedCapacity('energy') <= 0 && (this.room.name != data.disRoom || Game.shard.name != data.shard)) {
                 let stroge_ = this.room.storage as StructureStorage
                 if (stroge_) {
                     this.withdraw_(stroge_, 'energy')
@@ -797,7 +817,7 @@ export default class CreepMissonActionExtension extends Creep {
 
         if ((this.room.name != data.disRoom || Game.shard.name != data.shard)) {
             if (this.hits < this.hitsMax) {
-                this.heal(this)
+                // this.heal(this)
                 if (this.room.controller?.my) {
                     this.optTower('heal', this, true)
                 }
@@ -806,6 +826,9 @@ export default class CreepMissonActionExtension extends Creep {
         } else {
             this.memory.swith = true
             this.workstate('energy')
+            if (this.room.memory.state == 'peace' && this.hits < this.hitsMax) {
+                this.optTower('heal', this, true)
+            }
             if (this.memory.working) {
                 // if (this.hits < this.hitsMax) {
                 //     this.optTower('heal', this, true)

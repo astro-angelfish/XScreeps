@@ -89,15 +89,24 @@ export default class CreepMissonTransportExtension extends Creep {
                     case 'T3':
                     case 'T2':
                     case 'T1':
+                    case 'T11':
                         if (!this.BoostCheck(['move', 'carry'])) return
+                        break;
+                    case 'T9':
+                        if (!this.BoostCheck(['move', 'carry', 'heal', 'tough'])) return
                         break;
                 }
             }
-            if (this.room.storage.store.getUsedCapacity(data.rType) < this.store.getFreeCapacity(data.rType)) {
+            if (this.room.storage.store.getUsedCapacity(data.rType) <= 0) {
                 /*发送一个邮件提醒，任务已经完成*/
                 Game.notify(`[Carry] 位面搬运任务${this.memory.belong}-${data.rType}已完成`)
                 Game.rooms[this.memory.belong].DeleteMission(id)
-                this.suicide();
+                if (this.store.getUsedCapacity() == 0) {
+                    this.suicide();
+                }
+                if (!this.memory.working && this.store.getUsedCapacity(data.rType) > 0) {
+                    this.memory.working = true;
+                }
             }
             this.withdraw_(this.room.storage, data.rType)
             this.workstate(data.rType)
@@ -105,6 +114,11 @@ export default class CreepMissonTransportExtension extends Creep {
         }
         if (this.memory.working) {
             // console.log('完成取货准备搬运')
+            switch (missionData.Data.level) {
+                case 'T9':
+                    this.heal(this);
+                    break;
+            }
             if ((this.room.name != data.disRoom || Game.shard.name != data.shard)) {
                 this.arriveTo(new RoomPosition(24, 24, data.disRoom), 23, data.shard, data.shardData ? data.shardData : null)
             } else {
@@ -241,9 +255,16 @@ export default class CreepMissonTransportExtension extends Creep {
             }
             var find_dropped_resources = this.pos.findClosestByRange(FIND_DROPPED_RESOURCES, {
                 filter: (res) => {
-                    return res.amount > 0
+                    return res.amount > 1000
                 }
             })
+            if (!find_dropped_resources) {
+                var find_dropped_resources = this.pos.findClosestByRange(FIND_DROPPED_RESOURCES, {
+                    filter: (res) => {
+                        return res.amount > 0
+                    }
+                })
+            }
             if (find_dropped_resources) {
                 if (!this.pos.isNearTo(find_dropped_resources)) this.goTo(find_dropped_resources.pos, 1)
                 else this.pickup(find_dropped_resources)

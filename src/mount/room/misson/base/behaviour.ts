@@ -29,6 +29,12 @@ export default class RoomMissonBehaviourExtension extends Room {
                 case 'T1':
                     global.MSB[mission.id] = { 'truckshard': GenerateAbility(0, 32, 16, 0, 0, 0, 0, 0) }
                     break;
+                case 'T11':
+                    global.MSB[mission.id] = { 'truckshard': GenerateAbility(0, 16, 8, 0, 0, 0, 0, 0) }
+                    break;
+                case 'T9':
+                    global.MSB[mission.id] = { 'truckshard': GenerateAbility(0, 2, 10, 0, 0, 18, 0, 20) }
+                    break;
             }
             if ((Game.time - global.Gtime[this.name]) % 8) return
             if (mission.LabBind) {
@@ -162,6 +168,7 @@ export default class RoomMissonBehaviourExtension extends Room {
         } else {
             if ((global.Gtime[this.name] - Game.time) % 7) return
         }
+        if (this.storage?.store.getUsedCapacity('energy') < 1000) return;
         if (!this.memory.StructureIdData.center_link) return
         // let center_link = this.getStructureData(STRUCTURE_LINK, 'center_link', [this.memory.StructureIdData.center_link])[0] as StructureLink
         let center_link = Game.getObjectById(this.memory.StructureIdData.center_link) as StructureLink

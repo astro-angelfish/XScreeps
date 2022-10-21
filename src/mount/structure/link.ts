@@ -37,6 +37,7 @@ export default class linkExtension extends StructureLink {
             if (this.room.memory.StructureIdData.center_link == this.id) {
                 let storage = this.room.storage as StructureStorage
                 if (!storage) return
+                if (storage.store.getUsedCapacity('energy') < 1000) return;
                 if (this.room.Check_Carry('manage', storage.pos, this.pos, 'energy')) {
                     var thisTask = this.room.public_Carry({ 'manage': { num: 1, bind: [] } }, 20, this.room.name, storage.pos.x, storage.pos.y, this.room.name, this.pos.x, this.pos.y, 'energy', this.store.getFreeCapacity())
                     this.room.AddMission(thisTask)

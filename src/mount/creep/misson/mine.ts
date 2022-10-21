@@ -379,7 +379,7 @@ export default class CreepMissonMineExtension extends Creep {
                 /*出击 主动攻击*/
                 const h_creeps = this.pos.findInRange(FIND_HOSTILE_CREEPS, 4, {
                     filter: function (object) {
-                        return (!isInArray([0, 49], object.pos.x) && !isInArray([0, 49], object.pos.y))
+                        return !isInArray(Memory.whitesheet, object.owner.username) && (!isInArray([0, 49], object.pos.x) && !isInArray([0, 49], object.pos.y))
                     }
                 });
                 if (h_creeps.length > 0) {

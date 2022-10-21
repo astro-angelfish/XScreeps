@@ -19,7 +19,7 @@ export default class CreepMissonWarExtension extends Creep {
         }
         this.memory.standed = true
         // 对方开安全模式情况下 删除任务
-        if (this.room.controller && this.room.controller.safeMode) {
+        if (this.room.controller && !this.room.controller.my && this.room.controller.safeMode) {
             if (Game.shard.name == this.memory.shard) {
                 Game.rooms[this.memory.belong].DeleteMission(id)
             }
