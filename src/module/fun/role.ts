@@ -20,20 +20,6 @@ export function harvest_(creep_: Creep): void {
         let data = harvestData[creep_.memory.targetID]
         if (!data) return
         // 优先寻找link
-        if (creep_.room.controller?.level <= 4 && !data.containerID) {
-            /* 最后寻找附近的建筑工地 -补全container*/
-            let cons = creep_.pos.findInRange(FIND_MY_CONSTRUCTION_SITES, 3)
-            if (cons.length > 0) {
-                creep_.build(cons[0])
-            } else {
-                let containers = creep_.pos.findInRange(FIND_STRUCTURES, 1, { filter: (stru) => { return stru.structureType == 'container' } })
-                if (containers.length < 1) {
-                    creep_.pos.createConstructionSite('container')
-                    return;
-                }
-            }
-            return
-        }
         if (data.linkID) {
             if (data.containerID && creep_.room.controller?.level >= 7) {
                 let container = Game.getObjectById(data.containerID as Id<StructureContainer>) as StructureContainer
@@ -68,7 +54,19 @@ export function harvest_(creep_: Creep): void {
                     return
                 }
             }
-
+        } else {
+            /* 最后寻找附近的建筑工地 -补全container或link*/
+            let cons = creep_.pos.findInRange(FIND_MY_CONSTRUCTION_SITES, 3)
+            if (cons.length > 0) {
+                creep_.build(cons[0])
+            }
+            if (creep_.room.controller?.level <= 4) {
+                let containers = creep_.pos.findInRange(FIND_STRUCTURES, 1, { filter: (stru) => { return stru.structureType == 'container' } })
+                if (containers.length <= 0) {
+                    creep_.pos.createConstructionSite('container')
+                    return;
+                }
+            }
         }
     } else {
         // 如果不具备挖矿功能了，就自杀
@@ -120,8 +118,6 @@ export function harvest_(creep_: Creep): void {
             if (creep_.withdraw(container, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                 creep_.moveTo(container);
             }
-
-
         }
     }
 }
@@ -417,10 +413,10 @@ export function initial_speed_(creep: Creep): void {
     creep.workstate('energy')
     if (creep.memory.working) {
         /*检查是否有需要填充的单位*/
-        if (thisRoom.controller.level < 2) {
+        if (thisRoom.controller.level <= 2) {
             var target = creep.pos.findClosestByRange(FIND_STRUCTURES, {
-                filter: (stru: StructureTower | StructureSpawn) => {
-                    return isInArray(['tower', 'spawn', 'extension'], stru.structureType) && stru.store.getFreeCapacity('energy') > 0
+                filter: (stru: StructureSpawn | StructureExtension) => {
+                    return isInArray(['spawn', 'extension'], stru.structureType) && stru.store.getFreeCapacity('energy') > 0
                 }
             })
             if (target) {
@@ -428,7 +424,7 @@ export function initial_speed_(creep: Creep): void {
                 return
             }
         } else {
-            if (thisRoom.controller.level < 4) {
+            if (thisRoom.controller.level <= 4) {
                 var target = creep.pos.findClosestByRange(FIND_STRUCTURES, {
                     filter: (stru: StructureTower | StructureSpawn) => {
                         return isInArray(['tower', 'spawn'], stru.structureType) && stru.store.getFreeCapacity('energy') > 0
