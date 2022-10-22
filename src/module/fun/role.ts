@@ -58,7 +58,8 @@ export function harvest_(creep_: Creep): void {
             /* 最后寻找附近的建筑工地 -补全container或link*/
             let cons = creep_.pos.findInRange(FIND_MY_CONSTRUCTION_SITES, 3)
             if (cons.length > 0) {
-                creep_.build(cons[0])
+                creep_.build(cons[0]);
+                return;
             }
             if (creep_.room.controller?.level <= 4) {
                 let containers = creep_.pos.findInRange(FIND_STRUCTURES, 1, { filter: (stru) => { return stru.structureType == 'container' } })

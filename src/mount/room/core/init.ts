@@ -154,8 +154,8 @@ export default class RoomCoreInitExtension extends Room {
         }
         /* 矿点link记忆更新 */
 
-        if (level == 6 || level == 7) {
-            if (level == 6) {
+        if (level >= 5) {
+            if (level == 5 || level == 6) {
                 if (StructureData.source_links.length <= 0) {
                     let temp_link_list = []
                     for (let sID of StructureData.source) {
@@ -416,8 +416,6 @@ export default class RoomCoreInitExtension extends Room {
                     if (level >= 8) {
                         this.memory.DynamicConfig.Dynamicupgrade = false;
                         this.memory.SpawnConfig.upgrade.num = 1;
-                    } else {
-                        this.memory.SpawnConfig.upgrade.num = 2;
                     }
                 }
             }
