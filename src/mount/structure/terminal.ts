@@ -385,6 +385,7 @@ export default class terminalExtension extends StructureTerminal {
         if (market_deal.price) price = market_deal.price
         let order_: any = [];
         for (let orders_data of orders) {
+            if (Object.keys(Game.rooms).includes(orders_data.roomName)) continue; /*过滤自己房间的订单*/
             if (orders_data.price < market_deal.price) continue;/*价格不满足*/
             if (orders_data.amount < a && market_deal.num >= a) continue;/*订单数量过少*/
             let cost = Game.market.calcTransactionCost(1000, orders_data.roomName, this.room.name);

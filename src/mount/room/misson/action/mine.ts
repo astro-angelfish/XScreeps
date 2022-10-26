@@ -175,7 +175,7 @@ export default class RoomMissonMineExtension extends Room {
         }
         else if (mission.Data.state == 2)    // 采集状态 [正常状态]
         {
-            if (Game.rooms[disRoomName].controller?.reservation?.ticksToEnd > 4000) {
+            if (Game.rooms[disRoomName]?.controller?.reservation?.ticksToEnd > 4000) {
                 mission.CreepBind['out-claim'].num = 0
             }
             mission.CreepBind['out-harvest'].num = Memory.outMineData[disRoomName].minepoint.length
