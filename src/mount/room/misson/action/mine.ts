@@ -104,12 +104,12 @@ export default class RoomMissonMineExtension extends Room {
     }
 
     /* 房间外矿处理任务 只适用于一般外矿 */
-    public Task_OutMine(misson: MissionModel): void {
+    public Task_OutMine(mission: MissionModel): void {
         if ((Game.time - global.Gtime[this.name]) % 13) return
-        if (!misson.Data.state) misson.Data.state = 1   // 默认状态1
-        misson.CreepBind['out-claim'].num = 1
-        let disRoomName = misson.Data.disRoom
-        if (!Memory.outMineData[disRoomName]) Memory.outMineData[disRoomName] = { road: [], startpoint: misson.Data.startpoint, minepoint: [], mineType: 'normal' }
+        if (!mission.Data.state) mission.Data.state = 1   // 默认状态1
+        mission.CreepBind['out-claim'].num = 1
+        let disRoomName = mission.Data.disRoom
+        if (!Memory.outMineData[disRoomName]) Memory.outMineData[disRoomName] = { road: [], startpoint: mission.Data.startpoint, minepoint: [], mineType: 'normal' }
         // 相关爬虫死亡后的数据擦除
 
         if (Memory.outMineData[disRoomName].minepoint && Memory.outMineData[disRoomName].minepoint.length > 0 && Memory.outMineData[disRoomName].mineType == 'normal') {
@@ -118,14 +118,14 @@ export default class RoomMissonMineExtension extends Room {
                 if (obj.bind && obj.bind.car && !Game.creeps[obj.bind.car]) delete obj.bind.car
             }
         }
-        if (misson.Data.state == 1) // 初始化状态
+        if (mission.Data.state == 1) // 初始化状态
         {
             /* 状态1下仅仅获取外矿信息和派出claimer */
             if (Game.rooms[disRoomName]) {
                 var sources = Game.rooms[disRoomName].find(FIND_SOURCES)
                 if (sources.length <= 0) {
                     Game.notify(`房间${disRoomName}未发现能量点！删除外矿任务！`)
-                    this.DeleteMission(misson.id)
+                    this.DeleteMission(mission.id)
                     return
                 }
                 /* 说明有该房间的视野了 先查找矿点 */
@@ -141,13 +141,13 @@ export default class RoomMissonMineExtension extends Room {
                     return
                 }
                 /* 矿点信息更新完毕了 接下来更新路线信息 */
-                if (!misson.Data.roadUpdated) {
+                if (!mission.Data.roadUpdated) {
                     Memory.outMineData[disRoomName].road = [];
                     var startpos = unzipPosition(Memory.outMineData[disRoomName].startpoint)
                     if (!startpos) { console.log(`${startpos}不能解压成RoomPosition对象`); return }
                     /* 每个矿点都要有一个路线信息 */
                     for (var s of sources) {
-                        var results = startpos.FindPath(s.pos, 1, misson.Data.roadUpdatedforce)
+                        var results = startpos.FindPath(s.pos, 1, mission.Data.roadUpdatedforce)
                         for (var p of results) {
                             if (p.isNearTo(s.pos)) continue
                             if (isInArray([0, 49], p.x) || isInArray([0, 49], p.y)) continue
@@ -157,8 +157,8 @@ export default class RoomMissonMineExtension extends Room {
                             }
                         }
                     }
-                    misson.Data.roadUpdated = true
-                    misson.Data.roadUpdatedforce = false;
+                    mission.Data.roadUpdated = true
+                    mission.Data.roadUpdatedforce = false;
                     return
                 }
                 /* 先看路径点中是否有本房间的位置点，有的话就创建工地 */
@@ -170,90 +170,93 @@ export default class RoomMissonMineExtension extends Room {
                     }
                 }
                 /* 路线信息更新完毕 接下来进入阶段2 */
-                misson.Data.state = 2
+                mission.Data.state = 2
             }
         }
-        else if (misson.Data.state == 2)    // 采集状态 [正常状态]
+        else if (mission.Data.state == 2)    // 采集状态 [正常状态]
         {
-
-            misson.CreepBind['out-harvest'].num = Memory.outMineData[disRoomName].minepoint.length
-            misson.CreepBind['out-defend'].num = 0
+            if (Game.rooms[disRoomName].controller?.reservation?.ticksToEnd > 4000) {
+                mission.CreepBind['out-claim'].num = 0
+            }
+            mission.CreepBind['out-harvest'].num = Memory.outMineData[disRoomName].minepoint.length
+            mission.CreepBind['out-defend'].num = 0
             if (Memory.outMineData[disRoomName].car) {
-                misson.CreepBind['out-car'].num = Memory.outMineData[disRoomName].minepoint.length
+                mission.CreepBind['out-car'].num = Memory.outMineData[disRoomName].minepoint.length
             }
-            else misson.CreepBind['out-car'].num = 0
+            else mission.CreepBind['out-car'].num = 0
         }
-        else if (misson.Data.state == 3)    // 防御状态
+        else if (mission.Data.state == 3)    // 防御状态
         {
-            misson.CreepBind['out-harvest'].num = 0
-            misson.CreepBind['out-car'].num = 0
-            misson.CreepBind['out-defend'].num = 1
-            if (Game.rooms[misson.Data.disRoom]) {
-                var enemys = Game.rooms[misson.Data.disRoom].find(FIND_HOSTILE_CREEPS, {
+            mission.CreepBind['out-harvest'].num = 0
+            mission.CreepBind['out-car'].num = 0
+            mission.CreepBind['out-claim'].num = 0
+            mission.CreepBind['out-defend'].num = 1
+            if (Game.rooms[mission.Data.disRoom]) {
+                var enemys = Game.rooms[mission.Data.disRoom].find(FIND_HOSTILE_CREEPS, {
                     filter: (creep) => {
                         return !isInArray(Memory.whitesheet, creep.owner.username) && (creep.getActiveBodyparts(ATTACK) > 0 || creep.getActiveBodyparts(RANGED_ATTACK) > 0)
                     }
                 })
-                var InvaderCore = Game.rooms[misson.Data.disRoom].find(FIND_STRUCTURES, {
+                var InvaderCore = Game.rooms[mission.Data.disRoom].find(FIND_STRUCTURES, {
                     filter: (stru) => {
                         return stru.structureType == STRUCTURE_INVADER_CORE
                     }
                 })
                 if (enemys.length <= 0 && InvaderCore.length <= 0)
-                    misson.Data.state = 2
+                    mission.Data.state = 2
             }
         }
     }
 
     /* 过道采集监控发布任务 */
-    public Task_Cross(misson: MissionModel): void {
+    public Task_Cross(mission: MissionModel): void {
 
         if (this.controller.level < 8 || !this.memory.StructureIdData.ObserverID) return
         if (Game.cpu.bucket < 9500 && Memory.StopPixel) return/*CPU不足情况下不进行任务发布*/
         if (this.memory.switch.StopCross) return
         var observer_ = Game.getObjectById(this.memory.StructureIdData.ObserverID) as StructureObserver
         if (!observer_) { delete this.memory.StructureIdData.ObserverID; return }
-        if (!misson.Data.relateRooms) misson.Data.relateRooms = []
-        if (misson.Data.relateRooms.length <= 0) return
-        if (!misson.Data.index) misson.Data.index = 0
-        if (!misson.Data.state) misson.Data.state = 1
-        if (misson.Data.state == 1) {
+        if (!mission.Data.relateRooms) mission.Data.relateRooms = []
+        if (mission.Data.relateRooms.length <= 0) return
+        if (!mission.Data.index) mission.Data.index = 0
+        if (!mission.Data.state) mission.Data.state = 1
+        if (mission.Data.state == 1) {
             // let a = Game.cpu.getUsed();
             /* 观察房间 */
-            if (misson.Data.relateRooms[misson.Data.index]) {
-                observer_.observeRoom(misson.Data.relateRooms[misson.Data.index])
+            if (mission.Data.relateRooms[mission.Data.index]) {
+                observer_.observeRoom(mission.Data.relateRooms[mission.Data.index])
             }
-            // console.log(`observer正在观察房间${misson.Data.relateRooms[misson.Data.index]}`)
+            // console.log(`observer正在观察房间${mission.Data.relateRooms[mission.Data.index]}`)
             /* 获取上个tick的房间名 */
             let beforRoom: string
-            if (misson.Data.relateRooms.length == 1) beforRoom = misson.Data.relateRooms[0]
-            else if (misson.Data.relateRooms.length > 1) {
-                if (misson.Data.index == 0) beforRoom = misson.Data.relateRooms[misson.Data.relateRooms.length - 1]
-                else beforRoom = misson.Data.relateRooms[misson.Data.index - 1]
+            if (mission.Data.relateRooms.length == 1) beforRoom = mission.Data.relateRooms[0]
+            else if (mission.Data.relateRooms.length > 1) {
+                if (mission.Data.index == 0) beforRoom = mission.Data.relateRooms[mission.Data.relateRooms.length - 1]
+                else beforRoom = mission.Data.relateRooms[mission.Data.index - 1]
             }
             if (Game.rooms[beforRoom]) {
                 /* 查找power和deposit */
                 // console.log('扫描房间',this.name)
-                if (misson.Data.power) {
+                if (mission.Data.power) {
                     this.Add_Cross_power(beforRoom);
                 }
-                if (misson.Data.deposit) {
+                if (mission.Data.deposit) {
                     this.Add_Cross_deposit(beforRoom);
                 }
             }
-            if (misson.Data.index > misson.Data.relateRooms.length) {
-                misson.Data.index = 0
-                misson.Data.time = Game.time
-                misson.Data.state = 2
+            if (mission.Data.index > mission.Data.relateRooms.length) {
+                mission.Data.index = 0
+                mission.Data.time = Game.time
+                mission.Data.state = 2
             } else {
-                misson.Data.index++
+                mission.Data.index++
             }
             // let b = Game.cpu.getUsed();
             // console.log(this.name, beforRoom, b - a)
         }
-        else if (misson.Data.state == 2) {
-            if (Game.time - misson.Data.time != 0 && (Game.time - misson.Data.time) % 180 == 0) {
-                misson.Data.state = 1
+        else if (mission.Data.state == 2) {
+            if (Game.time - mission.Data.time != 0 && (Game.time - mission.Data.time) % 180 == 0) {
+                mission.Data.state = 1
                 // console.log(Colorful("进入观察模式",'blue'))
             }
         }
@@ -342,26 +345,26 @@ export default class RoomMissonMineExtension extends Room {
     }
 
     /* Power采集 */
-    public Task_PowerHarvest(misson: MissionModel): void {
+    public Task_PowerHarvest(mission: MissionModel): void {
         if (this.controller.level < 8) return
-        if (!misson.Data.state) misson.Data.state = 1
-        if (misson.Data.state == 1) {
-            misson.CreepBind['power-carry'].num = 0
+        if (!mission.Data.state) mission.Data.state = 1
+        if (mission.Data.state == 1) {
+            mission.CreepBind['power-carry'].num = 0
         }
-        else if (misson.Data.state == 2) {
-            if (!misson.Data.down) misson.Data.down = false
-            if (!misson.Data.down) {
-                misson.CreepBind['power-carry'].num = Math.ceil(misson.Data.num / 1600)
-                misson.Data.down = true
+        else if (mission.Data.state == 2) {
+            if (!mission.Data.down) mission.Data.down = false
+            if (!mission.Data.down) {
+                mission.CreepBind['power-carry'].num = Math.ceil(mission.Data.num / 1600)
+                mission.Data.down = true
             }
-            misson.CreepBind['power-attack'].num = 0
-            misson.CreepBind['power-heal'].num = 0
-            if (misson.CreepBind['power-carry'].num == misson.CreepBind['power-carry'].bind.length && misson.CreepBind['power-carry'].num != 0) {
-                misson.CreepBind['power-carry'].num = 0
+            mission.CreepBind['power-attack'].num = 0
+            mission.CreepBind['power-heal'].num = 0
+            if (mission.CreepBind['power-carry'].num == mission.CreepBind['power-carry'].bind.length && mission.CreepBind['power-carry'].num != 0) {
+                mission.CreepBind['power-carry'].num = 0
             }
-            if (misson.CreepBind['power-attack'].bind.length <= 0 && misson.CreepBind['power-heal'].bind.length <= 0 && misson.CreepBind['power-carry'].bind.length <= 0
-                && misson.CreepBind['power-carry'].num <= 0) {
-                this.DeleteMission(misson.id)
+            if (mission.CreepBind['power-attack'].bind.length <= 0 && mission.CreepBind['power-heal'].bind.length <= 0 && mission.CreepBind['power-carry'].bind.length <= 0
+                && mission.CreepBind['power-carry'].num <= 0) {
+                this.DeleteMission(mission.id)
             }
         }
     }
