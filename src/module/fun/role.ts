@@ -220,8 +220,9 @@ export function upgrade_(creep_: Creep): void {
     }
     if (creep_.memory.working) {
         creep_.upgrade_(300)
-        if (creep_.memory.targetID) {
-            delete creep_.memory.targetID
+        if (creep_.memory.targetID && creep_.store.getFreeCapacity() > creep_.store.getCapacity() * 0.5) {
+            let target = Game.getObjectById(creep_.memory.targetID as Id<Structure>) as Structure
+            if (target) creep_.withdraw_(target, 'energy')
         }
     }
     else {
@@ -253,7 +254,6 @@ export function upgrade_(creep_: Creep): void {
                 return
             }
         }
-
         if (!creep_.memory.targetID) {
             let target = null
             if (creep_.room.controller.level < 8 && creep_.room.terminal && !Game.rooms[creep_.memory.belong].memory.StructureIdData.upgrade_link) {
@@ -281,12 +281,10 @@ export function upgrade_(creep_: Creep): void {
             else { creep_.memory.targetID = target.id }
         }
         else {
-            let target = Game.getObjectById(creep_.memory.targetID as Id<StructureStorage>) as StructureStorage
+            let target = Game.getObjectById(creep_.memory.targetID as Id<Structure>) as Structure
             if (target) creep_.withdraw_(target, 'energy')
         }
-
     }
-
 }
 
 // 建筑工
