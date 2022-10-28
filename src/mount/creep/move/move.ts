@@ -615,6 +615,7 @@ export default class CreepMoveExtension extends Creep {
 
     // 逃离寻路
     public Flee(target: RoomPosition, range: number, ExcludePosition?: RoomPosition[]): void {
+        if (!this.pos.inRangeTo(target, range)) return //若已逃离目标范围则直接返回
         let avoid_pos = [] as RoomPosition[];
         if (global.warData.tower[this.room.name]) {
             let _tower_data = global.warData.tower[this.room.name]

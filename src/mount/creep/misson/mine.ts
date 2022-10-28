@@ -16,20 +16,23 @@ export default class CreepMissonMineExtension extends Creep {
             if (enemy) globalMisson.Data.state = 3
         }
         if (this.memory.role == 'out-claim') {
+            if (globalMisson.Data.state == 4) {
+                return
+            }
             if (this.room.name != creepMisson.disRoom && !this.memory.disPos) {
                 this.goTo(new RoomPosition(25, 25, creepMisson.disRoom), 20, null, 2)
                 if (this.room.name != this.memory.belong) {
                     /* 如果是别人的房间就不考虑 */
                     if (this.room.controller && this.room.controller.owner && this.room.controller.owner.username != this.owner.username)
                         return
-                    if (Memory.outMineData && Memory.outMineData[this.room.name]) {
-                        for (var i of Memory.outMineData[this.room.name].road) {
-                            var thisPos = unzipPosition(i)
-                            if (thisPos.roomName == this.name && !thisPos.GetStructure('road')) {
-                                thisPos.createConstructionSite('road')
-                            }
-                        }
-                    }
+                    // if (Memory.outMineData && Memory.outMineData[this.room.name]) {
+                    //     for (var i of Memory.outMineData[this.room.name].road) {
+                    //         var thisPos = unzipPosition(i)
+                    //         if (thisPos.roomName == this.name && !thisPos.GetStructure('road')) {
+                    //             thisPos.createConstructionSite('road')
+                    //         }
+                    //     }
+                    // }
                 }
             }
             if (!this.memory.disPos && this.room.name == creepMisson.disRoom) {
@@ -121,6 +124,20 @@ export default class CreepMissonMineExtension extends Creep {
 
             if (!source) return
             this.workstate('energy')
+            //中央九房特殊处理
+            if (globalMisson.Data.state == 4) {
+                //寻找Keeper
+                var keeper = this.pos.findInRange(FIND_HOSTILE_CREEPS, 6,{
+                    filter: (creep) => {
+                        return creep.owner.username == 'Source Keeper' || creep.owner.username == 'Invader'
+                    }
+                })
+                //逃离keeper
+                if (keeper.length > 0) {
+                    this.Flee(keeper[0].pos, 5)
+                    return
+                }
+            }
             if (this.memory.working) {
                 var container_ = source.pos.findInRange(FIND_STRUCTURES, 1, { filter: (stru) => { return stru.structureType == 'container' } }) as StructureContainer[]
                 if (container_[0]) {
@@ -151,7 +168,6 @@ export default class CreepMissonMineExtension extends Creep {
                 }
                 else this.harvest(source)
             }
-
         }
         else if (this.memory.role == 'out-car') {
             if (!Game.rooms[creepMisson.disRoom]) return
@@ -165,7 +181,7 @@ export default class CreepMissonMineExtension extends Creep {
             }
             if (!this.memory.bindpoint) return
             var disPos = unzipPosition(this.memory.bindpoint)
-            if (Game.time % 91 == 0 && this.room.name != this.memory.belong && this.room.name != disPos.roomName) {
+            if ((Game.time - global.Gtime[this.memory.belong]) % 91 == 0 && this.room.name != this.memory.belong) {
                 if (Memory.outMineData && Memory.outMineData[disPos.roomName]) {
                     for (var i of Memory.outMineData[disPos.roomName].road) {
                         var thisPos = unzipPosition(i) as RoomPosition
@@ -174,6 +190,20 @@ export default class CreepMissonMineExtension extends Creep {
                             thisPos.createConstructionSite('road')
                         }
                     }
+                }
+            }
+            //中央九房特殊处理
+            if (globalMisson.Data.state == 4) {
+                //寻找Keeper
+                var keeper = this.pos.findInRange(FIND_HOSTILE_CREEPS, 6,{
+                    filter: (creep) => {
+                        return creep.owner.username == 'Source Keeper' || creep.owner.username == 'Invader'
+                    }
+                })
+                //逃离keeper
+                if (keeper.length > 0) {
+                    this.Flee(keeper[0].pos, 5)
+                    return
                 }
             }
 
@@ -241,7 +271,7 @@ export default class CreepMissonMineExtension extends Creep {
                     this.goTo(disPos, 1)
                     return
                 }
-                this.say("🚗", true)
+                this.say("🚗")
                 var container_ = disPos.findInRange(FIND_STRUCTURES, 1, {
                     filter: (stru) => {
                         return stru.structureType == 'container'
@@ -267,9 +297,8 @@ export default class CreepMissonMineExtension extends Creep {
                     return
                 }
             }
-
         }
-        else {
+        else if (this.memory.role == 'out-defend') {
             var heal_state = false;
             if (this.hits < this.hitsMax) heal_state = true
             if (this.room.name != creepMisson.disRoom) {
@@ -335,6 +364,85 @@ export default class CreepMissonMineExtension extends Creep {
                     }
                 }
                 if (heal_state) { this.heal(this) }
+            }
+        } 
+        else {    //攻击keeper
+            var heal_state = false;
+            if (this.hits < this.hitsMax) heal_state = true
+            if (this.room.name != creepMisson.disRoom) {
+                this.goTo(new RoomPosition(25, 25, creepMisson.disRoom), 20)
+                if (heal_state) { this.heal(this) }
+            }
+            else {
+
+                //寻找敌对爬
+                var enemy = this.pos.findClosestByRange(FIND_HOSTILE_CREEPS, {
+                    filter: (c) => {
+                        return c.getActiveBodyparts(ATTACK) > 0 || c.getActiveBodyparts(RANGED_ATTACK) > 0
+                    }
+                });
+                if (enemy) {
+                    if (this.pos.isNearTo(enemy)) {
+                        this.attack(enemy)
+                    } else {
+                        if (heal_state) {
+                            this.heal(this)
+                        }
+                        this.say(`⚔️${enemy.pos.x},${enemy.pos.y}`)
+                        this.goTo(enemy.pos, 1)
+                    }
+                    return
+                }
+                
+
+                //寻找下一个据点
+                if (!this.memory.targetID && !this.memory.standed) {
+                    var lairs = this.room.find(FIND_HOSTILE_STRUCTURES, {
+                        filter: (st) => {
+                            return st.structureType == STRUCTURE_KEEPER_LAIR && st.ticksToSpawn < 70
+                        }
+                    }) as StructureKeeperLair[]
+                    var minTickToSpawn = 0xff
+                    for (const lair of lairs) {
+                        if (lair.ticksToSpawn < minTickToSpawn) {
+                            this.memory.targetID = lair.id
+                            minTickToSpawn = lair.ticksToSpawn
+                        }
+                    }
+                }
+
+                var target = Game.getObjectById(this.memory.targetID as Id<StructureKeeperLair>) as StructureKeeperLair
+                if (target) {
+                    //提前到据点准备
+                    if (!this.pos.isNearTo(target)) {
+                        this.say(`⚔️(${target.pos.x},${target.pos.y})`)
+                        this.goTo(target.pos, 1)
+                    } else {
+                        this.memory.standed = true
+                    }
+                    if (target.ticksToSpawn > 200) {
+                        this.memory.standed = false
+                        this.memory.targetID = undefined
+                    }
+                } else {
+                    //空闲时治疗其他爬
+                    let wounded = this.pos.findClosestByRange(FIND_MY_CREEPS, {
+                        filter: (creep) => {
+                            return creep.hits < creep.hitsMax && creep != this
+                        }
+                    })
+                    if (wounded) {
+                        if (!this.pos.isNearTo(wounded)) this.goTo(wounded.pos, 1)
+                        this.heal(wounded)
+                    } else {
+                        let wounded_isNearTo = this.pos.findInRange(FIND_MY_CREEPS, 1, {
+                            filter: (creep) => {
+                                return creep.hits < creep.hitsMax && creep != this
+                            }
+                        })
+                        this.heal(wounded_isNearTo[0])
+                    }
+                }
             }
         }
     }

@@ -69,13 +69,15 @@ export function GenerateAbility(work?: number, carry?: number, move?: number, at
   switch (role) {
     case 'power-attack':
       if (move) body_list = AddList(body_list, move - 1, MOVE)
-      if (work) body_list = AddList(body_list, work, WORK)
       if (attack) body_list = AddList(body_list, attack, ATTACK)
-      if (range_attack) body_list = AddList(body_list, range_attack, RANGED_ATTACK)
-      if (carry) body_list = AddList(body_list, carry, CARRY)
-      if (claim) body_list = AddList(body_list, claim, CLAIM)
-      if (heal) body_list = AddList(body_list, heal, HEAL)
       if (move) body_list = AddList(body_list, 1, MOVE)
+      break;
+    case 'out-attack':
+      if (move) body_list = AddList(body_list, move - 2, MOVE)
+      if (attack) body_list = AddList(body_list, attack, ATTACK)
+      if (heal) body_list = AddList(body_list, heal-1, HEAL)
+      if (move) body_list = AddList(body_list, 2, MOVE)
+      if (heal) body_list = AddList(body_list, 1, HEAL)
       break;
     default:
       if (work) body_list = AddList(body_list, work, WORK)

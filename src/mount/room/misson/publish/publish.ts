@@ -709,7 +709,7 @@ export default class RoomMissonPublish extends Room {
     }
 
     /* 外矿开采任务发布函数 */
-    public public_OutMine(sourceRoom: string, x: number, y: number, disRoom: string): MissionModel {
+    public public_OutMine(sourceRoom: string, x: number, y: number, disRoom: string, central: boolean): MissionModel {
         var pos = new RoomPosition(x, y, sourceRoom)
         if (!this.storage) return null
         if (!pos) return null
@@ -725,10 +725,11 @@ export default class RoomMissonPublish extends Room {
             level: 10,
             Data: {
                 disRoom: disRoom,
+                central: central? central : false,
                 startpoint: zipPosition(pos)
             },
         }
-        thisTask.CreepBind = { 'out-claim': { num: 0, bind: [] }, 'out-harvest': { num: 0, bind: [] }, 'out-car': { num: 0, bind: [] }, 'out-defend': { num: 0, bind: [] } }
+        thisTask.CreepBind = { 'out-claim': { num: 0, bind: [] }, 'out-harvest': { num: 0, bind: [] }, 'out-car': { num: 0, bind: [] }, 'out-defend': { num: 0, bind: [] }, 'out-attack': { num: 0, bind: [] } }
         return thisTask
     }
 

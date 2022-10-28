@@ -105,19 +105,27 @@ export default class RoomMissonMineExtension extends Room {
 
     /* 房间外矿处理任务 只适用于一般外矿 */
     public Task_OutMine(mission: MissionModel): void {
-        if ((Game.time - global.Gtime[this.name]) % 13) return
+        //if ((Game.time - global.Gtime[this.name]) % 13) return
         if (!mission.Data.state) mission.Data.state = 1   // 默认状态1
         mission.CreepBind['out-claim'].num = 1
         let disRoomName = mission.Data.disRoom
         if (!Memory.outMineData[disRoomName]) Memory.outMineData[disRoomName] = { road: [], startpoint: mission.Data.startpoint, minepoint: [], mineType: 'normal' }
+        
         // 相关爬虫死亡后的数据擦除
-
         if (Memory.outMineData[disRoomName].minepoint && Memory.outMineData[disRoomName].minepoint.length > 0 && Memory.outMineData[disRoomName].mineType == 'normal') {
             for (var obj of Memory.outMineData[disRoomName].minepoint) {
                 if (obj.bind && obj.bind.harvest && !Game.creeps[obj.bind.harvest]) delete obj.bind.harvest
                 if (obj.bind && obj.bind.car && !Game.creeps[obj.bind.car]) delete obj.bind.car
             }
         }
+
+        //房间等级低于7级时不能采集中央矿区
+        if (mission.Data.central && Game.rooms[this.name].controller.level < 7) {
+            console.log(`房间等级低于7级时不能采集中央矿区！`)
+            this.DeleteMission(mission.id)
+            return
+        }
+
         if (mission.Data.state == 1) // 初始化状态
         {
             /* 状态1下仅仅获取外矿信息和派出claimer */
@@ -171,6 +179,12 @@ export default class RoomMissonMineExtension extends Room {
                 }
                 /* 路线信息更新完毕 接下来进入阶段2 */
                 mission.Data.state = 2
+                /* 若是中央九房就进入阶段4 */
+                if (mission.Data.central) {
+                    mission.CreepBind['out-claim'].num = 0
+                    mission.CreepBind['out-defend'].num = 0
+                    mission.Data.state = 4
+                }
             }
         }
         else if (mission.Data.state == 2)    // 采集状态 [正常状态]
@@ -204,6 +218,34 @@ export default class RoomMissonMineExtension extends Room {
                 })
                 if (enemys.length <= 0 && InvaderCore.length <= 0)
                     mission.Data.state = 2
+            }
+        } 
+        else if (mission.Data.state == 4)  //中央九房采集
+        {   
+            //存在要塞时暂停采集
+            if (Game.time < mission.Data.sleepTime) {
+                mission.CreepBind['out-harvest'].num = 0
+                mission.CreepBind['out-car'].num = 0
+                mission.CreepBind['out-claim'].num = 0
+                mission.CreepBind['out-defend'].num = 0
+                mission.CreepBind['out-attack'].num = 0
+                return
+            }
+            mission.CreepBind['out-harvest'].num = 3
+            mission.CreepBind['out-car'].num = 3
+            mission.CreepBind['out-claim'].num = 0
+            mission.CreepBind['out-defend'].num = 0
+            mission.CreepBind['out-attack'].num = 1
+            if (Game.rooms[mission.Data.disRoom]) {
+                //寻找要塞
+                var stronghold = Game.rooms[mission.Data.disRoom].find(FIND_STRUCTURES, {
+                    filter: (stru) => {
+                        return stru.structureType == STRUCTURE_INVADER_CORE && stru.level >=1 && !stru.ticksToDeploy
+                    }
+                })
+                if (stronghold.length > 0) {
+                    mission.Data.sleepTime = Game.time + stronghold[0].effects[0].ticksRemaining
+                }
             }
         }
     }
