@@ -414,18 +414,16 @@ export default class CreepMissonMineExtension extends Creep {
                         filter: (stru: Structure) => {
                             return stru.structureType == STRUCTURE_KEEPER_LAIR && 
                                     (!globalMission.Data.lairID || !globalMission.Data.lairID.includes(stru.id))
+                                    && stru.pos.findInRange(FIND_SOURCES, 5).length > 0
                         }
                     }
                     var hasLair = this.pos.findClosestByPath(FIND_HOSTILE_STRUCTURES, lairFilter)
                     let cnt = 1
                     while (hasLair && cnt < 4) {
-                        var nearSource = hasLair.pos.findInRange(FIND_SOURCES, 5).length > 0
-                        if (nearSource) {
-                            if (!globalMission.Data.lairID) {
-                                globalMission.Data.lairID = [hasLair.id]
-                            } else {
-                                globalMission.Data.lairID.push(hasLair.id)
-                            }
+                        if (!globalMission.Data.lairID) {
+                            globalMission.Data.lairID = [hasLair.id]
+                        } else {
+                            globalMission.Data.lairID.push(hasLair.id)
                         }
                         hasLair = hasLair.pos.findClosestByPath(FIND_HOSTILE_STRUCTURES, lairFilter)
                         cnt++
@@ -450,19 +448,23 @@ export default class CreepMissonMineExtension extends Creep {
                     } else {
                         this.memory.targetID = undefined
                         //空闲时治疗其他爬
-                        let wounded = this.pos.findInRange(FIND_MY_CREEPS, 5, {
-                            filter: (creep) => {
-                                return creep.hits < creep.hitsMax && creep != this
+                        if (!heal_state) {
+                            let wounded = this.pos.findInRange(FIND_MY_CREEPS, 5, {
+                                filter: (creep) => {
+                                    return creep.hits < creep.hitsMax && creep != this
+                                }
+                            })
+                            if (wounded.length > 0) {
+                                if (!this.pos.isNearTo(wounded[0])){
+                                    this.goTo(wounded[0].pos, 1)
+                                    this.rangedHeal(wounded[0])
+                                } else {
+                                    this.heal(wounded[0])
+                                }
+                                return
                             }
-                        })
-                        if (wounded.length > 0) {
-                            if (!this.pos.isNearTo(wounded[0])){
-                                this.goTo(wounded[0].pos, 1)
-                                this.rangedHeal(wounded[0])
-                            } else {
-                                this.heal(wounded[0])
-                            }
-                            return
+                        } else {
+                            this.heal(this)
                         }
                         //没事情干就到下一个据点
                         this.say(`🚨(${nextLair.pos.x},${nextLair.pos.y})`)
