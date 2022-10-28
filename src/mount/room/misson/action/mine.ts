@@ -235,7 +235,12 @@ export default class RoomMissonMineExtension extends Room {
             mission.CreepBind['out-car'].num = 3
             mission.CreepBind['out-claim'].num = 0
             mission.CreepBind['out-defend'].num = 0
-            mission.CreepBind['out-attack'].num = 1
+            var atkCreep = Game.creeps[mission.CreepBind['out-attack'].bind[0]]
+            if (atkCreep && atkCreep.ticksToLive < 250) {
+                mission.CreepBind['out-attack'].num = 2 //提前产爬
+            } else {
+                mission.CreepBind['out-attack'].num = 1
+            }
             if (Game.rooms[mission.Data.disRoom]) {
                 //寻找要塞
                 var stronghold = Game.rooms[mission.Data.disRoom].find(FIND_STRUCTURES, {

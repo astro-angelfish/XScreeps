@@ -4,7 +4,6 @@ interface Creep {
 }
 
 interface CreepMemory {
-    lairID?: string
     belong: string      // 爬虫所属房间
     shard: string       // 爬虫所属shard
     role: string        // 爬虫角色
@@ -13,6 +12,7 @@ interface CreepMemory {
     boostData: BoostData
     /* 目标Id */
     targetID?: string
+    enemyID?: string //附近敌人id
     containerID?: string
     adaption?: boolean
     taskRB?: string
