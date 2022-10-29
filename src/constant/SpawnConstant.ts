@@ -54,7 +54,7 @@ export const RoleData: SpawnConstantData = {
     'out-claim': { num: 0, ability: [0, 0, 2, 0, 0, 0, 2, 0], level: 11, mark: "🟣" },
     'out-harvest': { num: 0, ability: [4, 2, 4, 0, 0, 0, 0, 0], level: 12, mark: "⛏️" },
     'out-car': { num: 0, ability: [1, 5, 6, 0, 0, 0, 0, 0], level: 13, mark: "🚜" },
-    'out-carry': { num: 0, ability: [0, 30, 15, 0, 0, 0, 0, 0], level: 13, mark: "🚜" },
+    'out-carry': { num: 0, ability: [0, 5, 5, 0, 0, 0, 0, 0], level: 13, mark: "🚜" },
     'out-defend': { num: 0, ability: [0, 0, 5, 5, 0, 5, 0, 0], level: 10, mark: "🧹" },
     'out-attack': { num: 0, ability: [0, 0, 25, 19, 0, 6, 0, 0], level: 10, mark: "⚔️" },
     /* 帕瓦 */
@@ -245,6 +245,16 @@ export const RoleLevelData = {
         6: { bodypart: [1, 21, 11, 0, 0, 0, 0, 0], num: 0 },
         7: { bodypart: [2, 26, 14, 0, 0, 0, 0, 0], num: 0 },
         8: { bodypart: [2, 30, 16, 0, 0, 0, 0, 0], num: 0 },
+    },
+    "out-carry": {
+        1: { bodypart: [0, 2, 2, 0, 0, 0, 0, 0], num: 0 },
+        2: { bodypart: [0, 3, 3, 0, 0, 0, 0, 0], num: 0 },
+        3: { bodypart: [0, 4, 4, 0, 0, 0, 0, 0], num: 0 },
+        4: { bodypart: [0, 8, 4, 0, 0, 0, 0, 0], num: 0 },
+        5: { bodypart: [0, 20, 10, 0, 0, 0, 0, 0], num: 0 },
+        6: { bodypart: [0, 20, 10, 0, 0, 0, 0, 0], num: 0 },
+        7: { bodypart: [0, 26, 13, 0, 0, 0, 0, 0], num: 0 },
+        8: { bodypart: [0, 30, 15, 0, 0, 0, 0, 0], num: 0 },
     },
     "out-defend": {
         1: { bodypart: [0, 0, 1, 0, 0, 1, 0, 0], num: 0 },
