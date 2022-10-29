@@ -207,6 +207,16 @@ export default class RoomMissonMineExtension extends Room {
                 setBind('out-car', Memory.outMineData[disRoomName].minepoint.length)
             }
             else setBind('out-car', 0)
+
+            if (Game.rooms[mission.Data.disRoom]) {
+                var container = Game.rooms[mission.Data.disRoom].find(FIND_STRUCTURES, { 
+                    filter: (stru) => {
+                        return stru.structureType == STRUCTURE_CONTAINER && 
+                        stru.store.getFreeCapacity() <= 200
+                    } 
+                })
+                setBind('out-carry', container.length)
+            }
         }
         else if (mission.Data.state == 3)    // 防御状态
         {
