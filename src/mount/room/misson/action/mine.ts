@@ -234,29 +234,29 @@ export default class RoomMissonMineExtension extends Room {
             setBind('out-claim', 0)
             if (Game.time < mission.Data.sleepTime) {
                 mission.Data.nextLair = 0
-                setBind('out-harvest', 0)
-                setBind('out-car', 0)
-                setBind('out-carry', 0)
-                setBind('out-defend', 0)
-                setBind('out-attack', 0)
+                for (const role in mission.CreepBind) {
+                    setBind(role, 0)
+                }
                 return
             }
-            if (mission.Data.hasInvader) {
-                setBind('out-defend', 1)
+            var atkCreep = Game.creeps[mission.CreepBind['out-attack'].bind[0]]
+            if (atkCreep && !mission.Data.hasInvader) {
+                if (atkCreep.ticksToLive < 200 && mission.CreepBind['out-attack'].bind.length < 2){
+                    setBind('out-attack', 2) //提前产爬
+                } else {
+                    setBind('out-attack', 1)
+                }
+                setBind('out-harvest', 3)  //有守护者则开始采集
+                setBind('out-car', 3)
+                setBind('out-carry', 2)
+            } else {
+                if (mission.Data.hasInvader) {
+                    setBind('out-defend', 1) //有Invader则加强防御
+                }
+                setBind('out-attack', 1) //先生产守护者
                 setBind('out-harvest', 0)
                 setBind('out-car', 0)
                 setBind('out-carry', 0)
-            } else {
-                setBind('out-defend', 0)
-                setBind('out-harvest', 3)
-                setBind('out-car', 3)
-                setBind('out-carry', 2)
-            }
-            var atkCreep = Game.creeps[mission.CreepBind['out-attack'].bind[0]]
-            if (atkCreep && atkCreep.ticksToLive < 200) {
-                setBind('out-attack', 2) //提前产爬
-            } else {
-                setBind('out-attack', 1)
             }
             if (Game.rooms[mission.Data.disRoom]) {
                 //寻找要塞
@@ -272,11 +272,12 @@ export default class RoomMissonMineExtension extends Room {
                 //寻找Invader
                 var invader = Game.rooms[mission.Data.disRoom].find(FIND_HOSTILE_CREEPS, {
                     filter: (creep) => {
-                        return creep.owner.username == 'Invader'
+                        return creep.owner.username == 'Invader' && 
+                        (creep.getActiveBodyparts(ATTACK) > 0 || creep.getActiveBodyparts(RANGED_ATTACK) > 0)
                     }
                 })
                 if (invader.length > 0) {
-                    if (invader.length >= 3) {
+                    if (invader.length >= 2) {
                         mission.Data.sleepTime = Game.time + invader[0].ticksToLive - 200 //Invader太多了就暂停采集
                         return
                     }
