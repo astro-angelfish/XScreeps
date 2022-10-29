@@ -729,7 +729,7 @@ export default class RoomMissonPublish extends Room {
                 startpoint: zipPosition(pos)
             },
         }
-        thisTask.CreepBind = { 'out-claim': { num: 0, bind: [] }, 'out-harvest': { num: 0, bind: [] }, 'out-car': { num: 0, bind: [] }, 'out-defend': { num: 0, bind: [] }, 'out-attack': { num: 0, bind: [] } }
+        thisTask.CreepBind = { 'out-claim': { num: 0, bind: [] }, 'out-harvest': { num: 0, bind: [] }, 'out-car': { num: 0, bind: [] }, 'out-defend': { num: 0, bind: [] }, 'out-attack': { num: 0, bind: [] }, 'out-carry': { num: 0, bind: [] } }
         return thisTask
     }
 

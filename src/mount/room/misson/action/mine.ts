@@ -105,12 +105,21 @@ export default class RoomMissonMineExtension extends Room {
 
     /* 房间外矿处理任务 只适用于一般外矿 */
     public Task_OutMine(mission: MissionModel): void {
-        //if ((Game.time - global.Gtime[this.name]) % 13) return
+        if ((Game.time - global.Gtime[this.name]) % 13) return
         if (!mission.Data.state) mission.Data.state = 1   // 默认状态1
-        mission.CreepBind['out-claim'].num = 1
+
+        function setBind(role: string, num: number) {
+            if (!mission.CreepBind[role]) {
+                mission.CreepBind[role] = {num: num, bind: []}
+            } else {
+                mission.CreepBind[role].num = num
+            }
+        }
+
+        setBind('out-claim', 1)
         let disRoomName = mission.Data.disRoom
         if (!Memory.outMineData[disRoomName]) Memory.outMineData[disRoomName] = { road: [], startpoint: mission.Data.startpoint, minepoint: [], mineType: 'normal' }
-        
+
         // 相关爬虫死亡后的数据擦除
         if (Memory.outMineData[disRoomName].minepoint && Memory.outMineData[disRoomName].minepoint.length > 0 && Memory.outMineData[disRoomName].mineType == 'normal') {
             for (var obj of Memory.outMineData[disRoomName].minepoint) {
@@ -181,8 +190,8 @@ export default class RoomMissonMineExtension extends Room {
                 mission.Data.state = 2
                 /* 若是中央九房就进入阶段4 */
                 if (mission.Data.central) {
-                    mission.CreepBind['out-claim'].num = 0
-                    mission.CreepBind['out-defend'].num = 0
+                    setBind('out-claim', 0)
+                    setBind('out-defend', 0)
                     mission.Data.state = 4
                 }
             }
@@ -190,21 +199,21 @@ export default class RoomMissonMineExtension extends Room {
         else if (mission.Data.state == 2)    // 采集状态 [正常状态]
         {
             if (Game.rooms[disRoomName]?.controller?.reservation?.ticksToEnd > 4000) {
-                mission.CreepBind['out-claim'].num = 0
+                setBind('out-claim', 0)
             }
-            mission.CreepBind['out-harvest'].num = Memory.outMineData[disRoomName].minepoint.length
-            mission.CreepBind['out-defend'].num = 0
+            setBind('out-harvest', Memory.outMineData[disRoomName].minepoint.length)
+            setBind('out-defend', 0)
             if (Memory.outMineData[disRoomName].car) {
-                mission.CreepBind['out-car'].num = Memory.outMineData[disRoomName].minepoint.length
+                setBind('out-car', Memory.outMineData[disRoomName].minepoint.length)
             }
-            else mission.CreepBind['out-car'].num = 0
+            else setBind('out-car', 0)
         }
         else if (mission.Data.state == 3)    // 防御状态
         {
-            mission.CreepBind['out-harvest'].num = 0
-            mission.CreepBind['out-car'].num = 0
-            mission.CreepBind['out-claim'].num = 0
-            mission.CreepBind['out-defend'].num = 1
+            setBind('out-harvest', 0)
+            setBind('out-car', 0)
+            setBind('out-claim', 0)
+            setBind('out-defend', 1)
             if (Game.rooms[mission.Data.disRoom]) {
                 var enemys = Game.rooms[mission.Data.disRoom].find(FIND_HOSTILE_CREEPS, {
                     filter: (creep) => {
@@ -219,37 +228,61 @@ export default class RoomMissonMineExtension extends Room {
                 if (enemys.length <= 0 && InvaderCore.length <= 0)
                     mission.Data.state = 2
             }
-        } 
+        }
         else if (mission.Data.state == 4)  //中央九房采集
-        {   
-            //存在要塞时暂停采集
+        {
             if (Game.time < mission.Data.sleepTime) {
-                mission.CreepBind['out-harvest'].num = 0
-                mission.CreepBind['out-car'].num = 0
-                mission.CreepBind['out-claim'].num = 0
-                mission.CreepBind['out-defend'].num = 0
-                mission.CreepBind['out-attack'].num = 0
+                mission.Data.nextLair = 0
+                setBind('out-harvest', 0)
+                setBind('out-car', 0)
+                setBind('out-carry', 0)
+                setBind('out-defend', 0)
+                setBind('out-attack', 0)
                 return
             }
-            mission.CreepBind['out-harvest'].num = 3
-            mission.CreepBind['out-car'].num = 3
-            mission.CreepBind['out-claim'].num = 0
-            mission.CreepBind['out-defend'].num = 0
-            var atkCreep = Game.creeps[mission.CreepBind['out-attack'].bind[0]]
-            if (atkCreep && atkCreep.ticksToLive < 250) {
-                mission.CreepBind['out-attack'].num = 2 //提前产爬
+            setBind('out-claim', 0)
+            if (mission.Data.hasInvader) {
+                setBind('out-defend', 1)
+                setBind('out-harvest', 0)
+                setBind('out-car', 0)
+                setBind('out-carry', 0)
             } else {
-                mission.CreepBind['out-attack'].num = 1
+                setBind('out-defend', 0)
+                setBind('out-harvest', 3)
+                setBind('out-car', 3)
+                setBind('out-carry', 2)
+            }
+            var atkCreep = Game.creeps[mission.CreepBind['out-attack'].bind[0]]
+            if (atkCreep && atkCreep.ticksToLive < 200) {
+                setBind('out-attack', 2) //提前产爬
+            } else {
+                setBind('out-attack', 1)
             }
             if (Game.rooms[mission.Data.disRoom]) {
                 //寻找要塞
                 var stronghold = Game.rooms[mission.Data.disRoom].find(FIND_STRUCTURES, {
                     filter: (stru) => {
-                        return stru.structureType == STRUCTURE_INVADER_CORE && stru.level >=1 && !stru.ticksToDeploy
+                        return stru.structureType == STRUCTURE_INVADER_CORE && stru.level >= 1 && !stru.ticksToDeploy
                     }
                 })
                 if (stronghold.length > 0) {
-                    mission.Data.sleepTime = Game.time + stronghold[0].effects[0].ticksRemaining
+                    mission.Data.sleepTime = Game.time + stronghold[0].effects[0].ticksRemaining  //存在要塞时暂停采集
+                }
+
+                //寻找Invader
+                var invader = Game.rooms[mission.Data.disRoom].find(FIND_HOSTILE_CREEPS, {
+                    filter: (creep) => {
+                        return creep.owner.username == 'Invader'
+                    }
+                })
+                if (invader.length > 0) {
+                    if (invader.length >= 3) {
+                        mission.Data.sleepTime = Game.time + invader[0].ticksToLive - 200 //Invader太多了就暂停采集
+                        return
+                    }
+                    mission.Data.hasInvader = true
+                } else {
+                    mission.Data.hasInvader = false
                 }
             }
         }

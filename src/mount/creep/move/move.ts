@@ -198,6 +198,7 @@ export default class CreepMoveExtension extends Creep {
     // 通用移动 (配合findPath 和 goByPath)
     public goTo(target: RoomPosition, range: number = 1, ops?: number, plain?: number, CustomPositionroad?: any[]): CreepMoveReturnCode | ERR_NO_PATH | ERR_NOT_IN_RANGE | ERR_INVALID_TARGET {
         //  var a = Game.cpu.getUsed()
+        if (this.pos.inRangeTo(target, range)) return OK;
         if (this.fatigue) return ERR_TIRED;
         if (this.memory.moveData == undefined) this.memory.moveData = {}
         // 确认目标没有变化，如果变化了就重新规划路线
