@@ -231,6 +231,7 @@ export default class RoomMissonMineExtension extends Room {
         }
         else if (mission.Data.state == 4)  //中央九房采集
         {
+            setBind('out-claim', 0)
             if (Game.time < mission.Data.sleepTime) {
                 mission.Data.nextLair = 0
                 setBind('out-harvest', 0)
@@ -240,7 +241,6 @@ export default class RoomMissonMineExtension extends Room {
                 setBind('out-attack', 0)
                 return
             }
-            setBind('out-claim', 0)
             if (mission.Data.hasInvader) {
                 setBind('out-defend', 1)
                 setBind('out-harvest', 0)
