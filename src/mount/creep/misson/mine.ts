@@ -109,25 +109,25 @@ export default class CreepMissonMineExtension extends Creep {
                 if (!this.pos.isNearTo(this.room.controller)) {
                     var controllerPos = unzipPosition(this.memory.disPos)
                     if (controllerPos.roomName == this.room.name)
-                        this.goTo(controllerPos, 1, 5000)
-                    else this.goTo(controllerPos, 1, 8000)
+                        this.goTo(controllerPos, 1, 500)
+                    else this.goTo(controllerPos, 1, 800)
                 }
                 else {
-                    if (this.room.controller && (!this.room.controller.sign || (Game.time - this.room.controller.sign.time) > 100000)) {
-                        if (["somygame"].includes(this.owner.username)) {
-                            this.signController(this.room.controller, `麻了，麻了，彻底麻了`)
-                        } else if (["Morningtea"].includes(this.owner.username)) {
-                            this.signController(this.room.controller, ``)
-                        } else if (!["superbitch", "ExtraDim"].includes(this.owner.username)) {
-                            this.signController(this.room.controller, `${this.owner.username}'s 🌾 room!  Auto clean, Please keep distance!`)
-                        }
-                        else if (["CalvinG"].includes(this.owner.username)) {
-                            this.signController(this.room.controller, `垒土成垛，择高而上🌾`)
-                        }
-                        else {
-                            this.signController(this.room.controller, `躬耕陇亩`)
-                        }
-                    }
+                    // if (this.room.controller && (!this.room.controller.sign || (Game.time - this.room.controller.sign.time) > 100000)) {
+                    //     if (["somygame"].includes(this.owner.username)) {
+                    //         this.signController(this.room.controller, `麻了，麻了，彻底麻了`)
+                    //     } else if (["Morningtea"].includes(this.owner.username)) {
+                    //         this.signController(this.room.controller, ``)
+                    //     } else if (!["superbitch", "ExtraDim"].includes(this.owner.username)) {
+                    //         this.signController(this.room.controller, `${this.owner.username}'s 🌾 room!  Auto clean, Please keep distance!`)
+                    //     }
+                    //     else if (["CalvinG"].includes(this.owner.username)) {
+                    //         this.signController(this.room.controller, `垒土成垛，择高而上🌾`)
+                    //     }
+                    //     else {
+                    //         this.signController(this.room.controller, `躬耕陇亩`)
+                    //     }
+                    // }
                     /* somygame 改 */
                     let _reserve_state = 0;
                     if (this.room.controller.reservation) {
@@ -140,17 +140,16 @@ export default class CreepMissonMineExtension extends Creep {
                         this.reserveController(this.room.controller)
                     }
                     /* 终 */
-                    if (Game.time % 91 == 0) {
-                        if (Memory.outMineData && Memory.outMineData[this.room.name]) {
-                            for (var i of Memory.outMineData[this.room.name].road) {
-                                var thisPos = unzipPosition(i) as RoomPosition
-
-                                if (thisPos.roomName == this.room.name && !thisPos.GetStructure('road')) {
-                                    thisPos.createConstructionSite('road')
-                                }
-                            }
-                        }
-                    }
+                    // if (Game.time % 91 == 0) {
+                    //     if (Memory.outMineData && Memory.outMineData[this.room.name]) {
+                    //         for (var i of Memory.outMineData[this.room.name].road) {
+                    //             var thisPos = unzipPosition(i) as RoomPosition
+                    //             if (thisPos.roomName == this.room.name && !thisPos.GetStructure('road')) {
+                    //                 thisPos.createConstructionSite('road')
+                    //             }
+                    //         }
+                    //     }
+                    // }
                 }
                 if (this.room.controller.reservation)
                     this.memory.num = this.room.controller.reservation.ticksToEnd
