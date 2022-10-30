@@ -113,21 +113,23 @@ export default class CreepMissonMineExtension extends Creep {
                     else this.goTo(controllerPos, 1, 800)
                 }
                 else {
-                    // if (this.room.controller && (!this.room.controller.sign || (Game.time - this.room.controller.sign.time) > 100000)) {
-                    //     if (["somygame"].includes(this.owner.username)) {
-                    //         this.signController(this.room.controller, `麻了，麻了，彻底麻了`)
-                    //     } else if (["Morningtea"].includes(this.owner.username)) {
-                    //         this.signController(this.room.controller, ``)
-                    //     } else if (!["superbitch", "ExtraDim"].includes(this.owner.username)) {
-                    //         this.signController(this.room.controller, `${this.owner.username}'s 🌾 room!  Auto clean, Please keep distance!`)
-                    //     }
-                    //     else if (["CalvinG"].includes(this.owner.username)) {
-                    //         this.signController(this.room.controller, `垒土成垛，择高而上🌾`)
-                    //     }
-                    //     else {
-                    //         this.signController(this.room.controller, `躬耕陇亩`)
-                    //     }
-                    // }
+                    if (this.room.controller && (!this.room.controller.sign || (Game.time - this.room.controller.sign.time) > 100000)) {
+                        if (["somygame"].includes(this.owner.username)) {
+                            this.signController(this.room.controller, `麻了，麻了，彻底麻了`)
+                        } else if (["Morningtea"].includes(this.owner.username)) {
+                            if (this.room.controller.sign) {
+                                this.signController(this.room.controller, ``)
+                            }
+                        } else if (!["superbitch", "ExtraDim"].includes(this.owner.username)) {
+                            this.signController(this.room.controller, `${this.owner.username}'s 🌾 room!  Auto clean, Please keep distance!`)
+                        }
+                        else if (["CalvinG"].includes(this.owner.username)) {
+                            this.signController(this.room.controller, `垒土成垛，择高而上🌾`)
+                        }
+                        else {
+                            this.signController(this.room.controller, `躬耕陇亩`)
+                        }
+                    }
                     /* somygame 改 */
                     let _reserve_state = 0;
                     if (this.room.controller.reservation) {
@@ -589,6 +591,9 @@ export default class CreepMissonMineExtension extends Creep {
                         } else {
                             this.goTo(enemy.pos, 1)
                         }
+                        return
+                    } else {
+                        globalMission.Data.hasInvader = false
                     }
                 }
 
