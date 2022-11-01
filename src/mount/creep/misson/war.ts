@@ -924,9 +924,20 @@ export default class CreepMissonWarExtension extends Creep {
             let creeps = global.warData.enemy[data.disRoom].data
             let flags = global.warData.flag[data.disRoom].data
             this.heal(this)
-            if (!this.memory.targetFlag && (this.room.controller && !this.room.controller.my))    // 没有目标旗帜Memory的情况下，先查找有没有最近的周围没有攻击爬的旗帜
+            if (!this.memory.targetFlag && ((this.room.controller && !this.room.controller.my) || !this.room.controller))    // 没有目标旗帜Memory的情况下，先查找有没有最近的周围没有攻击爬的旗帜
             {
-
+                if (!this.room.controller && Game.time % 31 == 0) { //要塞房间处理
+                    let stronghold = this.room.find(FIND_STRUCTURES, {
+                        filter: (stru) => {
+                            return stru.structureType == STRUCTURE_INVADER_CORE && stru.level >= 1 && !stru.ticksToDeploy
+                        }
+                    }) as StructureInvaderCore[]
+                    if (stronghold.length <= 0) {
+                        if (Game.shard.name == this.memory.shard) {
+                            Game.rooms[this.memory.belong].DeleteMission(id)
+                        }
+                    }
+                }
                 let flag_attack = pathClosestFlag(this.pos, flags, 'aio', true, 4) // 最近的攻击旗帜
                 if (flag_attack) {
                     this.memory.targetFlag = flag_attack.name
@@ -1091,7 +1102,7 @@ export default class CreepMissonWarExtension extends Creep {
             // 寻找最近的敌人攻击
             let closestCreep = this.pos.findClosestByPath(FIND_HOSTILE_CREEPS, {
                 filter: (creep) => {
-                    return !isInArray(Memory.whitesheet, creep.owner.username) && !creep.pos.GetStructure('rampart') && (!isInArray([0, 49], creep.pos.x) && !isInArray([0, 49], creep.pos.y))
+                    return !isInArray(Memory.whitesheet, creep.owner.username) && !creep.pos.GetStructure('rampart') && (!isInArray([0, 49], creep.pos.x) && !isInArray([0, 49], creep.pos.y)) && (!creep.room.controller ? creep.owner.username != 'Source Keeper' : true)
                 }
             })
             if (closestCreep && !this.pos.isNearTo(closestCreep)) {

@@ -414,17 +414,23 @@ export default class CreepMissonMineExtension extends Creep {
                 if (!this.memory.targetID) {
                     var drop = this.pos.findClosestByRange(FIND_DROPPED_RESOURCES, {
                         filter: (res: Resource) => {
-                            return res.amount > 300
+                            return (res.resourceType == 'energy' ? res.amount > 300 : true)
                         }
                     }) as Resource
                     var tomb = this.pos.findClosestByRange(FIND_TOMBSTONES, {
                         filter: (tomb: Tombstone) => {
-                            return tomb.store.getUsedCapacity() > 300
+                            return (tomb.store.getUsedCapacity('energy') > 300 || tomb.store.getUsedCapacity() > tomb.store.getUsedCapacity('energy'))
                         }
                     }) as Tombstone
+                    var ruin = this.pos.findClosestByRange(FIND_RUINS, {
+                        filter: (ruin: Tombstone) => {
+                            return (ruin.store.getUsedCapacity('energy') > 300 || ruin.store.getUsedCapacity() > ruin.store.getUsedCapacity('energy'))
+                        }
+                    }) as Ruin
                     var container = this.pos.findClosestByRange(FIND_STRUCTURES, {
                         filter: (stru) => {
-                            return stru.structureType == 'container' && stru.store.getUsedCapacity() > 1200
+                            return stru.structureType == 'container' && 
+                            (stru.store.getUsedCapacity('energy') > 1200 || stru.store.getUsedCapacity() > stru.store.getUsedCapacity('energy'))
                         }
                     }) as StructureContainer
                     var range = 0xff
@@ -436,12 +442,16 @@ export default class CreepMissonMineExtension extends Creep {
                         range = tomb.pos.getRangeTo(this)
                         this.memory.targetID = tomb.id
                     }
+                    if (ruin && ruin.pos.getRangeTo(this) < range) {
+                        range = ruin.pos.getRangeTo(this)
+                        this.memory.targetID = ruin.id
+                    }
                     if (container && container.pos.getRangeTo(this) < range) {
                         range = container.pos.getRangeTo(this)
                         this.memory.targetID = container.id
                     }
                 } else {
-                    var target = Game.getObjectById(this.memory.targetID) as Resource | Tombstone | StructureContainer
+                    var target = Game.getObjectById(this.memory.targetID) as Resource | Tombstone | Ruin | StructureContainer
                     if (!target) {
                         delete this.memory.targetID
                         return

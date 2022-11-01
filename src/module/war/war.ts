@@ -109,7 +109,7 @@ export function getTowerData(room: Room): TowerRangeMapData {
             excludemaskwall_list[audit] = 0;
         }
     }
-    console.log(JSON.stringify(find_exit))
+    // console.log(JSON.stringify(find_exit))
     // console.log(JSON.stringify(excludemaskwall_list))
     for (let Data in excludemaskwall_list) {
         if (tempData[Data]) {
@@ -418,7 +418,8 @@ export function pathClosestStructure(pos: RoomPosition, wall?: boolean, ram?: bo
             filter: (stru) => {
                 return !isInArray(["road", "container", 'controller'], stru.structureType) &&
                     (wall ? stru.structureType != "constructedWall" : true) &&
-                    (ram ? (stru.structureType != "rampart" || !stru.pos.GetStructure('rampart')) : true)
+                    (ram ? (stru.structureType != "rampart" || !stru.pos.GetStructure('rampart')) : true) &&
+                    (!stru.room.controller ? stru.structureType != STRUCTURE_KEEPER_LAIR : !stru.room.controller.my)
             }
         })
         return pos.findClosestByPath(structures)
@@ -430,7 +431,8 @@ export function pathClosestStructure(pos: RoomPosition, wall?: boolean, ram?: bo
             filter: (stru) => {
                 return !isInArray(["road", "container", 'controller'], stru.structureType) &&
                     (wall ? stru.structureType != "constructedWall" : true) &&
-                    (ram ? (stru.structureType != "rampart" || !stru.pos.GetStructure('rampart')) : true)
+                    (ram ? (stru.structureType != "rampart" || !stru.pos.GetStructure('rampart')) : true) &&
+                    (!stru.room.controller ? stru.structureType != STRUCTURE_KEEPER_LAIR : !stru.room.controller.my)
             }
         })
         let result = pos.findClosestByPath(structures, {

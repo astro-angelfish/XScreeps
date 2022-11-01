@@ -274,9 +274,16 @@ export default class RoomMissonMineExtension extends Room {
                     filter: (stru) => {
                         return stru.structureType == STRUCTURE_INVADER_CORE && stru.level >= 1 && !stru.ticksToDeploy
                     }
-                })
+                }) as StructureInvaderCore[]
                 if (stronghold.length > 0) {
-                    mission.Data.sleepTime = Game.time + stronghold[0].effects[0].ticksRemaining  //存在要塞时暂停采集
+                    if (stronghold[0].level <= 2 && this.controller.level >= 8) {  //对于低等级要塞发布攻防一体任务,七级房就摆烂
+                        var thisTask = this.public_aio(mission.Data.disRoom, Game.shard.name as shardName, 1, 1500, true, "T2")
+                        if (thisTask && this.AddMission(thisTask)) {
+                            mission.Data.state = 5
+                            console.log(`[war] 对${mission.Data.disRoom}等级为${stronghold[0].level}的要塞挂载攻防一体任务!`)
+                        }
+                    }
+                    mission.Data.sleepTime = Game.time + stronghold[0].effects[0].ticksRemaining 
                 }
 
                 //寻找Invader
@@ -295,6 +302,29 @@ export default class RoomMissonMineExtension extends Room {
                 } else {
                     mission.Data.hasInvader = false
                 }
+            }
+        }
+        else if (mission.Data.state == 5) //低等级要塞
+        {
+            mission.Data.nextLair = 0
+            for (const role in mission.CreepBind) {
+                setBind(role, 0)
+            }
+            if (Game.time < mission.Data.sleepTime) {
+                if (Game.rooms[mission.Data.disRoom]) {
+                    var stronghold = Game.rooms[mission.Data.disRoom].find(FIND_STRUCTURES, {
+                        filter: (stru) => {
+                            return stru.structureType == STRUCTURE_INVADER_CORE && stru.level >= 1 && !stru.ticksToDeploy
+                        }
+                    }) as StructureInvaderCore[]
+                    if (stronghold.length <= 0) {
+                        mission.Data.state = 4
+                        delete mission.Data.sleepTime
+                    }
+                }
+            } else {
+                mission.Data.state = 4
+                delete mission.Data.sleepTime
             }
         }
     }
