@@ -88,7 +88,7 @@ export default class CreepMissonMineExtension extends Creep {
                     // }
                 }
             }
-            if (!this.memory.disPos && this.room.name == creepMission.disRoom) {
+            if (!this.memory.disPos && this.room.name == creepMission.disRoom && this.room.controller) {
                 var controllerPos = this.room.controller.pos
                 this.memory.disPos = zipPosition(controllerPos)
             }
@@ -186,7 +186,7 @@ export default class CreepMissonMineExtension extends Creep {
             }
             //中央九房特殊处理
             if (globalMission.Data.state == 4) {
-                if (centralSector(this, 6)) return
+                if (centralSector(this, 5)) return
             }
 
             if (this.memory.working) {
@@ -223,12 +223,14 @@ export default class CreepMissonMineExtension extends Creep {
         else if (this.memory.role == 'out-car') {
             this.memory.crossLevel = 9
             if (!Game.rooms[creepMission.disRoom]) return
-            this.workstate('energy')
+            this.workstate('energy', 0.9)
             if (!Memory.outMineData[creepMission.disRoom] || Memory.outMineData[creepMission.disRoom].minepoint.length <= 0) return
-            for (var point of Memory.outMineData[creepMission.disRoom].minepoint) {
-                if (!point.bind.car && !this.memory.bindpoint) {
-                    point.bind.car = this.name
-                    this.memory.bindpoint = point.pos
+            if (!this.memory.bindpoint) {
+                for (var point of Memory.outMineData[creepMission.disRoom].minepoint) {
+                    if (!point.bind.car) {
+                        point.bind.car = this.name
+                        this.memory.bindpoint = point.pos
+                    }
                 }
             }
             if (!this.memory.bindpoint) return
@@ -251,12 +253,17 @@ export default class CreepMissonMineExtension extends Creep {
                 if (this.room.name != this.memory.belong) {
                     return
                 } else {
-                    this.memory.working = true
+                    if (this.store.getUsedCapacity() > 0) {
+                        this.memory.working = true
+                    } else {
+                        this.memory.working = false
+                        return
+                    }
                 }
             }
             //中央九房特殊处理
             if (globalMission.Data.state == 4) {
-                if (centralSector(this, 6)) return
+                if (centralSector(this, 5)) return
             }
 
             if (this.memory.working) {
@@ -264,16 +271,25 @@ export default class CreepMissonMineExtension extends Creep {
                 if (!stroage_) return
                 if (!this.pos.isNearTo(stroage_)) {
                     if (this.getActiveBodyparts(WORK) > 0) {
-                        var constructions = this.pos.findClosestByPath(FIND_MY_CONSTRUCTION_SITES, {
-                            filter: (constr) => {
-                                return constr.structureType == 'road'
+                        if ((Game.time - global.Gtime[this.memory.belong]) % 7 == 0) {
+                            var constructions = this.pos.findClosestByRange(FIND_MY_CONSTRUCTION_SITES, {
+                                filter: (constr) => {
+                                    return constr.structureType == 'road'
+                                }
+                            })
+                            if (constructions) {
+                                this.memory.targetID = constructions.id
                             }
-                        })
-                        // console.log(this.name, '标记1')
-                        if (constructions) {
-                            this.build_(constructions)
-                            return
                         }
+                        // console.log(this.name, '标记1')
+                        if (this.memory.targetID) {
+                            var targetRoad = Game.getObjectById(this.memory.targetID as Id<ConstructionSite>)
+                            if (targetRoad) {
+                                this.build_(targetRoad)
+                                return
+                            } else delete this.memory.targetID
+                        }
+
                         // console.log(this.name, '标记2')
                         if (this.room.name != this.memory.belong) {/*只修理外矿*/
                             var road_ = this.pos.GetStructure('road')
@@ -297,6 +313,7 @@ export default class CreepMissonMineExtension extends Creep {
                         for (var r in this.store) {
                             if (this.room.storage.store.getFreeCapacity() > this.store.getUsedCapacity()) {
                                 this.transfer_(this.room.storage, r as ResourceConstant)
+                                return
                             }
                             else return
                         }
@@ -323,7 +340,7 @@ export default class CreepMissonMineExtension extends Creep {
                     this.goTo(disPos, 1)
                     return
                 }
-                this.say("🚗")
+                // this.say("🚗")
                 var container_ = disPos.findInRange(FIND_STRUCTURES, 1, {
                     filter: (stru) => {
                         return stru.structureType == 'container'
@@ -345,7 +362,7 @@ export default class CreepMissonMineExtension extends Creep {
                     }
                 }
                 else if (!container_[0]) {
-                    this.goTo(disPos, 1)
+                    this.goTo(disPos, 2)
                     return
                 }
             }
@@ -353,20 +370,25 @@ export default class CreepMissonMineExtension extends Creep {
         else if (this.memory.role == 'out-carry') {
             this.memory.crossLevel = 9
             if (!Game.rooms[creepMission.disRoom]) return
-            this.workstate('energy')
+            this.workstate('energy', 0.9)
 
             //防御状态回到自己房间
             if (globalMission.Data.state == 3 || globalMission.Data.hasInvader || Game.time < globalMission.Data.sleepTime) {
-                this.goTo(new RoomPosition(25, 25, this.memory.belong), 20)
+                this.goTo(new RoomPosition(25, 25, this.memory.belong), 15)
                 if (this.room.name != this.memory.belong) {
                     return
                 } else {
-                    this.memory.working = true
+                    if (this.store.getUsedCapacity() > 0) {
+                        this.memory.working = true
+                    } else {
+                        this.memory.working = false
+                        return
+                    }
                 }
             }
             //中央九房特殊处理
             if (globalMission.Data.state == 4) {
-                if (centralSector(this, 3)) return
+                if (centralSector(this, 5)) return
             }
 
             if (this.memory.working) {
@@ -410,8 +432,8 @@ export default class CreepMissonMineExtension extends Creep {
                     this.goTo(new RoomPosition(25, 25, creepMission.disRoom), 20)
                     return
                 }
-                this.say("🚗")
-                if (!this.memory.targetID) {
+                // this.say("🚗")
+                if (!this.memory.targetID && (Game.time - global.Gtime[this.memory.belong]) % 5 == 0) {
                     var drop = this.pos.findClosestByRange(FIND_DROPPED_RESOURCES, {
                         filter: (res: Resource) => {
                             return (res.resourceType == 'energy' ? res.amount > 300 : true)
@@ -419,18 +441,18 @@ export default class CreepMissonMineExtension extends Creep {
                     }) as Resource
                     var tomb = this.pos.findClosestByRange(FIND_TOMBSTONES, {
                         filter: (tomb: Tombstone) => {
-                            return (tomb.store.getUsedCapacity('energy') > 300 || tomb.store.getUsedCapacity() > tomb.store.getUsedCapacity('energy'))
+                            return (tomb.store.getUsedCapacity() > 300 || tomb.store.getUsedCapacity() > tomb.store.getUsedCapacity('energy'))
                         }
                     }) as Tombstone
                     var ruin = this.pos.findClosestByRange(FIND_RUINS, {
                         filter: (ruin: Tombstone) => {
-                            return (ruin.store.getUsedCapacity('energy') > 300 || ruin.store.getUsedCapacity() > ruin.store.getUsedCapacity('energy'))
+                            return (ruin.store.getUsedCapacity() > 300 || ruin.store.getUsedCapacity() > ruin.store.getUsedCapacity('energy'))
                         }
                     }) as Ruin
                     var container = this.pos.findClosestByRange(FIND_STRUCTURES, {
                         filter: (stru) => {
-                            return stru.structureType == 'container' && 
-                            (stru.store.getUsedCapacity('energy') > 1200 || stru.store.getUsedCapacity() > stru.store.getUsedCapacity('energy'))
+                            return stru.structureType == 'container' &&
+                                (stru.store.getUsedCapacity() > 1800 || stru.store.getUsedCapacity() > stru.store.getUsedCapacity('energy'))
                         }
                     }) as StructureContainer
                     var range = 0xff
@@ -446,8 +468,7 @@ export default class CreepMissonMineExtension extends Creep {
                         range = ruin.pos.getRangeTo(this)
                         this.memory.targetID = ruin.id
                     }
-                    if (container && container.pos.getRangeTo(this) < range) {
-                        range = container.pos.getRangeTo(this)
+                    if (container) {
                         this.memory.targetID = container.id
                     }
                 } else {
@@ -457,11 +478,15 @@ export default class CreepMissonMineExtension extends Creep {
                         return
                     }
                     if (!this.pos.isNearTo(target)) {
-                        this.goTo(target.pos, 1)
+                        this.goTo(target.pos, 1, null, 4)
                     }
                     if (target instanceof Resource) {
                         this.pickup(target)
                     } else {
+                        if (target.store.getUsedCapacity() < 300 && target.store.getUsedCapacity('energy') == target.store.getUsedCapacity()) {
+                            delete this.memory.targetID
+                            return
+                        }
                         if (Object.keys(target.store).length > 0) {
                             for (const r in target.store) {
                                 if (target.store[r] > 0) {
@@ -551,7 +576,7 @@ export default class CreepMissonMineExtension extends Creep {
                 }
                 if (heal_state) { this.heal(this) }
             }
-        } 
+        }
         else {    //攻击keeper
             this.memory.crossLevel = 12
             var heal_state = false;
@@ -565,9 +590,9 @@ export default class CreepMissonMineExtension extends Creep {
                 if (!globalMission.Data.updatedLairs) {
                     const lairFilter = {
                         filter: (stru: Structure) => {
-                            return stru.structureType == STRUCTURE_KEEPER_LAIR && 
-                                    (!globalMission.Data.lairID || !globalMission.Data.lairID.includes(stru.id))
-                                    && stru.pos.findInRange(FIND_SOURCES, 5).length > 0
+                            return stru.structureType == STRUCTURE_KEEPER_LAIR &&
+                                (!globalMission.Data.lairID || !globalMission.Data.lairID.includes(stru.id))
+                                && stru.pos.findInRange(FIND_SOURCES, 5).length > 0
                         }
                     }
                     var hasLair = this.pos.findClosestByPath(FIND_HOSTILE_STRUCTURES, lairFilter)
@@ -630,7 +655,7 @@ export default class CreepMissonMineExtension extends Creep {
                                 }
                             })
                             if (wounded.length > 0) {
-                                if (!this.pos.isNearTo(wounded[0])){
+                                if (!this.pos.isNearTo(wounded[0])) {
                                     this.goTo(wounded[0].pos, 1)
                                     this.rangedHeal(wounded[0])
                                 } else {
@@ -645,8 +670,8 @@ export default class CreepMissonMineExtension extends Creep {
                         this.say(`🚨(${nextLair.pos.x},${nextLair.pos.y})`)
                         this.goTo(nextLair.pos, 1, 800, 2)
                     }
-                } 
-                
+                }
+
                 if (this.memory.targetID) {
                     var enemy = Game.getObjectById(this.memory.targetID as Id<Creep>) as Creep
                     if (enemy) {

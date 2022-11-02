@@ -119,8 +119,8 @@ export const RoleLevelData = {
         4: { bodypart: [4, 4, 8, 0, 0, 0, 0, 0], num: 2 },
         5: { bodypart: [6, 6, 12, 0, 0, 0, 0, 0], num: 2, upbodypart: [5, 10, 15, 0, 0, 0, 0, 0] },
         6: { bodypart: [7, 7, 14, 0, 0, 0, 0, 0], num: 1, upbodypart: [7, 7, 14, 0, 0, 0, 0, 0] },
-        7: { bodypart: [10, 2, 3, 0, 0, 0, 0, 0], num: 1, upbodypart: [10, 10, 10, 0, 0, 0, 0, 0] },
-        8: { bodypart: [15, 1, 4, 0, 0, 0, 0, 0], num: 1, upbodypart: [15, 15, 8, 0, 0, 0, 0, 0] },
+        7: { bodypart: [10, 2, 3, 0, 0, 0, 0, 0], num: 1, upbodypart: [10, 2, 3, 0, 0, 0, 0, 0] },
+        8: { bodypart: [15, 1, 4, 0, 0, 0, 0, 0], num: 1, upbodypart: [10, 2, 3, 0, 0, 0, 0, 0] },
     },
     'build': {
         1: { bodypart: [1, 1, 2, 0, 0, 0, 0, 0], num: 0 },
@@ -232,9 +232,9 @@ export const RoleLevelData = {
         3: { bodypart: [1, 1, 1, 0, 0, 0, 0, 0], num: 0 },
         4: { bodypart: [2, 1, 1, 0, 0, 0, 0, 0], num: 0 },
         5: { bodypart: [5, 1, 3, 0, 0, 0, 0, 0], num: 0 },
-        6: { bodypart: [6, 1, 3, 0, 0, 0, 0, 0], num: 0 },
-        7: { bodypart: [7, 2, 7, 0, 0, 0, 0, 0], num: 0 },
-        8: { bodypart: [10, 2, 10, 0, 0, 0, 0, 0], num: 0 },
+        6: { bodypart: [6, 2, 4, 0, 0, 0, 0, 0], num: 0 },
+        7: { bodypart: [8, 2, 5, 0, 0, 0, 0, 0], num: 0 },
+        8: { bodypart: [10, 2, 6, 0, 0, 0, 0, 0], num: 0 },
     },
     "out-car": {
         1: { bodypart: [1, 1, 2, 0, 0, 0, 0, 0], num: 0 },

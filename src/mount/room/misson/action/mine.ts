@@ -212,10 +212,12 @@ export default class RoomMissonMineExtension extends Room {
                 var container = Game.rooms[mission.Data.disRoom].find(FIND_STRUCTURES, { 
                     filter: (stru) => {
                         return stru.structureType == STRUCTURE_CONTAINER && 
-                        stru.store.getFreeCapacity() <= 200
+                        stru.store.getFreeCapacity() <= 0
                     } 
                 })
-                setBind('out-carry', container.length)
+                if (container.length > 0 && mission.CreepBind['out-car'].bind.length == mission.CreepBind['out-car'].num) {
+                    setBind('out-carry', container.length)
+                }
             }
         }
         else if (mission.Data.state == 3)    // 防御状态
@@ -256,12 +258,15 @@ export default class RoomMissonMineExtension extends Room {
                 } else {
                     setBind('out-attack', 1)
                 }
+                setBind('out-defend', 0)
                 setBind('out-harvest', 3)  //有守护者则开始采集
                 setBind('out-car', 3)
                 setBind('out-carry', 2)
             } else {
                 if (mission.Data.hasInvader) {
                     setBind('out-defend', 1) //有Invader则加强防御
+                } else {
+                    setBind('out-defend', 0)
                 }
                 setBind('out-attack', 1) //先生产守护者
                 setBind('out-harvest', 0)
@@ -289,8 +294,7 @@ export default class RoomMissonMineExtension extends Room {
                 //寻找Invader
                 var invader = Game.rooms[mission.Data.disRoom].find(FIND_HOSTILE_CREEPS, {
                     filter: (creep) => {
-                        return creep.owner.username == 'Invader' && 
-                        (creep.getActiveBodyparts(ATTACK) > 0 || creep.getActiveBodyparts(RANGED_ATTACK) > 0)
+                        return creep.owner.username == 'Invader'
                     }
                 })
                 if (invader.length > 0) {
@@ -301,6 +305,17 @@ export default class RoomMissonMineExtension extends Room {
                     mission.Data.hasInvader = true
                 } else {
                     mission.Data.hasInvader = false
+                }
+
+                //寻找container
+                var container = Game.rooms[mission.Data.disRoom].find(FIND_STRUCTURES, { 
+                    filter: (stru) => {
+                        return stru.structureType == STRUCTURE_CONTAINER && 
+                        stru.store.getFreeCapacity() <= 0
+                    } 
+                })
+                if (container.length > 0 && mission.CreepBind['out-car'].bind.length == mission.CreepBind['out-car'].num) {
+                    setBind('out-carry', 2 + container.length)
                 }
             }
         }
