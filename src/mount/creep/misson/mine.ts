@@ -546,6 +546,7 @@ export default class CreepMissonMineExtension extends Creep {
                         /*判定是否相邻*/
                         if (this.pos.isNearTo(enemy)) {
                             this.attack(enemy)
+                            this.rangedMassAttack()
                         } else {
                             if (enemy.owner.username == 'Invader' && globalMission.Data.state == 3) {
                                 this.goTo(enemy.pos, 1)
@@ -564,12 +565,16 @@ export default class CreepMissonMineExtension extends Creep {
                     if (InvaderCore) {
                         this.memory.standed = true
                         if (!this.pos.isNearTo(InvaderCore)) this.goTo(InvaderCore.pos, 1)
-                        else this.rangedMassAttack()
+                        else {
+                            this.rangedMassAttack()
+                            this.attack(InvaderCore)
+                        }
 
                         if (!heal_state) {
                             /*判定是否相邻*/
                             if (this.pos.isNearTo(enemy)) {
                                 this.rangedAttack(enemy)
+                                this.attack(enemy)
                             }
                         }
                     }

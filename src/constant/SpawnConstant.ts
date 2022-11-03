@@ -232,9 +232,9 @@ export const RoleLevelData = {
         3: { bodypart: [1, 1, 1, 0, 0, 0, 0, 0], num: 0 },
         4: { bodypart: [2, 1, 1, 0, 0, 0, 0, 0], num: 0 },
         5: { bodypart: [5, 1, 3, 0, 0, 0, 0, 0], num: 0 },
-        6: { bodypart: [6, 2, 4, 0, 0, 0, 0, 0], num: 0 },
-        7: { bodypart: [8, 2, 5, 0, 0, 0, 0, 0], num: 0 },
-        8: { bodypart: [10, 2, 6, 0, 0, 0, 0, 0], num: 0 },
+        6: { bodypart: [6, 2, 3, 0, 0, 0, 0, 0], num: 0 },
+        7: { bodypart: [8, 2, 4, 0, 0, 0, 0, 0], num: 0 },
+        8: { bodypart: [10, 2, 5, 0, 0, 0, 0, 0], num: 0 },
     },
     "out-car": {
         1: { bodypart: [1, 1, 2, 0, 0, 0, 0, 0], num: 0 },

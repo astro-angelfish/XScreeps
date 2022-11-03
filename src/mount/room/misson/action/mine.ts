@@ -294,7 +294,8 @@ export default class RoomMissonMineExtension extends Room {
                 //寻找Invader
                 var invader = Game.rooms[mission.Data.disRoom].find(FIND_HOSTILE_CREEPS, {
                     filter: (creep) => {
-                        return creep.owner.username == 'Invader'
+                        return creep.owner.username == 'Invader' &&
+                        (creep.getActiveBodyparts(ATTACK) > 0 || creep.getActiveBodyparts(RANGED_ATTACK) > 0)
                     }
                 })
                 if (invader.length > 0) {
