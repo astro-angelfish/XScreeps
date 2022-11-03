@@ -230,6 +230,7 @@ export default class CreepMissonMineExtension extends Creep {
                     if (!point.bind.car) {
                         point.bind.car = this.name
                         this.memory.bindpoint = point.pos
+                        break
                     }
                 }
             }
@@ -536,7 +537,7 @@ export default class CreepMissonMineExtension extends Creep {
                 })
                 if (enemy) {
                     if (this.rangedAttack(enemy) == ERR_NOT_IN_RANGE) {
-                        if (enemy.owner.username == 'Invader' && globalMission.Data.state == 3) {
+                        if ((enemy.owner.username == 'Invader' && globalMission.Data.state == 3) || (enemy.getActiveBodyparts(ATTACK) == 0 && enemy.getActiveBodyparts(RANGED_ATTACK) == 0)) {
                             this.goTo(enemy.pos, 1)
                         } else {
                             this.goTo(enemy.pos, 3)
@@ -548,7 +549,7 @@ export default class CreepMissonMineExtension extends Creep {
                             this.attack(enemy)
                             this.rangedMassAttack()
                         } else {
-                            if (enemy.owner.username == 'Invader' && globalMission.Data.state == 3) {
+                            if ((enemy.owner.username == 'Invader' && globalMission.Data.state == 3) || (enemy.getActiveBodyparts(ATTACK) == 0 && enemy.getActiveBodyparts(RANGED_ATTACK) == 0)) {
                                 this.goTo(enemy.pos, 1)
                             } else {
                                 this.Flee(enemy.pos, 3)

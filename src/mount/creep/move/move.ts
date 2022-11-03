@@ -96,7 +96,7 @@ export default class CreepMoveExtension extends Creep {
         let okroom_list: any = [];
         const result = PathFinder.search(this.pos, { pos: target, range: range }, {
             plainCost: plain ? plain : 2,
-            swampCost: 10,
+            swampCost: plain ? plain * 5 : 10,
             maxRooms: target.roomName == this.room.name ? 1 : 32,
             maxOps: ops ? ops : (target.roomName == this.room.name ? 750 : 8000),
             roomCallback: roomName => {
