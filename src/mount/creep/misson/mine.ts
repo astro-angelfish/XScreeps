@@ -182,7 +182,11 @@ export default class CreepMissonMineExtension extends Creep {
             //防御状态回到自己房间
             if (globalMission.Data.state == 3 || globalMission.Data.hasInvader || Game.time < globalMission.Data.sleepTime) {
                 this.goTo(new RoomPosition(25, 25, this.memory.belong), 15)
-                return
+                if (this.room.name != this.memory.belong) {
+                    return
+                } else if ((Game.time-globalMission.Data.sleepTime) > this.ticksToLive + 100){
+                    this.suicide()
+                }
             }
             //中央九房特殊处理
             if (globalMission.Data.state == 4) {
@@ -257,6 +261,7 @@ export default class CreepMissonMineExtension extends Creep {
                     if (this.store.getUsedCapacity() > 0) {
                         this.memory.working = true
                     } else {
+                        if ((Game.time-globalMission.Data.sleepTime) > this.ticksToLive + 100) this.suicide()
                         this.memory.working = false
                         return
                     }
@@ -382,6 +387,7 @@ export default class CreepMissonMineExtension extends Creep {
                     if (this.store.getUsedCapacity() > 0) {
                         this.memory.working = true
                     } else {
+                        if ((Game.time-globalMission.Data.sleepTime) > this.ticksToLive + 100) this.suicide()
                         this.memory.working = false
                         return
                     }
@@ -528,55 +534,61 @@ export default class CreepMissonMineExtension extends Creep {
                         })
                         this.heal(wounded_isNearTo[0])
                     }
-                    return
+                    if ((Game.time - global.Gtime[this.memory.belong]) % 7 && !this.memory.targetID) {
+                        return
+                    }
                 }
-                var enemy = this.pos.findClosestByPath(FIND_HOSTILE_CREEPS, {
-                    filter: (creep) => {
-                        return !isInArray(Memory.whitesheet, creep.owner.username)
-                    }
-                })
-                if (enemy) {
-                    if (this.rangedAttack(enemy) == ERR_NOT_IN_RANGE) {
-                        if ((enemy.owner.username == 'Invader' && globalMission.Data.state == 3) || (enemy.getActiveBodyparts(ATTACK) == 0 && enemy.getActiveBodyparts(RANGED_ATTACK) == 0)) {
-                            this.goTo(enemy.pos, 1)
-                        } else {
-                            this.goTo(enemy.pos, 3)
-                        }
-                    }
-                    if (!heal_state) {
-                        /*判定是否相邻*/
-                        if (this.pos.isNearTo(enemy)) {
-                            this.attack(enemy)
-                            this.rangedMassAttack()
-                        } else {
-                            if ((enemy.owner.username == 'Invader' && globalMission.Data.state == 3) || (enemy.getActiveBodyparts(ATTACK) == 0 && enemy.getActiveBodyparts(RANGED_ATTACK) == 0)) {
-                                this.goTo(enemy.pos, 1)
-                            } else {
-                                this.Flee(enemy.pos, 3)
-                            }
-                        }
-                    }
-
-                } else {
-                    var InvaderCore = this.pos.findClosestByPath(FIND_HOSTILE_STRUCTURES, {
-                        filter: (stru) => {
-                            return stru.structureType != 'rampart'
+                if (!this.memory.targetID) {
+                    var enemy = this.pos.findClosestByPath(FIND_HOSTILE_CREEPS, {
+                        filter: (creep) => {
+                            return !isInArray(Memory.whitesheet, creep.owner.username)
                         }
                     })
-                    if (InvaderCore) {
-                        this.memory.standed = true
-                        if (!this.pos.isNearTo(InvaderCore)) this.goTo(InvaderCore.pos, 1)
-                        else {
-                            this.rangedMassAttack()
-                            this.attack(InvaderCore)
-                        }
-
-                        if (!heal_state) {
-                            /*判定是否相邻*/
-                            if (this.pos.isNearTo(enemy)) {
-                                this.rangedAttack(enemy)
-                                this.attack(enemy)
+                    if (enemy) {
+                        this.memory.targetID = enemy.id
+                        return
+                    } else {
+                        var InvaderCore = this.pos.findClosestByPath(FIND_HOSTILE_STRUCTURES, {
+                            filter: (stru) => {
+                                return stru.structureType != 'rampart'
                             }
+                        })
+                        if (InvaderCore) {
+                            this.memory.targetID = InvaderCore.id
+                            return
+                        }
+                    }
+                } else {
+                    var atkTarget = Game.getObjectById(this.memory.targetID) as Creep | Structure
+                    if (!atkTarget) {
+                        delete this.memory.targetID
+                        return
+                    }
+                    if (atkTarget instanceof Creep) {                      
+                        /*判定是否相邻*/
+                        if (this.pos.isNearTo(atkTarget)) {
+                            this.attack(atkTarget)
+                            this.rangedMassAttack()
+                        } else {
+                            if ((atkTarget.owner.username == 'Invader') || (atkTarget.getActiveBodyparts(ATTACK) == 0 && atkTarget.getActiveBodyparts(RANGED_ATTACK) == 0)) {
+                                this.goTo(atkTarget.pos, 1)
+                            } else {
+                                if (heal_state) {
+                                    this.Flee(atkTarget.pos, 3)
+                                } else {
+                                    this.goTo(atkTarget.pos, 3)
+                                }
+                            }
+                            this.rangedAttack(atkTarget)
+                        }
+                    } else {
+                        this.memory.standed = true
+                        if (!this.pos.isNearTo(atkTarget)) {
+                            this.goTo(atkTarget.pos, 1)
+                            this.rangedAttack(atkTarget)
+                        } else {
+                            this.rangedMassAttack()
+                            this.attack(atkTarget)
                         }
                     }
                 }

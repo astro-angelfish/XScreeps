@@ -646,6 +646,22 @@ export default class CreepMissonTransportExtension extends Creep {
                                 return
                             }
                             this.memory.working = true;
+                        } else {
+                            var tomb = disPos.lookFor(LOOK_TOMBSTONES)[0]
+                            var droppedResource = disPos.lookFor(LOOK_RESOURCES)
+                            if (droppedResource.length > 0) {
+                                for (var res of droppedResource) {
+                                    this.pickup(res)
+                                }
+                            } else if (tomb && tomb.store.getUsedCapacity() > 0) {
+                                for (var t in tomb.store) {
+                                    this.withdraw(tomb, t as ResourceConstant)
+                                }
+                            } else {
+                                belongRoom.DeleteMission(this.memory.MissionData.id)
+                                return
+                            }
+                            this.memory.working = true
                         }
                     }
                 }

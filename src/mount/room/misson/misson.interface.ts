@@ -7,7 +7,7 @@ interface Room {
     RoleMissionNum(role: string, name: string): number
     GainMission(id: string): MissionModel | null
     MissionNum(range: string, name: string): number
-    Check_Carry(role: string, source: RoomPosition, pos: RoomPosition, rType: ResourceConstant): boolean
+    Check_Carry(role: string, source: RoomPosition, pos: RoomPosition, rType?: ResourceConstant): boolean
     Check_Lab(misson: MissionModel, role: string, tankType: 'storage' | 'terminal' | 'complex'): boolean
     Check_Link(source: RoomPosition, pos: RoomPosition): boolean
     Check_Buy(resource: ResourceConstant): boolean
@@ -33,6 +33,7 @@ interface Room {
     Task_Auto_Defend(): void
     Global_Detection(): void
     Auto_Basicmarket(): void
+    Resource_Recycle(): void
 
     // 被动任务
     Task_Carry(misson: MissionModel): void

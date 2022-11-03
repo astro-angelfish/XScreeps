@@ -46,6 +46,7 @@ export default class RoomMissonFrameExtension extends Room {
         this.Task_montitorPower()   // 烧power任务监控
         this.Task_Auto_Defend()     // 主动防御任务发布
         this.Auto_Basicmarket() //自动化基础资源保持功能
+        this.Resource_Recycle() //资源回收
 
         if (cpu_test) { cpu_list.push(Game.cpu.getUsed()) }
 
@@ -530,11 +531,11 @@ export default class RoomMissonFrameExtension extends Room {
     }
 
     /* 判断已经有了该类型的搬运任务 true:代表没有重复， false代表有 */
-    public Check_Carry(role: string, source: RoomPosition, pos: RoomPosition, rType: ResourceConstant): boolean {
+    public Check_Carry(role: string, source: RoomPosition, pos: RoomPosition, rType?: ResourceConstant): boolean {
         for (let i of this.memory.Misson['Creep']) {
             if (!i.CreepBind) continue
             if (i.name != '物流运输') continue
-            if (i.CreepBind[role] && i.Data.rType == rType) {
+            if (i.CreepBind[role] && (rType ? i.Data.rType == rType : true)) {
                 let sourcePos = new RoomPosition(i.Data.sourcePosX, i.Data.sourcePosY, i.Data.sourceRoom)
                 let disPos = new RoomPosition(i.Data.targetPosX, i.Data.targetPosY, i.Data.targetRoom)
                 if (sourcePos.isEqualTo(source) && disPos.isEqualTo(pos)) return false

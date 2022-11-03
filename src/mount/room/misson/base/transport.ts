@@ -28,6 +28,44 @@ export default class RoomMissonTransportExtension extends Room {
         }
     }
 
+    // 资源回收任务
+    public Resource_Recycle(): void {
+        if ((Game.time - global.Gtime[this.name]) % 17) return
+        if (!this.storage) return
+        let tombstone = this.find(FIND_TOMBSTONES, { 
+            filter: (tomb) => {
+                return (tomb.store.getUsedCapacity('energy') >= tomb.pos.getRangeTo(this.storage!) * 25) ||
+                        (tomb.store.getUsedCapacity() > tomb.store.getUsedCapacity('energy'))
+            }
+        }) as Tombstone[];
+        if (tombstone.length > 0) {
+            /* 下达搬运任务搬运 */
+            if (this.RoleMissionNum('transport', '物流运输') > 3) return
+            if (this.storage) {
+                if (!this.Check_Carry('transport', this.storage.pos, tombstone[0].pos)) return
+                let thisTask = this.public_Carry({ 'transport': { num: 1, bind: [] } }, 35, this.name, tombstone[0].pos.x, tombstone[0].pos.y, this.name, this.storage.pos.x, this.storage.pos.y)
+                this.AddMission(thisTask)
+                return
+            }
+        } else {
+            let droppedResource = this.find(FIND_DROPPED_RESOURCES, {
+                filter: (dropped) => {
+                    return (dropped.amount >= dropped.pos.getRangeTo(this.storage!) * 25) || (dropped.resourceType != 'energy')
+                }
+            }) as Resource[];
+            if (droppedResource.length > 0) {
+                /* 下达搬运任务搬运 */
+                if (this.RoleMissionNum('transport', '物流运输') > 3) return
+                if (this.storage) {
+                    if (!this.Check_Carry('transport', this.storage.pos, droppedResource[0].pos)) return
+                    let thisTask = this.public_Carry({ 'transport': { num: 1, bind: [] } }, 35, this.name, droppedResource[0].pos.x, droppedResource[0].pos.y, this.name, this.storage.pos.x, this.storage.pos.y)
+                    this.AddMission(thisTask)
+                    return
+                }
+            }
+        }
+    }
+
     // 防御塔填充任务
     public Tower_Feed(): void {
         if (Game.shard.name == 'shard3') {
