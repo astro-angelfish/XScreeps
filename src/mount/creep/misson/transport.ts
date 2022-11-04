@@ -589,7 +589,7 @@ export default class CreepMissonTransportExtension extends Creep {
                                 }
                             }
 
-                            if (target.store.getFreeCapacity() < 40000) {
+                            if (this.memory.role == 'truck' && target.store.getFreeCapacity() < 40000) {
                                 /* 目标满了、不是正确目标、目标消失了也代表任务完成 */
                                 belongRoom.DeleteMission(this.memory.MissionData.id)
                                 this.suicide();
