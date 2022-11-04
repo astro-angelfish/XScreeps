@@ -550,7 +550,7 @@ export default class CreepMissonMineExtension extends Creep {
                     } else {
                         var InvaderCore = this.pos.findClosestByPath(FIND_HOSTILE_STRUCTURES, {
                             filter: (stru) => {
-                                return stru.structureType != 'rampart'
+                                return stru.structureType == STRUCTURE_INVADER_CORE
                             }
                         })
                         if (InvaderCore) {
