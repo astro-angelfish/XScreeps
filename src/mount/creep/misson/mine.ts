@@ -388,7 +388,7 @@ export default class CreepMissonMineExtension extends Creep {
                 if (container_[0] && container_[0].store.getUsedCapacity() > 0) {
                     if (!this.pos.isNearTo(container_[0])) {
                         // this.goTo(container_[0].pos, 1);
-                        this.moveTo(disPos, { range: 1, visualizePathStyle: { stroke: colors.orange } })
+                        this.moveTo(container_[0], { range: 1, visualizePathStyle: { stroke: colors.orange } })
                         return;
                     }
                     /*进行资源遍历操作*/
