@@ -7,6 +7,7 @@ import mountPowerCreep from './powercreep'
 import mountHelp from './help'
 import { Colorful } from '@/utils'
 import { AppLifecycleCallbacks } from '@/module/framework/types'
+import './creep/move/betterMove'
 
 const initStorage = function () {
     if (!Memory.rooms) Memory.rooms = {}

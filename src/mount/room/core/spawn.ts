@@ -163,7 +163,8 @@ export default class RoomCoreSpawnExtension extends Room {
                 shard: Game.shard.name,
                 boostData: bodyData,
                 working: false,
-                adaption: false
+                adaption: false,
+                dontPullMe: false,
             }
             if (adaption) thisMem.adaption = true   // 代表该爬虫是被自适应过孵化的，如果能量充足应该重新孵化
             // 额外记忆添加

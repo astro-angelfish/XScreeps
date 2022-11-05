@@ -198,9 +198,27 @@ export default class CreepMissonMineExtension extends Creep {
             }
 
             if (this.memory.working) {
+                if (this.memory.containerID) {
+                    let containerData = Game.getObjectById(this.memory.containerID) as StructureContainer
+                    if (!containerData) delete this.memory.containerID
+                    if (containerData.store.getFreeCapacity() < 20) return;
+                    if (!this.pos.isEqualTo(containerData.pos)){
+                        // this.goTo(containerData.pos, 0)
+                        this.moveTo(containerData, { range: 0, visualizePathStyle: { stroke: colors.yellow } })
+                    } 
+                    else {
+                        if (containerData.hits < containerData.hitsMax) {
+                            this.repair(containerData)
+                            return
+                        }
+                        this.harvest(source)
+                    }
+                    return
+                }
                 var container_ = source.pos.findInRange(FIND_STRUCTURES, 1, { filter: (stru) => { return stru.structureType == 'container' } }) as StructureContainer[]
                 if (container_[0]) {
-                    if (!this.pos.isEqualTo(container_[0].pos)) {
+                    if (container_[0].store.getFreeCapacity() < 20) return;
+                    if (!this.pos.isEqualTo(container_[0].pos)){
                         // this.goTo(container_[0].pos, 0)
                         this.moveTo(container_[0], { range: 0, visualizePathStyle: { stroke: colors.yellow } })
                     }
@@ -209,9 +227,12 @@ export default class CreepMissonMineExtension extends Creep {
                             this.repair(container_[0])
                             return
                         }
+                        this.memory.containerID = container_[0].id;
                         this.transfer(container_[0], 'energy')
+                        // this.harvest(source)
                     }
                     Memory.outMineData[creepMission.disRoom].car = true
+                    this.memory.working = false;
                 }
                 else {
                     Memory.outMineData[creepMission.disRoom].car = false
@@ -224,7 +245,7 @@ export default class CreepMissonMineExtension extends Creep {
                     }
                 }
             }
-            else {
+            if (!this.memory.working) {
                 if (!this.pos.isNearTo(disPos)) {
                     // this.goTo(disPos, 1)
                     this.moveTo(disPos, { range: 1, visualizePathStyle: { stroke: colors.yellow } })

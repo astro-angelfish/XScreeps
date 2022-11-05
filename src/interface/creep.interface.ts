@@ -4,6 +4,7 @@ interface Creep {
 }
 
 interface CreepMemory {
+    dontPullMe: boolean
     belong: string      // 爬虫所属房间
     shard: string       // 爬虫所属shard
     role: string        // 爬虫角色
