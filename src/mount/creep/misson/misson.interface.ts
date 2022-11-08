@@ -9,6 +9,7 @@ interface Creep{
     handle_carry():void
     handle_Carryshard():void
     handle_carrygleaner():void
+    handle_carryenergysupply():void
     handle_carrymine():void
     handle_repair():void
     handle_planC():void
@@ -53,6 +54,10 @@ interface CreepMemory{
     creeptime?:number,
     arrive?:number,
     carsourceid?:string/*外矿专用-能量矿ID*/
+    readystate?:boolean,
+    deathcreep?:string,
+    arrivestate?:boolean,
+    hitsinjured?:number,/*血量的受伤信息*/
 }
 
 
