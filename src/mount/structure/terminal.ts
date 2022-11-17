@@ -295,8 +295,8 @@ export default class terminalExtension extends StructureTerminal {
                         // console.log(this.room.name, '订单触发调价')
                         if (!order_data.ignore) {
                             /*非忽略订单。执行价格更新*/
-                            let reduceprice = 0.05;
-                            reduceprice += Math.min((Math.floor(drop_tick / order_time) * 0.05), 0.25); //最多下调0.3cr
+                            let reduceprice = 0.1;
+                            reduceprice += Math.min((Math.floor(drop_tick / order_time) * 0.05), 0.90); //最多下调1cr
                             order_data.price = (Number(order_data.price) - reduceprice).toFixed(3).toString();
                             console.log(Colorful(`[调价下跌]房间${this.room.name}订单已完结,调价:${order_data.price}已存储`, 'gold', true))
                             switch (order_data.Demandlevel) {
