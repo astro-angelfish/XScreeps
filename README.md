@@ -1,5 +1,7 @@
 # Xscreeps
 
+English version is currently available [here](docs/README_en.md).
+
 #### 温馨提醒
 建议大家在使用本bot前拥有完整的八级房游戏体验，来熟悉游戏本身，方便理解bot内的相关操作以减少因为对游戏不熟悉从而导致的相关问题
 
