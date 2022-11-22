@@ -204,7 +204,7 @@ export default class CreepMissonMineExtension extends Creep {
 
             if (this.memory.working) {
                 if (this.memory.containerID) {
-                    let containerData = Game.getObjectById(this.memory.containerID) as StructureContainer
+                    let containerData = Game.getObjectById(this.memory.containerID as Id<StructureContainer>) as StructureContainer
                     if (!containerData) delete this.memory.containerID
                     if (containerData.store.getFreeCapacity() < 20) return;
                     if (!this.pos.isEqualTo(containerData.pos)) {
@@ -385,7 +385,7 @@ export default class CreepMissonMineExtension extends Creep {
                     return
                 }
                 if (this.memory.containerID) {
-                    var containerData = Game.getObjectById(this.memory.containerID) as StructureContainer;
+                    var containerData = Game.getObjectById(this.memory.containerID as Id<StructureContainer>) as StructureContainer;
                     if (!containerData) delete this.memory.containerID;
                     if (!this.pos.isNearTo(containerData)) {
                         // this.goTo(container_[0].pos, 1);
@@ -546,7 +546,7 @@ export default class CreepMissonMineExtension extends Creep {
                         this.memory.targetID = container.id
                     }
                 } else {
-                    var target = Game.getObjectById(this.memory.targetID) as Resource | Tombstone | Ruin | StructureContainer
+                    var target = Game.getObjectById(this.memory.targetID as Id<Resource | Tombstone | Ruin | StructureContainer>) as Resource | Tombstone | Ruin | StructureContainer
                     if (!target) {
                         delete this.memory.targetID
                         return
@@ -631,7 +631,7 @@ export default class CreepMissonMineExtension extends Creep {
                         }
                     }
                 } else {
-                    var atkTarget = Game.getObjectById(this.memory.targetID) as Creep | Structure
+                    var atkTarget = Game.getObjectById(this.memory.targetID as Id<Creep | Structure>) as Creep | Structure
                     if (!atkTarget) {
                         delete this.memory.targetID
                         return
